@@ -1,4 +1,5 @@
 import { VocabWord } from "@/types/lesson";
+import { SpeakButton } from "@/hooks/useSpeech";
 
 interface VocabTableProps {
   vocabulary: VocabWord[];
@@ -27,7 +28,10 @@ const VocabTable = ({ vocabulary, highlightWord }: VocabTableProps) => {
               }`}
             >
               <td className="py-2.5 px-2 font-reading text-base font-semibold text-english">
-                {word.word}
+                <span className="flex items-center gap-1">
+                  {word.word}
+                  <SpeakButton text={word.word} />
+                </span>
               </td>
               <td className="py-2.5 px-2 text-muted-foreground italic text-xs">
                 ({word.partOfSpeech})
