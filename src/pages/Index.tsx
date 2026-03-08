@@ -148,7 +148,9 @@ const Index = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {loading ? (
+        {showLibrary ? (
+          <FableLibrary currentLevel={level} onSelectFable={handleSelectFable} />
+        ) : loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <Loader2 className="w-10 h-10 animate-spin mb-4 text-primary" />
             <p className="font-thai">กำลังสร้างบทเรียนใหม่...</p>
