@@ -106,6 +106,15 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setShowLibrary(!showLibrary)}
+                variant={showLibrary ? "default" : "secondary"}
+                size="sm"
+                className="font-thai"
+              >
+                <Library className="w-4 h-4 mr-2" />
+                คลังนิทาน
+              </Button>
               <Button onClick={generateNewLesson} disabled={loading} size="sm" className="font-thai">
                 {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                 สร้างบทเรียนใหม่
