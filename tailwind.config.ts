@@ -47,6 +47,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        vocab: {
+          DEFAULT: "hsl(var(--vocab-bg))",
+          highlight: "hsl(var(--vocab-highlight))",
+        },
+        reading: {
+          DEFAULT: "hsl(var(--reading-bg))",
+        },
+        english: "hsl(var(--english-text))",
+        "thai-phonetic": "hsl(var(--thai-phonetic))",
+        quiz: {
+          correct: "hsl(var(--quiz-correct))",
+          wrong: "hsl(var(--quiz-wrong))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
