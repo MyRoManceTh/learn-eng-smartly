@@ -65,6 +65,14 @@ const Index = () => {
     }
   }, [level, lessonsCompleted]);
 
+  const handleSelectFable = (entry: FableEntry) => {
+    setLesson(entry.lesson);
+    setQuiz(entry.quiz);
+    setLessonImage(null);
+    setShowQuiz(false);
+    setShowLibrary(false);
+  };
+
   const handleQuizComplete = async (score: number) => {
     const newCompleted = lessonsCompleted + 1;
     setLessonsCompleted(newCompleted);
