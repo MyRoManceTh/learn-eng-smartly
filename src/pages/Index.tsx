@@ -4,10 +4,12 @@ import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
 import LevelSelector from "@/components/LevelSelector";
+import FableLibrary from "@/components/FableLibrary";
 import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
+import { FableEntry } from "@/data/aesopFables";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn } from "lucide-react";
+import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn, Library } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +25,7 @@ const Index = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
+  const [showLibrary, setShowLibrary] = useState(false);
 
   // Load profile data when logged in
   useEffect(() => {
@@ -61,6 +64,14 @@ const Index = () => {
       setLoading(false);
     }
   }, [level, lessonsCompleted]);
+
+  const handleSelectFable = (entry: FableEntry) => {
+    setLesson(entry.lesson);
+    setQuiz(entry.quiz);
+    setLessonImage(null);
+    setShowQuiz(false);
+    setShowLibrary(false);
+  };
 
   const handleQuizComplete = async (score: number) => {
     const newCompleted = lessonsCompleted + 1;
@@ -103,6 +114,15 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setShowLibrary(!showLibrary)}
+                variant={showLibrary ? "default" : "secondary"}
+                size="sm"
+                className="font-thai"
+              >
+                <Library className="w-4 h-4 mr-2" />
+                คลังนิทาน
+              </Button>
               <Button onClick={generateNewLesson} disabled={loading} size="sm" className="font-thai">
                 {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
                 สร้างบทเรียนใหม่
@@ -128,7 +148,9 @@ const Index = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {loading ? (
+        {showLibrary ? (
+          <FableLibrary currentLevel={level} onSelectFable={handleSelectFable} />
+        ) : loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <Loader2 className="w-10 h-10 animate-spin mb-4 text-primary" />
             <p className="font-thai">กำลังสร้างบทเรียนใหม่...</p>
