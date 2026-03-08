@@ -37,7 +37,7 @@ Return a valid JSON object (no markdown, no code blocks) with this exact structu
       {"word": "english word", "phonetic": "Thai phonetic reading", "meaning": "Thai meaning", "partOfSpeech": "n./v./adj./adv./phr."}
     ],
     "articleSentences": [
-      [{"english": "word", "thai": "Thai reading/meaning under each word"}]
+      [{"english": "word", "thai": "คำอ่านออกเสียงเป็นไทย (phonetic)"}]
     ],
     "articleTranslation": "Full Thai translation of the article",
     "imagePrompt": "short description for image"
@@ -50,13 +50,13 @@ Return a valid JSON object (no markdown, no code blocks) with this exact structu
 Rules:
 - 6-8 vocabulary words appropriate for level ${level}
 - Article: 4-6 sentences using the vocabulary words
-- articleSentences: each sentence is an array of {english, thai} word pairs where thai is the phonetic reading in Thai script
+- articleSentences: each sentence is an array of {english, thai} word pairs
+- CRITICAL: the "thai" field in articleSentences must be PHONETIC PRONUNCIATION in Thai script (e.g., "แอปเปิ้ล" for "apple", "ไลค์" for "like", "อาฟเทอะ" for "after"). It is NOT a translation! It is how to READ/PRONOUNCE the English word in Thai script.
 - 4 quiz questions (2 vocab, 2 comprehension) in Thai
 - Level 1: very simple sentences, basic words
 - Level 5: complex sentences, advanced vocabulary
 - All Thai text must use Thai script
-- Phonetic readings should be in Thai transliteration (e.g., "แอปเปิ้ล" for "apple")`;
-
+- Phonetic readings example: "hello" → "เฮลโล", "school" → "สคูล", "water" → "วอเทอะ"`;
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
