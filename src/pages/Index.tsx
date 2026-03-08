@@ -25,6 +25,7 @@ const Index = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
+  const [showLibrary, setShowLibrary] = useState(false);
 
   // Load profile data when logged in
   useEffect(() => {
