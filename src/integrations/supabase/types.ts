@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      learning_history: {
+        Row: {
+          completed_at: string
+          id: string
+          lesson_level: number
+          lesson_title: string
+          quiz_score: number | null
+          quiz_total: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          lesson_level: number
+          lesson_title: string
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          lesson_level?: number
+          lesson_title?: string
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          avatar_url: string | null
+          created_at: string
+          current_level: number
+          display_name: string | null
+          education_level: string | null
+          gender: string | null
+          id: string
+          lessons_completed: number
+          school_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          current_level?: number
+          display_name?: string | null
+          education_level?: string | null
+          gender?: string | null
+          id?: string
+          lessons_completed?: number
+          school_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          current_level?: number
+          display_name?: string | null
+          education_level?: string | null
+          gender?: string | null
+          id?: string
+          lessons_completed?: number
+          school_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
