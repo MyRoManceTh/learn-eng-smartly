@@ -18,7 +18,7 @@ const Index = () => {
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [lessonImage, setLessonImage] = useState<string | null>(null);
+  const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
 
   const generateNewLesson = useCallback(async () => {
     setLoading(true);
