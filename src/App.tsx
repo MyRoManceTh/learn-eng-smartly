@@ -11,6 +11,7 @@ import AuthPage from "./pages/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
 import LearningPathPage from "./pages/LearningPathPage";
 import LibraryPage from "./pages/LibraryPage";
+import QuizPage from "./pages/QuizPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
