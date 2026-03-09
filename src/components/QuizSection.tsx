@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
+import confetti from "canvas-confetti";
 
 interface QuizSectionProps {
   questions: QuizQuestion[];
@@ -15,6 +16,8 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [shaking, setShaking] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const question = questions[currentQ];
 
@@ -25,8 +28,16 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
     if (idx === question.correctIndex) {
       setScore((s) => s + 1);
       playCorrect();
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.7 },
+        colors: ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6"],
+      });
     } else {
       playWrong();
+      setShaking(true);
+      setTimeout(() => setShaking(false), 500);
     }
   };
 
@@ -35,6 +46,9 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
       const finalScore = score;
       setFinished(true);
       playComplete();
+      // Big celebration confetti
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+      setTimeout(() => confetti({ particleCount: 80, spread: 120, origin: { y: 0.6 } }), 300);
       onComplete(finalScore);
     } else {
       setCurrentQ((c) => c + 1);
@@ -62,7 +76,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div ref={containerRef} className={`rounded-lg border border-border bg-card p-6 transition-transform ${shaking ? "animate-[shake_0.5s_ease-in-out]" : ""}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold font-thai">📝 แบบทดสอบ</h3>
         <span className="text-sm text-muted-foreground">
