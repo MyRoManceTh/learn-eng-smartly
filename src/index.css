@@ -100,3 +100,19 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: hsl(var(--primary) / 0.2);
+  transform: scale(0);
+  animation: ripple-anim 0.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple-anim {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
