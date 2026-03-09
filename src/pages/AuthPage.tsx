@@ -47,23 +47,31 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-b from-sky-300 via-purple-200 to-pink-200 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Floating decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-24 h-24 bg-yellow-400/20 rounded-full blur-xl" />
+        <div className="absolute top-40 right-8 w-16 h-16 bg-pink-400/20 rounded-full blur-xl" />
+        <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-cyan-400/20 rounded-full blur-xl" />
+        <div className="absolute top-1/3 right-1/3 w-12 h-12 bg-purple-400/20 rounded-full blur-xl" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <BookOpen className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground font-thai">
-              อ่านเรียน<span className="text-primary">English</span>
-            </h1>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 mx-auto mb-3">
+            <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <p className="text-muted-foreground font-thai text-sm">
+          <h1 className="text-2xl font-bold text-foreground font-thai">
+            อ่านเรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">English</span>
+          </h1>
+          <p className="text-white/70 font-thai text-sm mt-1">
             เรียนภาษาอังกฤษผ่านการอ่านเรื่องสั้นสองภาษา
           </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-xl p-6 shadow-xl">
           <h2 className="text-lg font-semibold text-center mb-6 font-thai">
             {isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
           </h2>
@@ -117,7 +125,7 @@ const AuthPage = () => {
                 minLength={6}
               />
             </div>
-            <Button type="submit" className="w-full font-thai" disabled={loading}>
+            <Button type="submit" className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25" disabled={loading}>
               {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Mail className="w-4 h-4 mr-2" />}
               {isLogin ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
             </Button>

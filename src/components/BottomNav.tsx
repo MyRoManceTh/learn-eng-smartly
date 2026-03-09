@@ -43,7 +43,7 @@ const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">
-      <div className="bg-card/90 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_24px_-4px_hsl(var(--foreground)/0.08)]">
+      <div className="bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-4px_24px_-4px_rgba(124,58,237,0.08)]">
         <div className="flex items-center justify-around h-[68px] px-1 max-w-md mx-auto">
           {tabs.map((tab) => {
             const isActive =
@@ -57,14 +57,14 @@ const BottomNav = () => {
                 className={cn(
                   "relative overflow-hidden flex flex-col items-center justify-center gap-0.5 flex-1 py-2 rounded-2xl transition-all duration-200 active:scale-90",
                   isActive
-                    ? "text-primary"
-                    : "text-muted-foreground active:text-foreground"
+                    ? "text-purple-600"
+                    : "text-gray-400 active:text-gray-600"
                 )}
               >
                 <div
                   className={cn(
                     "flex items-center justify-center w-10 h-7 rounded-full transition-all duration-300",
-                    isActive && "bg-primary/12 scale-110"
+                    isActive && "bg-gradient-to-r from-purple-500/15 to-pink-500/15 scale-110"
                   )}
                 >
                   <Icon
@@ -75,7 +75,7 @@ const BottomNav = () => {
                   />
                 </div>
                 {tab.path === "/profile" && notificationCount > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive rounded-full flex items-center justify-center">
+                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
                     <span className="text-[8px] text-white font-bold">{notificationCount > 9 ? '9+' : notificationCount}</span>
                   </div>
                 )}

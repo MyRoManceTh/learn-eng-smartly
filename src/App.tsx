@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import SeasonPassPage from "@/components/events/SeasonPassPage";
 import PremiumPage from "@/components/premium/PremiumPage";
 import ParentReport from "@/components/premium/ParentReport";
+import AdminPage from "@/pages/AdminPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/season-pass" element={<SeasonPassPage />} />
               <Route path="/premium" element={<PremiumPage />} />
               <Route path="/parent-report" element={<ParentReport />} />
+              <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </PageTransition>

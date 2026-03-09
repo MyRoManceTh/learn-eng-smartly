@@ -108,11 +108,41 @@ Rules:
 - 6-8 vocabulary words appropriate for level ${level}
 - Article: 4-6 sentences using the vocabulary words
 - articleSentences: each sentence is an array of {english, thai} word pairs
-- CRITICAL: the "thai" field in articleSentences must be PHONETIC PRONUNCIATION in Thai script (e.g., "แอปเปิ้ล" for "apple", "ไลค์" for "like", "อาฟเทอะ" for "after"). It is NOT a translation!
+- CRITICAL: "phonetic" in vocabulary and "thai" in articleSentences must be PHONETIC PRONUNCIATION in Thai script — how the word actually SOUNDS when spoken, NOT a translation, and NOT based on English spelling!
 - 4 quiz questions (2 vocab, 2 comprehension) in Thai
 - Level 1: very simple sentences, basic words
 - Level 5: complex sentences, advanced vocabulary
-- All Thai text must use Thai script`;
+- All Thai text must use Thai script
+
+THAI PHONETIC TRANSLITERATION RULES (follow strictly):
+1. Use ACTUAL pronunciation, NOT English spelling:
+   - Silent L: "walk"→"วอค", "talk"→"ทอค", "half"→"ฮาฟ", "would"→"วูด", "could"→"คูด"
+   - Silent K: "knife"→"ไนฟ์", "know"→"โน", "knee"→"นี"
+   - Silent B: "climb"→"ไคลม์", "bomb"→"บอม"
+   - Silent GH: "thought"→"ธอท", "night"→"ไนท์"
+
+2. Consonant sounds:
+   - /θ/ (think)→ท, /ð/ (the)→ด, /ʃ/ (she)→ช, /tʃ/ (catch)→ช, /dʒ/ (judge)→จ
+
+3. Vowel accuracy (very important):
+   - Short /ʊ/→อุ: "book"→"บุ๊ค", "cook"→"คุก", "pull"→"พุล" (NOT อู which is long)
+   - Long /uː/→อู: "food"→"ฟูด", "moon"→"มูน"
+   - /ə/ (schwa)→อะ/เออะ: "about"→"อะเบาท์", "after"→"อาฟเทอะ"
+   - /aʊ/: "found"→"ฟาวนด์" (include ALL consonants — don't drop N!)
+
+4. Past tense -ed:
+   - After voiceless→ท์: "walked"→"วอคท์", "laughed"→"ลาฟท์", "dropped"→"ดร็อปท์"
+   - After voiced→ด์: "called"→"คอลด์", "pulled"→"พุลด์"
+   - After /t,d/→เอ็ด: "wanted"→"วอนเท็ด", "decided"→"ดิไซเด็ด"
+
+5. Suffixes: -ing→อิ้ง ("cooking"→"คุกกิ้ง"), -tion→ชั่น ("station"→"สเตชั่น")
+
+6. Always add การันต์ (์) on final silent consonants: "ลาฟท์" NOT "ลาฟท"
+
+Examples of CORRECT phonetics:
+"apple"→"แอ๊ปเปิ้ล", "like"→"ไลค์", "after"→"อาฟเทอะ", "water"→"วอเทอะ",
+"catch"→"แค็ตช์", "cooking"→"คุกกิ้ง", "found"→"ฟาวนด์", "walked"→"วอคท์",
+"grateful"→"เกรทฟุล", "probably"→"พร็อบบะบลี"`;
 
   const textResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",

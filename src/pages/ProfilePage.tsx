@@ -46,11 +46,11 @@ interface PathProgress {
 }
 
 const levelColorValues: Record<number, string> = {
-  1: "hsl(25, 65%, 45%)",
-  2: "hsl(160, 50%, 42%)",
-  3: "hsl(220, 65%, 52%)",
-  4: "hsl(275, 55%, 52%)",
-  5: "hsl(340, 65%, 50%)",
+  1: "hsl(152, 76%, 44%)",
+  2: "hsl(199, 89%, 48%)",
+  3: "hsl(262, 83%, 58%)",
+  4: "hsl(330, 85%, 60%)",
+  5: "hsl(25, 95%, 53%)",
 };
 
 const ProfilePage = () => {
@@ -127,8 +127,8 @@ const ProfilePage = () => {
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground font-thai">กำลังโหลด...</div>;
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-20 md:pb-0">
+      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={() => navigate("/")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
@@ -142,30 +142,30 @@ const ProfilePage = () => {
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         {/* Stats overview */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in">
-            <Flame className="w-6 h-6 text-destructive mx-auto mb-1" />
+          <div className="rounded-2xl bg-gradient-to-br from-orange-100 to-red-50 border border-orange-200/50 p-4 text-center shadow-sm animate-fade-in">
+            <Flame className="w-6 h-6 text-orange-500 mx-auto mb-1" />
             <p className="text-2xl font-bold text-foreground">{(profile as any)?.current_streak || 0}</p>
             <p className="text-xs text-muted-foreground font-thai">วันติดต่อกัน</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "50ms" }}>
-            <Trophy className="w-6 h-6 text-star-gold mx-auto mb-1" />
+          <div className="rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-50 border border-amber-200/50 p-4 text-center shadow-sm animate-fade-in" style={{ animationDelay: "50ms" }}>
+            <Trophy className="w-6 h-6 text-amber-500 mx-auto mb-1" />
             <p className="text-2xl font-bold text-foreground">{(profile as any)?.longest_streak || 0}</p>
             <p className="text-xs text-muted-foreground font-thai">สถิติสูงสุด</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <Zap className="w-6 h-6 text-primary mx-auto mb-1" />
+          <div className="rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-50 border border-purple-200/50 p-4 text-center shadow-sm animate-fade-in" style={{ animationDelay: "100ms" }}>
+            <Zap className="w-6 h-6 text-purple-600 mx-auto mb-1" />
             <p className="text-2xl font-bold text-foreground">{(profile as any)?.total_exp || 0}</p>
             <p className="text-xs text-muted-foreground font-thai">EXP สะสม</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "150ms" }}>
-            <Star className="w-6 h-6 text-star-gold mx-auto mb-1" />
+          <div className="rounded-2xl bg-gradient-to-br from-pink-100 to-rose-50 border border-pink-200/50 p-4 text-center shadow-sm animate-fade-in" style={{ animationDelay: "150ms" }}>
+            <Star className="w-6 h-6 text-pink-500 mx-auto mb-1" />
             <p className="text-2xl font-bold text-foreground">{Math.round(avgScore)}%</p>
             <p className="text-xs text-muted-foreground font-thai">คะแนนเฉลี่ย</p>
           </div>
         </div>
 
         {/* Progress charts */}
-        <div className="rounded-lg border border-border bg-card p-6 animate-fade-in" style={{ animationDelay: "150ms" }}>
+        <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg animate-fade-in" style={{ animationDelay: "150ms" }}>
           <h2 className="font-semibold font-thai text-lg mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-primary" /> ความก้าวหน้าตามระดับ
           </h2>
@@ -213,7 +213,7 @@ const ProfilePage = () => {
                       startAngle={90}
                       endAngle={-270}
                     >
-                      <Cell fill="hsl(25, 65%, 45%)" />
+                      <Cell fill="hsl(262, 83%, 58%)" />
                       <Cell fill="hsl(0, 0%, 88%)" />
                     </Pie>
                   </PieChart>
@@ -250,7 +250,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Profile form */}
-        <div className="rounded-lg border border-border bg-card p-6 space-y-4">
+        <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg space-y-4">
           <h2 className="font-semibold font-thai text-lg">ข้อมูลส่วนตัว</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -303,9 +303,9 @@ const ProfilePage = () => {
         </div>
 
         {/* Learning history */}
-        <div className="rounded-lg border border-border bg-card p-6">
+        <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg">
           <h2 className="font-semibold font-thai text-lg mb-4 flex items-center gap-2">
-            <History className="w-5 h-5 text-primary" /> ประวัติการเรียนรู้
+            <History className="w-5 h-5 text-purple-600" /> ประวัติการเรียนรู้
           </h2>
           {history.length === 0 ? (
             <p className="text-muted-foreground text-sm font-thai">ยังไม่มีประวัติการเรียน</p>

@@ -19,7 +19,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
   };
 
   return (
-    <div className="rounded-lg border border-border bg-reading p-4 sm:p-6">
+    <div className="rounded-2xl border border-purple-100/50 bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-lg shadow-purple-500/5">
       {/* Title */}
       <div className="mb-3 sm:mb-4">
         <div className="flex items-start justify-between gap-2">
@@ -29,7 +29,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
           </div>
           <button
             onClick={readFullArticle}
-            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-thai text-primary bg-primary/10 hover:bg-primary/20 active:bg-primary/30 transition-colors shrink-0"
+            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-thai text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 active:from-purple-600 active:to-pink-600 transition-colors shrink-0 shadow-sm"
             title="ฟังทั้งบทความ"
           >
             <Volume2 className="w-4 h-4" />
@@ -40,7 +40,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
 
       {/* Image */}
       {imageUrl && (
-        <div className="mb-4 sm:mb-5 rounded-lg overflow-hidden border border-border">
+        <div className="mb-4 sm:mb-5 rounded-xl overflow-hidden border-2 border-purple-100/50 shadow-sm">
           <img src={imageUrl} alt={title} className="w-full h-40 sm:h-48 object-cover" />
         </div>
       )}
@@ -52,10 +52,10 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
             {sentence.map((word, wi) => (
               <span
                 key={wi}
-                className="interlinear-word group cursor-pointer active:bg-primary/10 rounded px-0.5 transition-colors"
+                className="interlinear-word group cursor-pointer active:bg-purple-100 rounded-md px-0.5 transition-colors"
                 onClick={() => speak(word.english)}
               >
-                <span className="interlinear-eng group-hover:text-primary group-active:text-primary transition-colors">
+                <span className="interlinear-eng group-hover:text-purple-600 group-active:text-purple-700 transition-colors">
                   {word.english}
                 </span>
                 <span className="interlinear-thai">{word.thai}</span>
@@ -67,7 +67,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
       </div>
 
       {/* Divider */}
-      <div className="border-t border-border my-3 sm:my-4" />
+      <div className="border-t border-purple-100/50 my-3 sm:my-4" />
 
       {/* Thai translation */}
       <div>

@@ -39,7 +39,7 @@ const DailyMissionPanel = ({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-      <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 bg-card rounded-xl border border-border/50 hover:bg-accent/50 transition-colors">
+      <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 bg-white/70 backdrop-blur-sm rounded-2xl border border-white/50 hover:bg-white/90 transition-colors shadow-sm">
         <div className="flex items-center gap-2">
           <span className="text-base">📋</span>
           <span className="font-semibold text-sm">
@@ -108,10 +108,10 @@ const DailyMissionPanel = ({
               <div
                 key={mission.id}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all",
                   mission.completed
-                    ? "bg-emerald-500/5 border-emerald-500/20"
-                    : "bg-card border-border/50"
+                    ? "bg-emerald-50/80 border-l-4 border-l-emerald-500 border-emerald-200/50"
+                    : "bg-white border-l-4 border-l-purple-300 border-purple-100/30"
                 )}
               >
                 {/* ไอคอนภารกิจ */}

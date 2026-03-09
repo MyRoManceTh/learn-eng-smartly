@@ -8,16 +8,18 @@ interface VocabTableProps {
 
 const VocabTable = ({ vocabulary, highlightWord }: VocabTableProps) => {
   return (
-    <div className="rounded-lg border border-border bg-vocab p-3 sm:p-4">
+    <div className="rounded-2xl border border-indigo-100/50 bg-white/90 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-indigo-500/5">
       <h3 className="text-base sm:text-lg font-semibold mb-3 text-foreground font-thai">📖 คำศัพท์</h3>
-      
+
       {/* Card layout for mobile, table for desktop */}
       <div className="block sm:hidden space-y-2">
         {vocabulary.map((word, i) => (
           <div
             key={i}
-            className={`rounded-lg p-3 border transition-colors ${
-              highlightWord === word.word ? "bg-primary/10 border-primary/30" : "bg-card border-border/50"
+            className={`rounded-xl p-3 transition-colors ${
+              highlightWord === word.word
+                ? "bg-purple-100 border-l-4 border-l-purple-500 border border-purple-200/50"
+                : "bg-purple-50/30 border-l-4 border-l-purple-300 border border-purple-100/30 hover:bg-purple-50/50"
             }`}
           >
             <div className="flex items-center justify-between mb-1">
@@ -38,7 +40,7 @@ const VocabTable = ({ vocabulary, highlightWord }: VocabTableProps) => {
       {/* Table for larger screens */}
       <table className="w-full text-sm hidden sm:table">
         <thead>
-          <tr className="border-b border-border">
+          <tr className="border-b border-purple-100/50">
             <th className="text-left py-2 px-2 text-muted-foreground font-thai">คำศัพท์</th>
             <th className="text-left py-2 px-2 text-muted-foreground font-thai">Part of Speech</th>
             <th className="text-left py-2 px-2 text-muted-foreground font-thai">คำอ่าน</th>
@@ -49,8 +51,8 @@ const VocabTable = ({ vocabulary, highlightWord }: VocabTableProps) => {
           {vocabulary.map((word, i) => (
             <tr
               key={i}
-              className={`border-b border-border/50 transition-colors ${
-                highlightWord === word.word ? "bg-primary/10" : "hover:bg-secondary/50"
+              className={`border-b border-purple-100/30 transition-colors ${
+                highlightWord === word.word ? "bg-purple-100/60" : "hover:bg-purple-50/40"
               }`}
             >
               <td className="py-2.5 px-2 font-reading text-base font-semibold text-english">

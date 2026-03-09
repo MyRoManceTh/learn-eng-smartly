@@ -121,8 +121,8 @@ const LearningPathPage = () => {
   if (selectedNode && (loading || lesson)) {
     const colors = levelColorMap[selectedNode.level];
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-0">
-        <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-20 md:pb-0">
+        <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => { setSelectedNode(null); setLesson(null); }}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
@@ -193,9 +193,9 @@ const LearningPathPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-20 md:pb-0">
       {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> หน้าหลัก
@@ -211,7 +211,7 @@ const LearningPathPage = () => {
       </header>
 
       {/* Progress bar */}
-      <div className="bg-card border-b border-border">
+      <div className="bg-white/60 backdrop-blur-sm border-b border-white/50">
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-1.5">
             <h1 className="text-lg font-bold font-thai flex items-center gap-2">
@@ -219,9 +219,9 @@ const LearningPathPage = () => {
             </h1>
             <span className="text-sm font-bold text-primary">{progressPercent}%</span>
           </div>
-          <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-white/50 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-level-1 via-level-3 to-level-5 rounded-full transition-all duration-700 ease-out"
+              className="h-full progress-shimmer rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

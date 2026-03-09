@@ -12,11 +12,11 @@ interface FableLibraryProps {
 }
 
 const levelLabels: Record<number, { en: string; th: string; color: string }> = {
-  1: { en: "Beginner", th: "เริ่มต้น", color: "bg-emerald-500/10 text-emerald-700 border-emerald-200" },
-  2: { en: "Elementary", th: "พื้นฐาน", color: "bg-blue-500/10 text-blue-700 border-blue-200" },
-  3: { en: "Intermediate", th: "กลาง", color: "bg-amber-500/10 text-amber-700 border-amber-200" },
-  4: { en: "Upper-Int", th: "กลาง-สูง", color: "bg-orange-500/10 text-orange-700 border-orange-200" },
-  5: { en: "Advanced", th: "สูง", color: "bg-red-500/10 text-red-700 border-red-200" },
+  1: { en: "Beginner", th: "เริ่มต้น", color: "bg-emerald-500/15 text-emerald-700 border-emerald-300" },
+  2: { en: "Elementary", th: "พื้นฐาน", color: "bg-sky-500/15 text-sky-700 border-sky-300" },
+  3: { en: "Intermediate", th: "กลาง", color: "bg-purple-500/15 text-purple-700 border-purple-300" },
+  4: { en: "Upper-Int", th: "กลาง-สูง", color: "bg-pink-500/15 text-pink-700 border-pink-300" },
+  5: { en: "Advanced", th: "สูง", color: "bg-orange-500/15 text-orange-700 border-orange-300" },
 };
 
 const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
@@ -72,9 +72,9 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-5 shadow-lg">
       <div className="flex items-center gap-2 mb-4">
-        <BookOpen className="w-5 h-5 text-primary" />
+        <BookOpen className="w-5 h-5 text-purple-600" />
         <h3 className="text-lg font-bold font-thai">📚 คลังนิทานอีสป</h3>
       </div>
 
@@ -112,7 +112,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
             <button
               key={entry.lesson.id}
               onClick={() => onSelectFable(entry)}
-              className="text-left rounded-xl border border-border bg-background overflow-hidden hover:border-primary/50 hover:shadow-md transition-all group"
+              className="text-left rounded-2xl border-2 border-white/60 bg-white overflow-hidden hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10 transition-all group"
             >
               {/* Image area */}
               <div className="relative w-full aspect-[16/9] bg-muted/50 overflow-hidden">

@@ -52,7 +52,7 @@ export const sampleLesson: Lesson = {
       { english: "fresh", thai: "เฟรช" },
       { english: "food", thai: "ฟูด" },
       { english: "for", thai: "ฟอร์" },
-      { english: "cooking.", thai: "คุคกิง" },
+      { english: "cooking.", thai: "คุกกิ้ง" },
     ],
     [
       { english: "She", thai: "ชี" },

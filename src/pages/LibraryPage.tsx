@@ -32,8 +32,8 @@ const LibraryPage = () => {
 
   if (selectedFable) {
     return (
-      <div className="min-h-screen bg-background pb-20">
-        <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-20">
+        <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
           <div className="px-4 py-3 flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => { setSelectedFable(null); setFableImageUrl(undefined); }}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
@@ -68,8 +68,8 @@ const LibraryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-20">
+      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <h1 className="text-lg font-bold font-thai">📚 คลังนิทาน</h1>
         </div>

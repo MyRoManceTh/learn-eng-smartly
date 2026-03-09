@@ -220,7 +220,7 @@ const Index = () => {
   const lessonImage = dbLesson?.image_url || defaultLessonImage;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-20">
       <DailyRewardModal
         open={dailyReward.showModal}
         reward={dailyReward.reward}
@@ -230,19 +230,19 @@ const Index = () => {
         onClaim={async () => { await dailyReward.claimReward(); refreshProfile(); }}
         onClose={dailyReward.closeModal}
       />
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-lg font-bold text-foreground font-thai">
-              📖 อ่านเรียน<span className="text-primary">English</span>
+              📖 อ่านเรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">English</span>
             </h1>
             <div className="flex items-center gap-2">
               {user && (
                 <div className="flex items-center gap-1.5">
                   <StreakFireDisplay streak={profile?.current_streak || currentStreak} size="sm" />
-                  <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
-                    <Zap className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-xs font-bold text-primary">{totalExp}</span>
+                  <div className="flex items-center gap-1 bg-purple-100 rounded-full px-2.5 py-1">
+                    <Zap className="w-3.5 h-3.5 text-purple-600" />
+                    <span className="text-xs font-bold text-purple-700">{totalExp}</span>
                   </div>
                   <EnergyDisplay energy={energy} />
                 </div>
@@ -332,8 +332,11 @@ const Index = () => {
             <div className="text-center pb-4">
               <Button
                 onClick={handleStartQuiz}
-                variant={isCurrentLessonCompleted ? "outline" : "default"}
-                className="font-thai w-full max-w-xs h-11"
+                className={`font-thai w-full max-w-xs h-12 text-base font-bold shadow-lg ${
+                  isCurrentLessonCompleted
+                    ? "bg-white border-2 border-purple-300 text-purple-600 hover:bg-purple-50 shadow-purple-500/10"
+                    : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-purple-500/25"
+                }`}
               >
                 📝 {isCurrentLessonCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
               </Button>

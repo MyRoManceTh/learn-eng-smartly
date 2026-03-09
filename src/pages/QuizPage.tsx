@@ -54,7 +54,7 @@ const QuizPage = () => {
         particleCount: 80,
         spread: 60,
         origin: { y: 0.7 },
-        colors: ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6"],
+        colors: ["#7c3aed", "#ec4899", "#10b981", "#f59e0b", "#3b82f6"],
       });
     } else {
       playWrong();
@@ -179,11 +179,11 @@ const QuizPage = () => {
 
   if (finished) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-b from-purple-400 via-pink-300 to-amber-200 flex items-center justify-center p-4">
         <div className="w-full max-w-md text-center space-y-6 animate-in fade-in zoom-in duration-500">
-          <div className="rounded-2xl border border-border bg-card p-8 space-y-4 shadow-lg">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <Trophy className="w-10 h-10 text-primary" />
+          <div className="rounded-3xl border border-white/50 bg-white/90 backdrop-blur-xl p-8 space-y-4 shadow-2xl">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto shadow-lg shadow-purple-500/30">
+              <Trophy className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-bold font-thai">🎉 ทำแบบทดสอบเสร็จแล้ว!</h2>
             <p className="text-4xl font-bold text-primary">
@@ -199,11 +199,11 @@ const QuizPage = () => {
 
             {/* EXP + Coins earned */}
             <div className="flex items-center justify-center gap-3">
-              <div className="flex items-center gap-2 bg-accent/50 rounded-xl py-3 px-4">
-                <Zap className="w-5 h-5 text-primary" />
-                <span className="font-bold text-lg text-primary">+{earnedExp} EXP</span>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-xl py-3 px-4 shadow-sm">
+                <Zap className="w-5 h-5 text-purple-600" />
+                <span className="font-bold text-lg text-purple-700">+{earnedExp} EXP</span>
               </div>
-              <div className="flex items-center gap-2 bg-amber-500/15 rounded-xl py-3 px-4">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-100 to-yellow-100 rounded-xl py-3 px-4 shadow-sm">
                 <span className="text-xl">🪙</span>
                 <span className="font-bold text-lg text-amber-700">+{earnedCoins}</span>
               </div>
@@ -212,7 +212,7 @@ const QuizPage = () => {
 
           <Button
             onClick={handleNextLesson}
-            className="w-full h-12 text-base font-thai"
+            className="w-full h-12 text-base font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25"
             size="lg"
           >
             <ArrowRight className="w-5 h-5 mr-2" />
@@ -232,9 +232,9 @@ const QuizPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50 pb-20 md:pb-0">
       {/* Header */}
-      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-bold font-thai">📝 แบบทดสอบ</h1>
@@ -243,9 +243,9 @@ const QuizPage = () => {
             </span>
           </div>
           {/* Progress bar */}
-          <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
+          <div className="mt-2 h-2.5 bg-white/50 rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${((currentQ + (showResult ? 1 : 0)) / questions.length) * 100}%` }}
             />
           </div>
@@ -254,7 +254,7 @@ const QuizPage = () => {
 
       <main className="px-4 py-6 max-w-2xl mx-auto">
         <div
-          className={`rounded-xl border border-border bg-card p-6 transition-transform ${
+          className={`rounded-2xl border-2 border-white/60 bg-white/90 backdrop-blur-sm p-6 shadow-xl shadow-purple-500/10 transition-transform ${
             shaking ? "animate-[shake_0.5s_ease-in-out]" : ""
           }`}
         >
@@ -291,7 +291,7 @@ const QuizPage = () => {
           </div>
 
           {showResult && (
-            <Button onClick={handleNext} className="w-full font-thai h-12 text-base">
+            <Button onClick={handleNext} className="w-full font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
               {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
             </Button>
           )}

@@ -32,7 +32,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
         particleCount: 80,
         spread: 60,
         origin: { y: 0.7 },
-        colors: ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6"],
+        colors: ["#7c3aed", "#ec4899", "#10b981", "#f59e0b", "#3b82f6"],
       });
     } else {
       playWrong();
@@ -59,9 +59,9 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
 
   if (finished) {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 text-center">
+      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 text-center shadow-xl shadow-purple-500/10">
         <h3 className="text-xl font-semibold mb-2 font-thai">🎉 ทำแบบทดสอบเสร็จแล้ว!</h3>
-        <p className="text-3xl font-bold text-primary mb-2">
+        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent mb-2">
           {score}/{questions.length}
         </p>
         <p className="text-muted-foreground font-thai text-sm">
@@ -76,7 +76,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
   }
 
   return (
-    <div ref={containerRef} className={`rounded-lg border border-border bg-card p-6 transition-transform ${shaking ? "animate-[shake_0.5s_ease-in-out]" : ""}`}>
+    <div ref={containerRef} className={`rounded-2xl border-2 border-white/60 bg-white/90 backdrop-blur-sm p-6 shadow-xl shadow-purple-500/10 transition-transform ${shaking ? "animate-[shake_0.5s_ease-in-out]" : ""}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold font-thai">📝 แบบทดสอบ</h3>
         <span className="text-sm text-muted-foreground">
@@ -117,7 +117,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
       </div>
 
       {showResult && (
-        <Button onClick={handleNext} className="w-full font-thai">
+        <Button onClick={handleNext} className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
           {currentQ + 1 >= questions.length ? "ดูผลคะแนน" : "ข้อถัดไป →"}
         </Button>
       )}
