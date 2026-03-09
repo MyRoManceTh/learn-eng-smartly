@@ -7,7 +7,8 @@ import LevelSelector from "@/components/LevelSelector";
 import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, LogOut, LogIn } from "lucide-react";
+import { Sparkles, LogOut, LogIn } from "lucide-react";
+import LessonSkeleton from "@/components/LessonSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -116,10 +117,7 @@ const Index = () => {
 
       <main className="px-4 py-4">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Loader2 className="w-10 h-10 animate-spin mb-4 text-primary" />
-            <p className="font-thai">กำลังสร้างบทเรียนใหม่...</p>
-          </div>
+          <LessonSkeleton />
         ) : (
           <div className="space-y-4">
             {/* Generate button - prominent on mobile */}
