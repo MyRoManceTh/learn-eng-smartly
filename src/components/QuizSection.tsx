@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
+import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 
 interface QuizSectionProps {
   questions: QuizQuestion[];
@@ -23,6 +24,9 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
     setShowResult(true);
     if (idx === question.correctIndex) {
       setScore((s) => s + 1);
+      playCorrect();
+    } else {
+      playWrong();
     }
   };
 
@@ -30,6 +34,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
     if (currentQ + 1 >= questions.length) {
       const finalScore = score;
       setFinished(true);
+      playComplete();
       onComplete(finalScore);
     } else {
       setCurrentQ((c) => c + 1);
