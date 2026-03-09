@@ -144,18 +144,12 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Quiz */}
-            {!showQuiz ? (
-              <div className="text-center pb-4">
-                <Button onClick={() => setShowQuiz(true)} variant="outline" className="font-thai w-full max-w-xs h-11">
-                  📝 ทำแบบทดสอบ
-                </Button>
-              </div>
-            ) : (
-              <div className="max-w-2xl mx-auto pb-4">
-                <QuizSection questions={quiz} onComplete={handleQuizComplete} />
-              </div>
-            )}
+            {/* Quiz button - navigates to quiz page */}
+            <div className="text-center pb-4">
+              <Button onClick={handleStartQuiz} variant="outline" className="font-thai w-full max-w-xs h-11">
+                📝 ทำแบบทดสอบ
+              </Button>
+            </div>
           </div>
         )}
       </main>
