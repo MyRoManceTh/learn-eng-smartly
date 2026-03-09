@@ -94,11 +94,17 @@ const Index = () => {
               📖 อ่านเรียน<span className="text-primary">English</span>
             </h1>
             <div className="flex items-center gap-2">
-              {/* EXP display */}
+              {/* Streak & EXP display */}
               {user && (
-                <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
-                  <Zap className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-bold text-primary">{totalExp}</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1 bg-destructive/10 rounded-full px-2.5 py-1">
+                    <Flame className="w-3.5 h-3.5 text-destructive" />
+                    <span className="text-xs font-bold text-destructive">{currentStreak}</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-xs font-bold text-primary">{totalExp}</span>
+                  </div>
                 </div>
               )}
               {user ? (
