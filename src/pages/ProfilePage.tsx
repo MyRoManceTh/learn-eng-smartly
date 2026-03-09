@@ -136,18 +136,23 @@ const ProfilePage = () => {
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         {/* Stats overview */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in">
+            <Flame className="w-6 h-6 text-destructive mx-auto mb-1" />
+            <p className="text-2xl font-bold text-foreground">{(profile as any)?.current_streak || 0}</p>
+            <p className="text-xs text-muted-foreground font-thai">วันติดต่อกัน</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "50ms" }}>
             <Trophy className="w-6 h-6 text-star-gold mx-auto mb-1" />
-            <p className="text-2xl font-bold text-foreground">{totalCompleted}</p>
-            <p className="text-xs text-muted-foreground font-thai">บทเรียนสำเร็จ</p>
+            <p className="text-2xl font-bold text-foreground">{(profile as any)?.longest_streak || 0}</p>
+            <p className="text-xs text-muted-foreground font-thai">สถิติสูงสุด</p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <TrendingUp className="w-6 h-6 text-accent mx-auto mb-1" />
-            <p className="text-2xl font-bold text-foreground">{overallPercent}%</p>
-            <p className="text-xs text-muted-foreground font-thai">ความก้าวหน้า</p>
+            <Zap className="w-6 h-6 text-primary mx-auto mb-1" />
+            <p className="text-2xl font-bold text-foreground">{(profile as any)?.total_exp || 0}</p>
+            <p className="text-xs text-muted-foreground font-thai">EXP สะสม</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "200ms" }}>
+          <div className="rounded-xl border border-border bg-card p-4 text-center animate-fade-in" style={{ animationDelay: "150ms" }}>
             <Star className="w-6 h-6 text-star-gold mx-auto mb-1" />
             <p className="text-2xl font-bold text-foreground">{Math.round(avgScore)}%</p>
             <p className="text-xs text-muted-foreground font-thai">คะแนนเฉลี่ย</p>
