@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import { User, Save, ArrowLeft, History, Trophy, Star, TrendingUp, Flame, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { pathNodes, levelLabels } from "@/data/pathNodes";
+import LeaderboardSection from "@/components/social/LeaderboardSection";
+import FriendsList from "@/components/social/FriendsList";
+import { trackEvent } from "@/utils/analytics";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +60,8 @@ const ProfilePage = () => {
   const [history, setHistory] = useState<LearningRecord[]>([]);
   const [pathProgress, setPathProgress] = useState<PathProgress[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => { trackEvent('page_view', { page: 'profile' }); }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -323,6 +328,40 @@ const ProfilePage = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Social & Premium Features */}
+        <div className="space-y-4 mt-6">
+          {/* Leaderboard */}
+          <LeaderboardSection />
+
+          {/* Friends */}
+          <FriendsList />
+
+          {/* Quick Links */}
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              className="font-thai h-14 text-sm"
+              onClick={() => navigate("/season-pass")}
+            >
+              🏆 Season Pass
+            </Button>
+            <Button
+              variant="outline"
+              className="font-thai h-14 text-sm"
+              onClick={() => navigate("/parent-report")}
+            >
+              📊 รายงานผู้ปกครอง
+            </Button>
+            <Button
+              variant="outline"
+              className="font-thai h-14 text-sm col-span-2"
+              onClick={() => navigate("/premium")}
+            >
+              ⭐ สมาชิกพรีเมียม
+            </Button>
+          </div>
         </div>
       </main>
     </div>

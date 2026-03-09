@@ -12,7 +12,11 @@ import ProfilePage from "./pages/ProfilePage";
 import LearningPathPage from "./pages/LearningPathPage";
 import LibraryPage from "./pages/LibraryPage";
 import QuizPage from "./pages/QuizPage";
+import AvatarPage from "./pages/AvatarPage";
 import NotFound from "./pages/NotFound";
+import SeasonPassPage from "@/components/events/SeasonPassPage";
+import PremiumPage from "@/components/premium/PremiumPage";
+import ParentReport from "@/components/premium/ParentReport";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +35,10 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/path" element={<LearningPathPage />} />
               <Route path="/library" element={<LibraryPage />} />
+              <Route path="/avatar" element={<AvatarPage />} />
+              <Route path="/season-pass" element={<SeasonPassPage />} />
+              <Route path="/premium" element={<PremiumPage />} />
+              <Route path="/parent-report" element={<ParentReport />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </PageTransition>

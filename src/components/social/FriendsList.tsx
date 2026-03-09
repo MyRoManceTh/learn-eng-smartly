@@ -1,0 +1,230 @@
+import { useState } from "react";
+import { useFriends } from "@/hooks/useFriends";
+import { useProfile } from "@/hooks/useProfile";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { evolutionStages } from "@/data/evolutionStages";
+import { toast } from "sonner";
+import GiftModal from "./GiftModal";
+
+export default function FriendsList() {
+  const {
+    friends,
+    pendingRequests,
+    loading,
+    addFriendByCode,
+    acceptRequest,
+    declineRequest,
+    sendGift,
+  } = useFriends();
+  const { profile } = useProfile();
+
+  const [friendCode, setFriendCode] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [giftTarget, setGiftTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
+  const getEvolutionIcon = (stage: number) => {
+    const evo = evolutionStages.find((s) => s.stage === stage);
+    return evo?.icon || "🥚";
+  };
+
+  const handleAddFriend = async () => {
+    if (!friendCode.trim() || friendCode.trim().length !== 6) {
+      toast.error("กรุณากรอกรหัสเพื่อน 6 ตัวอักษร");
+      return;
+    }
+    setAdding(true);
+    await addFriendByCode(friendCode.trim());
+    setFriendCode("");
+    setAdding(false);
+  };
+
+  const handleCopyCode = () => {
+    if (profile?.friend_code) {
+      navigator.clipboard.writeText(profile.friend_code);
+      toast.success("คัดลอกรหัสเพื่อนแล้ว!");
+    }
+  };
+
+  return (
+    <>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">👥 เพื่อน</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* My friend code */}
+          {profile?.friend_code && (
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+              <span className="text-sm text-muted-foreground">
+                รหัสเพื่อน:
+              </span>
+              <code className="rounded bg-background px-2 py-0.5 text-sm font-bold tracking-wider">
+                {profile.friend_code}
+              </code>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopyCode}
+                className="ml-auto h-7 px-2 text-xs"
+              >
+                📋 คัดลอก
+              </Button>
+            </div>
+          )}
+
+          {/* Add friend */}
+          <div className="flex gap-2">
+            <Input
+              placeholder="กรอกรหัสเพื่อน 6 ตัว"
+              value={friendCode}
+              onChange={(e) =>
+                setFriendCode(e.target.value.toUpperCase().slice(0, 6))
+              }
+              maxLength={6}
+              className="font-mono tracking-wider uppercase"
+            />
+            <Button
+              onClick={handleAddFriend}
+              disabled={adding || friendCode.length !== 6}
+              size="sm"
+              className="shrink-0"
+            >
+              {adding ? "กำลังส่ง..." : "เพิ่มเพื่อน"}
+            </Button>
+          </div>
+
+          {/* Pending requests */}
+          {pendingRequests.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-orange-500">
+                📨 คำขอเป็นเพื่อน ({pendingRequests.length})
+              </h4>
+              {pendingRequests.map((req) => (
+                <div
+                  key={req.friendship_id}
+                  className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50/50 p-2 dark:border-orange-900 dark:bg-orange-950/20"
+                >
+                  <span className="text-sm">
+                    {getEvolutionIcon(req.evolution_stage)}
+                  </span>
+                  <span className="flex-1 text-sm font-medium truncate">
+                    {req.display_name}
+                  </span>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => acceptRequest(req.friendship_id)}
+                  >
+                    ยอมรับ
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => declineRequest(req.friendship_id)}
+                  >
+                    ปฏิเสธ
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Friends list */}
+          {loading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-14 animate-pulse rounded-lg bg-muted"
+                />
+              ))}
+            </div>
+          ) : friends.length === 0 ? (
+            <div className="py-6 text-center">
+              <p className="text-3xl mb-2">🤝</p>
+              <p className="text-sm text-muted-foreground">
+                ยังไม่มีเพื่อน ลองเพิ่มเพื่อนด้วยรหัสด้านบน
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold">
+                เพื่อนของคุณ ({friends.length})
+              </h4>
+              {friends.map((friend) => (
+                <div
+                  key={friend.friendship_id}
+                  className="flex items-center gap-2 rounded-lg border p-2 transition-colors hover:bg-muted/30"
+                >
+                  <span className="text-lg">
+                    {getEvolutionIcon(friend.evolution_stage)}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {friend.display_name}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>
+                        ⚡ {friend.total_exp.toLocaleString()} EXP
+                      </span>
+                      <span>🔥 {friend.current_streak} วัน</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() =>
+                        setGiftTarget({
+                          id: friend.user_id,
+                          name: friend.display_name,
+                        })
+                      }
+                    >
+                      🎁 ส่งของขวัญ
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() =>
+                        toast.info("ฟีเจอร์ท้าทายกำลังมาเร็ว ๆ นี้!")
+                      }
+                    >
+                      ⚔️ ท้าทาย
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Gift Modal */}
+      {giftTarget && (
+        <GiftModal
+          open={!!giftTarget}
+          friendId={giftTarget.id}
+          friendName={giftTarget.name}
+          onClose={() => setGiftTarget(null)}
+          onSend={async (friendId, itemId, coins, message) => {
+            await sendGift(friendId, itemId, coins, message);
+            setGiftTarget(null);
+          }}
+          inventory={profile?.inventory || []}
+          coins={profile?.coins || 0}
+        />
+      )}
+    </>
+  );
+}

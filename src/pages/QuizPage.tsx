@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, ArrowRight, Trophy, Zap } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, Trophy, Zap, Coins } from "lucide-react";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { sampleQuiz } from "@/data/sampleLesson";
+import { useDailyMissions } from "@/hooks/useDailyMissions";
+import { trackEvent } from "@/utils/analytics";
 
 interface QuizLocationState {
   questions: QuizQuestion[];
@@ -21,6 +23,7 @@ const QuizPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { incrementMission } = useDailyMissions();
 
   const state = location.state as QuizLocationState | null;
   const questions = state?.questions || sampleQuiz;
@@ -36,6 +39,7 @@ const QuizPage = () => {
   const [finished, setFinished] = useState(false);
   const [shaking, setShaking] = useState(false);
   const [earnedExp, setEarnedExp] = useState(0);
+  const [earnedCoins, setEarnedCoins] = useState(0);
 
   const question = questions[currentQ];
 
@@ -70,13 +74,15 @@ const QuizPage = () => {
 
       // Calculate EXP: 10 per correct + 5 bonus for completion
       const exp = score * 10 + 5;
+      const coins = score * 5;
       setEarnedExp(exp);
+      setEarnedCoins(coins);
 
       if (user) {
         // Get current profile
         const { data: profile } = await supabase
           .from("profiles")
-          .select("total_exp, lessons_completed, current_level, current_streak, longest_streak, last_activity_date")
+          .select("total_exp, lessons_completed, current_level, current_streak, longest_streak, last_activity_date, coins")
           .eq("user_id", user.id)
           .single();
 
@@ -122,6 +128,7 @@ const QuizPage = () => {
           }).then(),
           supabase.from("profiles").update({
             total_exp: newExp,
+            coins: ((profileData as any)?.coins || 0) + coins,
             lessons_completed: newCompleted,
             current_level: newLevel,
             current_streak: newStreak,
@@ -143,6 +150,11 @@ const QuizPage = () => {
         }
 
         await Promise.all(saveOps);
+
+        // Track missions
+        incrementMission('complete_lesson', 1);
+        incrementMission('answer_quiz', questions.length);
+        trackEvent('quiz_complete', { score, total: questions.length, lessonTitle, level: lessonLevel });
 
         // Trigger next lesson generation in background
         supabase.functions.invoke("generate-lesson", {
@@ -185,10 +197,16 @@ const QuizPage = () => {
                 : "ลองทบทวนบทเรียนอีกครั้งนะ"}
             </p>
 
-            {/* EXP earned */}
-            <div className="flex items-center justify-center gap-2 bg-accent/50 rounded-xl py-3 px-4">
-              <Zap className="w-5 h-5 text-primary" />
-              <span className="font-bold text-lg text-primary">+{earnedExp} EXP</span>
+            {/* EXP + Coins earned */}
+            <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center gap-2 bg-accent/50 rounded-xl py-3 px-4">
+                <Zap className="w-5 h-5 text-primary" />
+                <span className="font-bold text-lg text-primary">+{earnedExp} EXP</span>
+              </div>
+              <div className="flex items-center gap-2 bg-amber-500/15 rounded-xl py-3 px-4">
+                <span className="text-xl">🪙</span>
+                <span className="font-bold text-lg text-amber-700">+{earnedCoins}</span>
+              </div>
             </div>
           </div>
 

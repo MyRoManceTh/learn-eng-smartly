@@ -1,18 +1,21 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { BookOpen, Route, Library, User } from "lucide-react";
+import { BookOpen, Route, Library, User, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useRef } from "react";
+import { useFriends } from "@/hooks/useFriends";
 
 const tabs = [
   { path: "/", icon: BookOpen, label: "เรียน" },
   { path: "/path", icon: Route, label: "เส้นทาง" },
-  { path: "/library", icon: Library, label: "คลังนิทาน" },
+  { path: "/avatar", icon: Sparkles, label: "ตัวละคร" },
+  { path: "/library", icon: Library, label: "คลัง" },
   { path: "/profile", icon: User, label: "โปรไฟล์" },
 ];
 
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { notificationCount } = useFriends();
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>, path: string) => {
@@ -71,6 +74,11 @@ const BottomNav = () => {
                     )}
                   />
                 </div>
+                {tab.path === "/profile" && notificationCount > 0 && (
+                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive rounded-full flex items-center justify-center">
+                    <span className="text-[8px] text-white font-bold">{notificationCount > 9 ? '9+' : notificationCount}</span>
+                  </div>
+                )}
                 <span
                   className={cn(
                     "text-[10px] font-thai leading-tight transition-all duration-200",

@@ -123,13 +123,16 @@ export type Database = {
         Row: {
           age: number | null
           avatar_url: string | null
+          coins: number
           created_at: string
           current_level: number
           current_streak: number
           display_name: string | null
           education_level: string | null
+          equipped: Json
           gender: string | null
           id: string
+          inventory: Json
           last_activity_date: string | null
           lessons_completed: number
           longest_streak: number
@@ -141,13 +144,16 @@ export type Database = {
         Insert: {
           age?: number | null
           avatar_url?: string | null
+          coins?: number
           created_at?: string
           current_level?: number
           current_streak?: number
           display_name?: string | null
           education_level?: string | null
+          equipped?: Json
           gender?: string | null
           id?: string
+          inventory?: Json
           last_activity_date?: string | null
           lessons_completed?: number
           longest_streak?: number
@@ -159,13 +165,16 @@ export type Database = {
         Update: {
           age?: number | null
           avatar_url?: string | null
+          coins?: number
           created_at?: string
           current_level?: number
           current_streak?: number
           display_name?: string | null
           education_level?: string | null
+          equipped?: Json
           gender?: string | null
           id?: string
+          inventory?: Json
           last_activity_date?: string | null
           lessons_completed?: number
           longest_streak?: number

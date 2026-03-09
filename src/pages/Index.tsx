@@ -12,6 +12,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import defaultLessonImage from "@/assets/lesson-default.jpg";
+import { useDailyReward } from "@/hooks/useDailyReward";
+import { useDailyMissions } from "@/hooks/useDailyMissions";
+import { useEnergy } from "@/hooks/useEnergy";
+import { useProfile } from "@/hooks/useProfile";
+import DailyRewardModal from "@/components/daily/DailyRewardModal";
+import DailyMissionPanel from "@/components/daily/DailyMissionPanel";
+import StreakFireDisplay from "@/components/daily/StreakFireDisplay";
+import EnergyDisplay from "@/components/daily/EnergyDisplay";
+import EventBanner from "@/components/events/EventBanner";
+import { trackEvent } from "@/utils/analytics";
 
 interface DbLesson {
   id: string;
@@ -36,6 +46,20 @@ const Index = () => {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Dopamine loop hooks
+  const { profile, refreshProfile } = useProfile();
+  const { missions, loading: missionsLoading, completedCount, totalCount, allCompleted, incrementMission } = useDailyMissions();
+  const dailyReward = useDailyReward(
+    profile?.current_streak || currentStreak,
+    profile?.mystery_box_last_claimed || null,
+    profile?.inventory || []
+  );
+  const { energy } = useEnergy(
+    profile?.energy ?? 5,
+    profile?.energy_last_refill || null,
+    profile?.is_premium || false
+  );
+
   // Lesson from DB
   const [dbLesson, setDbLesson] = useState<DbLesson | null>(null);
   const [currentLessonOrder, setCurrentLessonOrder] = useState(1);
@@ -45,6 +69,7 @@ const Index = () => {
   // Load profile
   useEffect(() => {
     if (!user) return;
+    trackEvent('page_view', { page: 'home' });
     supabase
       .from("profiles")
       .select("current_level, lessons_completed, total_exp, current_streak")
@@ -167,6 +192,8 @@ const Index = () => {
 
   const handleStartQuiz = () => {
     if (!dbLesson) return;
+    // Energy is tracked but doesn't block for now
+    trackEvent('quiz_start', { lessonId: dbLesson.id, level: dbLesson.level });
     navigate("/quiz", {
       state: {
         questions: dbLesson.quiz,
@@ -194,6 +221,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <DailyRewardModal
+        open={dailyReward.showModal}
+        reward={dailyReward.reward}
+        streakDays={dailyReward.streakDays}
+        isMilestone={dailyReward.isMilestone}
+        milestoneMessage={dailyReward.milestoneMessage}
+        onClaim={async () => { await dailyReward.claimReward(); refreshProfile(); }}
+        onClose={dailyReward.closeModal}
+      />
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-2">
@@ -203,14 +239,12 @@ const Index = () => {
             <div className="flex items-center gap-2">
               {user && (
                 <div className="flex items-center gap-1.5">
-                  <div className="flex items-center gap-1 bg-destructive/10 rounded-full px-2.5 py-1">
-                    <Flame className="w-3.5 h-3.5 text-destructive" />
-                    <span className="text-xs font-bold text-destructive">{currentStreak}</span>
-                  </div>
+                  <StreakFireDisplay streak={profile?.current_streak || currentStreak} size="sm" />
                   <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
                     <Zap className="w-3.5 h-3.5 text-primary" />
                     <span className="text-xs font-bold text-primary">{totalExp}</span>
                   </div>
+                  <EnergyDisplay energy={energy} />
                 </div>
               )}
               {user ? (
@@ -227,6 +261,17 @@ const Index = () => {
           <LevelSelector currentLevel={level} onLevelChange={handleLevelChange} lessonsCompleted={lessonsCompleted} />
         </div>
       </header>
+
+      <div className="px-4 pt-2">
+        <EventBanner event={null} />
+        <DailyMissionPanel
+          missions={missions}
+          loading={missionsLoading}
+          completedCount={completedCount}
+          totalCount={totalCount}
+          allCompleted={allCompleted}
+        />
+      </div>
 
       <main className="px-4 py-4">
         {loading ? (
