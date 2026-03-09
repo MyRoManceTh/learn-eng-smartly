@@ -90,7 +90,14 @@ const Index = () => {
             <h1 className="text-lg font-bold text-foreground font-thai">
               📖 อ่านเรียน<span className="text-primary">English</span>
             </h1>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              {/* EXP display */}
+              {user && (
+                <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
+                  <Zap className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-xs font-bold text-primary">{totalExp}</span>
+                </div>
+              )}
               {user ? (
                 <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
                   <LogOut className="w-4 h-4" />
