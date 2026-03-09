@@ -112,14 +112,14 @@ const QuizPage = () => {
           newLevel = Math.min(5, newLevel + 1);
         }
 
-        const saveOps: Promise<any>[] = [
+        const saveOps = [
           supabase.from("learning_history").insert({
             user_id: user.id,
             lesson_title: lessonTitle,
             lesson_level: lessonLevel,
             quiz_score: score,
             quiz_total: questions.length,
-          }),
+          }).then(),
           supabase.from("profiles").update({
             total_exp: newExp,
             lessons_completed: newCompleted,
@@ -127,7 +127,7 @@ const QuizPage = () => {
             current_streak: newStreak,
             longest_streak: newLongest,
             last_activity_date: today,
-          } as any).eq("user_id", user.id),
+          } as any).eq("user_id", user.id).then(),
         ];
 
         // Save lesson progress
@@ -138,7 +138,7 @@ const QuizPage = () => {
               lesson_id: lessonId,
               quiz_score: score,
               quiz_total: questions.length,
-            } as any, { onConflict: "user_id,lesson_id" })
+            } as any, { onConflict: "user_id,lesson_id" }).then()
           );
         }
 
