@@ -22,6 +22,7 @@ const Index = () => {
   const [quiz, setQuiz] = useState(sampleQuiz);
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
   const [totalExp, setTotalExp] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
 
