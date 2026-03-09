@@ -112,7 +112,7 @@ const QuizPage = () => {
           newLevel = Math.min(5, newLevel + 1);
         }
 
-        await Promise.all([
+        const saveOps: Promise<any>[] = [
           supabase.from("learning_history").insert({
             user_id: user.id,
             lesson_title: lessonTitle,
@@ -128,7 +128,26 @@ const QuizPage = () => {
             longest_streak: newLongest,
             last_activity_date: today,
           } as any).eq("user_id", user.id),
-        ]);
+        ];
+
+        // Save lesson progress
+        if (lessonId) {
+          saveOps.push(
+            supabase.from("user_lesson_progress").upsert({
+              user_id: user.id,
+              lesson_id: lessonId,
+              quiz_score: score,
+              quiz_total: questions.length,
+            } as any, { onConflict: "user_id,lesson_id" })
+          );
+        }
+
+        await Promise.all(saveOps);
+
+        // Trigger next lesson generation in background
+        supabase.functions.invoke("generate-lesson", {
+          body: { action: "trigger-next", level: lessonLevel, lessonOrder },
+        }).catch((e) => console.error("Trigger next lesson error:", e));
       }
     } else {
       setCurrentQ((c) => c + 1);
