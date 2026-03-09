@@ -1,22 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FableLibrary from "@/components/FableLibrary";
 import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
 import { FableEntry } from "@/data/aesopFables";
 import { LearnerLevel } from "@/types/lesson";
-import { sampleQuiz } from "@/data/sampleLesson";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const LibraryPage = () => {
   const [level] = useState<LearnerLevel>(1);
   const [selectedFable, setSelectedFable] = useState<FableEntry | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [fableImageUrl, setFableImageUrl] = useState<string | undefined>(undefined);
 
   const handleSelectFable = (entry: FableEntry) => {
     setSelectedFable(entry);
     setShowQuiz(false);
+    // Try to load existing image
+    const fileName = `fable-${entry.lesson.id}.png`;
+    const { data } = supabase.storage.from("lesson-images").getPublicUrl(fileName);
+    // Check if exists
+    fetch(data.publicUrl, { method: "HEAD" })
+      .then((resp) => {
+        if (resp.ok) setFableImageUrl(data.publicUrl);
+        else setFableImageUrl(undefined);
+      })
+      .catch(() => setFableImageUrl(undefined));
   };
 
   if (selectedFable) {
@@ -24,7 +35,7 @@ const LibraryPage = () => {
       <div className="min-h-screen bg-background pb-20">
         <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
           <div className="px-4 py-3 flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setSelectedFable(null)}>
+            <Button variant="ghost" size="sm" onClick={() => { setSelectedFable(null); setFableImageUrl(undefined); }}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
             <span className="text-base font-bold font-thai truncate">
@@ -40,6 +51,7 @@ const LibraryPage = () => {
             translation={selectedFable.lesson.articleTranslation}
             title={selectedFable.lesson.title}
             titleThai={selectedFable.lesson.titleThai}
+            imageUrl={fableImageUrl}
           />
           {!showQuiz ? (
             <div className="text-center py-2">
