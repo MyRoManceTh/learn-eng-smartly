@@ -30,14 +30,16 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("current_level, lessons_completed, total_exp")
+      .select("current_level, lessons_completed, total_exp, current_streak")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
           setLevel(data.current_level as LearnerLevel);
           setLessonsCompleted(data.lessons_completed);
-          setTotalExp((data as any).total_exp || 0);
+          const d = data as any;
+          setTotalExp(d.total_exp || 0);
+          setCurrentStreak(d.current_streak || 0);
         }
       });
   }, [user]);
