@@ -9,7 +9,7 @@ import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
 import { FableEntry } from "@/data/aesopFables";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn, Library } from "lucide-react";
+import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn, Library, Route } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -114,6 +114,15 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate("/path")}
+                variant="secondary"
+                size="sm"
+                className="font-thai"
+              >
+                <Route className="w-4 h-4 mr-2" />
+                เส้นทางเรียน
+              </Button>
               <Button
                 onClick={() => setShowLibrary(!showLibrary)}
                 variant={showLibrary ? "default" : "secondary"}
