@@ -77,11 +77,14 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           current_level: number
+          current_streak: number
           display_name: string | null
           education_level: string | null
           gender: string | null
           id: string
+          last_activity_date: string | null
           lessons_completed: number
+          longest_streak: number
           school_name: string | null
           total_exp: number
           updated_at: string
@@ -92,11 +95,14 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           current_level?: number
+          current_streak?: number
           display_name?: string | null
           education_level?: string | null
           gender?: string | null
           id?: string
+          last_activity_date?: string | null
           lessons_completed?: number
+          longest_streak?: number
           school_name?: string | null
           total_exp?: number
           updated_at?: string
@@ -107,11 +113,14 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           current_level?: number
+          current_streak?: number
           display_name?: string | null
           education_level?: string | null
           gender?: string | null
           id?: string
+          last_activity_date?: string | null
           lessons_completed?: number
+          longest_streak?: number
           school_name?: string | null
           total_exp?: number
           updated_at?: string
