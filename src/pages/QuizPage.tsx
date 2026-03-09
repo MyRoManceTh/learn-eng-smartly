@@ -13,6 +13,8 @@ interface QuizLocationState {
   questions: QuizQuestion[];
   lessonTitle: string;
   lessonLevel: number;
+  lessonId?: string;
+  lessonOrder?: number;
 }
 
 const QuizPage = () => {
@@ -24,6 +26,8 @@ const QuizPage = () => {
   const questions = state?.questions || sampleQuiz;
   const lessonTitle = state?.lessonTitle || "บทเรียน";
   const lessonLevel = state?.lessonLevel || 1;
+  const lessonId = state?.lessonId;
+  const lessonOrder = state?.lessonOrder || 1;
 
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
