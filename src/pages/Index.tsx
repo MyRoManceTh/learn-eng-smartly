@@ -9,7 +9,7 @@ import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
 import { FableEntry } from "@/data/aesopFables";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn, Library } from "lucide-react";
+import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn, Library, Route } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
