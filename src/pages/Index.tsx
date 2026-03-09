@@ -53,7 +53,6 @@ const Index = () => {
 
   const generateNewLesson = useCallback(async () => {
     setLoading(true);
-    setShowQuiz(false);
     try {
       const { data, error } = await supabase.functions.invoke("generate-lesson", {
         body: { level, lessonsCompleted },
@@ -73,34 +72,15 @@ const Index = () => {
     }
   }, [level, lessonsCompleted]);
 
-  const handleQuizComplete = async (score: number) => {
-    const newCompleted = lessonsCompleted + 1;
-    setLessonsCompleted(newCompleted);
-
-    let newLevel = level;
-    if (score >= 3 && newCompleted > 0 && newCompleted % 3 === 0 && level < 5) {
-      newLevel = Math.min(5, level + 1) as LearnerLevel;
-      setLevel(newLevel);
-      toast.success("🎉 เลื่อนระดับแล้ว!");
-    }
-
-    if (user) {
-      await Promise.all([
-        supabase.from("learning_history").insert({
-          user_id: user.id,
-          lesson_title: lesson.title,
-          lesson_level: lesson.level,
-          quiz_score: score,
-          quiz_total: quiz.length,
-        }),
-        supabase.from("profiles").update({
-          current_level: newLevel,
-          lessons_completed: newCompleted,
-        }).eq("user_id", user.id),
-      ]);
-    }
+  const handleStartQuiz = () => {
+    navigate("/quiz", {
+      state: {
+        questions: quiz,
+        lessonTitle: lesson.title,
+        lessonLevel: lesson.level,
+      },
+    });
   };
-
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       {/* Mobile-friendly header */}
