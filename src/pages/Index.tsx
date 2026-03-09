@@ -4,12 +4,10 @@ import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
 import LevelSelector from "@/components/LevelSelector";
-import FableLibrary from "@/components/FableLibrary";
 import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
-import { FableEntry } from "@/data/aesopFables";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, BookOpen, User, LogOut, LogIn, Library, Route } from "lucide-react";
+import { Loader2, Sparkles, LogOut, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,9 +23,7 @@ const Index = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
-  const [showLibrary, setShowLibrary] = useState(false);
 
-  // Load profile data when logged in
   useEffect(() => {
     if (!user) return;
     supabase
@@ -65,14 +61,6 @@ const Index = () => {
     }
   }, [level, lessonsCompleted]);
 
-  const handleSelectFable = (entry: FableEntry) => {
-    setLesson(entry.lesson);
-    setQuiz(entry.quiz);
-    setLessonImage(null);
-    setShowQuiz(false);
-    setShowLibrary(false);
-  };
-
   const handleQuizComplete = async (score: number) => {
     const newCompleted = lessonsCompleted + 1;
     setLessonsCompleted(newCompleted);
@@ -84,7 +72,6 @@ const Index = () => {
       toast.success("🎉 เลื่อนระดับแล้ว!");
     }
 
-    // Save to DB if logged in
     if (user) {
       await Promise.all([
         supabase.from("learning_history").insert({
@@ -103,50 +90,21 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
+      {/* Mobile-friendly header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-primary" />
-              <h1 className="text-xl font-bold text-foreground font-thai">
-                อ่านเรียน<span className="text-primary">English</span>
-              </h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => navigate("/path")}
-                variant="secondary"
-                size="sm"
-                className="font-thai"
-              >
-                <Route className="w-4 h-4 mr-2" />
-                เส้นทางเรียน
-              </Button>
-              <Button
-                onClick={() => setShowLibrary(!showLibrary)}
-                variant={showLibrary ? "default" : "secondary"}
-                size="sm"
-                className="font-thai"
-              >
-                <Library className="w-4 h-4 mr-2" />
-                คลังนิทาน
-              </Button>
-              <Button onClick={generateNewLesson} disabled={loading} size="sm" className="font-thai">
-                {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                สร้างบทเรียนใหม่
-              </Button>
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-lg font-bold text-foreground font-thai">
+              📖 อ่านเรียน<span className="text-primary">English</span>
+            </h1>
+            <div className="flex items-center gap-1">
               {user ? (
-                <>
-                  <Button variant="outline" size="sm" onClick={() => navigate("/profile")} className="font-thai">
-                    <User className="w-4 h-4 mr-1" /> โปรไฟล์
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={signOut}>
-                    <LogOut className="w-4 h-4" />
-                  </Button>
-                </>
+                <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
+                  <LogOut className="w-4 h-4" />
+                </Button>
               ) : (
-                <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="font-thai">
+                <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="font-thai text-xs h-8">
                   <LogIn className="w-4 h-4 mr-1" /> เข้าสู่ระบบ
                 </Button>
               )}
@@ -156,21 +114,27 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        {showLibrary ? (
-          <FableLibrary currentLevel={level} onSelectFable={handleSelectFable} />
-        ) : loading ? (
+      <main className="px-4 py-4">
+        {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <Loader2 className="w-10 h-10 animate-spin mb-4 text-primary" />
             <p className="font-thai">กำลังสร้างบทเรียนใหม่...</p>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-              <div className="lg:col-span-2">
-                <VocabTable vocabulary={lesson.vocabulary} />
-              </div>
-              <div className="lg:col-span-3">
+          <div className="space-y-4">
+            {/* Generate button - prominent on mobile */}
+            <Button
+              onClick={generateNewLesson}
+              disabled={loading}
+              className="w-full font-thai h-12 text-base"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              สร้างบทเรียนใหม่
+            </Button>
+
+            {/* Stacked layout for mobile, side-by-side for desktop */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+              <div className="lg:col-span-3 order-1">
                 <ArticleReader
                   sentences={lesson.articleSentences}
                   translation={lesson.articleTranslation}
@@ -179,20 +143,24 @@ const Index = () => {
                   imageUrl={lessonImage || undefined}
                 />
               </div>
+              <div className="lg:col-span-2 order-2">
+                <VocabTable vocabulary={lesson.vocabulary} />
+              </div>
             </div>
 
+            {/* Quiz */}
             {!showQuiz ? (
-              <div className="text-center">
-                <Button onClick={() => setShowQuiz(true)} variant="outline" className="font-thai">
+              <div className="text-center pb-4">
+                <Button onClick={() => setShowQuiz(true)} variant="outline" className="font-thai w-full max-w-xs h-11">
                   📝 ทำแบบทดสอบ
                 </Button>
               </div>
             ) : (
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-2xl mx-auto pb-4">
                 <QuizSection questions={quiz} onComplete={handleQuizComplete} />
               </div>
             )}
-          </>
+          </div>
         )}
       </main>
     </div>

@@ -87,12 +87,16 @@
   }
 
   .interlinear-eng {
-    @apply text-lg font-reading;
+    @apply text-base sm:text-lg font-reading;
     color: hsl(var(--english-text));
   }
 
   .interlinear-thai {
-    @apply text-xs font-thai;
+    @apply text-[10px] sm:text-xs font-thai;
     color: hsl(var(--thai-phonetic));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
