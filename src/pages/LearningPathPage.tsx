@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { pathNodes, levelLabels, PathNode } from "@/data/pathNodes";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
+import { sampleQuiz } from "@/data/sampleLesson";
 import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Lock, CheckCircle2, Play, Loader2, Trophy, Star } from "lucide-react";
+import { ArrowLeft, Lock, CheckCircle2, Play, Loader2, Trophy, Star, Crown, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,22 @@ interface CompletedNode {
   quiz_score: number | null;
   quiz_total: number | null;
 }
+
+const levelColorMap: Record<number, { bg: string; border: string; text: string; glow: string; badge: string }> = {
+  1: { bg: "bg-level-1/15", border: "border-level-1", text: "text-level-1", glow: "shadow-level-1/30", badge: "bg-level-1 text-primary-foreground" },
+  2: { bg: "bg-level-2/15", border: "border-level-2", text: "text-level-2", glow: "shadow-level-2/30", badge: "bg-level-2 text-primary-foreground" },
+  3: { bg: "bg-level-3/15", border: "border-level-3", text: "text-level-3", glow: "shadow-level-3/30", badge: "bg-level-3 text-primary-foreground" },
+  4: { bg: "bg-level-4/15", border: "border-level-4", text: "text-level-4", glow: "shadow-level-4/30", badge: "bg-level-4 text-primary-foreground" },
+  5: { bg: "bg-level-5/15", border: "border-level-5", text: "text-level-5", glow: "shadow-level-5/30", badge: "bg-level-5 text-primary-foreground" },
+};
+
+const levelIcons: Record<number, string> = {
+  1: "🌱",
+  2: "🌿",
+  3: "🌳",
+  4: "⭐",
+  5: "👑",
+};
 
 const LearningPathPage = () => {
   const { user } = useAuth();
@@ -94,8 +110,6 @@ const LearningPathPage = () => {
         ...prev,
         { node_index: selectedNode.index, quiz_score: score, quiz_total: quiz.length },
       ]);
-      
-      // Also update profiles
       await supabase.from("profiles").update({
         lessons_completed: selectedNode.index + 1,
         current_level: selectedNode.level,
@@ -103,8 +117,9 @@ const LearningPathPage = () => {
     }
   };
 
-  // If a lesson is active, show lesson view
+  // Lesson view
   if (selectedNode && (loading || lesson)) {
+    const colors = levelColorMap[selectedNode.level];
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
@@ -112,18 +127,25 @@ const LearningPathPage = () => {
             <Button variant="ghost" size="sm" onClick={() => { setSelectedNode(null); setLesson(null); }}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
+            <div className={cn("px-2 py-0.5 rounded-md text-xs font-bold", colors.badge)}>
+              Lv.{selectedNode.level}
+            </div>
             <span className="text-lg font-bold font-thai">
               {selectedNode.icon} {selectedNode.topicThai}
             </span>
-            <span className="text-sm text-muted-foreground">Level {selectedNode.level}</span>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 py-6">
+        <main className="max-w-7xl mx-auto px-4 py-6 animate-fade-in">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-              <Loader2 className="w-10 h-10 animate-spin mb-4 text-primary" />
-              <p className="font-thai">กำลังสร้างบทเรียน...</p>
+              <div className="relative">
+                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                <span className="absolute inset-0 flex items-center justify-center text-xl">
+                  {selectedNode.icon}
+                </span>
+              </div>
+              <p className="font-thai mt-4 text-lg">กำลังสร้างบทเรียน...</p>
             </div>
           ) : (
             <>
@@ -159,122 +181,230 @@ const LearningPathPage = () => {
     );
   }
 
-  // Path view
-  const levels = [1, 2, 3, 4, 5];
+  // Progress stats
+  const totalCompleted = completedNodes.length;
+  const progressPercent = Math.round((totalCompleted / pathNodes.length) * 100);
+
+  // Calculate streak (consecutive from 0)
+  let streak = 0;
+  for (let i = 0; i < pathNodes.length; i++) {
+    if (isCompleted(i)) streak++;
+    else break;
+  }
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> หน้าหลัก
           </Button>
-          <Trophy className="w-5 h-5 text-primary" />
-          <h1 className="text-xl font-bold font-thai">เส้นทางการเรียน</h1>
-          <span className="text-sm text-muted-foreground font-thai ml-auto">
-            {completedNodes.length}/{pathNodes.length} บทเรียน
-          </span>
+          <div className="flex items-center gap-2 ml-auto">
+            <Flame className="w-5 h-5 text-destructive" />
+            <span className="font-bold text-sm font-thai">{streak} ต่อเนื่อง</span>
+            <div className="w-px h-4 bg-border mx-1" />
+            <Trophy className="w-5 h-5 text-star-gold" />
+            <span className="font-bold text-sm font-thai">{totalCompleted}/{pathNodes.length}</span>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8">
-        {levels.map((lvl) => {
+      {/* Progress bar */}
+      <div className="bg-card border-b border-border">
+        <div className="max-w-3xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <h1 className="text-lg font-bold font-thai flex items-center gap-2">
+              🗺️ เส้นทางการเรียน
+            </h1>
+            <span className="text-sm font-bold text-primary">{progressPercent}%</span>
+          </div>
+          <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-level-1 via-level-3 to-level-5 rounded-full transition-all duration-700 ease-out"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Path */}
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        {[1, 2, 3, 4, 5].map((lvl) => {
           const nodesInLevel = pathNodes.filter((n) => n.level === lvl);
+          const colors = levelColorMap[lvl];
+          const levelCompleted = nodesInLevel.every((n) => isCompleted(n.index));
+          const levelProgress = nodesInLevel.filter((n) => isCompleted(n.index)).length;
+
           return (
-            <div key={lvl} className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
+            <div key={lvl} className="mb-10 animate-fade-in" style={{ animationDelay: `${lvl * 80}ms` }}>
+              {/* Level header */}
+              <div className="flex items-center gap-3 mb-6">
                 <div className={cn(
-                  "px-3 py-1 rounded-full text-sm font-bold font-thai",
-                  "bg-primary/10 text-primary"
+                  "w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-lg",
+                  colors.badge
                 )}>
-                  Level {lvl} — {levelLabels[lvl]}
+                  {levelIcons[lvl]}
                 </div>
-                <div className="flex-1 h-px bg-border" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h2 className={cn("text-base font-bold font-thai", colors.text)}>
+                      Level {lvl} — {levelLabels[lvl]}
+                    </h2>
+                    {levelCompleted && (
+                      <CheckCircle2 className={cn("w-5 h-5", colors.text)} />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full transition-all duration-500", colors.badge)}
+                        style={{ width: `${(levelProgress / nodesInLevel.length) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground font-thai">
+                      {levelProgress}/{nodesInLevel.length}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col items-center gap-2">
-                {nodesInLevel.map((node, i) => {
-                  const completed = isCompleted(node.index);
-                  const unlocked = isUnlocked(node.index);
-                  const isCurrent = node.index === nextUnlockedIndex;
-                  const score = getScore(node.index);
-                  // Zigzag offset
-                  const offset = i % 2 === 0 ? -60 : 60;
+              {/* Nodes - snake/zigzag path */}
+              <div className="relative pl-4">
+                {/* Vertical connector line */}
+                <div className={cn(
+                  "absolute left-[2.25rem] top-0 bottom-0 w-0.5 rounded-full",
+                  levelCompleted ? colors.badge : "bg-border"
+                )} />
 
-                  return (
-                    <div key={node.index} className="relative flex flex-col items-center">
-                      {/* Connector line */}
-                      {i > 0 && (
-                        <div className={cn(
-                          "w-0.5 h-4 -mt-2 mb-1",
-                          completed ? "bg-primary" : "bg-border"
-                        )} />
-                      )}
+                <div className="flex flex-col gap-3">
+                  {nodesInLevel.map((node, i) => {
+                    const completed = isCompleted(node.index);
+                    const unlocked = isUnlocked(node.index);
+                    const isCurrent = node.index === nextUnlockedIndex;
+                    const score = getScore(node.index);
+                    const offset = i % 2 === 0 ? 0 : 40;
 
-                      <button
-                        onClick={() => handleNodeClick(node)}
-                        disabled={!unlocked}
-                        style={{ transform: `translateX(${offset}px)` }}
-                        className={cn(
-                          "relative w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-200",
-                          "border-4 shadow-md",
-                          completed && "bg-primary/20 border-primary scale-100",
-                          isCurrent && !completed && "bg-primary/10 border-primary animate-pulse scale-110",
-                          unlocked && !completed && !isCurrent && "bg-card border-border hover:border-primary hover:scale-105",
-                          !unlocked && "bg-muted border-muted-foreground/20 opacity-50 cursor-not-allowed"
-                        )}
-                      >
-                        {completed ? (
-                          <CheckCircle2 className="w-7 h-7 text-primary" />
-                        ) : !unlocked ? (
-                          <Lock className="w-5 h-5 text-muted-foreground" />
-                        ) : (
-                          <span>{node.icon}</span>
-                        )}
-
-                        {isCurrent && !completed && (
-                          <span className="absolute -right-1 -top-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                            <Play className="w-3 h-3 text-primary-foreground fill-current" />
-                          </span>
-                        )}
-                      </button>
-
+                    return (
                       <div
-                        style={{ transform: `translateX(${offset}px)` }}
-                        className="text-center mt-1"
+                        key={node.index}
+                        className="animate-fade-in"
+                        style={{
+                          animationDelay: `${(lvl * 10 + i) * 50}ms`,
+                          paddingLeft: `${offset}px`,
+                        }}
                       >
-                        <p className={cn(
-                          "text-xs font-thai font-medium",
-                          completed ? "text-primary" : unlocked ? "text-foreground" : "text-muted-foreground"
-                        )}>
-                          {node.topicThai}
-                        </p>
-                        {score && (
-                          <div className="flex items-center justify-center gap-0.5 mt-0.5">
-                            {Array.from({ length: score.quiz_total || 4 }).map((_, si) => (
-                              <Star
-                                key={si}
-                                className={cn(
-                                  "w-3 h-3",
-                                  si < (score.quiz_score || 0) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"
-                                )}
-                              />
-                            ))}
+                        <button
+                          onClick={() => handleNodeClick(node)}
+                          disabled={!unlocked}
+                          className={cn(
+                            "group relative flex items-center gap-3 w-full max-w-xs rounded-2xl p-3 transition-all duration-300",
+                            "border-2",
+                            completed && cn(colors.bg, colors.border, "shadow-md", `shadow-[0_4px_14px_-3px] ${colors.glow}`),
+                            isCurrent && !completed && cn(
+                              colors.bg, colors.border,
+                              "animate-path-glow",
+                              "shadow-lg"
+                            ),
+                            unlocked && !completed && !isCurrent && cn(
+                              "bg-card border-border",
+                              "hover:border-current hover:shadow-md",
+                              colors.text
+                            ),
+                            !unlocked && "bg-muted/50 border-muted-foreground/10 opacity-60 cursor-not-allowed"
+                          )}
+                        >
+                          {/* Node circle */}
+                          <div className={cn(
+                            "relative w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0 transition-transform duration-300",
+                            "border-2",
+                            completed && cn(colors.badge, colors.border),
+                            isCurrent && !completed && cn(colors.bg, colors.border, "animate-float"),
+                            unlocked && !completed && !isCurrent && cn("bg-card", colors.border, "group-hover:scale-110"),
+                            !unlocked && "bg-muted border-muted-foreground/20"
+                          )}>
+                            {completed ? (
+                              <CheckCircle2 className="w-6 h-6 text-primary-foreground" />
+                            ) : !unlocked ? (
+                              <Lock className="w-4 h-4 text-muted-foreground" />
+                            ) : (
+                              <span className={cn(isCurrent && "animate-float")}>{node.icon}</span>
+                            )}
+
+                            {isCurrent && !completed && (
+                              <span className={cn(
+                                "absolute -right-1 -top-1 w-5 h-5 rounded-full flex items-center justify-center animate-bounce-in",
+                                colors.badge
+                              )}>
+                                <Play className="w-3 h-3 text-primary-foreground fill-current" />
+                              </span>
+                            )}
                           </div>
-                        )}
+
+                          {/* Node info */}
+                          <div className="text-left flex-1 min-w-0">
+                            <p className={cn(
+                              "text-sm font-bold font-thai truncate",
+                              completed ? colors.text : unlocked ? "text-foreground" : "text-muted-foreground"
+                            )}>
+                              {node.topicThai}
+                            </p>
+                            <p className={cn(
+                              "text-xs truncate",
+                              completed ? colors.text + "/70" : "text-muted-foreground"
+                            )}>
+                              {node.topic}
+                            </p>
+
+                            {/* Stars */}
+                            {score && (
+                              <div className="flex items-center gap-0.5 mt-1">
+                                {Array.from({ length: score.quiz_total || 4 }).map((_, si) => (
+                                  <Star
+                                    key={si}
+                                    className={cn(
+                                      "w-3.5 h-3.5 transition-all duration-300",
+                                      si < (score.quiz_score || 0)
+                                        ? "text-star-gold fill-star-gold"
+                                        : "text-muted-foreground/20"
+                                    )}
+                                    style={{ animationDelay: `${si * 100}ms` }}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Arrow / status */}
+                          {unlocked && !completed && (
+                            <div className={cn(
+                              "w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1",
+                              isCurrent ? colors.badge : "bg-muted"
+                            )}>
+                              <Play className={cn(
+                                "w-4 h-4 fill-current",
+                                isCurrent ? "text-primary-foreground" : "text-muted-foreground"
+                              )} />
+                            </div>
+                          )}
+                        </button>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
         })}
 
-        {completedNodes.length === pathNodes.length && (
-          <div className="text-center py-10">
-            <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold font-thai">🎉 ยินดีด้วย! เรียนจบทุกบทเรียนแล้ว!</h2>
+        {/* Completion celebration */}
+        {totalCompleted === pathNodes.length && (
+          <div className="text-center py-12 animate-bounce-in">
+            <div className="relative inline-block">
+              <Crown className="w-20 h-20 text-star-gold mx-auto animate-float" />
+            </div>
+            <h2 className="text-2xl font-bold font-thai mt-4">🎉 ยินดีด้วย!</h2>
+            <p className="text-muted-foreground font-thai mt-2">เรียนจบทุกบทเรียนแล้ว คุณเก่งมาก!</p>
           </div>
         )}
       </main>
