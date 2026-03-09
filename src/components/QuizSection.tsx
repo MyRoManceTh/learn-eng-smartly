@@ -34,6 +34,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
     if (currentQ + 1 >= questions.length) {
       const finalScore = score;
       setFinished(true);
+      playComplete();
       onComplete(finalScore);
     } else {
       setCurrentQ((c) => c + 1);
