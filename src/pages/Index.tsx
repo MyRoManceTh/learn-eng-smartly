@@ -29,16 +29,27 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("current_level, lessons_completed")
+      .select("current_level, lessons_completed, total_exp")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
           setLevel(data.current_level as LearnerLevel);
           setLessonsCompleted(data.lessons_completed);
+          setTotalExp((data as any).total_exp || 0);
         }
       });
   }, [user]);
+
+  // Auto-generate new lesson when coming back from quiz
+  useEffect(() => {
+    const navState = location.state as { generateNew?: boolean } | null;
+    if (navState?.generateNew) {
+      // Clear the state to prevent re-triggering
+      window.history.replaceState({}, "");
+      generateNewLesson();
+    }
+  }, [location.state]);
 
   const generateNewLesson = useCallback(async () => {
     setLoading(true);
