@@ -44,6 +44,54 @@ export type Database = {
         }
         Relationships: []
       }
+      lessons: {
+        Row: {
+          article_sentences: Json
+          article_translation: string
+          created_at: string
+          id: string
+          image_prompt: string | null
+          image_url: string | null
+          is_published: boolean
+          lesson_order: number
+          level: number
+          quiz: Json
+          title: string
+          title_thai: string
+          vocabulary: Json
+        }
+        Insert: {
+          article_sentences?: Json
+          article_translation?: string
+          created_at?: string
+          id?: string
+          image_prompt?: string | null
+          image_url?: string | null
+          is_published?: boolean
+          lesson_order?: number
+          level?: number
+          quiz?: Json
+          title: string
+          title_thai: string
+          vocabulary?: Json
+        }
+        Update: {
+          article_sentences?: Json
+          article_translation?: string
+          created_at?: string
+          id?: string
+          image_prompt?: string | null
+          image_url?: string | null
+          is_published?: boolean
+          lesson_order?: number
+          level?: number
+          quiz?: Json
+          title?: string
+          title_thai?: string
+          vocabulary?: Json
+        }
+        Relationships: []
+      }
       path_progress: {
         Row: {
           completed_at: string
@@ -127,6 +175,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_lesson_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          lesson_id: string
+          quiz_score: number | null
+          quiz_total: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          lesson_id: string
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          lesson_id?: string
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
