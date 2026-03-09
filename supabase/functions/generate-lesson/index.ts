@@ -210,8 +210,72 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { action, level, lessonOrder } = await req.json();
+    const { action, level, lessonOrder, topic } = await req.json();
     const supabase = getSupabase();
+
+    // Default action: fetch existing lesson or generate on-the-fly
+    if (!action || action === "get") {
+      if (!level || !lessonOrder) {
+        return new Response(JSON.stringify({ error: "Missing level or lessonOrder" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Try to find existing lesson
+      const { data: existing } = await supabase
+        .from("lessons")
+        .select("*")
+        .eq("level", level)
+        .eq("lesson_order", lessonOrder)
+        .eq("is_published", true)
+        .single();
+
+      if (existing) {
+        return new Response(JSON.stringify({
+          lesson: {
+            title: existing.title,
+            titleThai: existing.title_thai,
+            vocabulary: existing.vocabulary,
+            articleSentences: existing.article_sentences,
+            articleTranslation: existing.article_translation,
+          },
+          quiz: existing.quiz,
+          imageUrl: existing.image_url,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Not found — generate, save, and return
+      await generateAndSaveLesson(level, lessonOrder);
+
+      const { data: newLesson } = await supabase
+        .from("lessons")
+        .select("*")
+        .eq("level", level)
+        .eq("lesson_order", lessonOrder)
+        .single();
+
+      if (!newLesson) {
+        return new Response(JSON.stringify({ error: "Failed to generate lesson" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({
+        lesson: {
+          title: newLesson.title,
+          titleThai: newLesson.title_thai,
+          vocabulary: newLesson.vocabulary,
+          articleSentences: newLesson.article_sentences,
+          articleTranslation: newLesson.article_translation,
+        },
+        quiz: newLesson.quiz,
+        imageUrl: newLesson.image_url,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (action === "trigger-next") {
       // Called after a user completes the latest lesson for a level

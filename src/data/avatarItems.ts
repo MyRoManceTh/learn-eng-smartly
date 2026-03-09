@@ -1,4 +1,5 @@
 import { AvatarItem, ItemCategory, ItemRarity } from "@/types/avatar";
+import { gachaExclusiveItems } from "@/data/gachaItems";
 
 export const avatarItems: AvatarItem[] = [
   // === SKIN (6) ===
@@ -67,7 +68,7 @@ export const getItemsByCategory = (category: ItemCategory): AvatarItem[] =>
   avatarItems.filter((item) => item.category === category);
 
 export const getItemById = (id: string): AvatarItem | undefined =>
-  avatarItems.find((item) => item.id === id);
+  avatarItems.find((item) => item.id === id) ?? gachaExclusiveItems.find((item) => item.id === id);
 
 export const getRarityColor = (rarity: ItemRarity): string => {
   const colors: Record<ItemRarity, string> = {

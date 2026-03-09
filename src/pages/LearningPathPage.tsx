@@ -77,8 +77,9 @@ const LearningPathPage = () => {
     setLoading(true);
 
     try {
+      const lessonOrder = node.index - (node.level - 1) * 10 + 1;
       const { data, error } = await supabase.functions.invoke("generate-lesson", {
-        body: { level: node.level, topic: node.topic, lessonsCompleted: node.index },
+        body: { level: node.level, lessonOrder, topic: node.topic },
       });
       if (error) throw error;
       if (data.lesson) {
