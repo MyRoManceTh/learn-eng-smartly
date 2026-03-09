@@ -9,10 +9,43 @@ interface RobloxAvatarProps {
 }
 
 const sizeMap = { sm: 120, md: 200, lg: 300 };
-const OL = "#2A2A3C"; // outline color
-const OW = 2.2; // outline width
+const OL = "#1a1a2e";
+const OW = 1.8;
 
-const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = false, evolutionStage = 1 }: RobloxAvatarProps) => {
+/* ═══════════════════════════════════════════
+   3D BLOCK – isometric front + top + right
+   ═══════════════════════════════════════════ */
+const Block3D = ({ x, y, w, h, color, d = 6 }: {
+  x: number; y: number; w: number; h: number; color: string; d?: number;
+}) => (
+  <g>
+    {/* Right face (darker) */}
+    <polygon
+      points={`${x + w},${y} ${x + w + d},${y - d} ${x + w + d},${y + h - d} ${x + w},${y + h}`}
+      fill={shade(color, -40)} stroke={OL} strokeWidth={1.2} strokeLinejoin="round"
+    />
+    {/* Top face (lighter) */}
+    <polygon
+      points={`${x},${y} ${x + d},${y - d} ${x + w + d},${y - d} ${x + w},${y}`}
+      fill={shade(color, 45)} stroke={OL} strokeWidth={1.2} strokeLinejoin="round"
+    />
+    {/* Front face */}
+    <rect x={x} y={y} width={w} height={h} fill={color} stroke={OL} strokeWidth={OW} />
+    {/* Specular highlight */}
+    <rect x={x + 2} y={y + 2} width={Math.max(w * 0.3, 4)} height={Math.max(h * 0.25, 3)}
+      fill="white" opacity={0.12} rx={1} />
+  </g>
+);
+
+/* ═══════════════════════════════════════════
+   MAIN AVATAR COMPONENT
+   ═══════════════════════════════════════════ */
+const RobloxAvatar = ({
+  equipped = DEFAULT_EQUIPPED,
+  size = "md",
+  animated = false,
+  evolutionStage = 1,
+}: RobloxAvatarProps) => {
   const dim = sizeMap[size];
 
   const skinItem = getItemById(equipped.skin);
@@ -25,13 +58,10 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
   const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
 
   const skin = skinItem?.svgProps?.color || "#F5D5C0";
-  const skinShade = shade(skin, -15);
   const hairColor = hairColorItem?.svgProps?.color || "#2C2C2C";
-  const shirtColor = shirtItem?.svgProps?.color || "#FFFFFF";
-  const shirtShade = shade(shirtColor, -20);
+  const shirtColor = shirtItem?.svgProps?.color || "#4DB6AC";
   const pantsColor = pantsItem?.svgProps?.color || "#4A90E2";
-  const pantsShade = shade(pantsColor, -15);
-  const shoesColor = shoesItem?.svgProps?.color || "#FFFFFF";
+  const shoesColor = shoesItem?.svgProps?.color || "#F0F0F0";
 
   const isRainbowHair = hairColor === "rainbow";
   const isShorts = pantsItem?.id === "pants_shorts";
@@ -47,9 +77,9 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
     <svg
       width={dim}
       height={dim * 1.3}
-      viewBox="0 0 200 260"
+      viewBox="-2 -14 218 286"
       className={animated ? "animate-avatar-idle" : ""}
-      style={{ filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.18))" }}
+      style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.22))" }}
     >
       <defs>
         {isRainbowHair && (
@@ -71,21 +101,20 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
               evolutionStage >= 3 ? "#2196F3" : "#4CAF50"
             } floodOpacity={evolutionStage >= 4 ? "0.35" : "0.2"} />
             <feComposite in2="blur" operator="in" />
-            <feMerge>
-              <feMergeNode />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+            <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         )}
       </defs>
 
       <g filter={evolutionStage >= 2 ? "url(#evo-glow)" : undefined}>
 
-      {/* ========== CAPE / WINGS (behind body) ========== */}
+      {/* ══════════ CAPE / WINGS (behind body) ══════════ */}
       {accItem?.id === "acc_cape" && (
         <g>
-          <path d="M 72 120 Q 56 165 62 222 L 80 214 Q 74 168 78 125 Z" fill={accItem.svgProps?.color || "#D32F2F"} stroke={OL} strokeWidth={1.5} opacity="0.85" />
-          <path d="M 128 120 Q 144 165 138 222 L 120 214 Q 126 168 122 125 Z" fill={accItem.svgProps?.color || "#D32F2F"} stroke={OL} strokeWidth={1.5} opacity="0.85" />
+          <path d="M 72 120 Q 56 165 62 222 L 80 214 Q 74 168 78 125 Z"
+            fill={accItem.svgProps?.color || "#D32F2F"} stroke={OL} strokeWidth={1.5} opacity="0.85" />
+          <path d="M 128 120 Q 144 165 138 222 L 120 214 Q 126 168 122 125 Z"
+            fill={accItem.svgProps?.color || "#D32F2F"} stroke={OL} strokeWidth={1.5} opacity="0.85" />
         </g>
       )}
       {accItem?.id === "acc_wings" && (
@@ -97,78 +126,88 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
         </g>
       )}
 
-      {/* ========== LEGS ========== */}
+      {/* ══════════ LEGS ══════════ */}
       {(isShorts || isSkirt) && (
         <>
-          <rect x="80" y={skinLegTop} width="18" height={skinLegH} rx="3" fill={skin} stroke={OL} strokeWidth={OW} />
-          <rect x="102" y={skinLegTop} width="18" height={skinLegH} rx="3" fill={skin} stroke={OL} strokeWidth={OW} />
-          <rect x="93" y={skinLegTop} width="5" height={skinLegH} rx="1" fill={skinShade} opacity="0.25" />
-          <rect x="115" y={skinLegTop} width="5" height={skinLegH} rx="1" fill={skinShade} opacity="0.25" />
+          <Block3D x={80} y={skinLegTop} w={18} h={skinLegH} color={skin} d={3} />
+          <Block3D x={102} y={skinLegTop} w={18} h={skinLegH} color={skin} d={3} />
         </>
       )}
 
       {isSkirt ? (
         <g>
-          <polygon points="74,168 126,168 134,200 66,200" fill={pantsColor} stroke={OL} strokeWidth={OW} strokeLinejoin="round" />
-          <line x1="90" y1="170" x2="87" y2="198" stroke={pantsShade} strokeWidth="1.5" opacity="0.35" />
-          <line x1="110" y1="170" x2="113" y2="198" stroke={pantsShade} strokeWidth="1.5" opacity="0.35" />
-          <path d="M 66 198 Q 80 203 100 200 Q 120 203 134 198" fill="none" stroke={pantsShade} strokeWidth="1.5" opacity="0.25" />
+          {/* Skirt right face (3D) */}
+          <polygon points="126,168 131,163 139,195 134,200"
+            fill={shade(pantsColor, -40)} stroke={OL} strokeWidth={1.2} strokeLinejoin="round" />
+          {/* Skirt top face (3D) */}
+          <polygon points="74,168 79,163 131,163 126,168"
+            fill={shade(pantsColor, 45)} stroke={OL} strokeWidth={1.2} strokeLinejoin="round" />
+          {/* Skirt front face */}
+          <polygon points="74,168 126,168 134,200 66,200"
+            fill={pantsColor} stroke={OL} strokeWidth={OW} strokeLinejoin="round" />
+          {/* Pleat details */}
+          <line x1="90" y1="170" x2="87" y2="198" stroke={shade(pantsColor, -15)} strokeWidth="1.5" opacity="0.35" />
+          <line x1="110" y1="170" x2="113" y2="198" stroke={shade(pantsColor, -15)} strokeWidth="1.5" opacity="0.35" />
+          {/* Highlight */}
+          <rect x="76" y="170" width="14" height="8" fill="white" opacity="0.1" />
         </g>
       ) : (
         <>
-          <rect x="80" y={legTop} width="18" height={legH} rx="3" fill={pantsColor} stroke={OL} strokeWidth={OW} />
-          <rect x="102" y={legTop} width="18" height={legH} rx="3" fill={pantsColor} stroke={OL} strokeWidth={OW} />
-          <rect x="93" y={legTop} width="5" height={legH} rx="1" fill={pantsShade} opacity="0.25" />
-          <rect x="115" y={legTop} width="5" height={legH} rx="1" fill={pantsShade} opacity="0.25" />
+          <Block3D x={80} y={legTop} w={18} h={legH} color={pantsColor} d={3} />
+          <Block3D x={102} y={legTop} w={18} h={legH} color={pantsColor} d={3} />
           {pantsItem?.id === "pants_jeans" && (
             <>
-              <rect x="82" y={legTop + 3} width="6" height="8" rx="1" fill="none" stroke="#FFFFFF22" strokeWidth="1.2" />
-              <rect x="112" y={legTop + 3} width="6" height="8" rx="1" fill="none" stroke="#FFFFFF22" strokeWidth="1.2" />
+              <rect x="82" y={legTop + 3} width="6" height="8" fill="none" stroke="#FFFFFF22" strokeWidth="1.2" />
+              <rect x="112" y={legTop + 3} width="6" height="8" fill="none" stroke="#FFFFFF22" strokeWidth="1.2" />
               <line x1="89" y1={legTop} x2="89" y2={legTop + legH} stroke="#FFFFFF15" strokeWidth="1" strokeDasharray="3,3" />
               <line x1="111" y1={legTop} x2="111" y2={legTop + legH} stroke="#FFFFFF15" strokeWidth="1" strokeDasharray="3,3" />
             </>
           )}
           {isShorts && (
             <>
-              <rect x="80" y={legTop + legH - 4} width="18" height="4" rx="1" fill={pantsShade} opacity="0.2" />
-              <rect x="102" y={legTop + legH - 4} width="18" height="4" rx="1" fill={pantsShade} opacity="0.2" />
+              <rect x="80" y={legTop + legH - 4} width="18" height="4" fill={shade(pantsColor, -15)} opacity="0.2" />
+              <rect x="102" y={legTop + legH - 4} width="18" height="4" fill={shade(pantsColor, -15)} opacity="0.2" />
             </>
           )}
         </>
       )}
 
-      {/* ========== SHOES ========== */}
+      {/* ══════════ SHOES (3D) ══════════ */}
       <ShoeLayer shoeId={shoesItem?.id || "shoes_default"} color={shoesColor} y={shoeY} />
 
-      {/* ========== BODY (Torso) / SHIRT ========== */}
-      <ShirtLayer shirtId={shirtItem?.id || "shirt_default"} color={shirtColor} shirtShade={shirtShade} skin={skin} />
+      {/* ══════════ BODY / SHIRT (3D torso block) ══════════ */}
+      <Block3D x={74} y={112} w={52} h={58} color={shirtColor} d={5} />
+      <ShirtDetails shirtId={shirtItem?.id || "shirt_default"} color={shirtColor} skin={skin} />
 
-      {/* ========== ARMS ========== */}
-      <rect x="60" y="118" width="14" height="40" rx="5" fill={skin} stroke={OL} strokeWidth={OW} />
-      <rect x="60" y="118" width="14" height="20" rx="5" fill={shirtColor} stroke={OL} strokeWidth={OW} />
-      <rect x="126" y="118" width="14" height="40" rx="5" fill={skin} stroke={OL} strokeWidth={OW} />
-      <rect x="126" y="118" width="14" height="20" rx="5" fill={shirtColor} stroke={OL} strokeWidth={OW} />
-      <rect x="70" y="118" width="4" height="20" rx="2" fill={shirtShade} opacity="0.2" />
-      <rect x="126" y="118" width="4" height="20" rx="2" fill={shirtShade} opacity="0.2" />
-      {/* Hands */}
+      {/* ══════════ ARMS (3D blocks) ══════════ */}
+      {/* Left arm */}
+      <Block3D x={60} y={118} w={14} h={40} color={skin} d={4} />
+      <Block3D x={60} y={118} w={14} h={20} color={shirtColor} d={4} />
+      {/* Right arm */}
+      <Block3D x={126} y={118} w={14} h={40} color={skin} d={4} />
+      <Block3D x={126} y={118} w={14} h={20} color={shirtColor} d={4} />
+      {/* Hands (3D sphere via highlight) */}
       <circle cx="67" cy="161" r="7" fill={skin} stroke={OL} strokeWidth={OW} />
+      <ellipse cx="65" cy="158" rx="3" ry="2.5" fill="white" opacity="0.15" />
       <circle cx="133" cy="161" r="7" fill={skin} stroke={OL} strokeWidth={OW} />
+      <ellipse cx="131" cy="158" rx="3" ry="2.5" fill="white" opacity="0.15" />
 
-      {/* ========== HEAD ========== */}
-      <rect x="65" y="22" width="70" height="70" rx="10" fill={skin} stroke={OL} strokeWidth={OW} />
-      <rect x="125" y="28" width="8" height="58" rx="4" fill={skinShade} opacity="0.15" />
+      {/* ══════════ NECK ══════════ */}
+      <rect x="90" y="88" width="20" height="28" fill={skin} stroke={OL} strokeWidth={OW} />
+      {/* Neck shadow under head */}
+      <rect x="90" y="88" width="20" height="6" fill="black" opacity="0.08" />
 
-      {/* ========== NECK ========== */}
-      <rect x="90" y="88" width="20" height="28" rx="5" fill={skin} stroke={OL} strokeWidth={OW} />
+      {/* ══════════ HEAD (3D block - biggest!) ══════════ */}
+      <Block3D x={65} y={22} w={70} h={70} color={skin} d={7} />
 
-      {/* ========== HAIR ========== */}
+      {/* ══════════ HAIR ══════════ */}
       <HairLayer hairStyle={hairItem?.svgProps?.path || "short"} color={isRainbowHair ? "url(#rainbow-grad)" : hairColor} />
 
-      {/* ========== HAT ========== */}
+      {/* ══════════ HAT ══════════ */}
       {hatItem && <HatLayer hat={hatItem.id} color={hatItem.svgProps?.color || "#333"} />}
 
-      {/* ========== FACE (chibi cute!) ========== */}
-      {/* Big round eyes with white sclera */}
+      {/* ══════════ FACE (chibi cute!) ══════════ */}
+      {/* Big round eyes */}
       <ellipse cx="87" cy="54" rx="7" ry="7.5" fill="#FFFFFF" stroke={OL} strokeWidth={1.5} />
       <ellipse cx="113" cy="54" rx="7" ry="7.5" fill="#FFFFFF" stroke={OL} strokeWidth={1.5} />
       {/* Iris */}
@@ -193,7 +232,7 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
       <line x1="82" y1="44" x2="90" y2="45" stroke={OL} strokeWidth="1.8" strokeLinecap="round" opacity="0.25" />
       <line x1="118" y1="44" x2="110" y2="45" stroke={OL} strokeWidth="1.8" strokeLinecap="round" opacity="0.25" />
 
-      {/* ========== GLASSES ========== */}
+      {/* ══════════ GLASSES ══════════ */}
       {accItem?.id === "acc_glasses" && (
         <g>
           <rect x="78" y="47" width="18" height="16" rx="3" fill="#87CEEB" fillOpacity="0.15" stroke={OL} strokeWidth="2" />
@@ -204,17 +243,17 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
         </g>
       )}
 
-      {/* ========== BACKPACK ========== */}
+      {/* ══════════ BACKPACK (3D) ══════════ */}
       {accItem?.id === "acc_backpack" && (
         <g>
-          <rect x="132" y="118" width="18" height="42" rx="5" fill={accItem.svgProps?.color || "#E65100"} stroke={OL} strokeWidth={OW} />
+          <Block3D x={132} y={118} w={18} h={42} color={accItem.svgProps?.color || "#E65100"} d={3} />
           <rect x="135" y="122" width="12" height="10" rx="2" fill="#00000015" stroke={OL} strokeWidth="1" />
           <rect x="139" y="125" width="4" height="3" rx="1" fill="#00000020" />
           <line x1="140" y1="118" x2="138" y2="112" stroke={accItem.svgProps?.color || "#E65100"} strokeWidth="3" strokeLinecap="round" />
         </g>
       )}
 
-      {/* ========== HEADPHONES OVER FACE ========== */}
+      {/* ══════════ HEADPHONES OVER FACE ══════════ */}
       {hatItem?.id === "hat_headphones" && (
         <g>
           <rect x="78" y="47" width="16" height="16" rx="4" fill="#555" stroke={OL} strokeWidth="1.5" />
@@ -224,7 +263,7 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
         </g>
       )}
 
-      {/* ========== EVOLUTION SPARKLES ========== */}
+      {/* ══════════ EVOLUTION SPARKLES ══════════ */}
       {evolutionStage >= 3 && (
         <g>
           <circle cx="42" cy="28" r="2" fill="#FFD700" opacity="0.7">
@@ -266,106 +305,111 @@ const RobloxAvatar = ({ equipped = DEFAULT_EQUIPPED, size = "md", animated = fal
   );
 };
 
-// ============================================================
-// SHIRT LAYER
-// ============================================================
-const ShirtLayer = ({ shirtId, color, shirtShade, skin }: { shirtId: string; color: string; shirtShade: string; skin: string }) => {
-  const base = (
-    <>
-      <rect x="74" y="112" width="52" height="58" rx="5" fill={color} stroke={OL} strokeWidth={OW} />
-      <rect x="118" y="116" width="6" height="50" rx="3" fill={shirtShade} opacity="0.2" />
-    </>
-  );
-
+/* ═══════════════════════════════════════════
+   SHIRT DETAILS (overlays on 3D torso)
+   ═══════════════════════════════════════════ */
+const ShirtDetails = ({ shirtId, color, skin }: { shirtId: string; color: string; skin: string }) => {
+  const s = shade(color, -20);
   switch (shirtId) {
     case "shirt_striped":
       return (
         <g>
-          {base}
-          <rect x="76" y="122" width="48" height="5" rx="1" fill="#FFFFFF" opacity="0.45" />
-          <rect x="76" y="134" width="48" height="5" rx="1" fill="#FFFFFF" opacity="0.45" />
-          <rect x="76" y="146" width="48" height="5" rx="1" fill="#FFFFFF" opacity="0.45" />
-          <rect x="76" y="158" width="48" height="5" rx="1" fill="#FFFFFF" opacity="0.45" />
+          <rect x="76" y="122" width="48" height="5" fill="#FFFFFF" opacity="0.45" />
+          <rect x="76" y="134" width="48" height="5" fill="#FFFFFF" opacity="0.45" />
+          <rect x="76" y="146" width="48" height="5" fill="#FFFFFF" opacity="0.45" />
+          <rect x="76" y="158" width="48" height="5" fill="#FFFFFF" opacity="0.45" />
           <path d="M 88 112 Q 100 120 112 112" fill={skin} stroke={OL} strokeWidth="1.5" />
         </g>
       );
     case "shirt_hoodie":
       return (
         <g>
-          {base}
+          {/* Hood behind head */}
           <path d="M 70 92 Q 68 76 82 70 L 118 70 Q 132 76 130 92 L 130 116 L 70 116 Z"
             fill={color} stroke={OL} strokeWidth={OW} />
-          <path d="M 122 76 Q 128 80 128 92 L 128 114 L 124 114 L 124 90 Q 124 82 120 78 Z"
-            fill={shirtShade} opacity="0.15" />
+          {/* Hood 3D top highlight */}
+          <polygon points="70,92 76,86 136,86 130,92"
+            fill={shade(color, 40)} stroke={OL} strokeWidth={1} strokeLinejoin="round" />
           <path d="M 82 112 Q 100 106 118 112" fill="none" stroke={OL} strokeWidth="1.5" />
+          {/* Drawstrings */}
           <line x1="92" y1="114" x2="90" y2="130" stroke="#FFFFFF40" strokeWidth="1.5" strokeLinecap="round" />
           <line x1="108" y1="114" x2="110" y2="130" stroke="#FFFFFF40" strokeWidth="1.5" strokeLinecap="round" />
           <circle cx="90" cy="131" r="2" fill="#FFFFFF40" />
           <circle cx="110" cy="131" r="2" fill="#FFFFFF40" />
-          <rect x="86" y="148" width="28" height="14" rx="3" fill="none" stroke="#FFFFFF28" strokeWidth="1.5" />
+          {/* Kangaroo pocket */}
+          <rect x="86" y="148" width="28" height="14" rx="2" fill="none" stroke="#FFFFFF28" strokeWidth="1.5" />
           <path d="M 86 155 L 114 155" stroke="#FFFFFF18" strokeWidth="1" />
         </g>
       );
     case "shirt_superhero":
       return (
         <g>
-          {base}
-          <path d="M 86 112 Q 100 116 114 112" fill="none" stroke={shirtShade} strokeWidth="1.5" />
+          <path d="M 86 112 Q 100 116 114 112" fill="none" stroke={s} strokeWidth="1.5" />
+          {/* Star emblem */}
           <circle cx="100" cy="138" r="12" fill="#FFD700" stroke={OL} strokeWidth="1.5" />
           <polygon points="100,128 103,134 109,135 104,139 106,145 100,142 94,145 96,139 91,135 97,134"
             fill="#FFFFFF" stroke={OL} strokeWidth="0.8" />
+          {/* Belt */}
           <rect x="74" y="160" width="52" height="6" rx="2" fill="#FFD700" stroke={OL} strokeWidth="1.2" />
-          <rect x="96" y="159" width="8" height="8" rx="1.5" fill="#FFD700" stroke={OL} strokeWidth="1" />
+          <rect x="96" y="159" width="8" height="8" rx="1" fill="#FFD700" stroke={OL} strokeWidth="1" />
         </g>
       );
     case "shirt_tuxedo":
       return (
         <g>
-          {base}
+          {/* Lapels */}
           <path d="M 90 112 L 82 138 L 94 130 Z" fill="#1A1A30" stroke={OL} strokeWidth="1.2" />
           <path d="M 110 112 L 118 138 L 106 130 Z" fill="#1A1A30" stroke={OL} strokeWidth="1.2" />
+          {/* White shirt underneath */}
           <path d="M 92 112 L 100 128 L 108 112" fill="#FFFFFF" stroke={OL} strokeWidth="1" />
+          {/* Bowtie */}
           <polygon points="94,115 100,118 106,115 100,120" fill="#C62828" stroke={OL} strokeWidth="1" />
           <circle cx="100" cy="117.5" r="2" fill="#E53935" stroke={OL} strokeWidth="0.8" />
+          {/* Buttons */}
           <circle cx="100" cy="142" r="2" fill="#2C2C2C" stroke="#FFFFFF30" strokeWidth="0.8" />
           <circle cx="100" cy="154" r="2" fill="#2C2C2C" stroke="#FFFFFF30" strokeWidth="0.8" />
+          {/* Pocket square */}
           <path d="M 82 122 L 82 128 L 88 126 Z" fill="#E53935" opacity="0.8" />
         </g>
       );
     default:
       return (
         <g>
-          {base}
+          {/* V-neckline */}
           <path d="M 88 112 Q 100 120 112 112" fill={skin} stroke={OL} strokeWidth="1.5" />
-          <path d="M 86 113 Q 100 122 114 113" fill="none" stroke={shirtShade} strokeWidth="1.2" opacity="0.25" />
+          <path d="M 86 113 Q 100 122 114 113" fill="none" stroke={s} strokeWidth="1.2" opacity="0.25" />
         </g>
       );
   }
 };
 
-// ============================================================
-// SHOE LAYER
-// ============================================================
+/* ═══════════════════════════════════════════
+   SHOE LAYER (3D)
+   ═══════════════════════════════════════════ */
 const ShoeLayer = ({ shoeId, color, y }: { shoeId: string; color: string; y: number }) => {
   switch (shoeId) {
     case "shoes_boots":
       return (
         <g>
-          <rect x="76" y={y - 10} width="22" height="26" rx="4" fill={color} stroke={OL} strokeWidth={OW} />
-          <rect x="102" y={y - 10} width="22" height="26" rx="4" fill={color} stroke={OL} strokeWidth={OW} />
-          <rect x="74" y={y + 12} width="26" height="6" rx="3" fill={shade(color, -25)} stroke={OL} strokeWidth={OW} />
-          <rect x="100" y={y + 12} width="26" height="6" rx="3" fill={shade(color, -25)} stroke={OL} strokeWidth={OW} />
-          <rect x="78" y={y - 4} width="18" height="4" rx="1" fill={shade(color, -15)} stroke={OL} strokeWidth="1" />
-          <rect x="104" y={y - 4} width="18" height="4" rx="1" fill={shade(color, -15)} stroke={OL} strokeWidth="1" />
+          <Block3D x={76} y={y - 10} w={22} h={26} color={color} d={3} />
+          <Block3D x={102} y={y - 10} w={22} h={26} color={color} d={3} />
+          {/* Thick sole */}
+          <Block3D x={74} y={y + 12} w={26} h={6} color={shade(color, -25)} d={2} />
+          <Block3D x={100} y={y + 12} w={26} h={6} color={shade(color, -25)} d={2} />
+          {/* Strap */}
+          <rect x="78" y={y - 4} width="18" height="4" fill={shade(color, -15)} stroke={OL} strokeWidth="1" />
+          <rect x="104" y={y - 4} width="18" height="4" fill={shade(color, -15)} stroke={OL} strokeWidth="1" />
         </g>
       );
     case "shoes_heels":
       return (
         <g>
-          <rect x="76" y={y} width="22" height="12" rx="4" fill={color} stroke={OL} strokeWidth={OW} />
-          <rect x="102" y={y} width="22" height="12" rx="4" fill={color} stroke={OL} strokeWidth={OW} />
+          <Block3D x={76} y={y} w={22} h={12} color={color} d={3} />
+          <Block3D x={102} y={y} w={22} h={12} color={color} d={3} />
+          {/* Heels */}
           <polygon points={`82,${y + 12} 86,${y + 12} 84,${y + 20}`} fill={color} stroke={OL} strokeWidth="1.5" />
           <polygon points={`114,${y + 12} 118,${y + 12} 116,${y + 20}`} fill={color} stroke={OL} strokeWidth="1.5" />
+          {/* Pointed toe */}
           <path d={`M 76 ${y + 6} Q 72 ${y + 6} 72 ${y + 10} L 76 ${y + 12}`} fill={color} stroke={OL} strokeWidth="1.5" />
           <path d={`M 124 ${y + 6} Q 128 ${y + 6} 128 ${y + 10} L 124 ${y + 12}`} fill={color} stroke={OL} strokeWidth="1.5" />
         </g>
@@ -373,12 +417,12 @@ const ShoeLayer = ({ shoeId, color, y }: { shoeId: string; color: string; y: num
     case "shoes_rocket":
       return (
         <g>
-          <rect x="74" y={y - 4} width="26" height="18" rx="5" fill={color} stroke={OL} strokeWidth={OW} />
-          <rect x="100" y={y - 4} width="26" height="18" rx="5" fill={color} stroke={OL} strokeWidth={OW} />
+          <Block3D x={74} y={y - 4} w={26} h={18} color={color} d={3} />
+          <Block3D x={100} y={y - 4} w={26} h={18} color={color} d={3} />
+          {/* Fins */}
           <polygon points={`74,${y + 4} 68,${y + 14} 76,${y + 10}`} fill="#FF6D00" stroke={OL} strokeWidth="1.2" />
           <polygon points={`126,${y + 4} 132,${y + 14} 124,${y + 10}`} fill="#FF6D00" stroke={OL} strokeWidth="1.2" />
-          <ellipse cx="87" cy={y + 16} rx="6" ry="3" fill="#FFD600" opacity="0.7" />
-          <ellipse cx="113" cy={y + 16} rx="6" ry="3" fill="#FFD600" opacity="0.7" />
+          {/* Flames */}
           <polygon points={`84,${y + 14} 87,${y + 28} 90,${y + 14}`} fill="#FF6D00" opacity="0.8" />
           <polygon points={`82,${y + 14} 87,${y + 22} 92,${y + 14}`} fill="#FFD600" opacity="0.9" />
           <polygon points={`110,${y + 14} 113,${y + 28} 116,${y + 14}`} fill="#FF6D00" opacity="0.8" />
@@ -388,29 +432,32 @@ const ShoeLayer = ({ shoeId, color, y }: { shoeId: string; color: string; y: num
     default:
       return (
         <g>
-          <rect x="74" y={y} width="26" height="14" rx="5" fill={color} stroke={OL} strokeWidth={OW} />
-          <rect x="100" y={y} width="26" height="14" rx="5" fill={color} stroke={OL} strokeWidth={OW} />
-          <rect x="74" y={y + 10} width="26" height="4" rx="2" fill={shade(color, -20)} opacity="0.4" />
-          <rect x="100" y={y + 10} width="26" height="4" rx="2" fill={shade(color, -20)} opacity="0.4" />
+          <Block3D x={74} y={y} w={26} h={14} color={color} d={3} />
+          <Block3D x={100} y={y} w={26} h={14} color={color} d={3} />
+          {/* Sole */}
+          <rect x="74" y={y + 10} width="26" height="4" fill={shade(color, -20)} opacity="0.4" />
+          <rect x="100" y={y + 10} width="26" height="4" fill={shade(color, -20)} opacity="0.4" />
+          {/* Lace line */}
           <line x1="80" y1={y + 3} x2="94" y2={y + 3} stroke={shade(color, -30)} strokeWidth="1.5" strokeLinecap="round" opacity="0.25" />
           <line x1="106" y1={y + 3} x2="120" y2={y + 3} stroke={shade(color, -30)} strokeWidth="1.5" strokeLinecap="round" opacity="0.25" />
-          <circle cx="79" cy={y + 6} r="3" fill={shade(color, -10)} opacity="0.15" />
-          <circle cx="121" cy={y + 6} r="3" fill={shade(color, -10)} opacity="0.15" />
         </g>
       );
   }
 };
 
-// ============================================================
-// HAIR LAYER
-// ============================================================
+/* ═══════════════════════════════════════════
+   HAIR LAYER
+   ═══════════════════════════════════════════ */
 const HairLayer = ({ hairStyle, color }: { hairStyle: string; color: string }) => {
   switch (hairStyle) {
     case "short":
       return (
         <g>
-          <path d="M 65 50 Q 65 14 100 10 Q 135 14 135 50 L 135 35 Q 135 18 100 14 Q 65 18 65 35 Z" fill={color} stroke={OL} strokeWidth={OW} />
+          <path d="M 65 50 Q 65 14 100 10 Q 135 14 135 50 L 135 35 Q 135 18 100 14 Q 65 18 65 35 Z"
+            fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="65" y="22" width="70" height="14" rx="7" fill={color} stroke={OL} strokeWidth={OW} />
+          {/* 3D hair highlight */}
+          <rect x="67" y="24" width="20" height="6" rx="3" fill="white" opacity="0.1" />
         </g>
       );
     case "long":
@@ -420,12 +467,14 @@ const HairLayer = ({ hairStyle, color }: { hairStyle: string; color: string }) =
           <rect x="62" y="22" width="76" height="16" rx="7" fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="58" y="38" width="14" height="65" rx="6" fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="128" y="38" width="14" height="65" rx="6" fill={color} stroke={OL} strokeWidth={OW} />
+          <rect x="64" y="24" width="22" height="6" rx="3" fill="white" opacity="0.1" />
         </g>
       );
     case "ponytail":
       return (
         <g>
-          <path d="M 65 50 Q 65 14 100 10 Q 135 14 135 50 L 135 35 Q 135 18 100 14 Q 65 18 65 35 Z" fill={color} stroke={OL} strokeWidth={OW} />
+          <path d="M 65 50 Q 65 14 100 10 Q 135 14 135 50 L 135 35 Q 135 18 100 14 Q 65 18 65 35 Z"
+            fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="65" y="22" width="70" height="14" rx="7" fill={color} stroke={OL} strokeWidth={OW} />
           <circle cx="100" cy="14" r="8" fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="96" y="14" width="8" height="50" rx="4" fill={color} stroke={OL} strokeWidth={OW} />
@@ -436,7 +485,8 @@ const HairLayer = ({ hairStyle, color }: { hairStyle: string; color: string }) =
     case "bun":
       return (
         <g>
-          <path d="M 65 50 Q 65 14 100 10 Q 135 14 135 50 L 135 35 Q 135 18 100 14 Q 65 18 65 35 Z" fill={color} stroke={OL} strokeWidth={OW} />
+          <path d="M 65 50 Q 65 14 100 10 Q 135 14 135 50 L 135 35 Q 135 18 100 14 Q 65 18 65 35 Z"
+            fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="65" y="22" width="70" height="14" rx="7" fill={color} stroke={OL} strokeWidth={OW} />
           <circle cx="100" cy="12" r="14" fill={color} stroke={OL} strokeWidth={OW} />
           <circle cx="104" cy="8" r="3" fill="#FFFFFF" opacity="0.15" />
@@ -469,6 +519,7 @@ const HairLayer = ({ hairStyle, color }: { hairStyle: string; color: string }) =
       return (
         <g>
           <ellipse cx="100" cy="38" rx="44" ry="40" fill={color} stroke={OL} strokeWidth={OW} />
+          <ellipse cx="88" cy="24" rx="12" ry="8" fill="white" opacity="0.08" />
         </g>
       );
     case "mohawk":
@@ -484,9 +535,9 @@ const HairLayer = ({ hairStyle, color }: { hairStyle: string; color: string }) =
   }
 };
 
-// ============================================================
-// HAT LAYER
-// ============================================================
+/* ═══════════════════════════════════════════
+   HAT LAYER
+   ═══════════════════════════════════════════ */
 const HatLayer = ({ hat, color }: { hat: string; color: string }) => {
   switch (hat) {
     case "hat_baseball":
@@ -495,6 +546,8 @@ const HatLayer = ({ hat, color }: { hat: string; color: string }) => {
           <ellipse cx="100" cy="26" rx="38" ry="12" fill={color} stroke={OL} strokeWidth={OW} />
           <rect x="64" y="14" width="72" height="16" rx="7" fill={color} stroke={OL} strokeWidth={OW} />
           <ellipse cx="82" cy="30" rx="30" ry="7" fill={color} stroke={OL} strokeWidth={OW} />
+          {/* 3D cap top highlight */}
+          <rect x="68" y="16" width="20" height="6" rx="3" fill="white" opacity="0.12" />
           <circle cx="100" cy="14" r="3" fill={shade(color, -20)} stroke={OL} strokeWidth="1" />
         </g>
       );
@@ -506,15 +559,24 @@ const HatLayer = ({ hat, color }: { hat: string; color: string }) => {
           <line x1="66" y1="34" x2="134" y2="34" stroke="#FFFFFF25" strokeWidth="2" />
           <circle cx="100" cy="4" r="8" fill={color} stroke={OL} strokeWidth={OW} />
           <circle cx="96" cy="2" r="2" fill="#FFFFFF" opacity="0.2" />
+          {/* 3D highlight */}
+          <rect x="66" y="8" width="20" height="8" rx="4" fill="white" opacity="0.1" />
         </g>
       );
     case "hat_crown":
       return (
         <g>
           <rect x="66" y="16" width="68" height="18" rx="3" fill={color} stroke={OL} strokeWidth={OW} />
+          {/* Crown 3D top face */}
+          <polygon points="66,16 72,10 140,10 134,16"
+            fill={shade(color, 45)} stroke={OL} strokeWidth={1.2} strokeLinejoin="round" />
+          {/* Crown 3D right face */}
+          <polygon points="134,16 140,10 140,28 134,34"
+            fill={shade(color, -40)} stroke={OL} strokeWidth={1.2} strokeLinejoin="round" />
           <polygon points="66,16 72,0 82,16" fill={color} stroke={OL} strokeWidth="1.5" />
           <polygon points="88,16 100,-4 112,16" fill={color} stroke={OL} strokeWidth="1.5" />
           <polygon points="118,16 128,0 134,16" fill={color} stroke={OL} strokeWidth="1.5" />
+          {/* Gems */}
           <circle cx="77" cy="24" r="4" fill="#E53935" stroke={OL} strokeWidth="1" />
           <circle cx="100" cy="24" r="4" fill="#2196F3" stroke={OL} strokeWidth="1" />
           <circle cx="123" cy="24" r="4" fill="#4CAF50" stroke={OL} strokeWidth="1" />
@@ -526,7 +588,11 @@ const HatLayer = ({ hat, color }: { hat: string; color: string }) => {
         <g>
           <ellipse cx="100" cy="28" rx="40" ry="10" fill={color} stroke={OL} strokeWidth={OW} />
           <polygon points="72,28 100,-18 128,28" fill={color} stroke={OL} strokeWidth={OW} />
-          <polygon points="108,6 110,0 112,6 118,6 113,10 115,16 110,12 105,16 107,10 102,6" fill="#FFD700" stroke={OL} strokeWidth="0.8" />
+          {/* Wizard hat 3D right face */}
+          <polygon points="128,28 134,22 106,-24 100,-18" fill={shade(color, -35)} stroke={OL} strokeWidth={1} />
+          {/* Star */}
+          <polygon points="108,6 110,0 112,6 118,6 113,10 115,16 110,12 105,16 107,10 102,6"
+            fill="#FFD700" stroke={OL} strokeWidth="0.8" />
           <circle cx="90" cy="18" r="2.5" fill="#FFD700" />
           <circle cx="118" cy="20" r="1.5" fill="#FFD700" opacity="0.7" />
           <rect x="72" y="24" width="56" height="5" rx="2" fill={shade(color, 20)} stroke={OL} strokeWidth="1" />
@@ -553,9 +619,9 @@ const HatLayer = ({ hat, color }: { hat: string; color: string }) => {
   }
 };
 
-// ============================================================
-// UTILITY
-// ============================================================
+/* ═══════════════════════════════════════════
+   UTILITY - darken/lighten hex color
+   ═══════════════════════════════════════════ */
 function shade(hex: string, percent: number): string {
   if (hex.startsWith("url") || hex === "rainbow") return hex;
   const num = parseInt(hex.replace("#", ""), 16);

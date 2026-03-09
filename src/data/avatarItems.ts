@@ -38,7 +38,7 @@ export const avatarItems: AvatarItem[] = [
   { id: "hat_headphones", name: "Headphones", nameThai: "หูฟัง", category: "hat", price: 150, rarity: "rare", icon: "🎧", svgProps: { color: "#212121" } },
 
   // === SHIRTS (5) ===
-  { id: "shirt_default", name: "Plain Tee", nameThai: "เสื้อยืด", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#FFFFFF" } },
+  { id: "shirt_default", name: "Plain Tee", nameThai: "เสื้อยืด", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#4DB6AC" } },
   { id: "shirt_striped", name: "Striped Tee", nameThai: "เสื้อลายทาง", category: "shirt", price: 100, rarity: "common", icon: "👕", svgProps: { pattern: "stripes", color: "#1565C0" } },
   { id: "shirt_hoodie", name: "Hoodie", nameThai: "เสื้อฮู้ด", category: "shirt", price: 200, rarity: "rare", icon: "🧥", svgProps: { color: "#37474F" } },
   { id: "shirt_superhero", name: "Superhero Suit", nameThai: "ชุดซูเปอร์ฮีโร่", category: "shirt", price: 400, rarity: "epic", icon: "🦸", svgProps: { color: "#D32F2F", pattern: "hero" } },
@@ -51,7 +51,7 @@ export const avatarItems: AvatarItem[] = [
   { id: "pants_skirt", name: "Skirt", nameThai: "กระโปรง", category: "pants", price: 120, rarity: "rare", icon: "👗", svgProps: { color: "#EC407A" } },
 
   // === SHOES (4) ===
-  { id: "shoes_default", name: "Sneakers", nameThai: "รองเท้าผ้าใบ", category: "shoes", price: 0, rarity: "common", icon: "👟", svgProps: { color: "#FFFFFF" } },
+  { id: "shoes_default", name: "Sneakers", nameThai: "รองเท้าผ้าใบ", category: "shoes", price: 0, rarity: "common", icon: "👟", svgProps: { color: "#F0F0F0" } },
   { id: "shoes_boots", name: "Boots", nameThai: "บูท", category: "shoes", price: 100, rarity: "common", icon: "🥾", svgProps: { color: "#5D4037" } },
   { id: "shoes_heels", name: "High Heels", nameThai: "ส้นสูง", category: "shoes", price: 150, rarity: "rare", icon: "👠", svgProps: { color: "#C62828" } },
   { id: "shoes_rocket", name: "Rocket Boots", nameThai: "รองเท้าจรวด", category: "shoes", price: 400, rarity: "legendary", icon: "🚀", svgProps: { color: "#FF6D00" } },
