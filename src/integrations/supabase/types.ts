@@ -83,6 +83,7 @@ export type Database = {
           id: string
           lessons_completed: number
           school_name: string | null
+          total_exp: number
           updated_at: string
           user_id: string
         }
@@ -97,6 +98,7 @@ export type Database = {
           id?: string
           lessons_completed?: number
           school_name?: string | null
+          total_exp?: number
           updated_at?: string
           user_id: string
         }
@@ -111,6 +113,7 @@ export type Database = {
           id?: string
           lessons_completed?: number
           school_name?: string | null
+          total_exp?: number
           updated_at?: string
           user_id?: string
         }
