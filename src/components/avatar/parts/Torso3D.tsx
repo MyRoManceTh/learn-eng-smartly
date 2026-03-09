@@ -211,13 +211,13 @@ const Torso3D: React.FC<Torso3DProps> = ({ shirtColor, shirtId, skinColor, y }) 
   return (
     <>
       {/* Neck */}
-      <CSSBox3D width={16} height={8} depth={12} color={skinColor} x={0} y={y - 26} z={0} />
+      <CSSBox3D width={16} height={8} depth={18} color={skinColor} x={0} y={y - 26} z={0} />
 
       {/* Main torso */}
       <CSSBox3D
         width={40}
         height={44}
-        depth={20}
+        depth={28}
         color={shirtColor}
         x={0}
         y={y}

@@ -25,7 +25,7 @@ const Leg3D: React.FC<Leg3DProps> = ({ skinColor, pantsColor, pantsId, shoesColo
       return (
         <React.Fragment key={side}>
           {/* Skin leg below skirt */}
-          <CSSBox3D width={14} height={20} depth={14} color={skinColor} x={x} y={legTop + 22} z={0} />
+          <CSSBox3D width={14} height={20} depth={18} color={skinColor} x={x} y={legTop + 22} z={0} />
         </React.Fragment>
       );
     }
@@ -34,9 +34,9 @@ const Leg3D: React.FC<Leg3DProps> = ({ skinColor, pantsColor, pantsId, shoesColo
       return (
         <React.Fragment key={side}>
           {/* Short pant upper */}
-          <CSSBox3D width={14} height={18} depth={14} color={pantsColor} x={x} y={legTop} z={0} />
+          <CSSBox3D width={14} height={18} depth={18} color={pantsColor} x={x} y={legTop} z={0} />
           {/* Skin shin */}
-          <CSSBox3D width={14} height={18} depth={14} color={skinColor} x={x} y={legTop + 18} z={0} />
+          <CSSBox3D width={14} height={18} depth={18} color={skinColor} x={x} y={legTop + 18} z={0} />
         </React.Fragment>
       );
     }
@@ -46,9 +46,9 @@ const Leg3D: React.FC<Leg3DProps> = ({ skinColor, pantsColor, pantsId, shoesColo
     return (
       <React.Fragment key={side}>
         <CSSBox3D
-          width={14}
+          width={16}
           height={36}
-          depth={14}
+          depth={18}
           color={pantsColor}
           x={x}
           y={legTop}
@@ -80,7 +80,7 @@ const Leg3D: React.FC<Leg3DProps> = ({ skinColor, pantsColor, pantsId, shoesColo
   const renderShoe = (side: "left" | "right") => {
     const x = side === "left" ? -legGap : legGap;
     const shoeTop = isShorts || isSkirt ? legTop + 36 : legTop + 36;
-    const shoeDepth = 18; // slightly longer than wide for foot look
+    const shoeDepth = 22; // slightly longer than wide for foot look
 
     // Special shoe styles
     switch (shoesId) {
@@ -145,7 +145,7 @@ const Leg3D: React.FC<Leg3DProps> = ({ skinColor, pantsColor, pantsId, shoesColo
         <CSSBox3D
           width={30}
           height={20}
-          depth={16}
+          depth={22}
           color={pantsColor}
           x={0}
           y={legTop + 4}

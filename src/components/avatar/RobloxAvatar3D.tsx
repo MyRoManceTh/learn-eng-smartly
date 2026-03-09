@@ -75,7 +75,8 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
         width: container,
         height: container,
         position: "relative",
-        perspective: 600,
+        perspective: 300,
+        perspectiveOrigin: "50% 45%",
       }}
       className={animated ? "animate-avatar-idle" : undefined}
     >
@@ -146,7 +147,7 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
           left: "50%",
           top: "50%",
           transformStyle: "preserve-3d",
-          transform: `translate(-50%, -50%) scale(${scale}) rotateX(-10deg) rotateY(-25deg)`,
+          transform: `translate(-50%, -50%) scale(${scale}) rotateX(-18deg) rotateY(-35deg)`,
           animation: animated ? "avatar-3d-rotate 6s ease-in-out infinite" : undefined,
           ...evolutionGlow(),
         }}

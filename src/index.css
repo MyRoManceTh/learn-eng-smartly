@@ -234,8 +234,8 @@
 /* === 3D AVATAR ANIMATIONS === */
 
 @keyframes avatar-3d-rotate {
-  0%, 100% { transform: translate(-50%, -50%) scale(var(--avatar-scale, 1)) rotateX(-10deg) rotateY(-25deg); }
-  50% { transform: translate(-50%, -50%) scale(var(--avatar-scale, 1)) rotateX(-10deg) rotateY(-15deg); }
+  0%, 100% { transform: translate(-50%, -50%) scale(var(--avatar-scale, 1)) rotateX(-18deg) rotateY(-35deg); }
+  50% { transform: translate(-50%, -50%) scale(var(--avatar-scale, 1)) rotateX(-18deg) rotateY(-20deg); }
 }
 
 @keyframes avatar-arm-swing-left {

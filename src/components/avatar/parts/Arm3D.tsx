@@ -29,9 +29,9 @@ const Arm3D: React.FC<Arm3DProps> = ({ side, skinColor, shirtColor, torsoY, anim
     >
       {/* Sleeve (shirt color) */}
       <CSSBox3D
-        width={12}
+        width={14}
         height={18}
-        depth={12}
+        depth={16}
         color={shirtColor}
         x={xOffset}
         y={armTop}
@@ -39,9 +39,9 @@ const Arm3D: React.FC<Arm3DProps> = ({ side, skinColor, shirtColor, torsoY, anim
       />
       {/* Lower arm (skin) */}
       <CSSBox3D
-        width={12}
+        width={14}
         height={22}
-        depth={12}
+        depth={16}
         color={skinColor}
         x={xOffset}
         y={armTop + 20}
@@ -49,9 +49,9 @@ const Arm3D: React.FC<Arm3DProps> = ({ side, skinColor, shirtColor, torsoY, anim
       />
       {/* Hand (skin cube) */}
       <CSSBox3D
-        width={10}
-        height={10}
-        depth={10}
+        width={12}
+        height={12}
+        depth={12}
         color={skinColor}
         x={xOffset}
         y={armTop + 36}
