@@ -36,7 +36,7 @@ const BottomNav = () => {
     [navigate]
   );
 
-  if (location.pathname === "/auth") return null;
+  if (location.pathname === "/auth" || location.pathname === "/quiz") return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden safe-area-bottom">

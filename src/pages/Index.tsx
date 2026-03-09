@@ -1,13 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
-import QuizSection from "@/components/QuizSection";
 import LevelSelector from "@/components/LevelSelector";
 import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, LogIn } from "lucide-react";
+import { Sparkles, LogOut, LogIn, Zap } from "lucide-react";
 import LessonSkeleton from "@/components/LessonSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,11 +16,12 @@ import defaultLessonImage from "@/assets/lesson-default.jpg";
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [level, setLevel] = useState<LearnerLevel>(1);
   const [lesson, setLesson] = useState(sampleLesson);
   const [quiz, setQuiz] = useState(sampleQuiz);
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
-  const [showQuiz, setShowQuiz] = useState(false);
+  const [totalExp, setTotalExp] = useState(0);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
 
@@ -29,20 +29,30 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("current_level, lessons_completed")
+      .select("current_level, lessons_completed, total_exp")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
           setLevel(data.current_level as LearnerLevel);
           setLessonsCompleted(data.lessons_completed);
+          setTotalExp((data as any).total_exp || 0);
         }
       });
   }, [user]);
 
+  // Auto-generate new lesson when coming back from quiz
+  useEffect(() => {
+    const navState = location.state as { generateNew?: boolean } | null;
+    if (navState?.generateNew) {
+      // Clear the state to prevent re-triggering
+      window.history.replaceState({}, "");
+      generateNewLesson();
+    }
+  }, [location.state]);
+
   const generateNewLesson = useCallback(async () => {
     setLoading(true);
-    setShowQuiz(false);
     try {
       const { data, error } = await supabase.functions.invoke("generate-lesson", {
         body: { level, lessonsCompleted },
@@ -62,34 +72,15 @@ const Index = () => {
     }
   }, [level, lessonsCompleted]);
 
-  const handleQuizComplete = async (score: number) => {
-    const newCompleted = lessonsCompleted + 1;
-    setLessonsCompleted(newCompleted);
-
-    let newLevel = level;
-    if (score >= 3 && newCompleted > 0 && newCompleted % 3 === 0 && level < 5) {
-      newLevel = Math.min(5, level + 1) as LearnerLevel;
-      setLevel(newLevel);
-      toast.success("🎉 เลื่อนระดับแล้ว!");
-    }
-
-    if (user) {
-      await Promise.all([
-        supabase.from("learning_history").insert({
-          user_id: user.id,
-          lesson_title: lesson.title,
-          lesson_level: lesson.level,
-          quiz_score: score,
-          quiz_total: quiz.length,
-        }),
-        supabase.from("profiles").update({
-          current_level: newLevel,
-          lessons_completed: newCompleted,
-        }).eq("user_id", user.id),
-      ]);
-    }
+  const handleStartQuiz = () => {
+    navigate("/quiz", {
+      state: {
+        questions: quiz,
+        lessonTitle: lesson.title,
+        lessonLevel: lesson.level,
+      },
+    });
   };
-
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       {/* Mobile-friendly header */}
@@ -99,7 +90,14 @@ const Index = () => {
             <h1 className="text-lg font-bold text-foreground font-thai">
               📖 อ่านเรียน<span className="text-primary">English</span>
             </h1>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              {/* EXP display */}
+              {user && (
+                <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
+                  <Zap className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-xs font-bold text-primary">{totalExp}</span>
+                </div>
+              )}
               {user ? (
                 <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
                   <LogOut className="w-4 h-4" />
@@ -146,18 +144,12 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Quiz */}
-            {!showQuiz ? (
-              <div className="text-center pb-4">
-                <Button onClick={() => setShowQuiz(true)} variant="outline" className="font-thai w-full max-w-xs h-11">
-                  📝 ทำแบบทดสอบ
-                </Button>
-              </div>
-            ) : (
-              <div className="max-w-2xl mx-auto pb-4">
-                <QuizSection questions={quiz} onComplete={handleQuizComplete} />
-              </div>
-            )}
+            {/* Quiz button - navigates to quiz page */}
+            <div className="text-center pb-4">
+              <Button onClick={handleStartQuiz} variant="outline" className="font-thai w-full max-w-xs h-11">
+                📝 ทำแบบทดสอบ
+              </Button>
+            </div>
           </div>
         )}
       </main>
