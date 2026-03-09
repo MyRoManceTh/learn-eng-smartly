@@ -46,6 +46,9 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
       const finalScore = score;
       setFinished(true);
       playComplete();
+      // Big celebration confetti
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+      setTimeout(() => confetti({ particleCount: 80, spread: 120, origin: { y: 0.6 } }), 300);
       onComplete(finalScore);
     } else {
       setCurrentQ((c) => c + 1);
