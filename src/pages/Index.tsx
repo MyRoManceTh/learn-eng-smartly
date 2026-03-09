@@ -1,13 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
-import QuizSection from "@/components/QuizSection";
 import LevelSelector from "@/components/LevelSelector";
 import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, LogIn } from "lucide-react";
+import { Sparkles, LogOut, LogIn, Zap } from "lucide-react";
 import LessonSkeleton from "@/components/LessonSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
