@@ -115,6 +115,15 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-2">
               <Button
+                onClick={() => navigate("/path")}
+                variant="secondary"
+                size="sm"
+                className="font-thai"
+              >
+                <Route className="w-4 h-4 mr-2" />
+                เส้นทางเรียน
+              </Button>
+              <Button
                 onClick={() => setShowLibrary(!showLibrary)}
                 variant={showLibrary ? "default" : "secondary"}
                 size="sm"
