@@ -6,7 +6,7 @@ import LevelSelector from "@/components/LevelSelector";
 import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, LogIn, Zap } from "lucide-react";
+import { Sparkles, LogOut, LogIn, Zap, Flame } from "lucide-react";
 import LessonSkeleton from "@/components/LessonSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ const Index = () => {
   const [quiz, setQuiz] = useState(sampleQuiz);
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
   const [totalExp, setTotalExp] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
 
@@ -29,14 +30,16 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("current_level, lessons_completed, total_exp")
+      .select("current_level, lessons_completed, total_exp, current_streak")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
           setLevel(data.current_level as LearnerLevel);
           setLessonsCompleted(data.lessons_completed);
-          setTotalExp((data as any).total_exp || 0);
+          const d = data as any;
+          setTotalExp(d.total_exp || 0);
+          setCurrentStreak(d.current_streak || 0);
         }
       });
   }, [user]);
@@ -91,11 +94,17 @@ const Index = () => {
               📖 อ่านเรียน<span className="text-primary">English</span>
             </h1>
             <div className="flex items-center gap-2">
-              {/* EXP display */}
+              {/* Streak & EXP display */}
               {user && (
-                <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
-                  <Zap className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-bold text-primary">{totalExp}</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1 bg-destructive/10 rounded-full px-2.5 py-1">
+                    <Flame className="w-3.5 h-3.5 text-destructive" />
+                    <span className="text-xs font-bold text-destructive">{currentStreak}</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-accent/50 rounded-full px-2.5 py-1">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-xs font-bold text-primary">{totalExp}</span>
+                  </div>
                 </div>
               )}
               {user ? (

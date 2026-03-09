@@ -72,13 +72,36 @@ const QuizPage = () => {
         // Get current profile
         const { data: profile } = await supabase
           .from("profiles")
-          .select("total_exp, lessons_completed, current_level")
+          .select("total_exp, lessons_completed, current_level, current_streak, longest_streak, last_activity_date")
           .eq("user_id", user.id)
           .single();
 
-        const newExp = (profile?.total_exp || 0) + exp;
-        const newCompleted = (profile?.lessons_completed || 0) + 1;
-        let newLevel = profile?.current_level || 1;
+        const profileData = profile as any;
+        const newExp = (profileData?.total_exp || 0) + exp;
+        const newCompleted = (profileData?.lessons_completed || 0) + 1;
+        let newLevel = profileData?.current_level || 1;
+
+        // Streak calculation
+        const today = new Date().toISOString().split("T")[0];
+        const lastDate = profileData?.last_activity_date;
+        let newStreak = profileData?.current_streak || 0;
+
+        if (lastDate !== today) {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+          if (lastDate === yesterdayStr) {
+            newStreak += 1; // consecutive day
+          } else if (!lastDate) {
+            newStreak = 1; // first time
+          } else {
+            newStreak = 1; // streak broken, restart
+          }
+        }
+        // If lastDate === today, streak stays the same (already counted today)
+
+        const newLongest = Math.max(profileData?.longest_streak || 0, newStreak);
 
         // Level up every 3 lessons if score is good
         if (score >= Math.ceil(questions.length / 2) && newCompleted % 3 === 0 && newLevel < 5) {
@@ -97,7 +120,10 @@ const QuizPage = () => {
             total_exp: newExp,
             lessons_completed: newCompleted,
             current_level: newLevel,
-          }).eq("user_id", user.id),
+            current_streak: newStreak,
+            longest_streak: newLongest,
+            last_activity_date: today,
+          } as any).eq("user_id", user.id),
         ]);
       }
     } else {
