@@ -73,7 +73,7 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div ref={containerRef} className={`rounded-lg border border-border bg-card p-6 transition-transform ${shaking ? "animate-[shake_0.5s_ease-in-out]" : ""}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold font-thai">📝 แบบทดสอบ</h3>
         <span className="text-sm text-muted-foreground">
