@@ -14,6 +14,231 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      daily_missions: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          current_count: number
+          id: string
+          mission_date: string
+          mission_title: string
+          mission_type: string
+          reward_coins: number | null
+          reward_exp: number | null
+          target_count: number
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_count?: number
+          id?: string
+          mission_date?: string
+          mission_title: string
+          mission_type: string
+          reward_coins?: number | null
+          reward_exp?: number | null
+          target_count?: number
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          current_count?: number
+          id?: string
+          mission_date?: string
+          mission_title?: string
+          mission_type?: string
+          reward_coins?: number | null
+          reward_exp?: number | null
+          target_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_rewards: {
+        Row: {
+          claimed: boolean | null
+          claimed_at: string | null
+          created_at: string | null
+          id: string
+          reward_data: Json
+          reward_date: string
+          reward_type: string
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean | null
+          claimed_at?: string | null
+          created_at?: string | null
+          id?: string
+          reward_data?: Json
+          reward_date?: string
+          reward_type: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean | null
+          claimed_at?: string | null
+          created_at?: string | null
+          id?: string
+          reward_data?: Json
+          reward_date?: string
+          reward_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string
+          exclusive_items: Json | null
+          id: string
+          is_active: boolean | null
+          name: string
+          name_thai: string
+          start_date: string
+          theme: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date: string
+          exclusive_items?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          name_thai: string
+          start_date: string
+          theme?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string
+          exclusive_items?: Json | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          name_thai?: string
+          start_date?: string
+          theme?: string | null
+        }
+        Relationships: []
+      }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string | null
+          id: string
+          requester_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string | null
+          id?: string
+          requester_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string | null
+          id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      gacha_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          item_id: string
+          rarity: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          item_id: string
+          rarity: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          item_id?: string
+          rarity?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gift_transactions: {
+        Row: {
+          claimed: boolean | null
+          coins: number | null
+          created_at: string | null
+          id: string
+          item_id: string | null
+          message: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          claimed?: boolean | null
+          coins?: number | null
+          created_at?: string | null
+          id?: string
+          item_id?: string | null
+          message?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          claimed?: boolean | null
+          coins?: number | null
+          created_at?: string | null
+          id?: string
+          item_id?: string | null
+          message?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       learning_history: {
         Row: {
           completed_at: string
@@ -127,17 +352,28 @@ export type Database = {
           created_at: string
           current_level: number
           current_streak: number
+          daily_mission_streak: number | null
           display_name: string | null
           education_level: string | null
+          energy: number | null
+          energy_last_refill: string | null
           equipped: Json
+          evolution_stage: number | null
+          friend_code: string | null
+          gacha_tickets: number | null
           gender: string | null
           id: string
           inventory: Json
+          is_premium: boolean | null
           last_activity_date: string | null
+          last_free_gacha: string | null
+          last_mission_complete_date: string | null
           lessons_completed: number
           longest_streak: number
+          mystery_box_last_claimed: string | null
           school_name: string | null
           total_exp: number
+          total_missions_completed: number | null
           updated_at: string
           user_id: string
         }
@@ -148,17 +384,28 @@ export type Database = {
           created_at?: string
           current_level?: number
           current_streak?: number
+          daily_mission_streak?: number | null
           display_name?: string | null
           education_level?: string | null
+          energy?: number | null
+          energy_last_refill?: string | null
           equipped?: Json
+          evolution_stage?: number | null
+          friend_code?: string | null
+          gacha_tickets?: number | null
           gender?: string | null
           id?: string
           inventory?: Json
+          is_premium?: boolean | null
           last_activity_date?: string | null
+          last_free_gacha?: string | null
+          last_mission_complete_date?: string | null
           lessons_completed?: number
           longest_streak?: number
+          mystery_box_last_claimed?: string | null
           school_name?: string | null
           total_exp?: number
+          total_missions_completed?: number | null
           updated_at?: string
           user_id: string
         }
@@ -169,18 +416,106 @@ export type Database = {
           created_at?: string
           current_level?: number
           current_streak?: number
+          daily_mission_streak?: number | null
           display_name?: string | null
           education_level?: string | null
+          energy?: number | null
+          energy_last_refill?: string | null
           equipped?: Json
+          evolution_stage?: number | null
+          friend_code?: string | null
+          gacha_tickets?: number | null
           gender?: string | null
           id?: string
           inventory?: Json
+          is_premium?: boolean | null
           last_activity_date?: string | null
+          last_free_gacha?: string | null
+          last_mission_complete_date?: string | null
           lessons_completed?: number
           longest_streak?: number
+          mystery_box_last_claimed?: string | null
           school_name?: string | null
           total_exp?: number
+          total_missions_completed?: number | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_challenges: {
+        Row: {
+          challenger_id: string
+          challenger_score: number | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          lesson_id: string | null
+          opponent_id: string
+          opponent_score: number | null
+          status: string | null
+        }
+        Insert: {
+          challenger_id: string
+          challenger_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          opponent_id: string
+          opponent_score?: number | null
+          status?: string | null
+        }
+        Update: {
+          challenger_id?: string
+          challenger_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          opponent_id?: string
+          opponent_score?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_challenges_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      season_pass: {
+        Row: {
+          created_at: string | null
+          current_tier: number | null
+          exp_earned: number | null
+          id: string
+          is_premium: boolean | null
+          rewards_claimed: Json | null
+          season_month: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_tier?: number | null
+          exp_earned?: number | null
+          id?: string
+          is_premium?: boolean | null
+          rewards_claimed?: Json | null
+          season_month: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_tier?: number | null
+          exp_earned?: number | null
+          id?: string
+          is_premium?: boolean | null
+          rewards_claimed?: Json | null
+          season_month?: string
           user_id?: string
         }
         Relationships: []
