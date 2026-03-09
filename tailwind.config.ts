@@ -60,6 +60,14 @@ export default {
           correct: "hsl(var(--quiz-correct))",
           wrong: "hsl(var(--quiz-wrong))",
         },
+        level: {
+          1: "hsl(var(--level-1))",
+          2: "hsl(var(--level-2))",
+          3: "hsl(var(--level-3))",
+          4: "hsl(var(--level-4))",
+          5: "hsl(var(--level-5))",
+        },
+        "star-gold": "hsl(var(--star-gold))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
