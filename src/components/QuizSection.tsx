@@ -24,6 +24,9 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
     setShowResult(true);
     if (idx === question.correctIndex) {
       setScore((s) => s + 1);
+      playCorrect();
+    } else {
+      playWrong();
     }
   };
 
