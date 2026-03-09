@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
+import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 
 interface QuizSectionProps {
   questions: QuizQuestion[];
