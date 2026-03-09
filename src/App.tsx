@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/BottomNav";
+import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -21,14 +22,16 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/path" element={<LearningPathPage />} />
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/path" element={<LearningPathPage />} />
+              <Route path="/library" element={<LibraryPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
           <BottomNav />
         </BrowserRouter>
       </AuthProvider>
@@ -37,3 +40,4 @@ const App = () => (
 );
 
 export default App;
+
