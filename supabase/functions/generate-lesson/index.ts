@@ -91,7 +91,7 @@ serve(async (req) => {
     };
 
     const levelTopics = topics[level as keyof typeof topics] || topics[1];
-    const topic = levelTopics[(lessonsCompleted) % levelTopics.length];
+    const topic = requestedTopic || levelTopics[(lessonsCompleted) % levelTopics.length];
 
     const prompt = `You are an English-Thai bilingual education content creator. Create a lesson about "${topic}" for level ${level}/5 learners.
 
