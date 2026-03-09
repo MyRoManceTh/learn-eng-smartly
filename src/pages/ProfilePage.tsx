@@ -21,6 +21,9 @@ interface Profile {
   school_name: string | null;
   current_level: number;
   lessons_completed: number;
+  total_exp: number;
+  current_streak: number;
+  longest_streak: number;
 }
 
 interface LearningRecord {
