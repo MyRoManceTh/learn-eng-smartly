@@ -16,11 +16,12 @@ import defaultLessonImage from "@/assets/lesson-default.jpg";
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [level, setLevel] = useState<LearnerLevel>(1);
   const [lesson, setLesson] = useState(sampleLesson);
   const [quiz, setQuiz] = useState(sampleQuiz);
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
-  const [showQuiz, setShowQuiz] = useState(false);
+  const [totalExp, setTotalExp] = useState(0);
   const [loading, setLoading] = useState(false);
   const [lessonImage, setLessonImage] = useState<string | null>(defaultLessonImage);
 
