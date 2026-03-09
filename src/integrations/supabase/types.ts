@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      path_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          node_index: number
+          quiz_score: number | null
+          quiz_total: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          node_index: number
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          node_index?: number
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
