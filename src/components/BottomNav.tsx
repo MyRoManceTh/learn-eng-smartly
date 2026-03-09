@@ -1,14 +1,14 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { BookOpen, Route, Library, User, Sparkles } from "lucide-react";
+import { BookOpen, GraduationCap, Gamepad2, ShoppingCart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useRef } from "react";
 import { useFriends } from "@/hooks/useFriends";
 
 const tabs = [
-  { path: "/", icon: BookOpen, label: "เรียน" },
-  { path: "/path", icon: Route, label: "เส้นทาง" },
-  { path: "/avatar", icon: Sparkles, label: "ตัวละคร" },
-  { path: "/library", icon: Library, label: "คลัง" },
+  { path: "/", icon: BookOpen, label: "หน้าหลัก" },
+  { path: "/practice", icon: GraduationCap, label: "เรียนรู้" },
+  { path: "/games", icon: Gamepad2, label: "เกม" },
+  { path: "/shop", icon: ShoppingCart, label: "ร้านค้า" },
   { path: "/profile", icon: User, label: "โปรไฟล์" },
 ];
 
@@ -39,16 +39,19 @@ const BottomNav = () => {
     [navigate]
   );
 
-  if (location.pathname === "/auth" || location.pathname === "/quiz") return null;
+  const hiddenPaths = ["/auth", "/quiz", "/conversation"];
+  if (hiddenPaths.some(p => location.pathname.startsWith(p))) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">
       <div className="bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-4px_24px_-4px_rgba(124,58,237,0.08)]">
         <div className="flex items-center justify-around h-[68px] px-1 max-w-md mx-auto">
           {tabs.map((tab) => {
+            const practiceSubPaths = ["/practice", "/path", "/reading", "/conversation", "/news", "/pronunciation", "/library"];
             const isActive =
               location.pathname === tab.path ||
-              (tab.path === "/library" && location.pathname === "/" && new URLSearchParams(location.search).get("tab") === "library");
+              (tab.path === "/practice" && practiceSubPaths.includes(location.pathname)) ||
+              (tab.path === "/shop" && location.pathname === "/avatar");
             const Icon = tab.icon;
             return (
               <button

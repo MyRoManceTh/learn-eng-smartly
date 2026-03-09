@@ -14,6 +14,13 @@ import LibraryPage from "./pages/LibraryPage";
 import QuizPage from "./pages/QuizPage";
 import AvatarPage from "./pages/AvatarPage";
 import NotFound from "./pages/NotFound";
+import PracticePage from "./pages/PracticePage";
+import ReadingPage from "./pages/ReadingPage";
+import ConversationPage from "./pages/ConversationPage";
+import WordGamesPage from "./pages/WordGamesPage";
+import DailyNewsPage from "./pages/DailyNewsPage";
+import PronunciationPage from "./pages/PronunciationPage";
+import ShopPage from "./pages/ShopPage";
 import SeasonPassPage from "@/components/events/SeasonPassPage";
 import PremiumPage from "@/components/premium/PremiumPage";
 import ParentReport from "@/components/premium/ParentReport";
@@ -35,6 +42,13 @@ const App = () => (
               <Route path="/quiz" element={<QuizPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/path" element={<LearningPathPage />} />
+              <Route path="/practice" element={<PracticePage />} />
+              <Route path="/reading" element={<ReadingPage />} />
+              <Route path="/conversation" element={<ConversationPage />} />
+              <Route path="/games" element={<WordGamesPage />} />
+              <Route path="/news" element={<DailyNewsPage />} />
+              <Route path="/pronunciation" element={<PronunciationPage />} />
+              <Route path="/shop" element={<ShopPage />} />
               <Route path="/library" element={<LibraryPage />} />
               <Route path="/avatar" element={<AvatarPage />} />
               <Route path="/season-pass" element={<SeasonPassPage />} />

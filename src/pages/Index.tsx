@@ -232,20 +232,20 @@ const Index = () => {
       />
       <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-lg font-bold text-foreground font-thai">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h1 className="text-lg font-bold text-foreground font-thai shrink-0">
               📖 อ่านเรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">English</span>
             </h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 shrink-0">
               {user && (
-                <div className="flex items-center gap-1.5">
+                <>
                   <StreakFireDisplay streak={profile?.current_streak || currentStreak} size="sm" />
-                  <div className="flex items-center gap-1 bg-purple-100 rounded-full px-2.5 py-1">
+                  <div className="flex items-center gap-1 bg-purple-100 rounded-full px-2 py-1">
                     <Zap className="w-3.5 h-3.5 text-purple-600" />
                     <span className="text-xs font-bold text-purple-700">{totalExp}</span>
                   </div>
                   <EnergyDisplay energy={energy} />
-                </div>
+                </>
               )}
               {user ? (
                 <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
