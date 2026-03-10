@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/roomItems";
-import PixelCharacter from "@/components/room/PixelCharacter";
+import PixelAvatar from "@/components/avatar/PixelAvatar";
 import "@/components/ui/8bit/styles/retro.css";
 
 interface PixelRoomProps {
@@ -148,7 +148,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
 
       {/* === CHARACTER (centered) === */}
       <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 z-10">
-        <PixelCharacter
+        <PixelAvatar
           equipped={equipped}
           size={size}
           animated

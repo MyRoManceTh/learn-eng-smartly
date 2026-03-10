@@ -16,7 +16,7 @@ import { getItemById } from "@/data/avatarItems";
 
 // Components
 import PixelRoom from "@/components/room/PixelRoom";
-import PixelCharacter from "@/components/room/PixelCharacter";
+import PixelAvatar from "@/components/avatar/PixelAvatar";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
 import EvolutionProgressBar from "@/components/avatar/EvolutionProgressBar";
 import ShopSection from "@/components/avatar/ShopSection";
@@ -575,7 +575,7 @@ const MyPage = () => {
             <div className="space-y-4">
               {/* Avatar preview - 8-bit pixel character */}
               <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-8 shadow-lg flex justify-center items-center">
-                <PixelCharacter
+                <PixelAvatar
                   equipped={equipped}
                   size="lg"
                   animated
