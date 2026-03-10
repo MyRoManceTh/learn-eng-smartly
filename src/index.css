@@ -264,6 +264,25 @@
   100% { opacity: 0; transform: translateY(-60px) scale(0.3); }
 }
 
+/* === 8-bit Pixel Character Animations === */
+@keyframes pixel-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.animate-pixel-idle {
+  animation: pixel-idle 2s ease-in-out infinite;
+}
+
+@keyframes rainbow-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.animate-rainbow-shimmer {
+  animation: rainbow-shimmer 2s linear infinite;
+}
+
 /* Scrollbar hide */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
