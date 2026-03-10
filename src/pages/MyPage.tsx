@@ -16,7 +16,7 @@ import { getItemById } from "@/data/avatarItems";
 
 // Components
 import PixelRoom from "@/components/room/PixelRoom";
-import RobloxAvatar from "@/components/avatar/RobloxAvatar";
+import PixelCharacter from "@/components/room/PixelCharacter";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
 import EvolutionProgressBar from "@/components/avatar/EvolutionProgressBar";
 import ShopSection from "@/components/avatar/ShopSection";
@@ -573,9 +573,9 @@ const MyPage = () => {
           {/* ============ TAB 2: CHARACTER ============ */}
           <TabsContent value="character">
             <div className="space-y-4">
-              {/* Avatar preview */}
-              <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-6 shadow-lg flex justify-center">
-                <RobloxAvatar
+              {/* Avatar preview - 8-bit pixel character */}
+              <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-8 shadow-lg flex justify-center items-center">
+                <PixelCharacter
                   equipped={equipped}
                   size="lg"
                   animated
