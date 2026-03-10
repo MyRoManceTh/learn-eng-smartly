@@ -75,5 +75,50 @@ export interface AdminAnalyticsData {
   newUsers: ActiveUser[];
 }
 
-// Admin password (simple MVP approach)
-export const ADMIN_PASSWORD = "admin2026";
+// Admin management types
+export interface AdminUserProfile {
+  user_id: string;
+  display_name: string | null;
+  current_level: number;
+  current_streak: number;
+  longest_streak: number;
+  total_exp: number;
+  coins: number;
+  lessons_completed: number;
+  is_premium: boolean;
+  is_admin: boolean;
+  is_banned: boolean;
+  banned_at: string | null;
+  ban_reason: string | null;
+  friend_code: string | null;
+  last_activity_date: string | null;
+  created_at: string;
+  energy: number;
+  evolution_stage: number;
+}
+
+export interface AdminLesson {
+  id: string;
+  level: number;
+  lesson_order: number;
+  title: string;
+  title_thai: string;
+  vocabulary: any[];
+  article_sentences: any[];
+  article_translation: string;
+  quiz: any[];
+  image_url: string | null;
+  created_at: string;
+}
+
+export interface AdminEvent {
+  id: string;
+  name: string;
+  description: string;
+  theme: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+  exclusive_items: any[];
+  created_at: string;
+}

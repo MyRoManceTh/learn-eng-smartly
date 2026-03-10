@@ -9,6 +9,7 @@ import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
+import MyPage from "./pages/MyPage";
 import LearningPathPage from "./pages/LearningPathPage";
 import LibraryPage from "./pages/LibraryPage";
 import QuizPage from "./pages/QuizPage";
@@ -40,7 +41,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/quiz" element={<QuizPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/my" element={<MyPage />} />
+              <Route path="/profile" element={<MyPage />} />
               <Route path="/path" element={<LearningPathPage />} />
               <Route path="/practice" element={<PracticePage />} />
               <Route path="/reading" element={<ReadingPage />} />
@@ -50,7 +52,7 @@ const App = () => (
               <Route path="/pronunciation" element={<PronunciationPage />} />
               <Route path="/shop" element={<ShopPage />} />
               <Route path="/library" element={<LibraryPage />} />
-              <Route path="/avatar" element={<AvatarPage />} />
+              <Route path="/avatar" element={<MyPage />} />
               <Route path="/season-pass" element={<SeasonPassPage />} />
               <Route path="/premium" element={<PremiumPage />} />
               <Route path="/parent-report" element={<ParentReport />} />

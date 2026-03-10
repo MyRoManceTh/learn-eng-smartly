@@ -1,67 +1,72 @@
-import { useState, ReactNode } from "react";
-import { ADMIN_PASSWORD } from "@/types/admin";
+import { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Lock, ShieldCheck } from "lucide-react";
+import { Lock, ShieldX, LogIn, Bot } from "lucide-react";
 
 interface Props {
   children: ReactNode;
 }
 
 const AdminAuthGate = ({ children }: Props) => {
-  const [authenticated, setAuthenticated] = useState(
-    () => sessionStorage.getItem("admin_auth") === "true"
-  );
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const { isAdmin, isLoading, isLoggedIn } = useAdminAuth();
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "true");
-      setAuthenticated(true);
-      setError(false);
-    } else {
-      setError(true);
-    }
-  };
-
-  if (authenticated) return <>{children}</>;
-
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm text-center space-y-6">
-        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-          <Lock className="w-10 h-10 text-primary" />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <Bot className="w-12 h-12 text-primary mx-auto animate-pulse" />
+          <p className="text-muted-foreground font-thai">กำลังตรวจสอบสิทธิ์...</p>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold font-thai">🔒 Admin Access</h1>
-          <p className="text-muted-foreground font-thai mt-2">
-            กรุณาใส่รหัสผ่านเพื่อเข้าสู่แดชบอร์ด
-          </p>
-        </div>
-        <div className="space-y-3">
-          <Input
-            type="password"
-            placeholder="รหัสผ่าน..."
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError(false);
-            }}
-            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            className={error ? "border-destructive" : ""}
-          />
-          {error && (
-            <p className="text-sm text-destructive font-thai">รหัสผ่านไม่ถูกต้อง</p>
-          )}
-          <Button onClick={handleLogin} className="w-full font-thai">
-            <ShieldCheck className="w-4 h-4 mr-2" />
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="w-full max-w-sm text-center space-y-6">
+          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <Lock className="w-10 h-10 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold font-thai">Admin Access</h1>
+            <p className="text-muted-foreground font-thai mt-2">
+              กรุณาเข้าสู่ระบบก่อนเข้าหน้า Admin
+            </p>
+          </div>
+          <Button onClick={() => navigate("/auth")} className="w-full font-thai">
+            <LogIn className="w-4 h-4 mr-2" />
             เข้าสู่ระบบ
           </Button>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="w-full max-w-sm text-center space-y-6">
+          <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+            <ShieldX className="w-10 h-10 text-destructive" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold font-thai">ไม่มีสิทธิ์เข้าถึง</h1>
+            <p className="text-muted-foreground font-thai mt-2">
+              บัญชีนี้ไม่มีสิทธิ์ Admin
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate("/")} className="w-full font-thai">
+            กลับหน้าหลัก
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 };
 
 export default AdminAuthGate;

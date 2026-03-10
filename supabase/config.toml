@@ -2,3 +2,18 @@ project_id = "wyzfsfywpyjdsnxumowi"
 
 [functions.generate-lesson]
 verify_jwt = false
+
+[functions.admin-manage-content]
+verify_jwt = true
+
+[functions.admin-manage-users]
+verify_jwt = true
+
+[functions.daily-mission-reset]
+verify_jwt = false
+
+[functions.send-notification]
+verify_jwt = false
+
+[functions.leaderboard-update]
+verify_jwt = false

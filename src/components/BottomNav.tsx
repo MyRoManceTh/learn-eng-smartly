@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { BookOpen, GraduationCap, Gamepad2, ShoppingCart, User } from "lucide-react";
+import { BookOpen, GraduationCap, Gamepad2, ShoppingCart, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useRef } from "react";
 import { useFriends } from "@/hooks/useFriends";
@@ -9,7 +9,7 @@ const tabs = [
   { path: "/practice", icon: GraduationCap, label: "เรียนรู้" },
   { path: "/games", icon: Gamepad2, label: "เกม" },
   { path: "/shop", icon: ShoppingCart, label: "ร้านค้า" },
-  { path: "/profile", icon: User, label: "โปรไฟล์" },
+  { path: "/my", icon: Home, label: "My" },
 ];
 
 const BottomNav = () => {
@@ -51,7 +51,8 @@ const BottomNav = () => {
             const isActive =
               location.pathname === tab.path ||
               (tab.path === "/practice" && practiceSubPaths.includes(location.pathname)) ||
-              (tab.path === "/shop" && location.pathname === "/avatar");
+              (tab.path === "/shop" && location.pathname === "/avatar") ||
+              (tab.path === "/my" && ["/profile", "/avatar", "/my"].includes(location.pathname));
             const Icon = tab.icon;
             return (
               <button
@@ -77,7 +78,7 @@ const BottomNav = () => {
                     )}
                   />
                 </div>
-                {tab.path === "/profile" && notificationCount > 0 && (
+                {tab.path === "/my" && notificationCount > 0 && (
                   <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
                     <span className="text-[8px] text-white font-bold">{notificationCount > 9 ? '9+' : notificationCount}</span>
                   </div>
