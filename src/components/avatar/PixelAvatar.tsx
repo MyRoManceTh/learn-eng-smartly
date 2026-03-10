@@ -17,15 +17,16 @@ interface PixelAvatarProps {
   evolutionStage?: number;
 }
 
-// Internal (low-res) rendering size → displayed CSS size
-// The 8-bit look comes from rendering at low res then CSS upscaling with pixelated
-const INTERNAL_W = 64;
-const INTERNAL_H = 84;
+// Internal (low-res) rendering size must match GRID_W x GRID_H in drawChibiCharacter.
+// The 8-bit look comes from rendering at 17x23 then CSS upscaling with pixelated.
+const INTERNAL_W = 17;
+const INTERNAL_H = 23;
 
+// CSS sizes are exact integer multiples for pixel-perfect scaling
 const SIZE_CONFIG = {
-  sm: { cssWidth: 96, cssHeight: 126 },
-  md: { cssWidth: 160, cssHeight: 210 },
-  lg: { cssWidth: 240, cssHeight: 315 },
+  sm: { cssWidth: 102, cssHeight: 138 },   // 6x
+  md: { cssWidth: 170, cssHeight: 230 },   // 10x
+  lg: { cssWidth: 238, cssHeight: 322 },   // 14x
 };
 
 const PixelAvatar: React.FC<PixelAvatarProps> = ({
@@ -52,7 +53,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     const init = async () => {
       if (!canvasRef.current) return;
 
-      // Render at low resolution (64x84) for 8-bit pixel look
+      // Render at 17x23 pixel grid size for true 8-bit pixel look
       const app = await createPixelApp(canvasRef.current, {
         width: INTERNAL_W,
         height: INTERNAL_H,
@@ -70,7 +71,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       app.stage.addChild(character);
       characterRef.current = character;
 
-      // Draw chibi at internal resolution (INTERNAL_H = 84px)
+      // Draw chibi on 17x23 pixel grid
       drawChibiCharacter(character, equipped, INTERNAL_H);
 
       if (animated) {

@@ -1,56 +1,57 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import VocabTable from "@/components/VocabTable";
-import ArticleReader from "@/components/ArticleReader";
-import LevelSelector from "@/components/LevelSelector";
-import { sampleLesson, sampleQuiz } from "@/data/sampleLesson";
-import { LearnerLevel, QuizQuestion } from "@/types/lesson";
+import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, Zap, Flame, ChevronLeft, ChevronRight } from "lucide-react";
-import LessonSkeleton from "@/components/LessonSkeleton";
+import { LogOut, LogIn, ChevronRight, BookOpen, MessageSquare, Gamepad2, Volume2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import defaultLessonImage from "@/assets/lesson-default.jpg";
 import { useDailyReward } from "@/hooks/useDailyReward";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { useEnergy } from "@/hooks/useEnergy";
 import { useProfile } from "@/hooks/useProfile";
 import DailyRewardModal from "@/components/daily/DailyRewardModal";
-import DailyMissionPanel from "@/components/daily/DailyMissionPanel";
 import StreakFireDisplay from "@/components/daily/StreakFireDisplay";
 import EnergyDisplay from "@/components/daily/EnergyDisplay";
-import EventBanner from "@/components/events/EventBanner";
+import CoinDisplay from "@/components/avatar/CoinDisplay";
+import PixelAvatar from "@/components/avatar/PixelAvatar";
+import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
+import { getEvolutionStage } from "@/data/evolutionStages";
 import { trackEvent } from "@/utils/analytics";
+import { cn } from "@/lib/utils";
+import type { DailyMission, MissionType } from "@/types/dopamine";
 
-interface DbLesson {
+const missionIcons: Record<MissionType, string> = {
+  streak_login: "🔥",
+  complete_lesson: "📖",
+  answer_quiz: "🧠",
+  visit_avatar: "🛒",
+  read_article: "📚",
+  path_node: "🗺️",
+};
+
+const quickActions = [
+  { path: "/reading", icon: BookOpen, label: "ฝึกอ่าน", color: "from-blue-400 to-indigo-500", emoji: "📖" },
+  { path: "/conversation", icon: MessageSquare, label: "สนทนา", color: "from-pink-400 to-rose-500", emoji: "💬" },
+  { path: "/games", icon: Gamepad2, label: "เกม", color: "from-emerald-400 to-green-500", emoji: "🎮" },
+  { path: "/pronunciation", icon: Volume2, label: "ออกเสียง", color: "from-orange-400 to-amber-500", emoji: "🗣️" },
+];
+
+interface CurrentLesson {
   id: string;
-  level: number;
-  lesson_order: number;
   title: string;
   title_thai: string;
-  vocabulary: any[];
-  article_sentences: any[][];
-  article_translation: string;
-  image_url: string | null;
-  quiz: QuizQuestion[];
+  level: number;
+  lesson_order: number;
 }
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [level, setLevel] = useState<LearnerLevel>(1);
-  const [lessonsCompleted, setLessonsCompleted] = useState(0);
-  const [totalExp, setTotalExp] = useState(0);
-  const [currentStreak, setCurrentStreak] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  // Dopamine loop hooks
   const { profile, refreshProfile } = useProfile();
-  const { missions, loading: missionsLoading, completedCount, totalCount, allCompleted, incrementMission } = useDailyMissions();
+  const { missions, loading: missionsLoading, completedCount, totalCount, allCompleted } = useDailyMissions();
   const dailyReward = useDailyReward(
-    profile?.current_streak || currentStreak,
+    profile?.current_streak || 0,
     profile?.mystery_box_last_claimed || null,
     profile?.inventory || []
   );
@@ -60,167 +61,84 @@ const Index = () => {
     profile?.is_premium || false
   );
 
-  // Lesson from DB
-  const [dbLesson, setDbLesson] = useState<DbLesson | null>(null);
-  const [currentLessonOrder, setCurrentLessonOrder] = useState(1);
-  const [maxLessonOrder, setMaxLessonOrder] = useState(1);
+  const [currentLesson, setCurrentLesson] = useState<CurrentLesson | null>(null);
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
+  const [equipped, setEquipped] = useState<EquippedItems>(DEFAULT_EQUIPPED);
+  const [newsHeadline, setNewsHeadline] = useState<{ title: string; level: number } | null>(null);
 
-  // Load profile
+  const totalExp = profile?.total_exp || 0;
+  const currentStreak = profile?.current_streak || 0;
+  const coins = profile?.coins || 0;
+  const level = (profile?.current_level || 1) as LearnerLevel;
+  const displayName = profile?.display_name || "นักเรียน";
+  const evolutionStage = getEvolutionStage(totalExp);
+
+  useEffect(() => {
+    trackEvent("page_view", { page: "home" });
+  }, []);
+
+  // Load equipped avatar items
   useEffect(() => {
     if (!user) return;
-    trackEvent('page_view', { page: 'home' });
     supabase
       .from("profiles")
-      .select("current_level, lessons_completed, total_exp, current_streak")
+      .select("equipped_items")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
-          setLevel(data.current_level as LearnerLevel);
-          setLessonsCompleted(data.lessons_completed);
           const d = data as any;
-          setTotalExp(d.total_exp || 0);
-          setCurrentStreak(d.current_streak || 0);
+          if (d.equipped_items && typeof d.equipped_items === "object") {
+            setEquipped({ ...DEFAULT_EQUIPPED, ...d.equipped_items });
+          }
         }
       });
   }, [user]);
 
-  // Load completed lessons for this user
+  // Load current lesson (next uncompleted)
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("user_lesson_progress")
-      .select("lesson_id")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        if (data) {
-          setCompletedLessonIds(new Set(data.map((d: any) => d.lesson_id)));
-        }
-      });
-  }, [user]);
 
-  // Fetch lesson from DB by level + order
-  useEffect(() => {
-    fetchLesson(level, currentLessonOrder);
-  }, [level, currentLessonOrder]);
+    const loadCurrentLesson = async () => {
+      // Get completed lessons
+      const { data: progress } = await supabase
+        .from("user_lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", user.id);
 
-  // Find max lesson order for navigation
-  useEffect(() => {
-    supabase
-      .from("lessons")
-      .select("lesson_order")
-      .eq("level", level)
-      .eq("is_published", true)
-      .order("lesson_order", { ascending: false })
-      .limit(1)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setMaxLessonOrder((data[0] as any).lesson_order);
-        } else {
-          setMaxLessonOrder(1);
-        }
-      });
-  }, [level, dbLesson]);
+      const completedIds = new Set((progress || []).map((d: any) => d.lesson_id));
+      setCompletedLessonIds(completedIds);
 
-  // Auto-advance when coming back from quiz
+      // Find next uncompleted lesson at user's level
+      const { data: lessons } = await supabase
+        .from("lessons")
+        .select("id, title, title_thai, level, lesson_order")
+        .eq("level", level)
+        .eq("is_published", true)
+        .order("lesson_order", { ascending: true });
+
+      if (lessons) {
+        const next = lessons.find((l: any) => !completedIds.has(l.id));
+        setCurrentLesson((next || lessons[0]) as CurrentLesson);
+      }
+    };
+
+    loadCurrentLesson();
+  }, [user, level]);
+
+  // Auto-refresh after quiz
   useEffect(() => {
     const navState = location.state as { generateNew?: boolean } | null;
     if (navState?.generateNew) {
       window.history.replaceState({}, "");
-      // Move to next lesson
-      setCurrentLessonOrder((prev) => prev + 1);
-      // Reload profile data
-      if (user) {
-        supabase
-          .from("profiles")
-          .select("current_level, lessons_completed, total_exp, current_streak")
-          .eq("user_id", user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) {
-              setLevel(data.current_level as LearnerLevel);
-              setLessonsCompleted(data.lessons_completed);
-              const d = data as any;
-              setTotalExp(d.total_exp || 0);
-              setCurrentStreak(d.current_streak || 0);
-            }
-          });
-        supabase
-          .from("user_lesson_progress")
-          .select("lesson_id")
-          .eq("user_id", user.id)
-          .then(({ data }) => {
-            if (data) {
-              setCompletedLessonIds(new Set(data.map((d: any) => d.lesson_id)));
-            }
-          });
-      }
+      refreshProfile();
     }
   }, [location.state]);
 
-  const fetchLesson = async (lvl: number, order: number) => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("lessons")
-      .select("*")
-      .eq("level", lvl)
-      .eq("lesson_order", order)
-      .eq("is_published", true)
-      .single();
-
-    if (data) {
-      setDbLesson(data as unknown as DbLesson);
-    } else {
-      // No lesson found at this order, stay on current or show message
-      if (order > 1) {
-        toast("🎉 ยังไม่มีบทเรียนถัดไป กำลังสร้างให้...", { duration: 3000 });
-        setCurrentLessonOrder(order - 1);
-      } else {
-        setDbLesson(null);
-      }
-    }
-    setLoading(false);
-  };
-
-  const handleLevelChange = (newLevel: LearnerLevel) => {
-    setLevel(newLevel);
-    setCurrentLessonOrder(1);
-  };
-
-  const isCurrentLessonCompleted = dbLesson ? completedLessonIds.has(dbLesson.id) : false;
-
-  const handleStartQuiz = () => {
-    if (!dbLesson) return;
-    // Energy is tracked but doesn't block for now
-    trackEvent('quiz_start', { lessonId: dbLesson.id, level: dbLesson.level });
-    navigate("/quiz", {
-      state: {
-        questions: dbLesson.quiz,
-        lessonTitle: dbLesson.title,
-        lessonLevel: dbLesson.level,
-        lessonId: dbLesson.id,
-        lessonOrder: dbLesson.lesson_order,
-      },
-    });
-  };
-
-  // Use dbLesson data or fallback to sample
-  const lesson = dbLesson
-    ? {
-        title: dbLesson.title,
-        titleThai: dbLesson.title_thai,
-        level: dbLesson.level,
-        vocabulary: dbLesson.vocabulary,
-        articleSentences: dbLesson.article_sentences,
-        articleTranslation: dbLesson.article_translation,
-      }
-    : sampleLesson;
-
-  const lessonImage = dbLesson?.image_url || defaultLessonImage;
+  const levelLabels = ["", "Starter", "Elementary", "Intermediate", "Upper", "Advanced"];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-24">
       <DailyRewardModal
         open={dailyReward.showModal}
         reward={dailyReward.reward}
@@ -230,117 +148,230 @@ const Index = () => {
         onClaim={async () => { await dailyReward.claimReward(); refreshProfile(); }}
         onClose={dailyReward.closeModal}
       />
+
+      {/* === Status Bar Header === */}
       <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <h1 className="text-lg font-bold text-foreground font-thai shrink-0">
-              📖 อ่านเรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">English</span>
-            </h1>
-            <div className="flex items-center gap-1.5 shrink-0">
-              {user && (
-                <>
-                  <StreakFireDisplay streak={profile?.current_streak || currentStreak} size="sm" />
-                  <div className="flex items-center gap-1 bg-purple-100 rounded-full px-2 py-1">
-                    <Zap className="w-3.5 h-3.5 text-purple-600" />
-                    <span className="text-xs font-bold text-purple-700">{totalExp}</span>
-                  </div>
-                  <EnergyDisplay energy={energy} />
-                </>
-              )}
-              {user ? (
-                <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              ) : (
-                <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="font-thai text-xs h-8">
-                  <LogIn className="w-4 h-4 mr-1" /> เข้าสู่ระบบ
-                </Button>
-              )}
-            </div>
+        <div className="px-4 py-2.5 flex items-center justify-between">
+          <h1 className="text-base font-bold text-foreground font-thai shrink-0">
+            Learn<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">English</span>
+          </h1>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {user && (
+              <>
+                <StreakFireDisplay streak={currentStreak} size="sm" />
+                <EnergyDisplay energy={energy} />
+              </>
+            )}
+            {user ? (
+              <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="font-thai text-xs h-8">
+                <LogIn className="w-4 h-4 mr-1" /> เข้าสู่ระบบ
+              </Button>
+            )}
           </div>
-          <LevelSelector currentLevel={level} onLevelChange={handleLevelChange} lessonsCompleted={lessonsCompleted} />
         </div>
       </header>
 
-      <div className="px-4 pt-2">
-        <EventBanner event={null} />
-        <DailyMissionPanel
-          missions={missions}
-          loading={missionsLoading}
-          completedCount={completedCount}
-          totalCount={totalCount}
-          allCompleted={allCompleted}
-        />
-      </div>
-
-      <main className="px-4 py-4">
-        {loading ? (
-          <LessonSkeleton />
-        ) : !dbLesson ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground font-thai text-lg">ยังไม่มีบทเรียนสำหรับระดับนี้</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Lesson navigation */}
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentLessonOrder <= 1}
-                onClick={() => setCurrentLessonOrder((p) => p - 1)}
-                className="font-thai"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" /> ก่อนหน้า
-              </Button>
-              <div className="text-center">
-                <span className="text-sm font-bold font-thai text-foreground">
-                  บทที่ {currentLessonOrder}
+      <main className="px-4 py-4 space-y-4 max-w-lg mx-auto">
+        {/* === Avatar + Greeting Section === */}
+        <div className="rounded-2xl bg-gradient-to-br from-purple-500/10 via-white/80 to-pink-500/10 border border-white/60 p-4 shadow-md backdrop-blur-sm">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/my")}
+              className="shrink-0 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 p-1 shadow-inner hover:scale-105 transition-transform"
+            >
+              <PixelAvatar equipped={equipped} size="sm" animated evolutionStage={evolutionStage.stage} />
+            </button>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-muted-foreground font-thai">
+                สวัสดี! 👋
+              </p>
+              <h2 className="text-lg font-bold font-thai text-foreground truncate">
+                {displayName}
+              </h2>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs font-bold text-purple-600 bg-purple-100 rounded-full px-2 py-0.5">
+                  Lv.{level} {levelLabels[level]}
                 </span>
-                {isCurrentLessonCompleted && (
-                  <span className="ml-2 text-xs text-primary font-thai">✅ เรียนแล้ว</span>
-                )}
+                <CoinDisplay coins={coins} size="sm" />
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentLessonOrder >= maxLessonOrder}
-                onClick={() => setCurrentLessonOrder((p) => p + 1)}
-                className="font-thai"
-              >
-                ถัดไป <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
+              {/* EXP Progress */}
+              <div className="mt-2">
+                <div className="flex justify-between text-[10px] text-muted-foreground mb-0.5">
+                  <span className="font-thai">{totalExp} EXP</span>
+                  <span className="font-thai">{evolutionStage.name}</span>
+                </div>
+                <div className="h-2 bg-gray-200/60 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-700"
+                    style={{ width: `${Math.min(100, (totalExp / (evolutionStage.maxExp || totalExp + 100)) * 100)}%` }}
+                  />
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
 
-            {/* Lesson content */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-              <div className="lg:col-span-3 order-1">
-                <ArticleReader
-                  sentences={lesson.articleSentences}
-                  translation={lesson.articleTranslation}
-                  title={lesson.title}
-                  titleThai={lesson.titleThai}
-                  imageUrl={lessonImage || undefined}
-                />
+        {/* === Daily Missions (Compact Chips) === */}
+        {user && missions.length > 0 && (
+          <div className="rounded-2xl bg-white/80 border border-white/60 p-3 shadow-sm backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">📋</span>
+                <span className="text-sm font-bold font-thai">ภารกิจวันนี้</span>
               </div>
-              <div className="lg:col-span-2 order-2">
-                <VocabTable vocabulary={lesson.vocabulary} />
-              </div>
+              <span className={cn(
+                "text-xs font-bold px-2 py-0.5 rounded-full",
+                allCompleted ? "bg-emerald-100 text-emerald-600" : "bg-purple-100 text-purple-600"
+              )}>
+                {completedCount}/{totalCount} {allCompleted && "🎉"}
+              </span>
             </div>
+            <div className="flex flex-wrap gap-1.5">
+              {missions.map((m: DailyMission) => (
+                <div
+                  key={m.id}
+                  className={cn(
+                    "flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-thai font-medium transition-all",
+                    m.current >= m.target
+                      ? "bg-emerald-100 text-emerald-700 line-through opacity-70"
+                      : "bg-gray-100 text-gray-700"
+                  )}
+                >
+                  <span>{missionIcons[m.type] || "📌"}</span>
+                  <span>{m.label}</span>
+                  {m.current >= m.target && <span>✅</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-            {/* Quiz button */}
-            <div className="text-center pb-4">
-              <Button
-                onClick={handleStartQuiz}
-                className={`font-thai w-full max-w-xs h-12 text-base font-bold shadow-lg ${
-                  isCurrentLessonCompleted
-                    ? "bg-white border-2 border-purple-300 text-purple-600 hover:bg-purple-50 shadow-purple-500/10"
-                    : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-purple-500/25"
-                }`}
-              >
-                📝 {isCurrentLessonCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
-              </Button>
+        {/* === Continue Learning Card === */}
+        {currentLesson && (
+          <button
+            onClick={() => navigate(`/learn`, { state: { lessonId: currentLesson.id } })}
+            className="w-full text-left rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 p-4 shadow-lg shadow-purple-500/20 hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.99]"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-200 text-xs font-thai mb-0.5">
+                  {completedLessonIds.has(currentLesson.id) ? "ทบทวนบทเรียน" : "เรียนต่อเลย! 🎯"}
+                </p>
+                <h3 className="text-white font-bold text-base">
+                  📖 บทที่ {currentLesson.lesson_order}: {currentLesson.title}
+                </h3>
+                <p className="text-purple-200 text-xs font-thai mt-0.5">
+                  {currentLesson.title_thai} · Level {currentLesson.level}
+                </p>
+              </div>
+              <div className="shrink-0 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <ChevronRight className="w-6 h-6 text-white" />
+              </div>
             </div>
+          </button>
+        )}
+
+        {/* === Quick Actions Grid === */}
+        <div>
+          <h3 className="text-sm font-bold font-thai text-foreground mb-2">
+            ⚡ กิจกรรมด่วน
+          </h3>
+          <div className="grid grid-cols-4 gap-2">
+            {quickActions.map((action) => (
+              <button
+                key={action.path}
+                onClick={() => navigate(action.path)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/80 border border-white/60 shadow-sm hover:shadow-md hover:scale-105 transition-all active:scale-95 backdrop-blur-sm"
+              >
+                <div className={cn(
+                  "w-11 h-11 rounded-xl flex items-center justify-center text-xl bg-gradient-to-br shadow-md",
+                  action.color
+                )}>
+                  <span>{action.emoji}</span>
+                </div>
+                <span className="text-[10px] font-bold font-thai text-foreground leading-tight text-center">
+                  {action.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* === Learning Path Preview === */}
+        <button
+          onClick={() => navigate("/path")}
+          className="w-full text-left rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm hover:shadow-md transition-all backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-xl shadow-md">
+                🗺️
+              </div>
+              <div>
+                <h3 className="font-bold font-thai text-sm">เส้นทางการเรียน</h3>
+                <p className="text-xs text-muted-foreground font-thai">เรียนตามลำดับ ปลดล็อคทีละด่าน</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </div>
+        </button>
+
+        {/* === Daily News Card === */}
+        <button
+          onClick={() => navigate("/news")}
+          className="w-full text-left rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm hover:shadow-md transition-all backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-violet-500 flex items-center justify-center text-xl shadow-md">
+                📰
+              </div>
+              <div>
+                <h3 className="font-bold font-thai text-sm">ข่าววันนี้</h3>
+                <p className="text-xs text-muted-foreground font-thai">อ่านข่าวง่ายๆ ฝึกภาษาทุกวัน</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">Daily</span>
+          </div>
+        </button>
+
+        {/* === Library Card === */}
+        <button
+          onClick={() => navigate("/library")}
+          className="w-full text-left rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm hover:shadow-md transition-all backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-xl shadow-md">
+                📚
+              </div>
+              <div>
+                <h3 className="font-bold font-thai text-sm">คลังนิทาน</h3>
+                <p className="text-xs text-muted-foreground font-thai">นิทานอีสปสนุกๆ พร้อม Quiz</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </div>
+        </button>
+
+        {/* === Not logged in prompt === */}
+        {!user && (
+          <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-dashed border-purple-200 p-6 text-center">
+            <p className="text-3xl mb-2">🎓</p>
+            <h3 className="font-bold font-thai text-foreground mb-1">เริ่มเรียนภาษาอังกฤษ!</h3>
+            <p className="text-xs text-muted-foreground font-thai mb-3">
+              เข้าสู่ระบบเพื่อบันทึกความก้าวหน้า รับรางวัล และแต่ง Avatar
+            </p>
+            <Button
+              onClick={() => navigate("/auth")}
+              className="font-thai bg-gradient-to-r from-purple-600 to-pink-500 text-white"
+            >
+              <LogIn className="w-4 h-4 mr-1" /> เข้าสู่ระบบ / สมัครสมาชิก
+            </Button>
           </div>
         )}
       </main>

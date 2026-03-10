@@ -1,15 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { BookOpen, GraduationCap, Gamepad2, ShoppingCart, Home } from "lucide-react";
+import { Home, GraduationCap, Gamepad2, ShoppingCart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useRef } from "react";
 import { useFriends } from "@/hooks/useFriends";
 
 const tabs = [
-  { path: "/", icon: BookOpen, label: "หน้าหลัก" },
-  { path: "/practice", icon: GraduationCap, label: "เรียนรู้" },
+  { path: "/", icon: Home, label: "หน้าหลัก" },
+  { path: "/learn", icon: GraduationCap, label: "เรียนรู้" },
   { path: "/games", icon: Gamepad2, label: "เกม" },
   { path: "/shop", icon: ShoppingCart, label: "ร้านค้า" },
-  { path: "/my", icon: Home, label: "My" },
+  { path: "/my", icon: User, label: "ฉัน" },
 ];
 
 const BottomNav = () => {
@@ -47,10 +47,10 @@ const BottomNav = () => {
       <div className="bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-4px_24px_-4px_rgba(124,58,237,0.08)]">
         <div className="flex items-center justify-around h-[68px] px-1 max-w-md mx-auto">
           {tabs.map((tab) => {
-            const practiceSubPaths = ["/practice", "/path", "/reading", "/conversation", "/news", "/pronunciation", "/library"];
+            const learnSubPaths = ["/learn", "/practice", "/path", "/reading", "/news", "/pronunciation", "/library"];
             const isActive =
               location.pathname === tab.path ||
-              (tab.path === "/practice" && practiceSubPaths.includes(location.pathname)) ||
+              (tab.path === "/learn" && learnSubPaths.includes(location.pathname)) ||
               (tab.path === "/shop" && location.pathname === "/avatar") ||
               (tab.path === "/my" && ["/profile", "/avatar", "/my"].includes(location.pathname));
             const Icon = tab.icon;

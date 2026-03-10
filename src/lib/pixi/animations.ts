@@ -14,8 +14,8 @@ export function setupIdleAnimation(
 
   const update = (dt: Ticker) => {
     time += dt.deltaTime * 0.04;
-    // Gentle bounce: 2px amplitude
-    characterContainer.y = baseY + Math.sin(time) * 2;
+    // Gentle bounce: 0.5px amplitude (canvas is only 23px tall)
+    characterContainer.y = baseY + Math.sin(time) * 0.5;
   };
 
   ticker.add(update);
@@ -73,7 +73,7 @@ export function setupEvolutionEffects(
     // --- Stage 2+: Soft glow circle ---
     if (stage >= 2) {
       const glowAlpha = 0.12 + Math.sin(time * 0.025) * 0.04;
-      const glowRadius = canvasSize * 0.28 + Math.sin(time * 0.02) * 4;
+      const glowRadius = canvasSize * 0.28 + Math.sin(time * 0.02) * 1;
       graphics.circle(cx, cy, glowRadius).fill({ color, alpha: glowAlpha });
     }
 
@@ -82,11 +82,11 @@ export function setupEvolutionEffects(
       particles.push({
         x: cx + (Math.random() - 0.5) * canvasSize * 0.6,
         y: cy + (Math.random() - 0.5) * canvasSize * 0.7,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: -0.15 - Math.random() * 0.25,
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: -0.05 - Math.random() * 0.08,
         life: 0,
         maxLife: 50 + Math.random() * 30,
-        size: 1 + Math.random() * 1.5,
+        size: 0.4 + Math.random() * 0.4,
         color,
       });
     }
@@ -94,10 +94,10 @@ export function setupEvolutionEffects(
     // --- Stage 4+: Aura ring pulse ---
     if (stage >= 4) {
       const auraAlpha = 0.08 + Math.sin(time * 0.03) * 0.04;
-      const auraRadius = canvasSize * 0.35 + Math.sin(time * 0.025) * 5;
+      const auraRadius = canvasSize * 0.35 + Math.sin(time * 0.025) * 1;
       graphics
         .circle(cx, cy, auraRadius)
-        .stroke({ color, alpha: auraAlpha, width: 2 });
+        .stroke({ color, alpha: auraAlpha, width: 0.5 });
     }
 
     // --- Stage 5: Rising golden particles ---
@@ -105,11 +105,11 @@ export function setupEvolutionEffects(
       particles.push({
         x: cx + (Math.random() - 0.5) * canvasSize * 0.4,
         y: canvasSize * 0.85,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: -0.4 - Math.random() * 0.4,
+        vx: (Math.random() - 0.5) * 0.05,
+        vy: -0.12 - Math.random() * 0.12,
         life: 0,
         maxLife: 70 + Math.random() * 30,
-        size: 1.2 + Math.random() * 1.3,
+        size: 0.4 + Math.random() * 0.4,
         color: 0xffd700,
       });
     }
@@ -134,12 +134,10 @@ export function setupEvolutionEffects(
           : 1 - (lifeRatio - 0.15) / 0.85;
       const size = p.size * (1 - lifeRatio * 0.4);
 
-      // Star shape for sparkles (stage 3+)
-      if (stage >= 3) {
-        graphics.star(p.x, p.y, 4, size, size * 0.4, 0).fill({ color: p.color, alpha });
-      } else {
-        graphics.circle(p.x, p.y, size).fill({ color: p.color, alpha });
-      }
+      // Draw as small pixel squares (true 8-bit style)
+      graphics.rect(
+        Math.floor(p.x), Math.floor(p.y), Math.max(0.5, size), Math.max(0.5, size)
+      ).fill({ color: p.color, alpha });
     }
   };
 
@@ -173,9 +171,9 @@ export function setupRainbowShimmer(
     time += dt.deltaTime * 0.02;
     graphics.clear();
 
-    // Overlay a shifting color on the hair region (rows 1-7)
-    const hairRowStart = 1 * pixelSize;
-    const hairRowEnd = 7 * pixelSize;
+    // Overlay a shifting color on the hair region (rows 0-3 in 17x23 grid)
+    const hairRowStart = 0;
+    const hairRowEnd = 4;
     const width = canvasSize;
 
     const colorIndex = Math.floor(time * 3) % rainbowColors.length;
@@ -216,8 +214,8 @@ export function playEquipTransition(
     frame += dt.deltaTime;
     const progress = Math.min(1, frame / duration);
 
-    // Quick scale pulse
-    const scale = 1 + Math.sin(progress * Math.PI) * 0.06;
+    // Quick scale pulse (subtle for small canvas)
+    const scale = 1 + Math.sin(progress * Math.PI) * 0.04;
     container.scale.set(scale);
 
     // Brief brightness flash

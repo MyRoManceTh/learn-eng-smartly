@@ -1,56 +1,40 @@
 /**
- * Chibi Character Renderer - Claw-Empire Style
+ * Pixel Art Chibi Character - True 8-bit style
  *
- * Draws detailed chibi characters using PixiJS Graphics shapes
- * (circles, roundRects, bezier curves) instead of pixel grids.
- *
- * Design space: 200 x 260 units, scaled to fit canvas.
- * Chibi proportions: big head (~40%), small body (~35%), short legs (~25%)
+ * Draws characters as a pixel grid (17 wide x 23 tall).
+ * Each cell = 1 pixel, CSS upscaled with imageRendering: pixelated.
+ * Proportions match classic pixel art chibi: big head, small body.
  */
 import { Container, Graphics } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { getItemById } from "@/data/avatarItems";
-import { parseColor, darkenColor, lightenColor, blendColor } from "./colorUtils";
+import { parseColor, darkenColor, lightenColor } from "./colorUtils";
 
-// ─── Design constants (in design-space units) ───
-const DW = 200; // design width
-const DH = 260; // design height
-const CX = DW / 2; // center X
+export const GRID_W = 17;
+export const GRID_H = 23;
 
-// ─── Body proportions ───
-const HEAD_R = 38;  // head radius
-const HEAD_CY = 70; // head center Y
-const BODY_W = 52;  // body width
-const BODY_H = 58;  // body height
-const BODY_Y = 108; // body top Y
-const ARM_W = 16;
-const ARM_H = 50;
-const LEG_W = 20;
-const LEG_H = 48;
-const LEG_GAP = 8;
-const SHOE_H = 14;
-const FOOT_W = 24;
+type Grid = (number | null)[][];
 
 interface Colors {
   skin: number;
-  skinShadow: number;
-  skinHighlight: number;
+  skinShade: number;
   hair: number;
-  hairShadow: number;
-  hairHighlight: number;
+  hairHi: number;
+  hairDark: number;
   shirt: number;
-  shirtShadow: number;
-  shirtHighlight: number;
+  shirtShade: number;
   pants: number;
-  pantsShadow: number;
+  pantsShade: number;
   shoes: number;
-  shoesShadow: number;
+  shoesShade: number;
   hat: number | null;
-  hatShadow: number | null;
-  hatHighlight: number | null;
-  accColor: number;
+  hatShade: number | null;
+  acc: number;
   outline: number;
   eye: number;
+  mouth: number;
+  white: number;
+  blush: number;
 }
 
 function resolveColors(equipped: EquippedItems): Colors {
@@ -71,902 +55,509 @@ function resolveColors(equipped: EquippedItems): Colors {
 
   return {
     skin,
-    skinShadow: darkenColor(skin, 0.18),
-    skinHighlight: lightenColor(skin, 0.12),
+    skinShade: darkenColor(skin, 0.18),
     hair,
-    hairShadow: darkenColor(hair, 0.2),
-    hairHighlight: lightenColor(hair, 0.2),
+    hairHi: lightenColor(hair, 0.2),
+    hairDark: darkenColor(hair, 0.2),
     shirt,
-    shirtShadow: darkenColor(shirt, 0.18),
-    shirtHighlight: lightenColor(shirt, 0.12),
+    shirtShade: darkenColor(shirt, 0.2),
     pants,
-    pantsShadow: darkenColor(pants, 0.18),
+    pantsShade: darkenColor(pants, 0.2),
     shoes,
-    shoesShadow: darkenColor(shoes, 0.22),
+    shoesShade: darkenColor(shoes, 0.25),
     hat,
-    hatShadow: hat ? darkenColor(hat, 0.2) : null,
-    hatHighlight: hat ? lightenColor(hat, 0.15) : null,
-    accColor: accItem ? parseColor(accItem.svgProps?.color || "#80DEEA") : 0x80deea,
-    outline: 0x2a1f3d,
+    hatShade: hat ? darkenColor(hat, 0.2) : null,
+    acc: accItem ? parseColor(accItem.svgProps?.color || "#80DEEA") : 0x80deea,
+    outline: 0x1a1a2e,
     eye: 0x1a1a2e,
+    mouth: 0x1a1a2e,
+    white: 0xffffff,
+    blush: 0xffb4b4,
   };
 }
 
-// ─── Main Draw Function ───
+// ─── Main entry ───
 export function drawChibiCharacter(
   container: Container,
   equipped: EquippedItems,
-  canvasSize: number
+  _canvasH: number
 ): void {
   container.removeChildren();
 
-  const scale = canvasSize / DH;
   const c = resolveColors(equipped);
+  const grid = createGrid();
 
   const hairItem = getItemById(equipped.hair);
   const hairStyle = hairItem?.svgProps?.path || "short";
-  const shirtPattern = getShirtPattern(equipped.shirt);
-  const pantsStyle = getPantsStyle(equipped.pants);
-  const shoeStyle = getShoeStyle(equipped.shoes);
+  const hasHat = !!equipped.hat;
 
-  // Offset X to center character in square canvas
-  const offsetX = (canvasSize - DW * scale) / 2;
+  // Draw layers back to front
+  drawAccessoryBack(grid, equipped.accessory, c);
+  drawBody(grid, equipped.shirt, c);
+  drawArms(grid, c);
+  drawLegs(grid, equipped.pants, c);
+  drawShoes(grid, equipped.shoes, c);
+  drawHead(grid, c);
+  if (!hasHat) drawHair(grid, hairStyle, c);
+  if (hasHat) drawHatPixels(grid, equipped.hat!, c);
+  drawFace(grid, c, equipped.accessory);
+  drawAccessoryFront(grid, equipped.accessory, c);
+  addOutline(grid, c.outline);
+  drawShadow(grid);
 
-  const root = new Container();
-  root.scale.set(scale);
-  root.position.set(offsetX / scale, 0);
-
-  // Layer order (back to front)
-  drawShadow(root, c);
-  drawAccessoryBack(root, equipped.accessory, c);
-  drawHairBack(root, hairStyle, c, !!equipped.hat);
-  drawLegs(root, pantsStyle, c);
-  drawShoes(root, shoeStyle, c);
-  drawBody(root, shirtPattern, c);
-  drawArms(root, c);
-  drawNeck(root, c);
-  drawHead(root, c);
-  drawFace(root, c, equipped);
-  drawHairFront(root, hairStyle, c, !!equipped.hat);
-  drawHat(root, equipped.hat, c);
-  drawAccessoryFront(root, equipped.accessory, c);
-
-  container.addChild(root);
+  // Render grid to PixiJS
+  renderGrid(container, grid);
 }
 
-// ─── SHADOW ───
-function drawShadow(parent: Container, c: Colors) {
-  const g = new Graphics();
-  g.ellipse(CX, 252, 36, 8).fill({ color: 0x000000, alpha: 0.12 });
-  g.ellipse(CX, 252, 30, 6).fill({ color: 0x000000, alpha: 0.08 });
-  parent.addChild(g);
+function createGrid(): Grid {
+  return Array.from({ length: GRID_H }, () => Array(GRID_W).fill(null));
 }
 
-// ─── HEAD ───
-function drawHead(parent: Container, c: Colors) {
-  const g = new Graphics();
-
-  // Outline
-  g.circle(CX, HEAD_CY, HEAD_R + 2).fill(c.outline);
-
-  // Main head
-  g.circle(CX, HEAD_CY, HEAD_R).fill(c.skin);
-
-  // Shading: right side shadow
-  g.ellipse(CX + 14, HEAD_CY + 4, HEAD_R * 0.6, HEAD_R * 0.85)
-    .fill({ color: c.skinShadow, alpha: 0.35 });
-
-  // Highlight: top-left
-  g.ellipse(CX - 12, HEAD_CY - 10, 14, 12)
-    .fill({ color: c.skinHighlight, alpha: 0.3 });
-
-  // Cheek blush
-  g.ellipse(CX - 22, HEAD_CY + 10, 8, 5).fill({ color: 0xffb4b4, alpha: 0.5 });
-  g.ellipse(CX + 22, HEAD_CY + 10, 8, 5).fill({ color: 0xffb4b4, alpha: 0.5 });
-
-  parent.addChild(g);
+function set(g: Grid, r: number, c: number, color: number) {
+  if (r >= 0 && r < GRID_H && c >= 0 && c < GRID_W) g[r][c] = color;
 }
 
-// ─── FACE ───
-function drawFace(parent: Container, c: Colors, equipped: EquippedItems) {
-  const g = new Graphics();
-  const eyeY = HEAD_CY + 2;
-  const eyeSpacing = 16;
-  const hasGlasses = equipped.accessory === "acc_glasses";
+function fillRow(g: Grid, row: number, c1: number, c2: number, color: number) {
+  for (let c = c1; c <= c2; c++) set(g, row, c, color);
+}
 
-  // Eyes - big expressive chibi eyes
-  // Left eye
-  drawEye(g, CX - eyeSpacing, eyeY, c, false);
-  // Right eye
-  drawEye(g, CX + eyeSpacing, eyeY, c, true);
+// ─── HEAD (rows 2-8, centered) ───
+function drawHead(g: Grid, c: Colors) {
+  //        cols: 4-12 (9 wide)
+  // Row 2: top of head
+  fillRow(g, 2, 5, 11, c.skin);
+  // Row 3-4: wider
+  fillRow(g, 3, 4, 12, c.skin);
+  fillRow(g, 4, 4, 12, c.skin);
+  // Row 5: eyes level
+  fillRow(g, 5, 4, 12, c.skin);
+  // Row 6: cheeks
+  fillRow(g, 6, 4, 12, c.skin);
+  // Row 7: mouth
+  fillRow(g, 7, 4, 12, c.skin);
+  // Row 8: chin (narrower)
+  fillRow(g, 8, 5, 11, c.skin);
 
-  // Mouth - cute small smile
-  g.moveTo(CX - 5, HEAD_CY + 16)
-    .quadraticCurveTo(CX, HEAD_CY + 21, CX + 5, HEAD_CY + 16)
-    .stroke({ color: c.outline, alpha: 0.6, width: 1.8 });
+  // Shading on right side
+  set(g, 3, 12, c.skinShade);
+  set(g, 4, 12, c.skinShade);
+  set(g, 5, 12, c.skinShade);
+  set(g, 6, 12, c.skinShade);
+  set(g, 7, 12, c.skinShade);
+}
 
-  // Glasses
+// ─── FACE (eyes, mouth, blush) ───
+function drawFace(g: Grid, c: Colors, accId: string | null) {
+  const hasGlasses = accId === "acc_glasses";
+
+  // Eyes (row 5): col 6 and col 10
+  set(g, 5, 6, c.eye);
+  set(g, 5, 10, c.eye);
+
+  // Eye whites / highlights
+  set(g, 5, 7, c.white);
+  set(g, 5, 9, c.white);
+
+  // Blush (row 6)
+  set(g, 6, 5, c.blush);
+  set(g, 6, 11, c.blush);
+
+  // Mouth (row 7)
+  set(g, 7, 7, c.mouth);
+  set(g, 7, 8, c.mouth);
+  set(g, 7, 9, c.mouth);
+
+  // Glasses overlay
   if (hasGlasses) {
-    drawGlasses(g, c);
-  }
-
-  parent.addChild(g);
-}
-
-function drawEye(g: Graphics, x: number, y: number, c: Colors, isRight: boolean) {
-  // White area
-  g.roundRect(x - 8, y - 7, 16, 14, 5).fill(0xffffff);
-
-  // Iris (dark)
-  const pupilX = isRight ? x + 1 : x - 1;
-  g.circle(pupilX, y, 5.5).fill(c.eye);
-
-  // Pupil highlight (white dot)
-  g.circle(pupilX - 2, y - 2, 2).fill(0xffffff);
-
-  // Small secondary highlight
-  g.circle(pupilX + 1.5, y + 1.5, 1).fill({ color: 0xffffff, alpha: 0.6 });
-
-  // Eye outline
-  g.roundRect(x - 8, y - 7, 16, 14, 5)
-    .stroke({ color: c.outline, width: 1.5 });
-}
-
-function drawGlasses(g: Graphics, c: Colors) {
-  const eyeY = HEAD_CY + 2;
-  // Left lens
-  g.roundRect(CX - 26, eyeY - 10, 22, 18, 4)
-    .stroke({ color: c.accColor, width: 2.5 });
-  // Right lens
-  g.roundRect(CX + 4, eyeY - 10, 22, 18, 4)
-    .stroke({ color: c.accColor, width: 2.5 });
-  // Bridge
-  g.moveTo(CX - 4, eyeY)
-    .lineTo(CX + 4, eyeY)
-    .stroke({ color: c.accColor, width: 2 });
-  // Temples
-  g.moveTo(CX - 26, eyeY - 2).lineTo(CX - 38, eyeY - 5)
-    .stroke({ color: c.accColor, width: 1.5 });
-  g.moveTo(CX + 26, eyeY - 2).lineTo(CX + 38, eyeY - 5)
-    .stroke({ color: c.accColor, width: 1.5 });
-}
-
-// ─── NECK ───
-function drawNeck(parent: Container, c: Colors) {
-  const g = new Graphics();
-  g.roundRect(CX - 8, HEAD_CY + HEAD_R - 4, 16, 14, 3).fill(c.outline);
-  g.roundRect(CX - 6, HEAD_CY + HEAD_R - 3, 12, 12, 2).fill(c.skin);
-  g.roundRect(CX - 6, HEAD_CY + HEAD_R - 3, 12, 12, 2)
-    .fill({ color: c.skinShadow, alpha: 0.2 });
-  parent.addChild(g);
-}
-
-// ─── BODY / SHIRT ───
-function drawBody(parent: Container, pattern: string, c: Colors) {
-  const g = new Graphics();
-  const bx = CX - BODY_W / 2;
-
-  // Outline
-  g.roundRect(bx - 2, BODY_Y - 2, BODY_W + 4, BODY_H + 4, 10).fill(c.outline);
-
-  // Main body
-  g.roundRect(bx, BODY_Y, BODY_W, BODY_H, 8).fill(c.shirt);
-
-  // Shading: right side
-  g.roundRect(CX + 4, BODY_Y + 4, BODY_W / 2 - 4, BODY_H - 8, 6)
-    .fill({ color: c.shirtShadow, alpha: 0.35 });
-
-  // Highlight: top-left
-  g.roundRect(bx + 4, BODY_Y + 4, 16, 20, 5)
-    .fill({ color: c.shirtHighlight, alpha: 0.25 });
-
-  // Collar
-  g.moveTo(CX - 12, BODY_Y + 2)
-    .quadraticCurveTo(CX, BODY_Y + 10, CX + 12, BODY_Y + 2)
-    .stroke({ color: c.shirtShadow, width: 2 });
-
-  // Apply shirt pattern
-  applyShirtDetail(g, pattern, c);
-
-  parent.addChild(g);
-}
-
-function applyShirtDetail(g: Graphics, pattern: string, c: Colors) {
-  const bx = CX - BODY_W / 2;
-  switch (pattern) {
-    case "stripes":
-      for (let i = 0; i < 4; i++) {
-        const y = BODY_Y + 14 + i * 12;
-        g.roundRect(bx + 6, y, BODY_W - 12, 4, 2)
-          .fill({ color: c.shirtShadow, alpha: 0.4 });
-      }
-      break;
-    case "hero": {
-      // Star emblem on chest
-      const sx = CX, sy = BODY_Y + 28;
-      g.star(sx, sy, 5, 10, 5, 0).fill({ color: 0xffd700, alpha: 0.8 });
-      g.star(sx, sy, 5, 10, 5, 0).stroke({ color: 0xffab00, width: 1 });
-      break;
-    }
-    case "hoodie": {
-      // Hood outline behind neck
-      g.roundRect(CX - 20, BODY_Y - 4, 40, 14, 8)
-        .fill(c.shirtShadow);
-      // Zipper line
-      g.moveTo(CX, BODY_Y + 8).lineTo(CX, BODY_Y + BODY_H - 4)
-        .stroke({ color: c.shirtShadow, width: 2 });
-      // Pocket
-      g.roundRect(bx + 8, BODY_Y + 34, BODY_W - 16, 12, 4)
-        .stroke({ color: c.shirtShadow, width: 1.5 });
-      break;
-    }
-    case "tuxedo": {
-      // White shirt center
-      g.roundRect(CX - 8, BODY_Y + 8, 16, BODY_H - 14, 3).fill(0xf0f0f0);
-      // Lapels
-      g.moveTo(CX - 8, BODY_Y + 8).lineTo(CX - 18, BODY_Y + 24)
-        .stroke({ color: darkenColor(c.shirt, 0.3), width: 2.5 });
-      g.moveTo(CX + 8, BODY_Y + 8).lineTo(CX + 18, BODY_Y + 24)
-        .stroke({ color: darkenColor(c.shirt, 0.3), width: 2.5 });
-      // Bow tie
-      g.star(CX, BODY_Y + 6, 4, 5, 2.5, Math.PI / 4)
-        .fill(0xd32f2f);
-      break;
-    }
-    case "dragon": {
-      // Scale pattern
-      for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 4; col++) {
-          const px = bx + 8 + col * 10 + (row % 2) * 5;
-          const py = BODY_Y + 12 + row * 14;
-          g.ellipse(px, py, 5, 4)
-            .fill({ color: lightenColor(c.shirt, 0.2), alpha: 0.4 });
-        }
-      }
-      // Dragon emblem
-      g.circle(CX, BODY_Y + 30, 6).fill({ color: 0xffd700, alpha: 0.7 });
-      g.circle(CX, BODY_Y + 30, 3).fill({ color: 0xff6d00, alpha: 0.8 });
-      break;
-    }
-    case "galaxy": {
-      // Stars/sparkles
-      const stars = [[CX - 14, BODY_Y + 16], [CX + 10, BODY_Y + 22],
-        [CX - 8, BODY_Y + 36], [CX + 16, BODY_Y + 40], [CX, BODY_Y + 48]];
-      for (const [sx, sy] of stars) {
-        g.star(sx, sy, 4, 2.5, 1, 0).fill({ color: 0xffffff, alpha: 0.7 });
-      }
-      // Nebula glow
-      g.ellipse(CX, BODY_Y + 30, 18, 14)
-        .fill({ color: 0x7c4dff, alpha: 0.15 });
-      break;
-    }
+    set(g, 5, 5, c.acc);
+    set(g, 5, 8, c.acc); // bridge
+    set(g, 5, 11, c.acc);
+    set(g, 4, 6, c.acc); set(g, 4, 7, c.acc);
+    set(g, 4, 9, c.acc); set(g, 4, 10, c.acc);
+    set(g, 6, 6, c.acc); set(g, 6, 7, c.acc);
+    set(g, 6, 9, c.acc); set(g, 6, 10, c.acc);
   }
 }
 
-// ─── ARMS ───
-function drawArms(parent: Container, c: Colors) {
-  const g = new Graphics();
-
-  // Left arm
-  const lx = CX - BODY_W / 2 - ARM_W + 4;
-  const armY = BODY_Y + 4;
-  // Outline
-  g.roundRect(lx - 1, armY - 1, ARM_W + 2, ARM_H + 2, 7).fill(c.outline);
-  // Sleeve
-  g.roundRect(lx, armY, ARM_W, ARM_H * 0.55, 6).fill(c.shirt);
-  g.roundRect(lx, armY, ARM_W, ARM_H * 0.55, 6)
-    .fill({ color: c.shirtShadow, alpha: 0.15 });
-  // Skin (forearm)
-  g.roundRect(lx, armY + ARM_H * 0.45, ARM_W, ARM_H * 0.55, 6).fill(c.skin);
-  // Hand
-  g.circle(lx + ARM_W / 2, armY + ARM_H - 2, ARM_W / 2 + 1).fill(c.outline);
-  g.circle(lx + ARM_W / 2, armY + ARM_H - 2, ARM_W / 2).fill(c.skin);
-
-  // Right arm (mirrored, slightly darker for depth)
-  const rx = CX + BODY_W / 2 - 4;
-  g.roundRect(rx - 1, armY - 1, ARM_W + 2, ARM_H + 2, 7).fill(c.outline);
-  g.roundRect(rx, armY, ARM_W, ARM_H * 0.55, 6).fill(c.shirt);
-  g.roundRect(rx, armY, ARM_W, ARM_H * 0.55, 6)
-    .fill({ color: c.shirtShadow, alpha: 0.3 });
-  g.roundRect(rx, armY + ARM_H * 0.45, ARM_W, ARM_H * 0.55, 6).fill(c.skin);
-  g.roundRect(rx, armY + ARM_H * 0.45, ARM_W, ARM_H * 0.55, 6)
-    .fill({ color: c.skinShadow, alpha: 0.15 });
-  g.circle(rx + ARM_W / 2, armY + ARM_H - 2, ARM_W / 2 + 1).fill(c.outline);
-  g.circle(rx + ARM_W / 2, armY + ARM_H - 2, ARM_W / 2).fill(c.skinShadow);
-
-  parent.addChild(g);
-}
-
-// ─── LEGS ───
-function drawLegs(parent: Container, style: string, c: Colors) {
-  const g = new Graphics();
-  const legY = BODY_Y + BODY_H - 6;
-
-  // Left leg
-  const llx = CX - LEG_GAP / 2 - LEG_W;
-  g.roundRect(llx - 1, legY - 1, LEG_W + 2, LEG_H + 2, 6).fill(c.outline);
-
-  if (style === "skirt") {
-    // Skirt
-    g.moveTo(CX - BODY_W / 2 + 2, legY)
-      .lineTo(CX - BODY_W / 2 - 6, legY + 28)
-      .lineTo(CX + BODY_W / 2 + 6, legY + 28)
-      .lineTo(CX + BODY_W / 2 - 2, legY)
-      .fill(c.pants);
-    g.moveTo(CX - BODY_W / 2 + 2, legY)
-      .lineTo(CX - BODY_W / 2 - 6, legY + 28)
-      .lineTo(CX + BODY_W / 2 + 6, legY + 28)
-      .lineTo(CX + BODY_W / 2 - 2, legY)
-      .stroke({ color: c.outline, width: 2 });
-    // Legs showing below skirt
-    g.roundRect(llx, legY + 22, LEG_W, LEG_H - 22, 5).fill(c.skin);
-    const rlx = CX + LEG_GAP / 2;
-    g.roundRect(rlx, legY + 22, LEG_W, LEG_H - 22, 5).fill(c.skin);
-    g.roundRect(rlx, legY + 22, LEG_W, LEG_H - 22, 5)
-      .fill({ color: c.skinShadow, alpha: 0.15 });
-  } else {
-    const pantsH = style === "shorts" ? LEG_H * 0.5 : LEG_H;
-    // Left leg
-    g.roundRect(llx, legY, LEG_W, pantsH, 5).fill(c.pants);
-    if (style === "shorts") {
-      g.roundRect(llx, legY + pantsH - 2, LEG_W, LEG_H - pantsH + 2, 5).fill(c.skin);
-    }
-    // Right leg
-    const rlx = CX + LEG_GAP / 2;
-    g.roundRect(rlx - 1, legY - 1, LEG_W + 2, LEG_H + 2, 6).fill(c.outline);
-    g.roundRect(rlx, legY, LEG_W, pantsH, 5).fill(c.pants);
-    g.roundRect(rlx, legY, LEG_W, pantsH, 5)
-      .fill({ color: c.pantsShadow, alpha: 0.2 });
-    if (style === "shorts") {
-      g.roundRect(rlx, legY + pantsH - 2, LEG_W, LEG_H - pantsH + 2, 5).fill(c.skin);
-      g.roundRect(rlx, legY + pantsH - 2, LEG_W, LEG_H - pantsH + 2, 5)
-        .fill({ color: c.skinShadow, alpha: 0.15 });
-    }
-  }
-
-  parent.addChild(g);
-}
-
-// ─── SHOES ───
-function drawShoes(parent: Container, style: string, c: Colors) {
-  const g = new Graphics();
-  const shoeY = BODY_Y + BODY_H + LEG_H - 10;
-
-  const lsx = CX - LEG_GAP / 2 - FOOT_W + 2;
-  const rsx = CX + LEG_GAP / 2 - 2;
-
-  if (style === "rocket") {
-    // Rocket boots - bigger, with flame
-    drawRocketBoot(g, lsx, shoeY, c, false);
-    drawRocketBoot(g, rsx, shoeY, c, true);
-  } else if (style === "heels") {
-    drawHeel(g, lsx, shoeY, c, false);
-    drawHeel(g, rsx, shoeY, c, true);
-  } else if (style === "boots") {
-    // Taller boots
-    drawBoot(g, lsx, shoeY - 8, c, false);
-    drawBoot(g, rsx, shoeY - 8, c, true);
-  } else if (style === "cloud") {
-    drawCloudShoe(g, lsx, shoeY, c, false);
-    drawCloudShoe(g, rsx, shoeY, c, true);
-  } else {
-    // Sneakers (default)
-    g.roundRect(lsx - 1, shoeY - 1, FOOT_W + 2, SHOE_H + 2, 5).fill(c.outline);
-    g.roundRect(lsx, shoeY, FOOT_W, SHOE_H, 4).fill(c.shoes);
-    g.roundRect(lsx, shoeY + SHOE_H - 4, FOOT_W, 4, 2).fill(c.shoesShadow);
-
-    g.roundRect(rsx - 1, shoeY - 1, FOOT_W + 2, SHOE_H + 2, 5).fill(c.outline);
-    g.roundRect(rsx, shoeY, FOOT_W, SHOE_H, 4).fill(c.shoes);
-    g.roundRect(rsx, shoeY, FOOT_W, SHOE_H, 4)
-      .fill({ color: c.shoesShadow, alpha: 0.25 });
-    g.roundRect(rsx, shoeY + SHOE_H - 4, FOOT_W, 4, 2).fill(c.shoesShadow);
-  }
-
-  parent.addChild(g);
-}
-
-function drawRocketBoot(g: Graphics, x: number, y: number, c: Colors, isRight: boolean) {
-  g.roundRect(x - 1, y - 5, FOOT_W + 2, SHOE_H + 8, 5).fill(c.outline);
-  g.roundRect(x, y - 4, FOOT_W, SHOE_H + 6, 4).fill(c.shoes);
-  // Flame
-  g.ellipse(x + FOOT_W / 2, y + SHOE_H + 4, 6, 8)
-    .fill({ color: 0xff6d00, alpha: 0.8 });
-  g.ellipse(x + FOOT_W / 2, y + SHOE_H + 2, 4, 5)
-    .fill({ color: 0xffab00, alpha: 0.9 });
-}
-
-function drawHeel(g: Graphics, x: number, y: number, c: Colors, isRight: boolean) {
-  g.roundRect(x - 1, y - 1, FOOT_W + 2, SHOE_H + 2, 4).fill(c.outline);
-  g.roundRect(x, y, FOOT_W, SHOE_H, 3).fill(c.shoes);
-  // Heel
-  g.roundRect(x + FOOT_W - 6, y + SHOE_H - 2, 6, 8, 2).fill(c.outline);
-  g.roundRect(x + FOOT_W - 5, y + SHOE_H - 1, 4, 6, 1).fill(c.shoes);
-}
-
-function drawBoot(g: Graphics, x: number, y: number, c: Colors, isRight: boolean) {
-  g.roundRect(x - 1, y - 1, FOOT_W + 2, SHOE_H + 12, 5).fill(c.outline);
-  g.roundRect(x, y, FOOT_W, SHOE_H + 10, 4).fill(c.shoes);
-  // Boot cuff
-  g.roundRect(x, y, FOOT_W, 6, 3).fill(c.shoesShadow);
-  if (isRight) {
-    g.roundRect(x, y, FOOT_W, SHOE_H + 10, 4)
-      .fill({ color: c.shoesShadow, alpha: 0.2 });
-  }
-}
-
-function drawCloudShoe(g: Graphics, x: number, y: number, c: Colors, isRight: boolean) {
-  g.roundRect(x, y, FOOT_W, SHOE_H, 4).fill(c.shoes);
-  // Cloud puffs
-  g.circle(x + 4, y + SHOE_H, 6).fill({ color: 0xe3f2fd, alpha: 0.8 });
-  g.circle(x + FOOT_W / 2, y + SHOE_H + 2, 7).fill({ color: 0xe3f2fd, alpha: 0.8 });
-  g.circle(x + FOOT_W - 4, y + SHOE_H, 6).fill({ color: 0xbbdefb, alpha: 0.7 });
-}
-
-// ─── HAIR (back layer - drawn behind head) ───
-function drawHairBack(parent: Container, style: string, c: Colors, hasHat: boolean) {
-  if (hasHat) return;
-  const g = new Graphics();
-
-  if (style === "long" || style === "ponytail") {
-    // Long hair falling behind
-    g.roundRect(CX - 42, HEAD_CY - 10, 84, 100, 20).fill(c.outline);
-    g.roundRect(CX - 40, HEAD_CY - 8, 80, 96, 18).fill(c.hair);
-    g.roundRect(CX - 40, HEAD_CY - 8, 80, 96, 18)
-      .fill({ color: c.hairShadow, alpha: 0.2 });
-  }
-
-  if (style === "cape_hair" || style === "afro") {
-    // Big volume behind
-    g.circle(CX, HEAD_CY - 4, HEAD_R + 20).fill(c.outline);
-    g.circle(CX, HEAD_CY - 4, HEAD_R + 18).fill(c.hair);
-  }
-
-  parent.addChild(g);
-}
-
-// ─── HAIR (front layer - drawn on top of head) ───
-function drawHairFront(parent: Container, style: string, c: Colors, hasHat: boolean) {
-  if (hasHat) return;
-  const g = new Graphics();
-
+// ─── HAIR ───
+function drawHair(g: Grid, style: string, c: Colors) {
   switch (style) {
-    case "short":
-      drawShortHair(g, c);
-      break;
-    case "long":
-      drawLongHair(g, c);
-      break;
-    case "ponytail":
-      drawPonytailHair(g, c);
-      break;
-    case "bun":
-      drawBunHair(g, c);
-      break;
-    case "curly":
-      drawCurlyHair(g, c);
-      break;
-    case "spike":
-      drawSpikeHair(g, c);
-      break;
-    case "afro":
-      drawAfroHair(g, c);
-      break;
-    case "mohawk":
-      drawMohawkHair(g, c);
-      break;
-    default:
-      drawShortHair(g, c);
+    case "long": drawLongHair(g, c); break;
+    case "ponytail": drawPonytailHair(g, c); break;
+    case "bun": drawBunHair(g, c); break;
+    case "curly": drawCurlyHair(g, c); break;
+    case "spike": drawSpikeHair(g, c); break;
+    case "afro": drawAfroHair(g, c); break;
+    case "mohawk": drawMohawkHair(g, c); break;
+    default: drawShortHair(g, c);
   }
-
-  parent.addChild(g);
 }
 
-function drawShortHair(g: Graphics, c: Colors) {
-  // Top cap
-  g.ellipse(CX, HEAD_CY - 20, HEAD_R + 4, 22).fill(c.outline);
-  g.ellipse(CX, HEAD_CY - 20, HEAD_R + 2, 20).fill(c.hair);
-  // Fringe/bangs
-  g.ellipse(CX - 10, HEAD_CY - HEAD_R + 8, 22, 14).fill(c.hair);
-  g.ellipse(CX + 8, HEAD_CY - HEAD_R + 10, 18, 12).fill(c.hair);
-  // Side tufts
-  g.ellipse(CX - HEAD_R - 2, HEAD_CY - 6, 10, 16).fill(c.outline);
-  g.ellipse(CX - HEAD_R - 1, HEAD_CY - 6, 8, 14).fill(c.hair);
-  g.ellipse(CX + HEAD_R + 2, HEAD_CY - 6, 10, 16).fill(c.outline);
-  g.ellipse(CX + HEAD_R + 1, HEAD_CY - 6, 8, 14).fill(c.hair);
-  // Highlight
-  g.ellipse(CX - 8, HEAD_CY - 28, 10, 6)
-    .fill({ color: c.hairHighlight, alpha: 0.4 });
+function drawShortHair(g: Grid, c: Colors) {
+  const { hair: h, hairHi: hi, hairDark: dk } = c;
+  // Row 0-1: top hair
+  fillRow(g, 0, 6, 10, h);
+  fillRow(g, 1, 4, 12, h);
+  set(g, 1, 5, hi); set(g, 1, 6, hi);
+  // Row 2: over head - hair on top
+  fillRow(g, 2, 4, 12, h);
+  set(g, 2, 5, hi);
+  // Sides
+  set(g, 3, 3, h); set(g, 3, 4, h);
+  set(g, 3, 12, h); set(g, 3, 13, dk);
+  set(g, 4, 3, h);
+  set(g, 4, 13, dk);
 }
 
-function drawLongHair(g: Graphics, c: Colors) {
-  // Top
-  g.ellipse(CX, HEAD_CY - 22, HEAD_R + 6, 24).fill(c.outline);
-  g.ellipse(CX, HEAD_CY - 22, HEAD_R + 4, 22).fill(c.hair);
-  // Bangs
-  g.ellipse(CX - 12, HEAD_CY - HEAD_R + 8, 24, 16).fill(c.hair);
-  g.ellipse(CX + 6, HEAD_CY - HEAD_R + 10, 20, 14).fill(c.hair);
-  // Side curtains
-  g.roundRect(CX - HEAD_R - 8, HEAD_CY - 12, 14, 70, 6).fill(c.outline);
-  g.roundRect(CX - HEAD_R - 6, HEAD_CY - 10, 10, 66, 4).fill(c.hair);
-  g.roundRect(CX + HEAD_R - 4, HEAD_CY - 12, 14, 70, 6).fill(c.outline);
-  g.roundRect(CX + HEAD_R - 2, HEAD_CY - 10, 10, 66, 4).fill(c.hair);
-  g.roundRect(CX + HEAD_R - 2, HEAD_CY - 10, 10, 66, 4)
-    .fill({ color: c.hairShadow, alpha: 0.2 });
-  // Highlight
-  g.ellipse(CX - 10, HEAD_CY - 30, 12, 7)
-    .fill({ color: c.hairHighlight, alpha: 0.4 });
+function drawLongHair(g: Grid, c: Colors) {
+  const { hair: h, hairHi: hi, hairDark: dk } = c;
+  fillRow(g, 0, 6, 10, h);
+  fillRow(g, 1, 4, 12, h);
+  set(g, 1, 5, hi); set(g, 1, 6, hi);
+  fillRow(g, 2, 4, 12, h);
+  set(g, 2, 5, hi);
+  // Long sides going down
+  set(g, 3, 3, h); set(g, 3, 4, h); set(g, 3, 12, h); set(g, 3, 13, h);
+  set(g, 4, 3, h); set(g, 4, 13, h);
+  set(g, 5, 3, h); set(g, 5, 13, dk);
+  set(g, 6, 3, h); set(g, 6, 13, dk);
+  set(g, 7, 3, dk); set(g, 7, 13, dk);
+  set(g, 8, 3, dk); set(g, 8, 13, dk);
+  set(g, 9, 3, dk); set(g, 9, 13, dk);
 }
 
-function drawPonytailHair(g: Graphics, c: Colors) {
-  // Base similar to short
+function drawPonytailHair(g: Grid, c: Colors) {
   drawShortHair(g, c);
-  // Ponytail going right-back
-  g.roundRect(CX + HEAD_R - 4, HEAD_CY - 10, 12, 60, 6).fill(c.outline);
-  g.roundRect(CX + HEAD_R - 2, HEAD_CY - 8, 8, 56, 4).fill(c.hair);
-  // Hair tie
-  g.roundRect(CX + HEAD_R - 4, HEAD_CY - 12, 12, 6, 3).fill(0xe91e63);
+  const { hair: h, hairDark: dk } = c;
+  // Ponytail right
+  set(g, 2, 13, h); set(g, 3, 14, h);
+  set(g, 4, 14, h); set(g, 5, 14, h);
+  set(g, 6, 14, dk); set(g, 7, 14, dk);
+  // Tie
+  set(g, 2, 12, 0xe91e63);
 }
 
-function drawBunHair(g: Graphics, c: Colors) {
+function drawBunHair(g: Grid, c: Colors) {
   drawShortHair(g, c);
+  const { hair: h, hairHi: hi } = c;
   // Bun on top
-  g.circle(CX + 4, HEAD_CY - HEAD_R - 10, 14).fill(c.outline);
-  g.circle(CX + 4, HEAD_CY - HEAD_R - 10, 12).fill(c.hair);
-  g.circle(CX + 2, HEAD_CY - HEAD_R - 14, 4)
-    .fill({ color: c.hairHighlight, alpha: 0.4 });
+  fillRow(g, 0, 7, 10, h);
+  set(g, 0, 8, hi);
+  // Extra rows above (if space in grid, bun sits on row 0)
 }
 
-function drawCurlyHair(g: Graphics, c: Colors) {
-  // Voluminous curly hair
-  g.ellipse(CX, HEAD_CY - 16, HEAD_R + 10, 28).fill(c.outline);
-  g.ellipse(CX, HEAD_CY - 16, HEAD_R + 8, 26).fill(c.hair);
-  // Curly bumps
-  const bumpR = 8;
-  for (let angle = -2.5; angle <= 2.5; angle += 0.8) {
-    const bx = CX + Math.sin(angle) * (HEAD_R + 4);
-    const by = HEAD_CY - 4 + Math.cos(angle) * 14;
-    g.circle(bx, by, bumpR).fill(c.outline);
-    g.circle(bx, by, bumpR - 1.5).fill(c.hair);
-  }
-  // Side volume
-  g.ellipse(CX - HEAD_R - 6, HEAD_CY, 12, 22).fill(c.outline);
-  g.ellipse(CX - HEAD_R - 4, HEAD_CY, 10, 20).fill(c.hair);
-  g.ellipse(CX + HEAD_R + 6, HEAD_CY, 12, 22).fill(c.outline);
-  g.ellipse(CX + HEAD_R + 4, HEAD_CY, 10, 20).fill(c.hair);
-  // Highlight
-  g.ellipse(CX - 6, HEAD_CY - 30, 10, 6)
-    .fill({ color: c.hairHighlight, alpha: 0.5 });
+function drawCurlyHair(g: Grid, c: Colors) {
+  const { hair: h, hairHi: hi, hairDark: dk } = c;
+  fillRow(g, 0, 5, 11, h);
+  set(g, 0, 6, hi);
+  fillRow(g, 1, 3, 13, h);
+  set(g, 1, 4, hi); set(g, 1, 5, hi);
+  fillRow(g, 2, 3, 13, h);
+  set(g, 2, 4, hi);
+  // Curly bumps on sides
+  set(g, 3, 2, h); set(g, 3, 3, h); set(g, 3, 13, h); set(g, 3, 14, h);
+  set(g, 4, 2, h); set(g, 4, 3, h); set(g, 4, 13, dk); set(g, 4, 14, dk);
+  set(g, 5, 2, dk); set(g, 5, 3, h); set(g, 5, 13, dk);
+  set(g, 6, 3, dk); set(g, 6, 13, dk);
 }
 
-function drawSpikeHair(g: Graphics, c: Colors) {
-  // Base
-  g.ellipse(CX, HEAD_CY - 20, HEAD_R + 2, 20).fill(c.hair);
-  // Spikes pointing up
-  const spikes = [
-    { x: CX - 20, y: HEAD_CY - 48, r: -0.3 },
-    { x: CX - 6, y: HEAD_CY - 55, r: -0.1 },
-    { x: CX + 8, y: HEAD_CY - 52, r: 0.15 },
-    { x: CX + 22, y: HEAD_CY - 44, r: 0.3 },
-  ];
-  for (const spike of spikes) {
-    g.moveTo(spike.x - 10, HEAD_CY - HEAD_R + 6)
-      .lineTo(spike.x, spike.y)
-      .lineTo(spike.x + 10, HEAD_CY - HEAD_R + 6)
-      .fill(c.outline);
-    g.moveTo(spike.x - 8, HEAD_CY - HEAD_R + 8)
-      .lineTo(spike.x, spike.y + 3)
-      .lineTo(spike.x + 8, HEAD_CY - HEAD_R + 8)
-      .fill(c.hair);
-  }
-  // Side tufts
-  g.ellipse(CX - HEAD_R, HEAD_CY - 4, 8, 14).fill(c.hair);
-  g.ellipse(CX + HEAD_R, HEAD_CY - 4, 8, 14).fill(c.hair);
-  // Highlight on tips
-  for (const spike of spikes) {
-    g.ellipse(spike.x, spike.y + 6, 4, 5)
-      .fill({ color: c.hairHighlight, alpha: 0.5 });
-  }
+function drawSpikeHair(g: Grid, c: Colors) {
+  const { hair: h, hairHi: hi, hairDark: dk } = c;
+  // Spikes up
+  set(g, 0, 5, h); set(g, 0, 8, hi); set(g, 0, 11, h);
+  fillRow(g, 1, 4, 12, h);
+  set(g, 1, 5, hi); set(g, 1, 9, hi);
+  fillRow(g, 2, 4, 12, h);
+  set(g, 2, 5, hi);
+  set(g, 3, 3, h); set(g, 3, 4, h); set(g, 3, 12, dk); set(g, 3, 13, h);
+  set(g, 4, 3, h); set(g, 4, 13, dk);
 }
 
-function drawAfroHair(g: Graphics, c: Colors) {
-  const afroR = HEAD_R + 22;
-  // Big round afro
-  g.circle(CX, HEAD_CY - 6, afroR + 2).fill(c.outline);
-  g.circle(CX, HEAD_CY - 6, afroR).fill(c.hair);
-  // Volume bumps
-  for (let i = 0; i < 8; i++) {
-    const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-    const bx = CX + Math.cos(angle) * (afroR - 4);
-    const by = HEAD_CY - 6 + Math.sin(angle) * (afroR - 4);
-    g.circle(bx, by, 10).fill(c.hair);
-  }
-  // Highlight
-  g.ellipse(CX - 14, HEAD_CY - 30, 16, 10)
-    .fill({ color: c.hairHighlight, alpha: 0.35 });
+function drawAfroHair(g: Grid, c: Colors) {
+  const { hair: h, hairHi: hi, hairDark: dk } = c;
+  fillRow(g, 0, 4, 12, h);
+  set(g, 0, 5, hi); set(g, 0, 6, hi);
+  fillRow(g, 1, 2, 14, h);
+  set(g, 1, 3, hi); set(g, 1, 4, hi);
+  fillRow(g, 2, 2, 14, h);
+  set(g, 2, 3, hi);
+  set(g, 3, 1, h); set(g, 3, 2, h); set(g, 3, 3, h);
+  set(g, 3, 13, h); set(g, 3, 14, h); set(g, 3, 15, dk);
+  set(g, 4, 1, h); set(g, 4, 2, h);
+  set(g, 4, 14, dk); set(g, 4, 15, dk);
+  set(g, 5, 2, h); set(g, 5, 14, dk);
+  set(g, 6, 2, dk); set(g, 6, 14, dk);
 }
 
-function drawMohawkHair(g: Graphics, c: Colors) {
+function drawMohawkHair(g: Grid, c: Colors) {
+  const { hair: h, hairHi: hi } = c;
+  // Tall mohawk center strip
+  set(g, 0, 7, h); set(g, 0, 8, hi); set(g, 0, 9, h);
+  fillRow(g, 1, 6, 10, h);
+  set(g, 1, 7, hi);
+  fillRow(g, 2, 6, 10, h);
   // Shaved sides
-  g.ellipse(CX - HEAD_R, HEAD_CY - 4, 6, 12).fill(c.outline);
-  g.ellipse(CX - HEAD_R + 1, HEAD_CY - 4, 4, 10).fill(c.skinShadow);
-  g.ellipse(CX + HEAD_R, HEAD_CY - 4, 6, 12).fill(c.outline);
-  g.ellipse(CX + HEAD_R - 1, HEAD_CY - 4, 4, 10).fill(c.skinShadow);
-  // Mohawk strip
-  g.roundRect(CX - 10, HEAD_CY - 58, 20, 50, 6).fill(c.outline);
-  g.roundRect(CX - 8, HEAD_CY - 56, 16, 46, 4).fill(c.hair);
-  // Highlight
-  g.ellipse(CX - 2, HEAD_CY - 48, 5, 10)
-    .fill({ color: c.hairHighlight, alpha: 0.5 });
+  set(g, 3, 4, c.skinShade); set(g, 3, 12, c.skinShade);
+}
+
+// ─── BODY / SHIRT (rows 9-13) ───
+function drawBody(g: Grid, shirtId: string, c: Colors) {
+  // Neck (row 9)
+  fillRow(g, 9, 7, 9, c.skin);
+
+  // Shoulders (row 10)
+  fillRow(g, 10, 5, 11, c.shirt);
+  // Body rows 11-13
+  fillRow(g, 11, 5, 11, c.shirt);
+  fillRow(g, 12, 5, 11, c.shirt);
+  fillRow(g, 13, 6, 10, c.shirt);
+
+  // Shading right
+  set(g, 10, 11, c.shirtShade);
+  set(g, 11, 11, c.shirtShade);
+  set(g, 12, 11, c.shirtShade);
+
+  // Shirt pattern
+  applyShirtPattern(g, shirtId, c);
+}
+
+function applyShirtPattern(g: Grid, shirtId: string, c: Colors) {
+  if (shirtId.includes("striped")) {
+    fillRow(g, 11, 6, 10, c.shirtShade);
+  } else if (shirtId.includes("superhero")) {
+    set(g, 11, 8, 0xffd700); // star
+    set(g, 12, 7, 0xffd700); set(g, 12, 8, 0xffd700); set(g, 12, 9, 0xffd700);
+  } else if (shirtId.includes("hoodie")) {
+    set(g, 10, 7, c.shirtShade); set(g, 10, 9, c.shirtShade);
+    set(g, 11, 8, c.shirtShade); set(g, 12, 8, c.shirtShade);
+  } else if (shirtId.includes("tuxedo")) {
+    // White shirt center + lapels
+    set(g, 11, 8, 0xf0f0f0);
+    set(g, 12, 8, 0xf0f0f0);
+    set(g, 11, 6, c.shirtShade); set(g, 11, 10, c.shirtShade);
+    set(g, 10, 8, 0xd32f2f); // tie knot
+    set(g, 11, 8, 0xd32f2f); // tie
+    set(g, 12, 8, 0xd32f2f);
+  } else if (shirtId.includes("dragon")) {
+    set(g, 11, 7, lightenColor(c.shirt, 0.2));
+    set(g, 11, 9, lightenColor(c.shirt, 0.2));
+    set(g, 12, 8, 0xffd700);
+  } else if (shirtId.includes("galaxy")) {
+    set(g, 11, 6, 0xffffff); set(g, 12, 9, 0xffffff);
+    set(g, 11, 10, 0x7c4dff);
+  }
+}
+
+// ─── ARMS (rows 11-13, cols 3-4 left, 12-13 right) ───
+function drawArms(g: Grid, c: Colors) {
+  // Left arm
+  set(g, 11, 4, c.shirt);
+  set(g, 12, 3, c.shirt); set(g, 12, 4, c.shirtShade);
+  set(g, 13, 3, c.skin); set(g, 13, 4, c.skin); // hand
+
+  // Right arm
+  set(g, 11, 12, c.shirtShade);
+  set(g, 12, 12, c.shirtShade); set(g, 12, 13, c.shirtShade);
+  set(g, 13, 12, c.skinShade); set(g, 13, 13, c.skinShade); // hand
+}
+
+// ─── LEGS / PANTS (rows 14-18) ───
+function drawLegs(g: Grid, pantsId: string, c: Colors) {
+  const isShorts = pantsId.includes("shorts");
+  const isSkirt = pantsId.includes("skirt");
+
+  if (isSkirt) {
+    // Skirt flares out
+    fillRow(g, 14, 5, 11, c.pants);
+    fillRow(g, 15, 4, 12, c.pants);
+    set(g, 15, 4, c.pantsShade); set(g, 15, 12, c.pantsShade);
+    // Legs below
+    fillRow(g, 16, 5, 7, c.skin); fillRow(g, 16, 9, 11, c.skin);
+    fillRow(g, 17, 5, 7, c.skin); fillRow(g, 17, 9, 11, c.skin);
+  } else {
+    fillRow(g, 14, 5, 11, c.pants);
+    fillRow(g, 15, 5, 11, c.pants);
+    set(g, 15, 8, c.pantsShade); // seam
+    // Lower legs
+    if (isShorts) {
+      fillRow(g, 16, 5, 7, c.skin); fillRow(g, 16, 9, 11, c.skin);
+      fillRow(g, 17, 5, 7, c.skin); fillRow(g, 17, 9, 11, c.skin);
+    } else {
+      fillRow(g, 16, 5, 7, c.pants); fillRow(g, 16, 9, 11, c.pants);
+      set(g, 16, 11, c.pantsShade);
+      fillRow(g, 17, 5, 7, c.pantsShade); fillRow(g, 17, 9, 11, c.pantsShade);
+    }
+  }
+}
+
+// ─── SHOES (rows 18-19) ───
+function drawShoes(g: Grid, shoesId: string, c: Colors) {
+  const isRocket = shoesId.includes("rocket");
+  const isBoots = shoesId.includes("boots") && !isRocket;
+  const isHeels = shoesId.includes("heels");
+  const isCloud = shoesId.includes("cloud");
+
+  // Left shoe
+  fillRow(g, 18, 4, 7, c.shoes);
+  fillRow(g, 19, 4, 7, c.shoesShade);
+  // Right shoe
+  fillRow(g, 18, 9, 12, c.shoes);
+  fillRow(g, 19, 9, 12, c.shoesShade);
+
+  if (isRocket) {
+    // Flames below shoes
+    set(g, 20, 5, 0xff6d00); set(g, 20, 6, 0xffab00);
+    set(g, 20, 10, 0xff6d00); set(g, 20, 11, 0xffab00);
+  } else if (isBoots) {
+    // Taller - extend upward
+    fillRow(g, 17, 4, 7, c.shoes); fillRow(g, 17, 9, 12, c.shoes);
+  } else if (isHeels) {
+    // Heel point
+    set(g, 20, 4, c.shoesShade); set(g, 20, 9, c.shoesShade);
+  } else if (isCloud) {
+    // Cloud puffs below
+    set(g, 20, 4, 0xe3f2fd); set(g, 20, 5, 0xbbdefb); set(g, 20, 6, 0xe3f2fd);
+    set(g, 20, 9, 0xe3f2fd); set(g, 20, 10, 0xbbdefb); set(g, 20, 11, 0xe3f2fd);
+  }
 }
 
 // ─── HATS ───
-function drawHat(parent: Container, hatId: string | null, c: Colors) {
-  if (!hatId || !c.hat) return;
-  const g = new Graphics();
-  const hat = c.hat;
-  const shadow = c.hatShadow!;
-  const hl = c.hatHighlight!;
+function drawHatPixels(g: Grid, hatId: string, c: Colors) {
+  const h = c.hat!;
+  const sh = c.hatShade!;
 
   if (hatId.includes("baseball")) {
-    g.ellipse(CX, HEAD_CY - HEAD_R + 6, HEAD_R + 8, 18).fill(c.outline);
-    g.ellipse(CX, HEAD_CY - HEAD_R + 6, HEAD_R + 6, 16).fill(hat);
-    g.ellipse(CX - 4, HEAD_CY - HEAD_R + 2, HEAD_R - 4, 8)
-      .fill({ color: hl, alpha: 0.3 });
+    fillRow(g, 0, 5, 11, h);
+    fillRow(g, 1, 4, 12, h); set(g, 1, 5, lightenColor(h, 0.15));
+    fillRow(g, 2, 4, 12, h);
     // Brim
-    g.ellipse(CX - 6, HEAD_CY - HEAD_R + 20, HEAD_R + 12, 8).fill(c.outline);
-    g.ellipse(CX - 6, HEAD_CY - HEAD_R + 20, HEAD_R + 10, 6).fill(shadow);
+    fillRow(g, 3, 2, 12, sh);
   } else if (hatId.includes("beanie")) {
-    g.ellipse(CX, HEAD_CY - HEAD_R + 2, HEAD_R + 6, 22).fill(c.outline);
-    g.ellipse(CX, HEAD_CY - HEAD_R + 2, HEAD_R + 4, 20).fill(hat);
-    // Pompom
-    g.circle(CX, HEAD_CY - HEAD_R - 14, 8).fill(c.outline);
-    g.circle(CX, HEAD_CY - HEAD_R - 14, 6).fill(hl);
-    // Ribbed edge
-    g.roundRect(CX - HEAD_R - 4, HEAD_CY - HEAD_R + 14, HEAD_R * 2 + 8, 8, 3)
-      .fill(shadow);
+    set(g, 0, 8, lightenColor(h, 0.3)); // pompom
+    fillRow(g, 1, 5, 11, h); set(g, 1, 6, lightenColor(h, 0.15));
+    fillRow(g, 2, 4, 12, h);
+    fillRow(g, 3, 4, 12, sh); // ribbed edge
   } else if (hatId.includes("crown")) {
-    // Crown with jewels
-    const crY = HEAD_CY - HEAD_R - 4;
-    g.roundRect(CX - 22, crY, 44, 20, 3).fill(c.outline);
-    g.roundRect(CX - 20, crY + 2, 40, 16, 2).fill(hat);
-    // Points
-    for (const px of [-16, -4, 8, 20]) {
-      g.moveTo(CX + px - 6, crY + 2)
-        .lineTo(CX + px, crY - 12)
-        .lineTo(CX + px + 6, crY + 2)
-        .fill(hat);
-      g.moveTo(CX + px - 6, crY + 2)
-        .lineTo(CX + px, crY - 12)
-        .lineTo(CX + px + 6, crY + 2)
-        .stroke({ color: c.outline, width: 1.5 });
-    }
-    // Jewels
-    g.circle(CX - 10, crY + 10, 3).fill(0xe53935);
-    g.circle(CX + 4, crY + 10, 3).fill(0x2196f3);
-    g.circle(CX + 18, crY + 10, 3).fill(0x4caf50);
-    // Highlight
-    g.roundRect(CX - 16, crY + 3, 12, 4, 2)
-      .fill({ color: hl, alpha: 0.4 });
+    set(g, 0, 5, h); set(g, 0, 8, h); set(g, 0, 11, h); // points
+    fillRow(g, 1, 5, 11, h);
+    set(g, 1, 7, 0xe53935); set(g, 1, 9, 0x2196f3); // jewels
+    fillRow(g, 2, 5, 11, h);
   } else if (hatId.includes("wizard")) {
-    const tipY = HEAD_CY - HEAD_R - 50;
-    // Tall cone
-    g.moveTo(CX - HEAD_R - 6, HEAD_CY - HEAD_R + 18)
-      .lineTo(CX + 4, tipY)
-      .lineTo(CX + HEAD_R + 6, HEAD_CY - HEAD_R + 18)
-      .fill(c.outline);
-    g.moveTo(CX - HEAD_R - 4, HEAD_CY - HEAD_R + 16)
-      .lineTo(CX + 4, tipY + 3)
-      .lineTo(CX + HEAD_R + 4, HEAD_CY - HEAD_R + 16)
-      .fill(hat);
-    // Star
-    g.star(CX, HEAD_CY - HEAD_R - 16, 5, 8, 4, 0).fill(0xffd700);
-    // Brim
-    g.ellipse(CX, HEAD_CY - HEAD_R + 18, HEAD_R + 14, 8).fill(c.outline);
-    g.ellipse(CX, HEAD_CY - HEAD_R + 18, HEAD_R + 12, 6).fill(shadow);
+    set(g, 0, 8, h); // tip
+    fillRow(g, 1, 6, 10, h); set(g, 1, 8, 0xffd700); // star
+    fillRow(g, 2, 4, 12, h);
+    fillRow(g, 3, 3, 13, sh); // wide brim
   } else if (hatId.includes("santa")) {
-    const white = 0xf5f5f5;
-    g.ellipse(CX, HEAD_CY - HEAD_R + 4, HEAD_R + 4, 18).fill(hat);
-    // Droopy tip
-    g.moveTo(CX + 10, HEAD_CY - HEAD_R - 8)
-      .quadraticCurveTo(CX + 30, HEAD_CY - HEAD_R, CX + 28, HEAD_CY - HEAD_R + 16)
-      .lineTo(CX + 10, HEAD_CY - HEAD_R + 4)
-      .fill(hat);
-    g.circle(CX + 28, HEAD_CY - HEAD_R + 16, 6).fill(white);
-    // Fur trim
-    g.roundRect(CX - HEAD_R - 6, HEAD_CY - HEAD_R + 14, HEAD_R * 2 + 12, 10, 5)
-      .fill(white);
+    fillRow(g, 0, 9, 12, h); set(g, 0, 12, 0xf5f5f5); // droopy tip
+    fillRow(g, 1, 5, 11, h);
+    fillRow(g, 2, 4, 12, h);
+    fillRow(g, 3, 4, 12, 0xf5f5f5); // white trim
   } else if (hatId.includes("headphones")) {
-    // Headband
-    g.ellipse(CX, HEAD_CY - HEAD_R + 2, HEAD_R + 6, HEAD_R + 2)
-      .stroke({ color: c.outline, width: 5 });
-    g.ellipse(CX, HEAD_CY - HEAD_R + 2, HEAD_R + 4, HEAD_R)
-      .stroke({ color: hat, width: 3 });
-    // Left ear cup
-    g.roundRect(CX - HEAD_R - 10, HEAD_CY - 8, 16, 20, 5).fill(c.outline);
-    g.roundRect(CX - HEAD_R - 8, HEAD_CY - 6, 12, 16, 4).fill(hat);
-    // Right ear cup
-    g.roundRect(CX + HEAD_R - 4, HEAD_CY - 8, 16, 20, 5).fill(c.outline);
-    g.roundRect(CX + HEAD_R - 2, HEAD_CY - 6, 12, 16, 4).fill(hat);
+    fillRow(g, 1, 5, 11, h);
+    // Ear cups
+    set(g, 4, 2, h); set(g, 4, 3, h); set(g, 5, 2, sh); set(g, 5, 3, sh);
+    set(g, 4, 13, h); set(g, 4, 14, h); set(g, 5, 13, sh); set(g, 5, 14, sh);
   } else if (hatId.includes("halo")) {
-    const gold = 0xffd700;
-    g.ellipse(CX, HEAD_CY - HEAD_R - 12, 26, 6)
-      .stroke({ color: gold, width: 4, alpha: 0.9 });
-    g.ellipse(CX, HEAD_CY - HEAD_R - 12, 26, 6)
-      .fill({ color: 0xffecb3, alpha: 0.3 });
+    fillRow(g, 0, 5, 11, 0xffd700);
+    set(g, 0, 5, 0xffecb3); set(g, 0, 11, 0xffecb3);
   } else if (hatId.includes("devil")) {
-    // Left horn
-    g.moveTo(CX - HEAD_R + 4, HEAD_CY - HEAD_R + 8)
-      .quadraticCurveTo(CX - HEAD_R - 10, HEAD_CY - HEAD_R - 20, CX - HEAD_R + 14, HEAD_CY - HEAD_R - 14)
-      .fill(hat);
-    g.moveTo(CX - HEAD_R + 4, HEAD_CY - HEAD_R + 8)
-      .quadraticCurveTo(CX - HEAD_R - 10, HEAD_CY - HEAD_R - 20, CX - HEAD_R + 14, HEAD_CY - HEAD_R - 14)
-      .stroke({ color: c.outline, width: 2 });
-    // Right horn
-    g.moveTo(CX + HEAD_R - 4, HEAD_CY - HEAD_R + 8)
-      .quadraticCurveTo(CX + HEAD_R + 10, HEAD_CY - HEAD_R - 20, CX + HEAD_R - 14, HEAD_CY - HEAD_R - 14)
-      .fill(hat);
-    g.moveTo(CX + HEAD_R - 4, HEAD_CY - HEAD_R + 8)
-      .quadraticCurveTo(CX + HEAD_R + 10, HEAD_CY - HEAD_R - 20, CX + HEAD_R - 14, HEAD_CY - HEAD_R - 14)
-      .stroke({ color: c.outline, width: 2 });
+    set(g, 0, 3, h); set(g, 1, 4, sh);
+    set(g, 0, 13, h); set(g, 1, 12, sh);
   } else if (hatId.includes("astronaut")) {
-    const visor = 0x42a5f5;
-    // Helmet dome
-    g.circle(CX, HEAD_CY, HEAD_R + 12).fill(c.outline);
-    g.circle(CX, HEAD_CY, HEAD_R + 10).fill(hat);
+    fillRow(g, 1, 4, 12, 0xe0e0e0);
+    fillRow(g, 2, 3, 13, 0xe0e0e0);
+    fillRow(g, 3, 3, 13, 0xe0e0e0);
     // Visor
-    g.ellipse(CX, HEAD_CY + 2, HEAD_R - 2, HEAD_R - 6).fill(c.outline);
-    g.ellipse(CX, HEAD_CY + 2, HEAD_R - 4, HEAD_R - 8).fill(visor);
-    // Visor glare
-    g.ellipse(CX - 10, HEAD_CY - 6, 8, 6)
-      .fill({ color: 0x90caf9, alpha: 0.5 });
+    fillRow(g, 4, 5, 11, 0x42a5f5);
+    fillRow(g, 5, 5, 11, 0x42a5f5);
+    set(g, 4, 6, 0x90caf9); // glare
   }
-
-  parent.addChild(g);
 }
 
-// ─── ACCESSORIES (back) ───
-function drawAccessoryBack(parent: Container, accId: string | null, c: Colors) {
+// ─── ACCESSORIES (back layer) ───
+function drawAccessoryBack(g: Grid, accId: string | null, c: Colors) {
   if (!accId) return;
-  const g = new Graphics();
-
   if (accId.includes("cape")) {
-    g.moveTo(CX - 22, BODY_Y + 6)
-      .quadraticCurveTo(CX - 40, BODY_Y + 60, CX - 30, BODY_Y + 100)
-      .lineTo(CX + 30, BODY_Y + 100)
-      .quadraticCurveTo(CX + 40, BODY_Y + 60, CX + 22, BODY_Y + 6)
-      .fill(c.accColor);
-    g.moveTo(CX - 22, BODY_Y + 6)
-      .quadraticCurveTo(CX - 40, BODY_Y + 60, CX - 30, BODY_Y + 100)
-      .lineTo(CX + 30, BODY_Y + 100)
-      .quadraticCurveTo(CX + 40, BODY_Y + 60, CX + 22, BODY_Y + 6)
-      .stroke({ color: c.outline, width: 2 });
-    // Inner fold shading
-    g.ellipse(CX + 8, BODY_Y + 60, 16, 30)
-      .fill({ color: darkenColor(c.accColor, 0.2), alpha: 0.3 });
+    set(g, 11, 2, c.acc); set(g, 12, 1, c.acc); set(g, 12, 2, c.acc);
+    set(g, 13, 1, c.acc); set(g, 14, 1, darkenColor(c.acc, 0.2));
+    set(g, 11, 14, c.acc); set(g, 12, 14, c.acc); set(g, 12, 15, c.acc);
+    set(g, 13, 15, c.acc); set(g, 14, 15, darkenColor(c.acc, 0.2));
   } else if (accId.includes("wings")) {
-    const wc = c.accColor;
-    // Left wing
-    g.moveTo(CX - 24, BODY_Y + 10)
-      .quadraticCurveTo(CX - 70, BODY_Y - 20, CX - 60, BODY_Y + 30)
-      .quadraticCurveTo(CX - 65, BODY_Y + 50, CX - 28, BODY_Y + 40)
-      .fill(wc);
-    g.moveTo(CX - 24, BODY_Y + 10)
-      .quadraticCurveTo(CX - 70, BODY_Y - 20, CX - 60, BODY_Y + 30)
-      .quadraticCurveTo(CX - 65, BODY_Y + 50, CX - 28, BODY_Y + 40)
-      .stroke({ color: c.outline, width: 1.5 });
-    // Right wing
-    g.moveTo(CX + 24, BODY_Y + 10)
-      .quadraticCurveTo(CX + 70, BODY_Y - 20, CX + 60, BODY_Y + 30)
-      .quadraticCurveTo(CX + 65, BODY_Y + 50, CX + 28, BODY_Y + 40)
-      .fill(wc);
-    g.moveTo(CX + 24, BODY_Y + 10)
-      .quadraticCurveTo(CX + 70, BODY_Y - 20, CX + 60, BODY_Y + 30)
-      .quadraticCurveTo(CX + 65, BODY_Y + 50, CX + 28, BODY_Y + 40)
-      .stroke({ color: c.outline, width: 1.5 });
+    set(g, 10, 2, c.acc); set(g, 10, 3, c.acc);
+    set(g, 11, 1, lightenColor(c.acc, 0.2)); set(g, 11, 2, c.acc); set(g, 11, 3, c.acc);
+    set(g, 10, 13, c.acc); set(g, 10, 14, c.acc);
+    set(g, 11, 13, c.acc); set(g, 11, 14, c.acc); set(g, 11, 15, lightenColor(c.acc, 0.2));
   } else if (accId.includes("backpack")) {
-    g.roundRect(CX + 16, BODY_Y + 4, 24, 36, 6).fill(c.outline);
-    g.roundRect(CX + 18, BODY_Y + 6, 20, 32, 4).fill(c.accColor);
-    // Flap
-    g.roundRect(CX + 18, BODY_Y + 6, 20, 12, 4).fill(darkenColor(c.accColor, 0.15));
-    // Strap
-    g.moveTo(CX + 20, BODY_Y + 4).lineTo(CX + 14, BODY_Y - 4)
-      .stroke({ color: c.outline, width: 2.5 });
+    set(g, 10, 13, c.acc); set(g, 11, 13, c.acc); set(g, 11, 14, c.acc);
+    set(g, 12, 13, darkenColor(c.acc, 0.15)); set(g, 12, 14, c.acc);
   } else if (accId.includes("shield")) {
-    g.roundRect(CX - 46, BODY_Y + 10, 30, 38, 8).fill(c.outline);
-    g.roundRect(CX - 44, BODY_Y + 12, 26, 34, 6).fill(c.accColor);
-    // Emblem
-    g.circle(CX - 31, BODY_Y + 29, 8).fill(lightenColor(c.accColor, 0.3));
-    g.circle(CX - 31, BODY_Y + 29, 4).fill(c.accColor);
+    set(g, 11, 1, c.acc); set(g, 11, 2, lightenColor(c.acc, 0.2));
+    set(g, 12, 1, c.acc); set(g, 12, 2, c.acc);
+    set(g, 13, 2, darkenColor(c.acc, 0.2));
   }
-
-  parent.addChild(g);
 }
 
-// ─── ACCESSORIES (front) ───
-function drawAccessoryFront(parent: Container, accId: string | null, c: Colors) {
+// ─── ACCESSORIES (front layer) ───
+function drawAccessoryFront(g: Grid, accId: string | null, c: Colors) {
   if (!accId) return;
+  if (accId.includes("sword")) {
+    set(g, 8, 14, 0xc0c0c0); set(g, 9, 14, 0xc0c0c0);
+    set(g, 10, 14, 0xc0c0c0); set(g, 11, 14, 0x8d6e63);
+    set(g, 12, 14, 0x5d4037);
+  } else if (accId.includes("pet_cat")) {
+    set(g, 18, 14, c.acc); set(g, 18, 15, c.acc);
+    set(g, 19, 14, c.acc); set(g, 19, 15, darkenColor(c.acc, 0.2));
+    set(g, 17, 14, c.acc); set(g, 17, 15, c.acc); // ears
+    set(g, 18, 16, c.acc); // tail
+  } else if (accId.includes("pet_dog")) {
+    set(g, 18, 14, c.acc); set(g, 18, 15, c.acc);
+    set(g, 19, 14, c.acc); set(g, 19, 15, darkenColor(c.acc, 0.2));
+    set(g, 17, 13, darkenColor(c.acc, 0.2)); set(g, 17, 16, darkenColor(c.acc, 0.2)); // floppy ears
+    set(g, 18, 16, c.acc); // tail
+  }
+}
+
+// ─── SHADOW (row 21-22) ───
+function drawShadow(g: Grid) {
+  // Small shadow ellipse at feet
+  fillRow(g, 21, 5, 11, -1); // -1 = special shadow marker
+  fillRow(g, 22, 6, 10, -1);
+}
+
+// ─── AUTO-OUTLINE ───
+function addOutline(g: Grid, outlineColor: number) {
+  const snap = g.map(r => [...r]);
+  const dirs: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+  for (let r = 0; r < GRID_H; r++) {
+    for (let c = 0; c < GRID_W; c++) {
+      if (snap[r][c] !== null && snap[r][c] !== -1) {
+        for (const [dr, dc] of dirs) {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < GRID_H && nc >= 0 && nc < GRID_W && snap[nr][nc] === null) {
+            g[nr][nc] = outlineColor;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ─── RENDER GRID → PIXI ───
+function renderGrid(container: Container, grid: Grid) {
   const g = new Graphics();
 
-  if (accId.includes("sword")) {
-    const blade = 0xc0c0c0;
-    // Blade
-    g.roundRect(CX + 28, BODY_Y - 20, 5, 60, 2).fill(c.outline);
-    g.roundRect(CX + 29, BODY_Y - 18, 3, 56, 1).fill(blade);
-    // Guard
-    g.roundRect(CX + 22, BODY_Y + 36, 18, 5, 2).fill(0x8d6e63);
-    // Handle
-    g.roundRect(CX + 28, BODY_Y + 38, 5, 14, 2).fill(0x5d4037);
-    // Pommel
-    g.circle(CX + 30, BODY_Y + 54, 4).fill(c.accColor);
-    // Blade highlight
-    g.roundRect(CX + 29.5, BODY_Y - 14, 1.5, 40, 0)
-      .fill({ color: 0xffffff, alpha: 0.4 });
-  } else if (accId.includes("pet_cat")) {
-    const catC = c.accColor;
-    const catX = CX + 40, catY = 234;
-    // Body
-    g.ellipse(catX, catY, 10, 8).fill(c.outline);
-    g.ellipse(catX, catY, 8, 6).fill(catC);
-    // Head
-    g.circle(catX - 6, catY - 6, 7).fill(c.outline);
-    g.circle(catX - 6, catY - 6, 5.5).fill(catC);
-    // Ears
-    g.moveTo(catX - 12, catY - 10).lineTo(catX - 10, catY - 18).lineTo(catX - 6, catY - 11).fill(catC);
-    g.moveTo(catX - 2, catY - 10).lineTo(catX, catY - 18).lineTo(catX + 4, catY - 11).fill(catC);
-    // Eyes
-    g.circle(catX - 8, catY - 7, 1.5).fill(c.eye);
-    g.circle(catX - 4, catY - 7, 1.5).fill(c.eye);
-    // Tail
-    g.moveTo(catX + 8, catY - 2)
-      .quadraticCurveTo(catX + 20, catY - 14, catX + 16, catY - 8)
-      .stroke({ color: catC, width: 3 });
-  } else if (accId.includes("pet_dog")) {
-    const dogC = c.accColor;
-    const dogX = CX + 40, dogY = 236;
-    // Body
-    g.ellipse(dogX, dogY, 10, 7).fill(c.outline);
-    g.ellipse(dogX, dogY, 8, 5.5).fill(dogC);
-    // Head
-    g.circle(dogX - 8, dogY - 5, 7).fill(c.outline);
-    g.circle(dogX - 8, dogY - 5, 5.5).fill(dogC);
-    // Floppy ears
-    g.ellipse(dogX - 14, dogY - 2, 4, 8).fill(darkenColor(dogC, 0.2));
-    g.ellipse(dogX - 2, dogY - 2, 4, 8).fill(darkenColor(dogC, 0.2));
-    // Eyes
-    g.circle(dogX - 10, dogY - 6, 1.5).fill(c.eye);
-    g.circle(dogX - 6, dogY - 6, 1.5).fill(c.eye);
-    // Nose
-    g.circle(dogX - 8, dogY - 3, 2).fill(0x333333);
-    // Tail
-    g.moveTo(dogX + 8, dogY - 2)
-      .quadraticCurveTo(dogX + 18, dogY - 16, dogX + 14, dogY - 10)
-      .stroke({ color: dogC, width: 3 });
+  for (let r = 0; r < GRID_H; r++) {
+    for (let c = 0; c < GRID_W; c++) {
+      const color = grid[r][c];
+      if (color === -1) {
+        // Shadow pixel
+        g.rect(c, r, 1, 1).fill({ color: 0x000000, alpha: 0.15 });
+      } else if (color !== null) {
+        g.rect(c, r, 1, 1).fill(color);
+      }
+    }
   }
 
-  parent.addChild(g);
-}
-
-// ─── Helpers ───
-function getShirtPattern(shirtId: string): string {
-  if (shirtId.includes("striped")) return "stripes";
-  if (shirtId.includes("hoodie")) return "hoodie";
-  if (shirtId.includes("superhero")) return "hero";
-  if (shirtId.includes("tuxedo")) return "tuxedo";
-  if (shirtId.includes("dragon")) return "dragon";
-  if (shirtId.includes("galaxy")) return "galaxy";
-  return "plain";
-}
-
-function getPantsStyle(pantsId: string): string {
-  if (pantsId.includes("shorts")) return "shorts";
-  if (pantsId.includes("skirt")) return "skirt";
-  return "full";
-}
-
-function getShoeStyle(shoesId: string): string {
-  if (shoesId.includes("boots") && !shoesId.includes("rocket")) return "boots";
-  if (shoesId.includes("heels")) return "heels";
-  if (shoesId.includes("rocket")) return "rocket";
-  if (shoesId.includes("cloud")) return "cloud";
-  return "sneakers";
+  container.addChild(g);
 }

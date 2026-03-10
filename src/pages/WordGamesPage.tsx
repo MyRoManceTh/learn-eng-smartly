@@ -320,9 +320,25 @@ const WordGamesPage = () => {
           <p className="text-xs text-muted-foreground font-thai mt-0.5">เลือกหมวดแล้วเริ่มเล่นเลย!</p>
         </div>
       </header>
-      <main className="px-4 py-5 max-w-3xl mx-auto space-y-4">
+      <main className="px-4 py-4 max-w-lg mx-auto space-y-4">
+        {/* Game Mode Selector */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 p-4 text-white shadow-lg">
+            <span className="text-2xl">🎯</span>
+            <h3 className="font-bold font-thai text-sm mt-1">จับคู่คำ</h3>
+            <p className="text-[10px] text-purple-200 font-thai">Matching Game</p>
+          </div>
+          <div className="rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-4 text-white shadow-lg">
+            <span className="text-2xl">✏️</span>
+            <h3 className="font-bold font-thai text-sm mt-1">เติมคำ</h3>
+            <p className="text-[10px] text-pink-200 font-thai">Fill in the Blank</p>
+          </div>
+        </div>
+
+        {/* Game Sets */}
+        <h3 className="text-sm font-bold font-thai text-foreground">🎲 เลือกหมวดคำศัพท์</h3>
         {wordGameSets.map((set) => (
-          <div key={set.id} className="rounded-2xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-4 shadow-md">
+          <div key={set.id} className="rounded-2xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="font-bold font-thai text-foreground">{set.categoryThai}</h3>

@@ -357,14 +357,14 @@ const MyPage = () => {
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-              <span className="text-xl">🏠</span>
+              <span className="text-xl">👤</span>
             </div>
             <div>
               <h1 className="text-lg font-bold font-thai text-foreground">
-                {profileData?.display_name || "My Room"}
+                {profileData?.display_name || "ห้องของฉัน"}
               </h1>
               <p className="text-xs text-muted-foreground font-thai">
-                {evolutionStage.nameThai} {evolutionStage.icon}
+                {evolutionStage.nameThai} {evolutionStage.icon} · Lv.{profileData?.current_level || 1}
               </p>
             </div>
           </div>
@@ -389,16 +389,16 @@ const MyPage = () => {
 
       {/* === MAIN TABS === */}
       <div className="max-w-3xl mx-auto px-4">
-        <Tabs defaultValue="stats" className="w-full">
+        <Tabs defaultValue="character" className="w-full">
           <TabsList className="w-full mb-4 h-12 p-1 bg-white/50 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 grid grid-cols-4">
-            <TabsTrigger value="stats" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
-              📊 สถิติ
-            </TabsTrigger>
             <TabsTrigger value="character" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               👤 ตัวเรา
             </TabsTrigger>
             <TabsTrigger value="room" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               🛋️ ห้อง
+            </TabsTrigger>
+            <TabsTrigger value="stats" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+              📊 สถิติ
             </TabsTrigger>
             <TabsTrigger value="inventory" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               📦 คลัง
