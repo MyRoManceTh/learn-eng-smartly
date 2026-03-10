@@ -17,11 +17,15 @@ interface PixelAvatarProps {
   evolutionStage?: number;
 }
 
-// Chibi characters are taller than wide, use rectangular canvas
+// Internal (low-res) rendering size → displayed CSS size
+// The 8-bit look comes from rendering at low res then CSS upscaling with pixelated
+const INTERNAL_W = 64;
+const INTERNAL_H = 84;
+
 const SIZE_CONFIG = {
-  sm: { width: 100, height: 130 },
-  md: { width: 160, height: 210 },
-  lg: { width: 240, height: 310 },
+  sm: { cssWidth: 96, cssHeight: 126 },
+  md: { cssWidth: 160, cssHeight: 210 },
+  lg: { cssWidth: 240, cssHeight: 315 },
 };
 
 const PixelAvatar: React.FC<PixelAvatarProps> = ({
@@ -41,16 +45,17 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   const equippedKey = useMemo(() => JSON.stringify(equipped), [equipped]);
   const isRainbow = equipped.hairColor === "haircolor_rainbow";
 
-  // Initialize PixiJS app
+  // Initialize PixiJS app at LOW internal resolution
   useEffect(() => {
     let destroyed = false;
 
     const init = async () => {
       if (!canvasRef.current) return;
 
+      // Render at low resolution (64x84) for 8-bit pixel look
       const app = await createPixelApp(canvasRef.current, {
-        width: config.width,
-        height: config.height,
+        width: INTERNAL_W,
+        height: INTERNAL_H,
         transparent: true,
       });
 
@@ -61,38 +66,28 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
 
       appRef.current = app;
 
-      // Create character container
       const character = new Container();
       app.stage.addChild(character);
       characterRef.current = character;
 
-      // Draw initial character (use height as the scaling base)
-      drawChibiCharacter(character, equipped, config.height);
+      // Draw chibi at internal resolution (INTERNAL_H = 84px)
+      drawChibiCharacter(character, equipped, INTERNAL_H);
 
-      // Setup idle animation
       if (animated) {
         const cleanIdle = setupIdleAnimation(character, app.ticker);
         cleanupFnsRef.current.push(cleanIdle);
       }
 
-      // Setup evolution effects
       if (evolutionStage > 1) {
         const cleanEvo = setupEvolutionEffects(
-          app.stage,
-          app.ticker,
-          evolutionStage,
-          Math.max(config.width, config.height)
+          app.stage, app.ticker, evolutionStage, INTERNAL_H
         );
         cleanupFnsRef.current.push(cleanEvo);
       }
 
-      // Setup rainbow shimmer
       if (isRainbow) {
         const cleanRainbow = setupRainbowShimmer(
-          app.stage,
-          app.ticker,
-          config.height,
-          config.height / 260 // approximate pixel scale
+          app.stage, app.ticker, INTERNAL_H, INTERNAL_H / 260
         );
         cleanupFnsRef.current.push(cleanRainbow);
       }
@@ -114,22 +109,21 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       characterRef.current = null;
       initDoneRef.current = false;
     };
-  }, [config.width, config.height, animated]);
+  }, [animated]);
 
   // Update character when equipped changes
   useEffect(() => {
     if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
     if (equippedKey === prevEquippedRef.current) return;
 
-    drawChibiCharacter(characterRef.current, equipped, config.height);
+    drawChibiCharacter(characterRef.current, equipped, INTERNAL_H);
 
-    // Play transition effect
     if (prevEquippedRef.current !== "") {
       playEquipTransition(characterRef.current, appRef.current.ticker);
     }
 
     prevEquippedRef.current = equippedKey;
-  }, [equippedKey, config.height, equipped]);
+  }, [equippedKey, equipped]);
 
   // Update evolution effects when stage changes
   useEffect(() => {
@@ -150,20 +144,14 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
 
     if (evolutionStage > 1) {
       const cleanEvo = setupEvolutionEffects(
-        app.stage,
-        app.ticker,
-        evolutionStage,
-        Math.max(config.width, config.height)
+        app.stage, app.ticker, evolutionStage, INTERNAL_H
       );
       cleanupFnsRef.current.push(cleanEvo);
     }
 
     if (isRainbow) {
       const cleanRainbow = setupRainbowShimmer(
-        app.stage,
-        app.ticker,
-        config.height,
-        config.height / 260
+        app.stage, app.ticker, INTERNAL_H, INTERNAL_H / 260
       );
       cleanupFnsRef.current.push(cleanRainbow);
     }
@@ -172,10 +160,12 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   return (
     <canvas
       ref={canvasRef}
+      width={INTERNAL_W}
+      height={INTERNAL_H}
       style={{
-        width: config.width,
-        height: config.height,
-        imageRendering: "auto",
+        width: config.cssWidth,
+        height: config.cssHeight,
+        imageRendering: "pixelated",
       }}
     />
   );
