@@ -1,34 +1,33 @@
 /**
- * LINE Sticker-Style Chibi Character
+ * Japanese Anime Chibi Character (Shin-chan / Doraemon style)
  *
- * Vector drawing with PixiJS Graphics API — rounded shapes,
- * thick outlines, big head, expressive face.
- * Canvas: 32×42  |  Head ~55%  |  Body ~25%  |  Legs ~20%
+ * Vector drawing with PixiJS Graphics — BIG round head, expressive anime eyes,
+ * pudgy body, bold thick outlines, vivid colors.
+ * Canvas: 64×80  |  Head ~50%  |  Body ~28%  |  Legs ~22%
  */
 import { Container, Graphics } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { getItemById } from "@/data/avatarItems";
 import { parseColor, darkenColor, lightenColor } from "./colorUtils";
 
-// ─── Canvas dimensions (same as pixel avatar for compatibility) ───
-export const GRID_W = 32;
-export const GRID_H = 42;
+// ─── Canvas dimensions ───
+export const GRID_W = 64;
+export const GRID_H = 80;
 
-// ─── Layout constants ───
-const CX = 16;         // center x
-const HEAD_CY = 12;    // head center y
-const HEAD_RX = 9;     // head radius x (slightly wide oval)
-const HEAD_RY = 8.5;   // head radius y
-const BODY_TOP = 21;   // body starts
+// ─── Layout constants (scaled for 64×80) ───
+const CX = 32;          // center x
+const HEAD_CY = 22;     // head center y
+const HEAD_RX = 20;     // head radius x — BIG wide face
+const HEAD_RY = 18;     // head radius y
+const BODY_TOP = 41;    // body starts
 const BODY_CX = CX;
-const BODY_W = 10;     // body half-width
-const BODY_H = 7;      // body height
-const ARM_LEN = 6;
+const BODY_W = 24;      // body width
+const BODY_H = 14;      // body height
+const ARM_LEN = 12;
 const LEG_TOP = BODY_TOP + BODY_H;
-const LEG_LEN = 6;
-const FOOT_R = 2.5;
-const OUTLINE = 1.4;   // outline stroke width
-const OUTLINE_COLOR = 0x1a1a2e;
+const LEG_LEN = 12;
+const OL = 2.2;         // outline stroke width — BOLD
+const OL_COLOR = 0x1a1a2e;
 
 // ─── Emotion type ───
 export type StickerEmotion = "idle" | "happy" | "sad" | "surprised" | "angry" | "love";
@@ -56,41 +55,25 @@ interface Colors {
   blush: number;
 }
 
-function resolveColors(equipped: EquippedItems): Colors {
-  const skinItem = getItemById(equipped.skin);
-  const hairColorItem = getItemById(equipped.hairColor);
-  const shirtItem = getItemById(equipped.shirt);
-  const pantsItem = getItemById(equipped.pants);
-  const shoesItem = getItemById(equipped.shoes);
-  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
-
-  const skin = parseColor(skinItem?.svgProps?.color || "#F5D5C0");
-  const hair = parseColor(hairColorItem?.svgProps?.color || "#2C2C2C");
-  const shirt = parseColor(shirtItem?.svgProps?.color || "#4DB6AC");
-  const pants = parseColor(pantsItem?.svgProps?.color || "#4A90E2");
-  const shoes = parseColor(shoesItem?.svgProps?.color || "#F0F0F0");
+function resolveColors(eq: EquippedItems): Colors {
+  const skin = parseColor(getItemById(eq.skin)?.svgProps?.color || "#F5D5C0");
+  const hair = parseColor(getItemById(eq.hairColor)?.svgProps?.color || "#2C2C2C");
+  const shirt = parseColor(getItemById(eq.shirt)?.svgProps?.color || "#4DB6AC");
+  const pants = parseColor(getItemById(eq.pants)?.svgProps?.color || "#4A90E2");
+  const shoes = parseColor(getItemById(eq.shoes)?.svgProps?.color || "#F0F0F0");
+  const hatItem = eq.hat ? getItemById(eq.hat) : null;
   const hat = hatItem ? parseColor(hatItem.svgProps?.color || "#E53935") : null;
 
   return {
-    skin,
-    skinShade: darkenColor(skin, 0.15),
-    hair,
-    hairHi: lightenColor(hair, 0.25),
-    hairDark: darkenColor(hair, 0.2),
-    shirt,
-    shirtShade: darkenColor(shirt, 0.2),
-    pants,
-    pantsShade: darkenColor(pants, 0.2),
-    shoes,
-    shoesShade: darkenColor(shoes, 0.25),
-    hat,
-    hatShade: hat ? darkenColor(hat, 0.2) : null,
-    acc: 0x80deea,
-    outline: OUTLINE_COLOR,
-    eye: 0x1a1a2e,
-    mouth: 0xc06060,
-    white: 0xffffff,
-    blush: 0xffb4b4,
+    skin, skinShade: darkenColor(skin, 0.15),
+    hair, hairHi: lightenColor(hair, 0.25), hairDark: darkenColor(hair, 0.2),
+    shirt, shirtShade: darkenColor(shirt, 0.2),
+    pants, pantsShade: darkenColor(pants, 0.2),
+    shoes, shoesShade: darkenColor(shoes, 0.25),
+    hat, hatShade: hat ? darkenColor(hat, 0.2) : null,
+    acc: 0x80deea, outline: OL_COLOR,
+    eye: 0x1a1a2e, mouth: 0xc06060,
+    white: 0xffffff, blush: 0xffb4b4,
   };
 }
 
@@ -104,23 +87,19 @@ export function drawLineStickerCharacter(
   _canvasH: number,
   emotion: StickerEmotion = "idle",
   walkFrame: number = 0,
-  blinkFrame: number = 0, // 0 = open, 1 = half, 2 = closed
+  blinkFrame: number = 0,
 ): void {
   container.removeChildren();
-
   const c = resolveColors(equipped);
   const g = new Graphics();
   container.addChild(g);
 
-  const hairItem = getItemById(equipped.hair);
-  const hairStyle = hairItem?.svgProps?.path || "short";
+  const hairStyle = getItemById(equipped.hair)?.svgProps?.path || "short";
   const hasHat = !!equipped.hat;
+  const lOff = walkFrame === 1 ? -3 : walkFrame === 2 ? 3 : 0;
+  const rOff = walkFrame === 1 ? 3 : walkFrame === 2 ? -3 : 0;
 
-  // Walk offsets
-  const lOff = walkFrame === 1 ? -1.5 : walkFrame === 2 ? 1.5 : 0;
-  const rOff = walkFrame === 1 ? 1.5 : walkFrame === 2 ? -1.5 : 0;
-
-  // Draw order (back to front)
+  // Draw order (back → front)
   drawShadow(g);
   drawAccessoryBack(g, equipped.accessory, c);
   drawLegs(g, c, lOff, rOff, equipped.pants);
@@ -140,20 +119,21 @@ export function drawLineStickerCharacter(
 // ═══════════════════════════════════════════
 
 function drawShadow(g: Graphics) {
-  g.ellipse(CX, 39.5, 7, 1.5).fill({ color: 0x000000, alpha: 0.12 });
+  g.ellipse(CX, 77, 14, 2.5).fill({ color: 0x000000, alpha: 0.12 });
 }
 
 // ═══════════════════════════════════════════
-// HEAD — big round oval
+// HEAD — BIG round anime head
 // ═══════════════════════════════════════════
 
 function drawHead(g: Graphics, c: Colors) {
-  // Head fill
+  // Skin fill
   g.ellipse(CX, HEAD_CY, HEAD_RX, HEAD_RY).fill(c.skin);
-  // Subtle shading on right
-  g.ellipse(CX + 3, HEAD_CY + 1, HEAD_RX - 2, HEAD_RY - 1).fill({ color: c.skinShade, alpha: 0.25 });
-  // Head outline
-  g.ellipse(CX, HEAD_CY, HEAD_RX, HEAD_RY).stroke({ color: c.outline, width: OUTLINE });
+  // Soft shading on right cheek area
+  g.ellipse(CX + 6, HEAD_CY + 3, HEAD_RX - 5, HEAD_RY - 3)
+    .fill({ color: c.skinShade, alpha: 0.2 });
+  // Bold outline
+  g.ellipse(CX, HEAD_CY, HEAD_RX, HEAD_RY).stroke({ color: c.outline, width: OL });
 }
 
 // ═══════════════════════════════════════════
@@ -161,197 +141,192 @@ function drawHead(g: Graphics, c: Colors) {
 // ═══════════════════════════════════════════
 
 function drawNeck(g: Graphics, c: Colors) {
-  g.roundRect(CX - 2, HEAD_CY + HEAD_RY - 1, 4, 3, 1).fill(c.skin);
+  g.roundRect(CX - 4, HEAD_CY + HEAD_RY - 2, 8, 5, 2).fill(c.skin);
 }
 
 // ═══════════════════════════════════════════
-// FACE — big eyes, blush, cute mouth
+// FACE — Big anime eyes, blush, expressive mouth
 // ═══════════════════════════════════════════
 
 function drawFace(
-  g: Graphics,
-  c: Colors,
-  emotion: StickerEmotion,
-  blinkFrame: number,
+  g: Graphics, c: Colors,
+  emotion: StickerEmotion, blinkFrame: number,
   accId: string | null,
 ) {
-  const eyeY = HEAD_CY - 0.5;
-  const eyeLX = CX - 4;
-  const eyeRX = CX + 4;
-  const eyeR = 2.2;
+  const eyeY = HEAD_CY - 1;
+  const eyeLX = CX - 8;
+  const eyeRX = CX + 8;
+  const eyeRX_r = 4.2;  // eye radius x
+  const eyeRY_r = 5;    // eye radius y — tall anime eyes
 
-  // ── Eyes ──
+  // ── EYES ──
   if (blinkFrame >= 2) {
-    // Closed eyes — horizontal lines
-    g.moveTo(eyeLX - eyeR, eyeY).lineTo(eyeLX + eyeR, eyeY)
-      .stroke({ color: c.eye, width: 1.2 });
-    g.moveTo(eyeRX - eyeR, eyeY).lineTo(eyeRX + eyeR, eyeY)
-      .stroke({ color: c.eye, width: 1.2 });
+    // Closed — curved lines (happy squint style)
+    g.arc(eyeLX, eyeY, eyeRX_r, 0.2, Math.PI - 0.2, false)
+      .stroke({ color: c.eye, width: 2 });
+    g.arc(eyeRX, eyeY, eyeRX_r, 0.2, Math.PI - 0.2, false)
+      .stroke({ color: c.eye, width: 2 });
   } else if (blinkFrame === 1) {
-    // Half-closed — small ovals
-    g.ellipse(eyeLX, eyeY, eyeR, eyeR * 0.4).fill(c.eye);
-    g.ellipse(eyeRX, eyeY, eyeR, eyeR * 0.4).fill(c.eye);
+    // Half-closed
+    g.ellipse(eyeLX, eyeY, eyeRX_r, eyeRY_r * 0.3).fill(c.eye);
+    g.ellipse(eyeRX, eyeY, eyeRX_r, eyeRY_r * 0.3).fill(c.eye);
   } else if (emotion === "happy" || emotion === "love") {
-    // Happy eyes — upside-down U (squint)
-    drawHappyEye(g, eyeLX, eyeY, eyeR, c);
-    drawHappyEye(g, eyeRX, eyeY, eyeR, c);
+    // Happy squint ＾＾
+    g.arc(eyeLX, eyeY + 1, eyeRX_r, Math.PI + 0.2, -0.2, false)
+      .stroke({ color: c.eye, width: 2.5 });
+    g.arc(eyeRX, eyeY + 1, eyeRX_r, Math.PI + 0.2, -0.2, false)
+      .stroke({ color: c.eye, width: 2.5 });
   } else if (emotion === "surprised") {
-    // Surprised — bigger circles
-    const bigR = eyeR * 1.4;
-    g.circle(eyeLX, eyeY, bigR).fill(c.white);
-    g.circle(eyeLX, eyeY, bigR).stroke({ color: c.eye, width: 1 });
-    g.circle(eyeLX - 0.6, eyeY - 0.6, bigR * 0.55).fill(c.eye);
-    g.circle(eyeLX + 0.8, eyeY - 1.0, bigR * 0.2).fill(c.white);
-
-    g.circle(eyeRX, eyeY, bigR).fill(c.white);
-    g.circle(eyeRX, eyeY, bigR).stroke({ color: c.eye, width: 1 });
-    g.circle(eyeRX - 0.6, eyeY - 0.6, bigR * 0.55).fill(c.eye);
-    g.circle(eyeRX + 0.8, eyeY - 1.0, bigR * 0.2).fill(c.white);
+    // Big round eyes
+    const br = eyeRX_r * 1.3;
+    drawAnimeEye(g, eyeLX, eyeY, br, br * 1.2, c, true);
+    drawAnimeEye(g, eyeRX, eyeY, br, br * 1.2, c, true);
   } else if (emotion === "angry") {
-    // Angry — normal eyes + angry brows
-    drawNormalEye(g, eyeLX, eyeY, eyeR, c);
-    drawNormalEye(g, eyeRX, eyeY, eyeR, c);
-    // Angry eyebrows
-    g.moveTo(eyeLX - eyeR, eyeY - eyeR - 1.5)
-      .lineTo(eyeLX + eyeR, eyeY - eyeR - 0.5)
-      .stroke({ color: c.eye, width: 1.2 });
-    g.moveTo(eyeRX + eyeR, eyeY - eyeR - 1.5)
-      .lineTo(eyeRX - eyeR, eyeY - eyeR - 0.5)
-      .stroke({ color: c.eye, width: 1.2 });
+    drawAnimeEye(g, eyeLX, eyeY, eyeRX_r, eyeRY_r, c, false);
+    drawAnimeEye(g, eyeRX, eyeY, eyeRX_r, eyeRY_r, c, false);
+    // Angry brows ╬
+    g.moveTo(eyeLX - 5, eyeY - eyeRY_r - 2)
+      .lineTo(eyeLX + 5, eyeY - eyeRY_r + 1)
+      .stroke({ color: c.eye, width: 2.5 });
+    g.moveTo(eyeRX + 5, eyeY - eyeRY_r - 2)
+      .lineTo(eyeRX - 5, eyeY - eyeRY_r + 1)
+      .stroke({ color: c.eye, width: 2.5 });
   } else if (emotion === "sad") {
-    // Sad — droopy eyes
-    drawNormalEye(g, eyeLX, eyeY, eyeR, c);
-    drawNormalEye(g, eyeRX, eyeY, eyeR, c);
-    // Sad eyebrows
-    g.moveTo(eyeLX - eyeR, eyeY - eyeR - 0.5)
-      .lineTo(eyeLX + eyeR, eyeY - eyeR - 1.5)
-      .stroke({ color: c.eye, width: 1 });
-    g.moveTo(eyeRX + eyeR, eyeY - eyeR - 0.5)
-      .lineTo(eyeRX - eyeR, eyeY - eyeR - 1.5)
-      .stroke({ color: c.eye, width: 1 });
+    drawAnimeEye(g, eyeLX, eyeY, eyeRX_r, eyeRY_r * 0.8, c, false);
+    drawAnimeEye(g, eyeRX, eyeY, eyeRX_r, eyeRY_r * 0.8, c, false);
+    // Sad brows
+    g.moveTo(eyeLX - 4, eyeY - eyeRY_r + 1)
+      .lineTo(eyeLX + 4, eyeY - eyeRY_r - 2)
+      .stroke({ color: c.eye, width: 2 });
+    g.moveTo(eyeRX + 4, eyeY - eyeRY_r + 1)
+      .lineTo(eyeRX - 4, eyeY - eyeRY_r - 2)
+      .stroke({ color: c.eye, width: 2 });
   } else {
-    // Normal idle eyes
-    drawNormalEye(g, eyeLX, eyeY, eyeR, c);
-    drawNormalEye(g, eyeRX, eyeY, eyeR, c);
+    // Normal idle — big anime eyes
+    drawAnimeEye(g, eyeLX, eyeY, eyeRX_r, eyeRY_r, c, false);
+    drawAnimeEye(g, eyeRX, eyeY, eyeRX_r, eyeRY_r, c, false);
   }
 
-  // ── Love eyes (hearts) ──
+  // ── Love: heart overlay ──
   if (emotion === "love") {
-    drawHeart(g, eyeLX, eyeY, 2.5, 0xff4081);
-    drawHeart(g, eyeRX, eyeY, 2.5, 0xff4081);
+    drawHeart(g, eyeLX, eyeY, 6, 0xff4081);
+    drawHeart(g, eyeRX, eyeY, 6, 0xff4081);
   }
 
-  // ── Blush circles ──
-  const blushAlpha = emotion === "happy" || emotion === "love" ? 0.5 : 0.3;
-  g.circle(CX - 6.5, HEAD_CY + 2.5, 2).fill({ color: c.blush, alpha: blushAlpha });
-  g.circle(CX + 6.5, HEAD_CY + 2.5, 2).fill({ color: c.blush, alpha: blushAlpha });
+  // ── Blush ──
+  const ba = emotion === "happy" || emotion === "love" ? 0.5 : 0.3;
+  g.ellipse(CX - 14, HEAD_CY + 5.5, 4, 2.5).fill({ color: c.blush, alpha: ba });
+  g.ellipse(CX + 14, HEAD_CY + 5.5, 4, 2.5).fill({ color: c.blush, alpha: ba });
 
-  // ── Nose — tiny dot ──
-  g.circle(CX, HEAD_CY + 1.5, 0.5).fill({ color: c.skinShade, alpha: 0.5 });
+  // ── Nose ──
+  g.ellipse(CX, HEAD_CY + 4, 1, 0.7).fill({ color: c.skinShade, alpha: 0.45 });
 
   // ── Mouth ──
   drawMouth(g, c, emotion);
 
   // ── Glasses ──
   if (accId === "acc_glasses") {
-    drawGlasses(g, eyeLX, eyeRX, eyeY, eyeR, c);
+    drawGlasses(g, eyeLX, eyeRX, eyeY, eyeRX_r + 2, c);
   }
 
   // ── Sad tears ──
   if (emotion === "sad") {
-    g.circle(eyeLX + 1, eyeY + eyeR + 2, 0.8).fill({ color: 0x64b5f6, alpha: 0.7 });
-    g.circle(eyeRX - 1, eyeY + eyeR + 2, 0.8).fill({ color: 0x64b5f6, alpha: 0.7 });
+    g.ellipse(eyeLX + 2, eyeY + eyeRY_r + 3, 1.5, 2).fill({ color: 0x64b5f6, alpha: 0.6 });
+    g.ellipse(eyeRX - 2, eyeY + eyeRY_r + 3, 1.5, 2).fill({ color: 0x64b5f6, alpha: 0.6 });
   }
 
-  // ── Angry flush ──
+  // ── Angry cross vein ──
   if (emotion === "angry") {
-    g.circle(CX - 6.5, HEAD_CY + 2.5, 2.2).fill({ color: 0xff5252, alpha: 0.35 });
-    g.circle(CX + 6.5, HEAD_CY + 2.5, 2.2).fill({ color: 0xff5252, alpha: 0.35 });
+    g.ellipse(CX - 14, HEAD_CY + 5.5, 4.5, 2.8).fill({ color: 0xff5252, alpha: 0.35 });
+    g.ellipse(CX + 14, HEAD_CY + 5.5, 4.5, 2.8).fill({ color: 0xff5252, alpha: 0.35 });
+    // Cross vein mark
+    const vx = CX + 13, vy = HEAD_CY - 10;
+    g.moveTo(vx - 2, vy).lineTo(vx + 2, vy).stroke({ color: 0xff5252, width: 1.5 });
+    g.moveTo(vx, vy - 2).lineTo(vx, vy + 2).stroke({ color: 0xff5252, width: 1.5 });
   }
 }
 
-function drawNormalEye(g: Graphics, cx: number, cy: number, r: number, c: Colors) {
-  // White
-  g.circle(cx, cy, r).fill(c.white);
-  // Pupil (slightly offset up-left)
-  g.circle(cx - 0.3, cy - 0.2, r * 0.65).fill(c.eye);
-  // Highlight
-  g.circle(cx + 0.6, cy - 0.7, r * 0.28).fill(c.white);
+function drawAnimeEye(
+  g: Graphics, cx: number, cy: number,
+  rx: number, ry: number, c: Colors,
+  big: boolean,
+) {
+  // White sclera
+  g.ellipse(cx, cy, rx, ry).fill(c.white);
+  // Big dark iris
+  const irisR = big ? rx * 0.75 : rx * 0.7;
+  g.ellipse(cx, cy + 0.5, irisR, ry * 0.7).fill(c.eye);
+  // Pupil (darker center)
+  g.ellipse(cx, cy + 1, irisR * 0.5, ry * 0.4).fill(darkenColor(c.eye, 0.3));
+  // Big highlight (top-right)
+  g.circle(cx + rx * 0.25, cy - ry * 0.25, rx * 0.3).fill(c.white);
+  // Small highlight (bottom-left)
+  g.circle(cx - rx * 0.2, cy + ry * 0.2, rx * 0.15).fill({ color: c.white, alpha: 0.7 });
   // Outline
-  g.circle(cx, cy, r).stroke({ color: c.eye, width: 0.6 });
-}
-
-function drawHappyEye(g: Graphics, cx: number, cy: number, r: number, c: Colors) {
-  // Upside-down U / arc — happy squint
-  g.arc(cx, cy, r, Math.PI, 0, false)
-    .stroke({ color: c.eye, width: 1.4 });
+  g.ellipse(cx, cy, rx, ry).stroke({ color: c.eye, width: 1.2 });
 }
 
 function drawHeart(g: Graphics, cx: number, cy: number, size: number, color: number) {
   const s = size * 0.5;
-  g.moveTo(cx, cy + s * 0.6)
-    .bezierCurveTo(cx - s * 1.3, cy - s * 0.4, cx - s * 0.5, cy - s * 1.4, cx, cy - s * 0.5)
-    .bezierCurveTo(cx + s * 0.5, cy - s * 1.4, cx + s * 1.3, cy - s * 0.4, cx, cy + s * 0.6)
+  g.moveTo(cx, cy + s * 0.7)
+    .bezierCurveTo(cx - s * 1.4, cy - s * 0.3, cx - s * 0.6, cy - s * 1.5, cx, cy - s * 0.4)
+    .bezierCurveTo(cx + s * 0.6, cy - s * 1.5, cx + s * 1.4, cy - s * 0.3, cx, cy + s * 0.7)
     .fill(color);
 }
 
 function drawMouth(g: Graphics, c: Colors, emotion: StickerEmotion) {
-  const mx = CX;
-  const my = HEAD_CY + 4;
+  const mx = CX, my = HEAD_CY + 9;
 
   switch (emotion) {
     case "happy":
-      // Big smile — wide arc
-      g.arc(mx, my - 0.5, 3, 0.1, Math.PI - 0.1, false)
-        .stroke({ color: c.mouth, width: 1 });
+      // Big open smile — Shin-chan style
+      g.arc(mx, my - 1, 6, 0.1, Math.PI - 0.1, false).fill(c.mouth);
+      g.arc(mx, my - 1, 6, 0.1, Math.PI - 0.1, false)
+        .stroke({ color: c.outline, width: 1.5 });
+      // Tongue
+      g.ellipse(mx, my + 2, 3, 2).fill(0xff8a80);
       break;
     case "sad":
-      // Frown — upside-down arc
-      g.arc(mx, my + 1.5, 2.5, Math.PI + 0.2, -0.2, false)
-        .stroke({ color: c.mouth, width: 1 });
+      g.arc(mx, my + 3, 5, Math.PI + 0.3, -0.3, false)
+        .stroke({ color: c.mouth, width: 2 });
       break;
     case "surprised":
-      // O mouth
-      g.circle(mx, my + 0.5, 1.8).fill(c.mouth);
-      g.circle(mx, my + 0.5, 1.2).fill({ color: 0x8b3a3a, alpha: 0.6 });
+      // Big O mouth
+      g.ellipse(mx, my + 1, 4, 5).fill(c.mouth);
+      g.ellipse(mx, my + 1, 2.5, 3.5).fill({ color: 0x8b3a3a, alpha: 0.5 });
+      g.ellipse(mx, my + 1, 4, 5).stroke({ color: c.outline, width: 1.2 });
       break;
     case "angry":
-      // Grumpy line
-      g.moveTo(mx - 2, my + 0.3).lineTo(mx + 2, my - 0.3)
-        .stroke({ color: c.mouth, width: 1.2 });
+      // Gritted teeth
+      g.moveTo(mx - 5, my).lineTo(mx + 5, my - 1)
+        .stroke({ color: c.mouth, width: 2.5 });
       break;
     case "love":
-      // Cat smile :3
-      g.arc(mx - 1.2, my, 1.2, 0.1, Math.PI - 0.1, false)
-        .stroke({ color: c.mouth, width: 0.8 });
-      g.arc(mx + 1.2, my, 1.2, 0.1, Math.PI - 0.1, false)
-        .stroke({ color: c.mouth, width: 0.8 });
+      // Cat mouth :3
+      g.arc(mx - 2.5, my, 2.5, 0.1, Math.PI - 0.1, false)
+        .stroke({ color: c.mouth, width: 1.5 });
+      g.arc(mx + 2.5, my, 2.5, 0.1, Math.PI - 0.1, false)
+        .stroke({ color: c.mouth, width: 1.5 });
       break;
     default:
-      // Gentle smile — small arc
-      g.arc(mx, my, 2, 0.2, Math.PI - 0.2, false)
-        .stroke({ color: c.mouth, width: 0.9 });
+      // Gentle smile — anime style
+      g.arc(mx, my, 4, 0.2, Math.PI - 0.2, false)
+        .stroke({ color: c.mouth, width: 1.8 });
   }
 }
 
 function drawGlasses(
-  g: Graphics,
-  lx: number, rx: number, ey: number, er: number,
-  c: Colors,
+  g: Graphics, lx: number, rx: number, ey: number, r: number, c: Colors,
 ) {
-  const gr = er + 1.2;
-  // Frames
-  g.circle(lx, ey, gr).stroke({ color: c.acc, width: 1 });
-  g.circle(rx, ey, gr).stroke({ color: c.acc, width: 1 });
-  // Bridge
-  g.moveTo(lx + gr, ey).lineTo(rx - gr, ey).stroke({ color: c.acc, width: 0.8 });
-  // Temple arms
-  g.moveTo(lx - gr, ey).lineTo(lx - gr - 2, ey - 0.5).stroke({ color: c.acc, width: 0.8 });
-  g.moveTo(rx + gr, ey).lineTo(rx + gr + 2, ey - 0.5).stroke({ color: c.acc, width: 0.8 });
+  g.circle(lx, ey, r).stroke({ color: c.acc, width: 1.8 });
+  g.circle(rx, ey, r).stroke({ color: c.acc, width: 1.8 });
+  g.moveTo(lx + r, ey).lineTo(rx - r, ey).stroke({ color: c.acc, width: 1.5 });
+  g.moveTo(lx - r, ey).lineTo(lx - r - 4, ey - 1).stroke({ color: c.acc, width: 1.2 });
+  g.moveTo(rx + r, ey).lineTo(rx + r + 4, ey - 1).stroke({ color: c.acc, width: 1.2 });
 }
 
 // ═══════════════════════════════════════════
-// HAIR — rounded shapes for each style
+// HAIR — all 8 styles (anime proportions)
 // ═══════════════════════════════════════════
 
 function drawHair(g: Graphics, style: string, c: Colors) {
@@ -368,305 +343,236 @@ function drawHair(g: Graphics, style: string, c: Colors) {
 }
 
 function drawShortHair(g: Graphics, c: Colors) {
-  // Top dome covering upper head
-  g.ellipse(CX, HEAD_CY - 3.5, HEAD_RX + 1, 6).fill(c.hair);
+  // Big dome over top of head
+  g.ellipse(CX, HEAD_CY - 7, HEAD_RX + 2, 13).fill(c.hair);
   // Side tufts
-  g.ellipse(CX - 7.5, HEAD_CY - 1, 3, 4).fill(c.hair);
-  g.ellipse(CX + 7.5, HEAD_CY - 1, 3, 4).fill(c.hair);
-  // Highlight
-  g.ellipse(CX - 2, HEAD_CY - 6, 3, 1.5).fill({ color: c.hairHi, alpha: 0.5 });
+  g.ellipse(CX - 16, HEAD_CY - 2, 6, 8).fill(c.hair);
+  g.ellipse(CX + 16, HEAD_CY - 2, 6, 8).fill(c.hair);
+  // Highlights
+  g.ellipse(CX - 4, HEAD_CY - 14, 6, 2.5).fill({ color: c.hairHi, alpha: 0.45 });
   // Outline
-  g.ellipse(CX, HEAD_CY - 3.5, HEAD_RX + 1, 6).stroke({ color: c.outline, width: OUTLINE });
+  g.ellipse(CX, HEAD_CY - 7, HEAD_RX + 2, 13).stroke({ color: c.outline, width: OL });
 }
 
 function drawLongHair(g: Graphics, c: Colors) {
-  // Top dome
-  g.ellipse(CX, HEAD_CY - 3.5, HEAD_RX + 1, 6).fill(c.hair);
-  // Long sides flowing down
-  g.roundRect(CX - HEAD_RX - 2, HEAD_CY - 2, 4, 14, 2).fill(c.hair);
-  g.roundRect(CX + HEAD_RX - 2, HEAD_CY - 2, 4, 14, 2).fill(c.hair);
-  // Shade on sides
-  g.roundRect(CX - HEAD_RX - 2, HEAD_CY + 4, 4, 8, 2).fill({ color: c.hairDark, alpha: 0.4 });
-  g.roundRect(CX + HEAD_RX - 2, HEAD_CY + 4, 4, 8, 2).fill({ color: c.hairDark, alpha: 0.4 });
+  g.ellipse(CX, HEAD_CY - 7, HEAD_RX + 2, 13).fill(c.hair);
+  // Long flowing sides
+  g.roundRect(CX - HEAD_RX - 4, HEAD_CY - 4, 8, 28, 4).fill(c.hair);
+  g.roundRect(CX + HEAD_RX - 4, HEAD_CY - 4, 8, 28, 4).fill(c.hair);
+  // Shade
+  g.roundRect(CX - HEAD_RX - 4, HEAD_CY + 8, 8, 16, 4).fill({ color: c.hairDark, alpha: 0.35 });
+  g.roundRect(CX + HEAD_RX - 4, HEAD_CY + 8, 8, 16, 4).fill({ color: c.hairDark, alpha: 0.35 });
   // Highlight
-  g.ellipse(CX - 2, HEAD_CY - 6, 3, 1.5).fill({ color: c.hairHi, alpha: 0.5 });
-  // Outline
-  g.ellipse(CX, HEAD_CY - 3.5, HEAD_RX + 1, 6).stroke({ color: c.outline, width: OUTLINE });
-  g.roundRect(CX - HEAD_RX - 2, HEAD_CY - 2, 4, 14, 2).stroke({ color: c.outline, width: OUTLINE * 0.7 });
-  g.roundRect(CX + HEAD_RX - 2, HEAD_CY - 2, 4, 14, 2).stroke({ color: c.outline, width: OUTLINE * 0.7 });
+  g.ellipse(CX - 4, HEAD_CY - 14, 6, 2.5).fill({ color: c.hairHi, alpha: 0.45 });
+  // Outlines
+  g.ellipse(CX, HEAD_CY - 7, HEAD_RX + 2, 13).stroke({ color: c.outline, width: OL });
+  g.roundRect(CX - HEAD_RX - 4, HEAD_CY - 4, 8, 28, 4).stroke({ color: c.outline, width: OL * 0.7 });
+  g.roundRect(CX + HEAD_RX - 4, HEAD_CY - 4, 8, 28, 4).stroke({ color: c.outline, width: OL * 0.7 });
 }
 
 function drawPonytailHair(g: Graphics, c: Colors) {
   drawShortHair(g, c);
-  // Ponytail
-  g.ellipse(CX + 10, HEAD_CY - 1, 2.5, 5).fill(c.hair);
-  g.ellipse(CX + 10, HEAD_CY + 2, 2, 3).fill({ color: c.hairDark, alpha: 0.3 });
-  // Hair tie
-  g.circle(CX + 9, HEAD_CY - 4, 1.2).fill(0xe91e63);
-  // Outline
-  g.ellipse(CX + 10, HEAD_CY - 1, 2.5, 5).stroke({ color: c.outline, width: OUTLINE * 0.7 });
+  g.ellipse(CX + 22, HEAD_CY - 2, 5, 10).fill(c.hair);
+  g.ellipse(CX + 22, HEAD_CY + 4, 4, 6).fill({ color: c.hairDark, alpha: 0.3 });
+  g.circle(CX + 19, HEAD_CY - 8, 2.5).fill(0xe91e63);
+  g.ellipse(CX + 22, HEAD_CY - 2, 5, 10).stroke({ color: c.outline, width: OL * 0.7 });
 }
 
 function drawBunHair(g: Graphics, c: Colors) {
   drawShortHair(g, c);
-  // Bun on top
-  g.circle(CX, HEAD_CY - 9, 3.5).fill(c.hair);
-  g.circle(CX - 1, HEAD_CY - 10, 1.2).fill({ color: c.hairHi, alpha: 0.4 });
-  g.circle(CX, HEAD_CY - 9, 3.5).stroke({ color: c.outline, width: OUTLINE * 0.7 });
+  g.circle(CX, HEAD_CY - 19, 7).fill(c.hair);
+  g.circle(CX - 2, HEAD_CY - 22, 2.5).fill({ color: c.hairHi, alpha: 0.4 });
+  g.circle(CX, HEAD_CY - 19, 7).stroke({ color: c.outline, width: OL * 0.7 });
 }
 
 function drawCurlyHair(g: Graphics, c: Colors) {
-  // Fluffy curly mass
   const curls = [
-    { x: CX - 6, y: HEAD_CY - 5, r: 4 },
-    { x: CX, y: HEAD_CY - 7, r: 4.5 },
-    { x: CX + 6, y: HEAD_CY - 5, r: 4 },
-    { x: CX - 8, y: HEAD_CY, r: 3.5 },
-    { x: CX + 8, y: HEAD_CY, r: 3.5 },
-    { x: CX - 7, y: HEAD_CY + 4, r: 3 },
-    { x: CX + 7, y: HEAD_CY + 4, r: 3 },
+    { x: CX - 12, y: HEAD_CY - 10, r: 8 },
+    { x: CX, y: HEAD_CY - 14, r: 9 },
+    { x: CX + 12, y: HEAD_CY - 10, r: 8 },
+    { x: CX - 17, y: HEAD_CY, r: 7 },
+    { x: CX + 17, y: HEAD_CY, r: 7 },
+    { x: CX - 15, y: HEAD_CY + 8, r: 6 },
+    { x: CX + 15, y: HEAD_CY + 8, r: 6 },
   ];
-  // Fill all curls
-  for (const curl of curls) {
-    g.circle(curl.x, curl.y, curl.r).fill(c.hair);
-  }
-  // Highlights on top
-  g.circle(CX - 2, HEAD_CY - 8, 1.5).fill({ color: c.hairHi, alpha: 0.4 });
-  // Outline
-  for (const curl of curls) {
-    g.circle(curl.x, curl.y, curl.r).stroke({ color: c.outline, width: OUTLINE * 0.6 });
-  }
+  for (const curl of curls) g.circle(curl.x, curl.y, curl.r).fill(c.hair);
+  g.circle(CX - 4, HEAD_CY - 16, 3).fill({ color: c.hairHi, alpha: 0.4 });
+  for (const curl of curls) g.circle(curl.x, curl.y, curl.r).stroke({ color: c.outline, width: OL * 0.6 });
 }
 
 function drawSpikeHair(g: Graphics, c: Colors) {
-  // Spiky top with triangular points
-  g.ellipse(CX, HEAD_CY - 3, HEAD_RX + 1, 5.5).fill(c.hair);
-  // Spikes
+  g.ellipse(CX, HEAD_CY - 6, HEAD_RX + 2, 11).fill(c.hair);
   const spikes = [
-    { x: CX - 5, tipY: HEAD_CY - 11 },
-    { x: CX - 1, tipY: HEAD_CY - 13 },
-    { x: CX + 3, tipY: HEAD_CY - 12 },
-    { x: CX + 7, tipY: HEAD_CY - 10 },
+    { x: CX - 10, tipY: HEAD_CY - 24 },
+    { x: CX - 2, tipY: HEAD_CY - 28 },
+    { x: CX + 6, tipY: HEAD_CY - 26 },
+    { x: CX + 14, tipY: HEAD_CY - 22 },
   ];
   for (const s of spikes) {
-    g.moveTo(s.x - 2, HEAD_CY - 5)
-      .lineTo(s.x + 0.5, s.tipY)
-      .lineTo(s.x + 3, HEAD_CY - 5)
-      .fill(c.hair);
-    g.moveTo(s.x - 2, HEAD_CY - 5)
-      .lineTo(s.x + 0.5, s.tipY)
-      .lineTo(s.x + 3, HEAD_CY - 5)
-      .stroke({ color: c.outline, width: OUTLINE * 0.7 });
+    g.moveTo(s.x - 4, HEAD_CY - 10).lineTo(s.x + 1, s.tipY).lineTo(s.x + 6, HEAD_CY - 10).fill(c.hair);
+    g.moveTo(s.x - 4, HEAD_CY - 10).lineTo(s.x + 1, s.tipY).lineTo(s.x + 6, HEAD_CY - 10)
+      .stroke({ color: c.outline, width: OL * 0.7 });
   }
-  // Highlight
-  g.ellipse(CX - 1, HEAD_CY - 9, 1.5, 1).fill({ color: c.hairHi, alpha: 0.5 });
-  // Base outline
-  g.ellipse(CX, HEAD_CY - 3, HEAD_RX + 1, 5.5).stroke({ color: c.outline, width: OUTLINE });
+  g.ellipse(CX - 2, HEAD_CY - 18, 3, 2).fill({ color: c.hairHi, alpha: 0.5 });
+  g.ellipse(CX, HEAD_CY - 6, HEAD_RX + 2, 11).stroke({ color: c.outline, width: OL });
 }
 
 function drawAfroHair(g: Graphics, c: Colors) {
-  // Big round afro
-  g.circle(CX, HEAD_CY - 2, 13).fill(c.hair);
-  // Texture bumps
-  g.circle(CX - 6, HEAD_CY - 9, 2).fill({ color: c.hairHi, alpha: 0.3 });
-  g.circle(CX + 4, HEAD_CY - 10, 1.5).fill({ color: c.hairHi, alpha: 0.3 });
-  g.circle(CX - 3, HEAD_CY - 12, 1).fill({ color: c.hairHi, alpha: 0.3 });
-  // Outline
-  g.circle(CX, HEAD_CY - 2, 13).stroke({ color: c.outline, width: OUTLINE });
+  g.circle(CX, HEAD_CY - 4, 27).fill(c.hair);
+  g.circle(CX - 12, HEAD_CY - 18, 4).fill({ color: c.hairHi, alpha: 0.3 });
+  g.circle(CX + 8, HEAD_CY - 20, 3).fill({ color: c.hairHi, alpha: 0.3 });
+  g.circle(CX, HEAD_CY - 4, 27).stroke({ color: c.outline, width: OL });
 }
 
 function drawMohawkHair(g: Graphics, c: Colors) {
-  // Mohawk strip on top
-  g.roundRect(CX - 3, HEAD_CY - 13, 6, 10, 2.5).fill(c.hair);
-  // Highlight
-  g.ellipse(CX, HEAD_CY - 11, 1.5, 1).fill({ color: c.hairHi, alpha: 0.5 });
-  // Side shave hint
-  g.ellipse(CX - 7, HEAD_CY - 1.5, 2, 3).fill({ color: c.skinShade, alpha: 0.2 });
-  g.ellipse(CX + 7, HEAD_CY - 1.5, 2, 3).fill({ color: c.skinShade, alpha: 0.2 });
-  // Outline
-  g.roundRect(CX - 3, HEAD_CY - 13, 6, 10, 2.5).stroke({ color: c.outline, width: OUTLINE });
+  g.roundRect(CX - 6, HEAD_CY - 28, 12, 22, 5).fill(c.hair);
+  g.ellipse(CX, HEAD_CY - 24, 3, 2).fill({ color: c.hairHi, alpha: 0.5 });
+  g.ellipse(CX - 14, HEAD_CY - 3, 4, 6).fill({ color: c.skinShade, alpha: 0.2 });
+  g.ellipse(CX + 14, HEAD_CY - 3, 4, 6).fill({ color: c.skinShade, alpha: 0.2 });
+  g.roundRect(CX - 6, HEAD_CY - 28, 12, 22, 5).stroke({ color: c.outline, width: OL });
 }
 
 // ═══════════════════════════════════════════
-// BODY — small round torso
+// BODY — pudgy round torso (anime chibi)
 // ═══════════════════════════════════════════
 
 function drawBody(g: Graphics, c: Colors, shirtId: string) {
-  // Torso — rounded rectangle
-  g.roundRect(BODY_CX - BODY_W / 2, BODY_TOP, BODY_W, BODY_H, 3).fill(c.shirt);
-  // Shading right side
-  g.roundRect(BODY_CX + 1, BODY_TOP + 1, BODY_W / 2 - 1, BODY_H - 2, 2)
-    .fill({ color: c.shirtShade, alpha: 0.3 });
-  // Outline
-  g.roundRect(BODY_CX - BODY_W / 2, BODY_TOP, BODY_W, BODY_H, 3)
-    .stroke({ color: c.outline, width: OUTLINE });
-
-  // Shirt patterns
+  g.roundRect(BODY_CX - BODY_W / 2, BODY_TOP, BODY_W, BODY_H, 6).fill(c.shirt);
+  g.roundRect(BODY_CX + 2, BODY_TOP + 2, BODY_W / 2 - 3, BODY_H - 4, 4)
+    .fill({ color: c.shirtShade, alpha: 0.25 });
+  g.roundRect(BODY_CX - BODY_W / 2, BODY_TOP, BODY_W, BODY_H, 6)
+    .stroke({ color: c.outline, width: OL });
   applyShirtPattern(g, shirtId, c);
 }
 
-function applyShirtPattern(g: Graphics, shirtId: string, c: Colors) {
-  const top = BODY_TOP;
-  const left = BODY_CX - BODY_W / 2 + 1;
-  const right = BODY_CX + BODY_W / 2 - 1;
+function applyShirtPattern(g: Graphics, sid: string, c: Colors) {
+  const t = BODY_TOP;
+  const l = BODY_CX - BODY_W / 2 + 2;
+  const r = BODY_CX + BODY_W / 2 - 2;
 
-  if (shirtId.includes("striped")) {
-    g.moveTo(left, top + 2.5).lineTo(right, top + 2.5).stroke({ color: c.shirtShade, width: 0.8 });
-    g.moveTo(left, top + 4.5).lineTo(right, top + 4.5).stroke({ color: c.shirtShade, width: 0.8 });
-  } else if (shirtId.includes("superhero")) {
-    // Star emblem
-    drawStar(g, BODY_CX, top + 3.5, 2, 0xffd700);
-  } else if (shirtId.includes("hoodie")) {
-    // Hood collar
-    g.arc(BODY_CX, top + 0.5, 3, 0.3, Math.PI - 0.3, false)
-      .stroke({ color: c.shirtShade, width: 0.8 });
-    // Pocket
-    g.roundRect(BODY_CX - 3, top + 4, 6, 2, 1).stroke({ color: c.shirtShade, width: 0.6 });
-  } else if (shirtId.includes("tuxedo")) {
-    // White shirt center
-    g.roundRect(BODY_CX - 1.5, top + 0.5, 3, BODY_H - 1, 1).fill(0xf0f0f0);
-    // Tie
-    g.moveTo(BODY_CX, top + 0.5)
-      .lineTo(BODY_CX - 1, top + 2.5)
-      .lineTo(BODY_CX, top + 4.5)
-      .lineTo(BODY_CX + 1, top + 2.5)
-      .closePath()
-      .fill(0xd32f2f);
-  } else if (shirtId.includes("dragon")) {
-    // Dragon emblem
-    g.circle(BODY_CX, top + 3.5, 1.5).fill({ color: 0xffd700, alpha: 0.5 });
-  } else if (shirtId.includes("galaxy")) {
-    // Sparkle dots
-    g.circle(BODY_CX - 2, top + 2, 0.5).fill(0xffffff);
-    g.circle(BODY_CX + 2, top + 4, 0.4).fill(0xffffff);
-    g.circle(BODY_CX + 1, top + 1.5, 0.3).fill(0x7c4dff);
+  if (sid.includes("striped")) {
+    g.moveTo(l, t + 5).lineTo(r, t + 5).stroke({ color: c.shirtShade, width: 1.5 });
+    g.moveTo(l, t + 9).lineTo(r, t + 9).stroke({ color: c.shirtShade, width: 1.5 });
+  } else if (sid.includes("superhero")) {
+    drawStar(g, BODY_CX, t + 7, 4, 0xffd700);
+  } else if (sid.includes("hoodie")) {
+    g.arc(BODY_CX, t + 1, 6, 0.3, Math.PI - 0.3, false)
+      .stroke({ color: c.shirtShade, width: 1.5 });
+    g.roundRect(BODY_CX - 6, t + 8, 12, 4, 2).stroke({ color: c.shirtShade, width: 1 });
+  } else if (sid.includes("tuxedo")) {
+    g.roundRect(BODY_CX - 3, t + 1, 6, BODY_H - 2, 2).fill(0xf0f0f0);
+    g.moveTo(BODY_CX, t + 1).lineTo(BODY_CX - 2, t + 5)
+      .lineTo(BODY_CX, t + 9).lineTo(BODY_CX + 2, t + 5)
+      .closePath().fill(0xd32f2f);
+  } else if (sid.includes("dragon")) {
+    g.circle(BODY_CX, t + 7, 3).fill({ color: 0xffd700, alpha: 0.5 });
+  } else if (sid.includes("galaxy")) {
+    g.circle(BODY_CX - 4, t + 4, 1).fill(0xffffff);
+    g.circle(BODY_CX + 4, t + 8, 0.8).fill(0xffffff);
+    g.circle(BODY_CX + 2, t + 3, 0.6).fill(0x7c4dff);
   }
 }
 
 function drawStar(g: Graphics, cx: number, cy: number, r: number, color: number) {
-  const points: number[] = [];
+  const pts: number[] = [];
   for (let i = 0; i < 5; i++) {
-    const outerAngle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
-    const innerAngle = outerAngle + Math.PI / 5;
-    points.push(cx + Math.cos(outerAngle) * r, cy + Math.sin(outerAngle) * r);
-    points.push(cx + Math.cos(innerAngle) * r * 0.45, cy + Math.sin(innerAngle) * r * 0.45);
+    const oa = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+    const ia = oa + Math.PI / 5;
+    pts.push(cx + Math.cos(oa) * r, cy + Math.sin(oa) * r);
+    pts.push(cx + Math.cos(ia) * r * 0.45, cy + Math.sin(ia) * r * 0.45);
   }
-  g.poly(points).fill(color);
+  g.poly(pts).fill(color);
 }
 
 // ═══════════════════════════════════════════
-// ARMS — short rounded stubs
+// ARMS — pudgy short arms
 // ═══════════════════════════════════════════
 
 function drawArms(g: Graphics, c: Colors, walkFrame: number) {
-  const armY = BODY_TOP + 1;
-  const armW = 3;
-  const handR = 1.8;
+  const armY = BODY_TOP + 2;
+  const armW = 7;
+  const handR = 3.5;
+  const swL = walkFrame === 1 ? -0.3 : walkFrame === 2 ? 0.3 : 0;
+  const swR = walkFrame === 1 ? 0.3 : walkFrame === 2 ? -0.3 : 0;
 
-  // Arm swing angle
-  const swingL = walkFrame === 1 ? -0.3 : walkFrame === 2 ? 0.3 : 0;
-  const swingR = walkFrame === 1 ? 0.3 : walkFrame === 2 ? -0.3 : 0;
-
-  // Left arm (sleeve + hand)
-  const lx = BODY_CX - BODY_W / 2 - armW + 0.5;
-  const ly = armY + Math.sin(swingL) * 2;
-  g.roundRect(lx, ly, armW, ARM_LEN - 1, 1.5).fill(c.shirt);
-  g.roundRect(lx, ly, armW, ARM_LEN - 1, 1.5).stroke({ color: c.outline, width: OUTLINE * 0.7 });
-  // Hand
-  g.circle(lx + armW / 2, ly + ARM_LEN - 0.5, handR).fill(c.skin);
-  g.circle(lx + armW / 2, ly + ARM_LEN - 0.5, handR).stroke({ color: c.outline, width: OUTLINE * 0.6 });
+  // Left arm
+  const lx = BODY_CX - BODY_W / 2 - armW + 1;
+  const ly = armY + Math.sin(swL) * 4;
+  g.roundRect(lx, ly, armW, ARM_LEN - 2, 3).fill(c.shirt);
+  g.roundRect(lx, ly, armW, ARM_LEN - 2, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.circle(lx + armW / 2, ly + ARM_LEN - 1, handR).fill(c.skin);
+  g.circle(lx + armW / 2, ly + ARM_LEN - 1, handR).stroke({ color: c.outline, width: OL * 0.6 });
 
   // Right arm
-  const rx = BODY_CX + BODY_W / 2 - 0.5;
-  const ry = armY + Math.sin(swingR) * 2;
-  g.roundRect(rx, ry, armW, ARM_LEN - 1, 1.5).fill(c.shirtShade);
-  g.roundRect(rx, ry, armW, ARM_LEN - 1, 1.5).stroke({ color: c.outline, width: OUTLINE * 0.7 });
-  // Hand
-  g.circle(rx + armW / 2, ry + ARM_LEN - 0.5, handR).fill(c.skinShade);
-  g.circle(rx + armW / 2, ry + ARM_LEN - 0.5, handR).stroke({ color: c.outline, width: OUTLINE * 0.6 });
+  const rx = BODY_CX + BODY_W / 2 - 1;
+  const ry = armY + Math.sin(swR) * 4;
+  g.roundRect(rx, ry, armW, ARM_LEN - 2, 3).fill(c.shirtShade);
+  g.roundRect(rx, ry, armW, ARM_LEN - 2, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.circle(rx + armW / 2, ry + ARM_LEN - 1, handR).fill(c.skinShade);
+  g.circle(rx + armW / 2, ry + ARM_LEN - 1, handR).stroke({ color: c.outline, width: OL * 0.6 });
 }
 
 // ═══════════════════════════════════════════
-// LEGS — short cute legs
+// LEGS
 // ═══════════════════════════════════════════
 
 function drawLegs(g: Graphics, c: Colors, lOff: number, rOff: number, pantsId: string) {
   const isShorts = pantsId.includes("shorts");
   const isSkirt = pantsId.includes("skirt");
-  const legW = 3.5;
-  const legH = isShorts ? LEG_LEN - 2 : LEG_LEN;
+  const legW = 8;
+  const legH = isShorts ? LEG_LEN - 4 : LEG_LEN;
 
   if (isSkirt) {
-    // Skirt — trapezoid shape
     g.moveTo(BODY_CX - BODY_W / 2, LEG_TOP)
-      .lineTo(BODY_CX - BODY_W / 2 - 2, LEG_TOP + 3.5)
-      .lineTo(BODY_CX + BODY_W / 2 + 2, LEG_TOP + 3.5)
-      .lineTo(BODY_CX + BODY_W / 2, LEG_TOP)
-      .closePath()
-      .fill(c.pants);
+      .lineTo(BODY_CX - BODY_W / 2 - 4, LEG_TOP + 7)
+      .lineTo(BODY_CX + BODY_W / 2 + 4, LEG_TOP + 7)
+      .lineTo(BODY_CX + BODY_W / 2, LEG_TOP).closePath().fill(c.pants);
     g.moveTo(BODY_CX - BODY_W / 2, LEG_TOP)
-      .lineTo(BODY_CX - BODY_W / 2 - 2, LEG_TOP + 3.5)
-      .lineTo(BODY_CX + BODY_W / 2 + 2, LEG_TOP + 3.5)
-      .lineTo(BODY_CX + BODY_W / 2, LEG_TOP)
-      .closePath()
-      .stroke({ color: c.outline, width: OUTLINE * 0.7 });
-    // Legs below skirt (skin)
-    g.roundRect(CX - 3.5 + lOff, LEG_TOP + 3.5, legW, 2.5, 1).fill(c.skin);
-    g.roundRect(CX + 0.5 + rOff, LEG_TOP + 3.5, legW, 2.5, 1).fill(c.skin);
+      .lineTo(BODY_CX - BODY_W / 2 - 4, LEG_TOP + 7)
+      .lineTo(BODY_CX + BODY_W / 2 + 4, LEG_TOP + 7)
+      .lineTo(BODY_CX + BODY_W / 2, LEG_TOP).closePath()
+      .stroke({ color: c.outline, width: OL * 0.7 });
+    g.roundRect(CX - 7 + lOff, LEG_TOP + 7, legW, 5, 2).fill(c.skin);
+    g.roundRect(CX + 1 + rOff, LEG_TOP + 7, legW, 5, 2).fill(c.skin);
   } else {
-    // Left leg
-    g.roundRect(CX - 3.5 + lOff, LEG_TOP, legW, legH, 1.5).fill(c.pants);
-    g.roundRect(CX - 3.5 + lOff, LEG_TOP, legW, legH, 1.5)
-      .stroke({ color: c.outline, width: OUTLINE * 0.7 });
-    // Right leg
-    g.roundRect(CX + 0.5 + rOff, LEG_TOP, legW, legH, 1.5).fill(c.pantsShade);
-    g.roundRect(CX + 0.5 + rOff, LEG_TOP, legW, legH, 1.5)
-      .stroke({ color: c.outline, width: OUTLINE * 0.7 });
-
+    g.roundRect(CX - 7 + lOff, LEG_TOP, legW, legH, 3).fill(c.pants);
+    g.roundRect(CX - 7 + lOff, LEG_TOP, legW, legH, 3).stroke({ color: c.outline, width: OL * 0.7 });
+    g.roundRect(CX + 1 + rOff, LEG_TOP, legW, legH, 3).fill(c.pantsShade);
+    g.roundRect(CX + 1 + rOff, LEG_TOP, legW, legH, 3).stroke({ color: c.outline, width: OL * 0.7 });
     if (isShorts) {
-      // Exposed skin below shorts
-      g.roundRect(CX - 3.5 + lOff, LEG_TOP + legH, legW, 2, 1).fill(c.skin);
-      g.roundRect(CX + 0.5 + rOff, LEG_TOP + legH, legW, 2, 1).fill(c.skin);
+      g.roundRect(CX - 7 + lOff, LEG_TOP + legH, legW, 4, 2).fill(c.skin);
+      g.roundRect(CX + 1 + rOff, LEG_TOP + legH, legW, 4, 2).fill(c.skin);
     }
   }
 }
 
 // ═══════════════════════════════════════════
-// SHOES — round cute shoes
+// SHOES
 // ═══════════════════════════════════════════
 
 function drawShoes(g: Graphics, c: Colors, lOff: number, rOff: number, shoesId: string) {
-  const shoeY = LEG_TOP + LEG_LEN - 0.5;
-  const shoeW = 4.5;
-  const shoeH = 2.5;
-
+  const sy = LEG_TOP + LEG_LEN - 1;
+  const sw = 10, sh = 5;
   const isRocket = shoesId.includes("rocket");
   const isBoots = shoesId.includes("boots") && !isRocket;
   const isHeels = shoesId.includes("heels");
 
-  // Left shoe
-  g.roundRect(CX - 4.5 + lOff, shoeY, shoeW, shoeH, 1.2).fill(c.shoes);
-  g.roundRect(CX - 4.5 + lOff, shoeY, shoeW, shoeH, 1.2)
-    .stroke({ color: c.outline, width: OUTLINE * 0.6 });
-  // Right shoe
-  g.roundRect(CX + 0.5 + rOff, shoeY, shoeW, shoeH, 1.2).fill(c.shoesShade);
-  g.roundRect(CX + 0.5 + rOff, shoeY, shoeW, shoeH, 1.2)
-    .stroke({ color: c.outline, width: OUTLINE * 0.6 });
+  g.roundRect(CX - 9 + lOff, sy, sw, sh, 2.5).fill(c.shoes);
+  g.roundRect(CX - 9 + lOff, sy, sw, sh, 2.5).stroke({ color: c.outline, width: OL * 0.6 });
+  g.roundRect(CX + 1 + rOff, sy, sw, sh, 2.5).fill(c.shoesShade);
+  g.roundRect(CX + 1 + rOff, sy, sw, sh, 2.5).stroke({ color: c.outline, width: OL * 0.6 });
 
   if (isRocket) {
-    // Rocket flame
-    g.ellipse(CX - 2.5 + lOff, shoeY + shoeH + 1, 1.5, 1).fill(0xff6d00);
-    g.ellipse(CX + 2.5 + rOff, shoeY + shoeH + 1, 1.5, 1).fill(0xff6d00);
-    g.ellipse(CX - 2.5 + lOff, shoeY + shoeH + 1, 0.8, 0.6).fill(0xffab00);
-    g.ellipse(CX + 2.5 + rOff, shoeY + shoeH + 1, 0.8, 0.6).fill(0xffab00);
+    g.ellipse(CX - 4 + lOff, sy + sh + 2, 3, 2).fill(0xff6d00);
+    g.ellipse(CX + 6 + rOff, sy + sh + 2, 3, 2).fill(0xff6d00);
+    g.ellipse(CX - 4 + lOff, sy + sh + 2, 1.5, 1.2).fill(0xffab00);
+    g.ellipse(CX + 6 + rOff, sy + sh + 2, 1.5, 1.2).fill(0xffab00);
   } else if (isBoots) {
-    // Taller boots
-    g.roundRect(CX - 4 + lOff, shoeY - 2, shoeW - 0.5, 2, 1).fill(c.shoes);
-    g.roundRect(CX + 0.5 + rOff, shoeY - 2, shoeW - 0.5, 2, 1).fill(c.shoes);
+    g.roundRect(CX - 8 + lOff, sy - 4, sw - 1, 4, 2).fill(c.shoes);
+    g.roundRect(CX + 1 + rOff, sy - 4, sw - 1, 4, 2).fill(c.shoes);
   } else if (isHeels) {
-    // Small heel
-    g.roundRect(CX - 4.5 + lOff, shoeY + shoeH, 1, 1.5, 0.3).fill(c.shoesShade);
-    g.roundRect(CX + 0.5 + rOff, shoeY + shoeH, 1, 1.5, 0.3).fill(c.shoesShade);
+    g.roundRect(CX - 9 + lOff, sy + sh, 2, 3, 0.5).fill(c.shoesShade);
+    g.roundRect(CX + 1 + rOff, sy + sh, 2, 3, 0.5).fill(c.shoesShade);
   }
 }
 
@@ -675,106 +581,63 @@ function drawShoes(g: Graphics, c: Colors, lOff: number, rOff: number, shoesId: 
 // ═══════════════════════════════════════════
 
 function drawHat(g: Graphics, hatId: string, c: Colors) {
-  const h = c.hat!;
-  const sh = c.hatShade!;
+  const h = c.hat!, sh = c.hatShade!;
 
   if (hatId.includes("baseball")) {
-    // Cap dome
-    g.ellipse(CX, HEAD_CY - 5, HEAD_RX, 4).fill(h);
-    // Brim
-    g.ellipse(CX + 2, HEAD_CY - 2, HEAD_RX + 2, 1.5).fill(sh);
-    g.ellipse(CX, HEAD_CY - 5, HEAD_RX, 4).stroke({ color: c.outline, width: OUTLINE });
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 8).fill(h);
+    g.ellipse(CX + 4, HEAD_CY - 4, HEAD_RX + 5, 3).fill(sh);
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 8).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("beanie")) {
-    // Beanie dome
-    g.ellipse(CX, HEAD_CY - 5, HEAD_RX + 0.5, 5).fill(h);
-    // Pom-pom
-    g.circle(CX, HEAD_CY - 9.5, 2).fill(lightenColor(h, 0.3));
-    g.circle(CX, HEAD_CY - 9.5, 2).stroke({ color: c.outline, width: OUTLINE * 0.6 });
-    // Ribbed edge
-    g.moveTo(CX - HEAD_RX - 0.5, HEAD_CY - 1).lineTo(CX + HEAD_RX + 0.5, HEAD_CY - 1)
-      .stroke({ color: sh, width: 1.5 });
-    g.ellipse(CX, HEAD_CY - 5, HEAD_RX + 0.5, 5).stroke({ color: c.outline, width: OUTLINE });
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 10).fill(h);
+    g.circle(CX, HEAD_CY - 19, 4).fill(lightenColor(h, 0.3));
+    g.circle(CX, HEAD_CY - 19, 4).stroke({ color: c.outline, width: OL * 0.6 });
+    g.moveTo(CX - HEAD_RX - 1, HEAD_CY - 2).lineTo(CX + HEAD_RX + 1, HEAD_CY - 2)
+      .stroke({ color: sh, width: 3 });
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 10).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("crown")) {
-    // Crown base
-    g.roundRect(CX - 7, HEAD_CY - 7, 14, 4, 1).fill(h);
-    // Crown points
-    g.moveTo(CX - 7, HEAD_CY - 7).lineTo(CX - 5, HEAD_CY - 11).lineTo(CX - 3, HEAD_CY - 7).fill(h);
-    g.moveTo(CX - 2, HEAD_CY - 7).lineTo(CX, HEAD_CY - 12).lineTo(CX + 2, HEAD_CY - 7).fill(h);
-    g.moveTo(CX + 3, HEAD_CY - 7).lineTo(CX + 5, HEAD_CY - 11).lineTo(CX + 7, HEAD_CY - 7).fill(h);
-    // Jewels
-    g.circle(CX - 3, HEAD_CY - 5.5, 1).fill(0xe53935);
-    g.circle(CX + 3, HEAD_CY - 5.5, 1).fill(0x2196f3);
-    // Outline
-    g.moveTo(CX - 7, HEAD_CY - 3)
-      .lineTo(CX - 7, HEAD_CY - 7).lineTo(CX - 5, HEAD_CY - 11)
-      .lineTo(CX - 3, HEAD_CY - 7).lineTo(CX - 2, HEAD_CY - 7)
-      .lineTo(CX, HEAD_CY - 12).lineTo(CX + 2, HEAD_CY - 7)
-      .lineTo(CX + 3, HEAD_CY - 7).lineTo(CX + 5, HEAD_CY - 11)
-      .lineTo(CX + 7, HEAD_CY - 7).lineTo(CX + 7, HEAD_CY - 3)
-      .stroke({ color: c.outline, width: OUTLINE });
+    g.roundRect(CX - 14, HEAD_CY - 14, 28, 8, 2).fill(h);
+    g.moveTo(CX - 14, HEAD_CY - 14).lineTo(CX - 10, HEAD_CY - 22).lineTo(CX - 6, HEAD_CY - 14).fill(h);
+    g.moveTo(CX - 4, HEAD_CY - 14).lineTo(CX, HEAD_CY - 24).lineTo(CX + 4, HEAD_CY - 14).fill(h);
+    g.moveTo(CX + 6, HEAD_CY - 14).lineTo(CX + 10, HEAD_CY - 22).lineTo(CX + 14, HEAD_CY - 14).fill(h);
+    g.circle(CX - 6, HEAD_CY - 11, 2).fill(0xe53935);
+    g.circle(CX + 6, HEAD_CY - 11, 2).fill(0x2196f3);
+    g.roundRect(CX - 14, HEAD_CY - 14, 28, 8, 2).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("wizard")) {
-    // Wizard hat cone
-    g.moveTo(CX - 8, HEAD_CY - 2)
-      .lineTo(CX, HEAD_CY - 16)
-      .lineTo(CX + 8, HEAD_CY - 2)
-      .closePath()
-      .fill(h);
-    // Star decoration
-    drawStar(g, CX, HEAD_CY - 9, 1.5, 0xffd700);
-    // Wide brim
-    g.ellipse(CX, HEAD_CY - 2, HEAD_RX + 4, 2).fill(sh);
-    // Outline
-    g.moveTo(CX - 8, HEAD_CY - 2)
-      .lineTo(CX, HEAD_CY - 16)
-      .lineTo(CX + 8, HEAD_CY - 2)
-      .stroke({ color: c.outline, width: OUTLINE });
-    g.ellipse(CX, HEAD_CY - 2, HEAD_RX + 4, 2).stroke({ color: c.outline, width: OUTLINE });
+    g.moveTo(CX - 16, HEAD_CY - 4).lineTo(CX, HEAD_CY - 32).lineTo(CX + 16, HEAD_CY - 4).closePath().fill(h);
+    drawStar(g, CX, HEAD_CY - 18, 3, 0xffd700);
+    g.ellipse(CX, HEAD_CY - 4, HEAD_RX + 8, 3.5).fill(sh);
+    g.moveTo(CX - 16, HEAD_CY - 4).lineTo(CX, HEAD_CY - 32).lineTo(CX + 16, HEAD_CY - 4)
+      .stroke({ color: c.outline, width: OL });
+    g.ellipse(CX, HEAD_CY - 4, HEAD_RX + 8, 3.5).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("santa")) {
-    // Santa hat curve
-    g.ellipse(CX, HEAD_CY - 5, HEAD_RX + 0.5, 5).fill(h);
-    // Drooping tip
-    g.ellipse(CX + 7, HEAD_CY - 7, 3, 2.5).fill(h);
-    // Pom-pom
-    g.circle(CX + 9, HEAD_CY - 7, 1.8).fill(0xf5f5f5);
-    // White trim
-    g.roundRect(CX - HEAD_RX - 0.5, HEAD_CY - 1.5, HEAD_RX * 2 + 1, 2.5, 1).fill(0xf5f5f5);
-    g.ellipse(CX, HEAD_CY - 5, HEAD_RX + 0.5, 5).stroke({ color: c.outline, width: OUTLINE });
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 10).fill(h);
+    g.ellipse(CX + 14, HEAD_CY - 14, 6, 5).fill(h);
+    g.circle(CX + 18, HEAD_CY - 14, 3.5).fill(0xf5f5f5);
+    g.roundRect(CX - HEAD_RX - 1, HEAD_CY - 3, HEAD_RX * 2 + 2, 5, 2).fill(0xf5f5f5);
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 10).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("headphones")) {
-    // Band across top
-    g.arc(CX, HEAD_CY - 2, HEAD_RX + 1, Math.PI, 0, false)
-      .stroke({ color: h, width: 2 });
-    // Ear cups
-    g.roundRect(CX - HEAD_RX - 3, HEAD_CY - 1, 3.5, 5, 1.5).fill(h);
-    g.roundRect(CX + HEAD_RX - 0.5, HEAD_CY - 1, 3.5, 5, 1.5).fill(h);
-    // Cushion
-    g.roundRect(CX - HEAD_RX - 2.5, HEAD_CY, 2, 3, 1).fill(sh);
-    g.roundRect(CX + HEAD_RX, HEAD_CY, 2, 3, 1).fill(sh);
-    // Outline
-    g.roundRect(CX - HEAD_RX - 3, HEAD_CY - 1, 3.5, 5, 1.5).stroke({ color: c.outline, width: OUTLINE * 0.7 });
-    g.roundRect(CX + HEAD_RX - 0.5, HEAD_CY - 1, 3.5, 5, 1.5).stroke({ color: c.outline, width: OUTLINE * 0.7 });
+    g.arc(CX, HEAD_CY - 4, HEAD_RX + 2, Math.PI, 0, false).stroke({ color: h, width: 4 });
+    g.roundRect(CX - HEAD_RX - 6, HEAD_CY - 2, 7, 10, 3).fill(h);
+    g.roundRect(CX + HEAD_RX - 1, HEAD_CY - 2, 7, 10, 3).fill(h);
+    g.roundRect(CX - HEAD_RX - 5, HEAD_CY, 4, 6, 2).fill(sh);
+    g.roundRect(CX + HEAD_RX, HEAD_CY, 4, 6, 2).fill(sh);
+    g.roundRect(CX - HEAD_RX - 6, HEAD_CY - 2, 7, 10, 3).stroke({ color: c.outline, width: OL * 0.7 });
+    g.roundRect(CX + HEAD_RX - 1, HEAD_CY - 2, 7, 10, 3).stroke({ color: c.outline, width: OL * 0.7 });
   } else if (hatId.includes("halo")) {
-    // Floating halo ring
-    g.ellipse(CX, HEAD_CY - HEAD_RY - 3, 7, 1.5)
-      .fill({ color: 0xffd700, alpha: 0.7 });
-    g.ellipse(CX, HEAD_CY - HEAD_RY - 3, 7, 1.5)
-      .stroke({ color: 0xffecb3, width: 0.8 });
+    g.ellipse(CX, HEAD_CY - HEAD_RY - 5, 14, 3).fill({ color: 0xffd700, alpha: 0.7 });
+    g.ellipse(CX, HEAD_CY - HEAD_RY - 5, 14, 3).stroke({ color: 0xffecb3, width: 1.5 });
   } else if (hatId.includes("devil")) {
-    // Devil horns
-    g.moveTo(CX - 7, HEAD_CY - 3).lineTo(CX - 9, HEAD_CY - 10).lineTo(CX - 4, HEAD_CY - 5).fill(h);
-    g.moveTo(CX + 7, HEAD_CY - 3).lineTo(CX + 9, HEAD_CY - 10).lineTo(CX + 4, HEAD_CY - 5).fill(h);
-    g.moveTo(CX - 7, HEAD_CY - 3).lineTo(CX - 9, HEAD_CY - 10).lineTo(CX - 4, HEAD_CY - 5)
-      .stroke({ color: c.outline, width: OUTLINE * 0.7 });
-    g.moveTo(CX + 7, HEAD_CY - 3).lineTo(CX + 9, HEAD_CY - 10).lineTo(CX + 4, HEAD_CY - 5)
-      .stroke({ color: c.outline, width: OUTLINE * 0.7 });
+    g.moveTo(CX - 14, HEAD_CY - 6).lineTo(CX - 18, HEAD_CY - 20).lineTo(CX - 8, HEAD_CY - 10).fill(h);
+    g.moveTo(CX + 14, HEAD_CY - 6).lineTo(CX + 18, HEAD_CY - 20).lineTo(CX + 8, HEAD_CY - 10).fill(h);
+    g.moveTo(CX - 14, HEAD_CY - 6).lineTo(CX - 18, HEAD_CY - 20).lineTo(CX - 8, HEAD_CY - 10)
+      .stroke({ color: c.outline, width: OL * 0.7 });
+    g.moveTo(CX + 14, HEAD_CY - 6).lineTo(CX + 18, HEAD_CY - 20).lineTo(CX + 8, HEAD_CY - 10)
+      .stroke({ color: c.outline, width: OL * 0.7 });
   } else if (hatId.includes("astronaut")) {
-    // Helmet dome
-    g.circle(CX, HEAD_CY, HEAD_RY + 2.5).fill({ color: 0xe0e0e0, alpha: 0.85 });
-    // Visor
-    g.ellipse(CX, HEAD_CY + 0.5, HEAD_RX - 1, HEAD_RY - 1.5)
-      .fill({ color: 0x42a5f5, alpha: 0.5 });
-    // Glare
-    g.ellipse(CX - 3, HEAD_CY - 2, 2, 1.5).fill({ color: 0x90caf9, alpha: 0.4 });
-    g.circle(CX, HEAD_CY, HEAD_RY + 2.5).stroke({ color: c.outline, width: OUTLINE });
+    g.circle(CX, HEAD_CY, HEAD_RY + 5).fill({ color: 0xe0e0e0, alpha: 0.85 });
+    g.ellipse(CX, HEAD_CY + 1, HEAD_RX - 2, HEAD_RY - 3).fill({ color: 0x42a5f5, alpha: 0.5 });
+    g.ellipse(CX - 6, HEAD_CY - 4, 4, 3).fill({ color: 0x90caf9, alpha: 0.4 });
+    g.circle(CX, HEAD_CY, HEAD_RY + 5).stroke({ color: c.outline, width: OL });
   }
 }
 
@@ -784,95 +647,57 @@ function drawHat(g: Graphics, hatId: string, c: Colors) {
 
 function drawAccessoryBack(g: Graphics, accId: string | null, c: Colors) {
   if (!accId) return;
-
   if (accId.includes("cape")) {
-    // Cape flowing behind
-    g.moveTo(BODY_CX - BODY_W / 2, BODY_TOP + 1)
-      .bezierCurveTo(BODY_CX - BODY_W, BODY_TOP + BODY_H, BODY_CX - BODY_W, LEG_TOP + 4, BODY_CX - 3, LEG_TOP + 5)
-      .lineTo(BODY_CX + 3, LEG_TOP + 5)
-      .bezierCurveTo(BODY_CX + BODY_W, LEG_TOP + 4, BODY_CX + BODY_W, BODY_TOP + BODY_H, BODY_CX + BODY_W / 2, BODY_TOP + 1)
-      .fill(c.acc);
-    g.moveTo(BODY_CX - BODY_W / 2, BODY_TOP + 1)
-      .bezierCurveTo(BODY_CX - BODY_W, BODY_TOP + BODY_H, BODY_CX - BODY_W, LEG_TOP + 4, BODY_CX - 3, LEG_TOP + 5)
-      .lineTo(BODY_CX + 3, LEG_TOP + 5)
-      .bezierCurveTo(BODY_CX + BODY_W, LEG_TOP + 4, BODY_CX + BODY_W, BODY_TOP + BODY_H, BODY_CX + BODY_W / 2, BODY_TOP + 1)
-      .stroke({ color: darkenColor(c.acc, 0.3), width: OUTLINE * 0.6 });
-  } else if (accId.includes("wings")) {
-    // Left wing
     g.moveTo(BODY_CX - BODY_W / 2, BODY_TOP + 2)
-      .bezierCurveTo(BODY_CX - 12, BODY_TOP - 2, BODY_CX - 14, BODY_TOP + 3, BODY_CX - BODY_W / 2 - 1, BODY_TOP + 5)
+      .bezierCurveTo(BODY_CX - BODY_W, BODY_TOP + BODY_H, BODY_CX - BODY_W, LEG_TOP + 8, BODY_CX - 6, LEG_TOP + 10)
+      .lineTo(BODY_CX + 6, LEG_TOP + 10)
+      .bezierCurveTo(BODY_CX + BODY_W, LEG_TOP + 8, BODY_CX + BODY_W, BODY_TOP + BODY_H, BODY_CX + BODY_W / 2, BODY_TOP + 2)
+      .fill(c.acc);
+  } else if (accId.includes("wings")) {
+    g.moveTo(BODY_CX - BODY_W / 2, BODY_TOP + 4)
+      .bezierCurveTo(BODY_CX - 24, BODY_TOP - 4, BODY_CX - 28, BODY_TOP + 6, BODY_CX - BODY_W / 2 - 2, BODY_TOP + 10)
       .fill({ color: c.acc, alpha: 0.7 });
-    // Right wing
-    g.moveTo(BODY_CX + BODY_W / 2, BODY_TOP + 2)
-      .bezierCurveTo(BODY_CX + 12, BODY_TOP - 2, BODY_CX + 14, BODY_TOP + 3, BODY_CX + BODY_W / 2 + 1, BODY_TOP + 5)
+    g.moveTo(BODY_CX + BODY_W / 2, BODY_TOP + 4)
+      .bezierCurveTo(BODY_CX + 24, BODY_TOP - 4, BODY_CX + 28, BODY_TOP + 6, BODY_CX + BODY_W / 2 + 2, BODY_TOP + 10)
       .fill({ color: c.acc, alpha: 0.7 });
-    // Shine
-    g.ellipse(BODY_CX - 10, BODY_TOP, 1.5, 1).fill({ color: lightenColor(c.acc, 0.3), alpha: 0.5 });
-    g.ellipse(BODY_CX + 10, BODY_TOP, 1.5, 1).fill({ color: lightenColor(c.acc, 0.3), alpha: 0.5 });
   } else if (accId.includes("backpack")) {
-    // Backpack behind right side
-    g.roundRect(BODY_CX + BODY_W / 2 - 1, BODY_TOP, 5, 7, 2).fill(c.acc);
-    g.roundRect(BODY_CX + BODY_W / 2 - 1, BODY_TOP, 5, 7, 2)
-      .stroke({ color: darkenColor(c.acc, 0.2), width: OUTLINE * 0.5 });
-    // Pocket
-    g.roundRect(BODY_CX + BODY_W / 2, BODY_TOP + 3, 3, 2, 0.8).fill(darkenColor(c.acc, 0.15));
+    g.roundRect(BODY_CX + BODY_W / 2 - 2, BODY_TOP, 10, 14, 4).fill(c.acc);
+    g.roundRect(BODY_CX + BODY_W / 2 - 2, BODY_TOP, 10, 14, 4)
+      .stroke({ color: darkenColor(c.acc, 0.2), width: OL * 0.5 });
+    g.roundRect(BODY_CX + BODY_W / 2, BODY_TOP + 6, 6, 4, 1.5).fill(darkenColor(c.acc, 0.15));
   } else if (accId.includes("shield")) {
-    // Shield on left side
-    g.ellipse(BODY_CX - BODY_W / 2 - 3, BODY_TOP + 3, 3, 4).fill(c.acc);
-    g.ellipse(BODY_CX - BODY_W / 2 - 3, BODY_TOP + 3, 3, 4)
-      .stroke({ color: darkenColor(c.acc, 0.2), width: OUTLINE * 0.5 });
-    // Cross pattern
-    g.moveTo(BODY_CX - BODY_W / 2 - 3, BODY_TOP + 0.5)
-      .lineTo(BODY_CX - BODY_W / 2 - 3, BODY_TOP + 5.5)
-      .stroke({ color: lightenColor(c.acc, 0.2), width: 0.8 });
+    g.ellipse(BODY_CX - BODY_W / 2 - 6, BODY_TOP + 6, 6, 8).fill(c.acc);
+    g.ellipse(BODY_CX - BODY_W / 2 - 6, BODY_TOP + 6, 6, 8)
+      .stroke({ color: darkenColor(c.acc, 0.2), width: OL * 0.5 });
   }
 }
 
 function drawAccessoryFront(g: Graphics, accId: string | null, c: Colors) {
   if (!accId) return;
-
   if (accId.includes("sword")) {
-    // Sword on right side
-    const sx = BODY_CX + BODY_W / 2 + 3;
-    // Blade
-    g.roundRect(sx - 0.5, HEAD_CY, 1, 14, 0.3).fill(0xc0c0c0);
-    g.roundRect(sx - 0.5, HEAD_CY, 1, 14, 0.3).stroke({ color: 0x808080, width: 0.4 });
-    // Guard
-    g.roundRect(sx - 2, BODY_TOP + 1, 4, 1, 0.5).fill(0xffd700);
-    // Handle
-    g.roundRect(sx - 0.5, BODY_TOP + 2, 1, 3, 0.3).fill(0x8d6e63);
+    const sx = BODY_CX + BODY_W / 2 + 6;
+    g.roundRect(sx - 1, HEAD_CY, 2, 28, 0.5).fill(0xc0c0c0);
+    g.roundRect(sx - 1, HEAD_CY, 2, 28, 0.5).stroke({ color: 0x808080, width: 0.7 });
+    g.roundRect(sx - 4, BODY_TOP + 2, 8, 2, 1).fill(0xffd700);
+    g.roundRect(sx - 1, BODY_TOP + 4, 2, 6, 0.5).fill(0x8d6e63);
   } else if (accId.includes("pet_cat")) {
-    // Small cat companion
-    const px = BODY_CX + 10;
-    const py = LEG_TOP + LEG_LEN;
-    g.circle(px, py - 2, 2).fill(c.acc); // head
-    g.ellipse(px, py + 0.5, 2, 1.5).fill(c.acc); // body
-    // Ears
-    g.moveTo(px - 2, py - 3.5).lineTo(px - 1, py - 5).lineTo(px, py - 3.5).fill(c.acc);
-    g.moveTo(px, py - 3.5).lineTo(px + 1, py - 5).lineTo(px + 2, py - 3.5).fill(c.acc);
-    // Eyes
-    g.circle(px - 0.8, py - 2.2, 0.4).fill(c.outline);
-    g.circle(px + 0.8, py - 2.2, 0.4).fill(c.outline);
-    // Tail
-    g.moveTo(px + 2, py + 0.5)
-      .bezierCurveTo(px + 4, py, px + 4, py - 2, px + 3, py - 3)
-      .stroke({ color: c.acc, width: 0.8 });
+    const px = BODY_CX + 20, py = LEG_TOP + LEG_LEN;
+    g.circle(px, py - 4, 4).fill(c.acc);
+    g.ellipse(px, py + 1, 4, 3).fill(c.acc);
+    g.moveTo(px - 4, py - 7).lineTo(px - 2, py - 10).lineTo(px, py - 7).fill(c.acc);
+    g.moveTo(px, py - 7).lineTo(px + 2, py - 10).lineTo(px + 4, py - 7).fill(c.acc);
+    g.circle(px - 1.5, py - 4.5, 0.8).fill(c.outline);
+    g.circle(px + 1.5, py - 4.5, 0.8).fill(c.outline);
+    g.moveTo(px + 4, py + 1).bezierCurveTo(px + 8, py, px + 8, py - 4, px + 6, py - 6)
+      .stroke({ color: c.acc, width: 1.5 });
   } else if (accId.includes("pet_dog")) {
-    const px = BODY_CX + 10;
-    const py = LEG_TOP + LEG_LEN;
-    g.circle(px, py - 2, 2.2).fill(c.acc); // head
-    g.ellipse(px, py + 0.5, 2.2, 1.5).fill(c.acc); // body
-    // Floppy ears
-    g.ellipse(px - 2.5, py - 1, 1.2, 2).fill(darkenColor(c.acc, 0.2));
-    g.ellipse(px + 2.5, py - 1, 1.2, 2).fill(darkenColor(c.acc, 0.2));
-    // Eyes
-    g.circle(px - 0.8, py - 2.5, 0.4).fill(c.outline);
-    g.circle(px + 0.8, py - 2.5, 0.4).fill(c.outline);
-    // Tongue
-    g.ellipse(px, py - 0.8, 0.6, 0.4).fill(0xff8a80);
-    // Tail
-    g.moveTo(px + 2.2, py + 0.5)
-      .bezierCurveTo(px + 4, py - 1, px + 5, py - 2, px + 4, py - 3)
-      .stroke({ color: c.acc, width: 1 });
+    const px = BODY_CX + 20, py = LEG_TOP + LEG_LEN;
+    g.circle(px, py - 4, 4.5).fill(c.acc);
+    g.ellipse(px, py + 1, 4.5, 3).fill(c.acc);
+    g.ellipse(px - 5, py - 2, 2.5, 4).fill(darkenColor(c.acc, 0.2));
+    g.ellipse(px + 5, py - 2, 2.5, 4).fill(darkenColor(c.acc, 0.2));
+    g.circle(px - 1.5, py - 5, 0.8).fill(c.outline);
+    g.circle(px + 1.5, py - 5, 0.8).fill(c.outline);
+    g.ellipse(px, py - 2, 1.2, 0.8).fill(0xff8a80);
   }
 }

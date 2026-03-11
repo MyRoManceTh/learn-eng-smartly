@@ -31,14 +31,14 @@ interface PixelAvatarProps {
   emotion?: StickerEmotion;
 }
 
-const INTERNAL_W = GRID_W; // 32
-const INTERNAL_H = GRID_H; // 42
+const INTERNAL_W = GRID_W; // 64
+const INTERNAL_H = GRID_H; // 80
 
-// CSS display sizes — smooth upscale for vector art
+// CSS display sizes — pet is ~36-44px, character should be ~2x bigger
 const SIZE_CONFIG = {
-  sm: { cssWidth: 96, cssHeight: 128 },    // 2x
-  md: { cssWidth: 144, cssHeight: 192 },   // 3x
-  lg: { cssWidth: 240, cssHeight: 320 },   // 5x
+  sm: { cssWidth: 96, cssHeight: 120 },    // 1.5x — room (2x pet size)
+  md: { cssWidth: 160, cssHeight: 200 },   // 2.5x — home page
+  lg: { cssWidth: 256, cssHeight: 320 },   // 4x — avatar page
 };
 
 const PixelAvatar: React.FC<PixelAvatarProps> = ({
