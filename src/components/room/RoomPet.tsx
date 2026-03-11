@@ -88,12 +88,13 @@ const DEFAULT_SPEECHES = [
 
 interface RoomPetProps {
   pet: RoomItem;
-  charX: number; // character position %
+  charX: number;
+  petCare?: PetCareState;
 }
 
 type PetState = "idle" | "walking" | "approaching" | "cuddling";
 
-const RoomPet = ({ pet, charX }: RoomPetProps) => {
+const RoomPet = ({ pet, charX, petCare }: RoomPetProps) => {
   const [petX, setPetX] = useState(65);
   const [petState, setPetState] = useState<PetState>("idle");
   const [petDirection, setPetDirection] = useState<"left" | "right">("left");
