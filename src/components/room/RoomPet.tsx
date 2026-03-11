@@ -179,6 +179,8 @@ const RoomPet = ({ pet, charX, petCare }: RoomPetProps) => {
         ? "animate-[wiggle_0.5s_ease-in-out_infinite]"
         : ""; // idle: no extra animation
 
+  const petLevel = petCare?.[pet.id] ? getPetLevel(petCare[pet.id].exp) : 0;
+
   return (
     <>
       {/* Pet sprite */}
@@ -192,6 +194,19 @@ const RoomPet = ({ pet, charX, petCare }: RoomPetProps) => {
           filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.25))",
         }}
       >
+        {/* Level badge */}
+        {petLevel > 0 && (
+          <div
+            className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 px-1 py-0 rounded-full text-[7px] font-bold whitespace-nowrap"
+            style={{
+              background: "rgba(255,255,255,0.9)",
+              border: "1px solid rgba(0,0,0,0.15)",
+              transform: `translateX(-50%) scaleX(${petDirection === "left" ? -1 : 1})`,
+            }}
+          >
+            Lv.{petLevel}
+          </div>
+        )}
         <div className={animClass}>
           {petImage ? (
             <img
