@@ -114,6 +114,7 @@ const MyPage = () => {
   const [room, setRoom] = useState<RoomLayout>(DEFAULT_ROOM);
   const [roomInventory, setRoomInventory] = useState<string[]>([]);
   const [selectedRoomCategory, setSelectedRoomCategory] = useState("wallpaper");
+  const [petCare, setPetCare] = useState<PetCareState>(DEFAULT_PET_CARE);
 
   // Profile state
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
