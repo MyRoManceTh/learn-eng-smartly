@@ -75,6 +75,9 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
     return room.items.map((id) => getRoomItem(id)).filter(Boolean);
   }, [room.items]);
 
+  const petItems = useMemo(() => placedItems.filter((i) => i?.category === "pet"), [placedItems]);
+  const nonPetItems = useMemo(() => placedItems.filter((i) => i?.category !== "pet"), [placedItems]);
+
   const sizeClasses = { sm: "h-48", md: "h-64", lg: "h-80" };
   const isDark = room.wallpaper === "wall_space" || room.wallpaper === "wall_ocean";
 
