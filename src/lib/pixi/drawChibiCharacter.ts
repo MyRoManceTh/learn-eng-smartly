@@ -1,14 +1,9 @@
 /**
- * HD-2D Pixel Art Character — Octopath Traveler inspired
- * 48×64 grid with multi-level shading, dithering, rim-lighting
+ * HD-2D Pixel Art Character — Cute chibi style
+ * 48×64 grid with multi-level shading
  *
- * Features:
- * - 5-level shading (highlight → base → shade → deep → ambient)
- * - Dither patterns for smooth gradients
- * - Large expressive eyes with iris detail + double highlights
- * - Sub-surface scattering on skin edges
- * - Clothing fold shadows
- * - Anti-aliased thick outline
+ * Redesigned: proportional cute face, smaller expressive eyes,
+ * balanced head-to-body ratio
  */
 import { Container, Graphics } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
@@ -25,7 +20,7 @@ interface Colors {
   skinHi: number;
   skinShade: number;
   skinDeep: number;
-  skinRim: number;   // warm rim light (SSS)
+  skinRim: number;
   hair: number;
   hairHi: number;
   hairMid: number;
@@ -102,15 +97,15 @@ function resolveColors(equipped: EquippedItems): Colors {
     hatHi: hat ? lightenColor(hat, 0.2) : null,
     hatShade: hat ? darkenColor(hat, 0.2) : null,
     acc: accItem ? parseColor(accItem.svgProps?.color || "#80DEEA") : 0x80deea,
-    outline: 0x0d0d1a,
-    outlineSoft: 0x1e1e30,
-    eye: 0x0d0d1a,
+    outline: 0x1a1a2e,
+    outlineSoft: 0x2a2a45,
+    eye: 0x1a1a2e,
     eyeIris: iris,
     eyeIrisHi: lightenColor(iris, 0.3),
     eyeIrisDeep: darkenColor(iris, 0.3),
     mouth: 0xc06060,
     white: 0xffffff,
-    blush: 0xffb0b0,
+    blush: 0xffb8b8,
   };
 }
 
@@ -162,7 +157,6 @@ function fillRect(g: Grid, r1: number, c1: number, r2: number, c2: number, color
   for (let r = r1; r <= r2; r++) fillRow(g, r, c1, c2, color);
 }
 
-/** Dither: checkerboard blend of two colors */
 function dither(g: Grid, r: number, c: number, col1: number, col2: number) {
   set(g, r, c, (r + c) % 2 === 0 ? col1 : col2);
 }
@@ -181,135 +175,117 @@ function fillEllipse(g: Grid, cy: number, cx: number, ry: number, rx: number, co
   }
 }
 
-// ─── HEAD (rows 6-27) — large chibi head ───
+// ─── HEAD (rows 6-26) — round chibi head ───
 function drawHead(g: Grid, c: Colors) {
-  // Build a big round head using ellipse
-  fillEllipse(g, 16, 23, 11, 12, c.skin);
+  // Round head, centered at (15, 23), radius 10x11
+  fillEllipse(g, 15, 23, 10, 11, c.skin);
 
-  // Top highlight (light hitting from top-left)
-  fillEllipse(g, 12, 20, 4, 6, c.skinHi);
+  // Top-left highlight
+  fillEllipse(g, 11, 19, 3, 5, c.skinHi);
 
   // Right side shading
-  for (let r = 8; r <= 25; r++) {
-    const d = Math.abs(r - 16);
-    const edgeC = 35 - Math.floor(d * d * 0.08);
-    for (let col = edgeC; col <= 35; col++) {
-      if (g[r] && g[r][col] === c.skin) {
+  for (let r = 7; r <= 24; r++) {
+    const d = Math.abs(r - 15);
+    const edgeC = 34 - Math.floor(d * d * 0.08);
+    for (let col = edgeC; col <= 34; col++) {
+      if (g[r]?.[col] === c.skin) {
         g[r][col] = c.skinShade;
       }
     }
   }
 
   // Bottom chin shading
-  for (let r = 23; r <= 27; r++) {
-    for (let col = 12; col <= 34; col++) {
-      if (g[r] && g[r][col] === c.skin) {
+  for (let r = 22; r <= 25; r++) {
+    for (let col = 14; col <= 32; col++) {
+      if (g[r]?.[col] === c.skin) {
         dither(g, r, col, c.skinShade, c.skinDeep);
       }
     }
   }
 
-  // Warm rim light on left edge (sub-surface scattering)
-  for (let r = 10; r <= 22; r++) {
-    for (let col = 11; col <= 12; col++) {
-      if (g[r] && g[r][col] !== null) {
-        set(g, r, col, c.skinRim);
-      }
-    }
+  // Warm rim light on left edge
+  for (let r = 9; r <= 21; r++) {
+    if (g[r]?.[12] !== null) set(g, r, 12, c.skinRim);
+    if (g[r]?.[13] !== null) set(g, r, 13, c.skinRim);
   }
 
-  // Neck (rows 26-29)
-  fillRect(g, 26, 19, 29, 27, c.skin);
-  fillRect(g, 26, 25, 29, 27, c.skinShade);
-  ditherRow(g, 28, 19, 24, c.skin, c.skinShade);
+  // Neck (rows 25-28)
+  fillRect(g, 25, 19, 28, 27, c.skin);
+  fillRect(g, 25, 25, 28, 27, c.skinShade);
+  ditherRow(g, 27, 19, 24, c.skin, c.skinShade);
 }
 
-// ─── FACE — HD-2D detailed eyes ───
+// ─── FACE — cute proportional eyes ───
 function drawFace(g: Grid, c: Colors, accId: string | null) {
   const hasGlasses = accId === "acc_glasses";
+  const cx = 23; // face center x
 
-  // ── Eyebrows (row 12-13) — expressive thick brows ──
-  fillRow(g, 12, 14, 18, c.outline);
-  fillRow(g, 12, 28, 32, c.outline);
-  set(g, 13, 14, c.outline);
-  set(g, 13, 32, c.outline);
+  // ── Eyebrows (row 11) — thin expressive ──
+  fillRow(g, 11, 15, 18, c.eye);
+  fillRow(g, 11, 28, 31, c.eye);
 
-  // ── LEFT EYE (rows 14-20, cols 13-20) — 8x7 HD eye ──
-  // Top lid (thick)
-  fillRow(g, 14, 14, 19, c.eye);
-  fillRow(g, 15, 13, 20, c.eye);
+  // ── LEFT EYE (rows 13-17, cols 15-19) — 5x5 cute eye ──
+  // Top lid
+  fillRow(g, 13, 15, 19, c.eye);
   // Sclera
-  fillRect(g, 16, 13, 19, 20, c.white);
-  // Iris (gradient: light top → dark bottom)
-  fillRect(g, 16, 16, 17, 19, c.eyeIrisHi);
-  fillRect(g, 18, 16, 19, 19, c.eyeIris);
+  fillRect(g, 14, 15, 16, 19, c.white);
+  // Iris
+  set(g, 14, 17, c.eyeIrisHi); set(g, 14, 18, c.eyeIrisHi);
+  set(g, 15, 17, c.eyeIris); set(g, 15, 18, c.eyeIris);
+  set(g, 16, 17, c.eyeIrisDeep); set(g, 16, 18, c.eyeIrisDeep);
   // Pupil
-  set(g, 17, 17, c.eye); set(g, 17, 18, c.eye);
-  set(g, 18, 17, c.eye); set(g, 18, 18, c.eye);
-  // Deep iris shadow
-  set(g, 19, 16, c.eyeIrisDeep); set(g, 19, 17, c.eyeIrisDeep);
-  set(g, 19, 18, c.eyeIrisDeep); set(g, 19, 19, c.eyeIrisDeep);
-  // Highlight sparkles! (big + small)
-  set(g, 16, 15, c.white); set(g, 16, 16, c.white); // big highlight
-  set(g, 17, 15, c.white);
-  set(g, 19, 19, c.white); // small bottom highlight
+  set(g, 15, 17, c.eye); set(g, 15, 18, c.eye);
+  // Highlight sparkle
+  set(g, 14, 16, c.white);
+  set(g, 16, 19, c.white); // small bottom sparkle
   // Bottom lid
-  fillRow(g, 20, 14, 19, c.eye);
-  // Eyelash detail
-  set(g, 14, 13, c.eye); set(g, 14, 20, c.eye);
+  fillRow(g, 17, 15, 19, c.eye);
 
-  // ── RIGHT EYE (rows 14-20, cols 26-33) — mirror ──
-  fillRow(g, 14, 27, 32, c.eye);
-  fillRow(g, 15, 26, 33, c.eye);
-  fillRect(g, 16, 26, 19, 33, c.white);
-  fillRect(g, 16, 27, 17, 30, c.eyeIrisHi);
-  fillRect(g, 18, 27, 19, 30, c.eyeIris);
-  set(g, 17, 28, c.eye); set(g, 17, 29, c.eye);
-  set(g, 18, 28, c.eye); set(g, 18, 29, c.eye);
-  set(g, 19, 27, c.eyeIrisDeep); set(g, 19, 28, c.eyeIrisDeep);
-  set(g, 19, 29, c.eyeIrisDeep); set(g, 19, 30, c.eyeIrisDeep);
-  set(g, 16, 30, c.white); set(g, 16, 31, c.white);
-  set(g, 17, 31, c.white);
-  set(g, 19, 27, c.white);
-  fillRow(g, 20, 27, 32, c.eye);
-  set(g, 14, 26, c.eye); set(g, 14, 33, c.eye);
+  // ── RIGHT EYE (rows 13-17, cols 27-31) — mirror ──
+  fillRow(g, 13, 27, 31, c.eye);
+  fillRect(g, 14, 27, 16, 31, c.white);
+  set(g, 14, 28, c.eyeIrisHi); set(g, 14, 29, c.eyeIrisHi);
+  set(g, 15, 28, c.eyeIris); set(g, 15, 29, c.eyeIris);
+  set(g, 16, 28, c.eyeIrisDeep); set(g, 16, 29, c.eyeIrisDeep);
+  set(g, 15, 28, c.eye); set(g, 15, 29, c.eye);
+  set(g, 14, 30, c.white);
+  set(g, 16, 27, c.white);
+  fillRow(g, 17, 27, 31, c.eye);
 
-  // ── Blush (rows 20-21) — soft pink ovals ──
-  fillRow(g, 20, 12, 14, c.blush);
-  fillRow(g, 21, 12, 15, c.blush);
-  fillRow(g, 20, 32, 34, c.blush);
-  fillRow(g, 21, 31, 34, c.blush);
+  // ── Blush (rows 18-19) — soft pink ──
+  set(g, 18, 14, c.blush); set(g, 18, 15, c.blush);
+  set(g, 19, 14, c.blush); set(g, 19, 15, c.blush);
+  set(g, 18, 31, c.blush); set(g, 18, 32, c.blush);
+  set(g, 19, 31, c.blush); set(g, 19, 32, c.blush);
 
-  // ── Nose hint ──
-  set(g, 20, 23, c.skinShade);
-  set(g, 21, 23, c.skinDeep);
-  set(g, 21, 24, c.skinShade);
+  // ── Nose ──
+  set(g, 19, cx, c.skinShade);
+  set(g, 20, cx, c.skinDeep);
 
-  // ── Mouth — cute smile with highlight ──
-  set(g, 23, 20, c.mouth); set(g, 23, 21, c.mouth);
-  fillRow(g, 23, 25, 26, c.mouth);
-  fillRow(g, 24, 21, 25, c.mouth);
-  // Teeth/shine
-  set(g, 24, 22, c.white); set(g, 24, 23, c.white); set(g, 24, 24, c.white);
+  // ── Mouth — small smile ──
+  set(g, 21, 21, c.mouth);
+  fillRow(g, 21, 22, 24, c.mouth);
+  set(g, 21, 25, c.mouth);
+  // Teeth highlight
+  set(g, 21, 23, c.white);
 
   // ── Glasses overlay ──
   if (hasGlasses) {
-    // Left lens frame
-    fillRow(g, 14, 11, 21, c.acc);
-    set(g, 15, 11, c.acc); set(g, 15, 21, c.acc);
-    set(g, 16, 11, c.acc); set(g, 16, 21, c.acc);
-    set(g, 17, 11, c.acc); set(g, 17, 21, c.acc);
-    set(g, 18, 11, c.acc); set(g, 18, 21, c.acc);
-    fillRow(g, 19, 11, 21, c.acc);
+    fillRow(g, 12, 13, 21, c.acc);
+    set(g, 13, 13, c.acc); set(g, 13, 21, c.acc);
+    set(g, 14, 13, c.acc); set(g, 14, 21, c.acc);
+    set(g, 15, 13, c.acc); set(g, 15, 21, c.acc);
+    set(g, 16, 13, c.acc); set(g, 16, 21, c.acc);
+    fillRow(g, 17, 13, 21, c.acc);
     // Bridge
-    fillRow(g, 16, 22, 24, c.acc);
-    // Right lens frame
-    fillRow(g, 14, 25, 35, c.acc);
-    set(g, 15, 25, c.acc); set(g, 15, 35, c.acc);
-    set(g, 16, 25, c.acc); set(g, 16, 35, c.acc);
-    set(g, 17, 25, c.acc); set(g, 17, 35, c.acc);
-    set(g, 18, 25, c.acc); set(g, 18, 35, c.acc);
-    fillRow(g, 19, 25, 35, c.acc);
+    fillRow(g, 14, 22, 24, c.acc);
+    // Right lens
+    fillRow(g, 12, 25, 33, c.acc);
+    set(g, 13, 25, c.acc); set(g, 13, 33, c.acc);
+    set(g, 14, 25, c.acc); set(g, 14, 33, c.acc);
+    set(g, 15, 25, c.acc); set(g, 15, 33, c.acc);
+    set(g, 16, 25, c.acc); set(g, 16, 33, c.acc);
+    fillRow(g, 17, 25, 33, c.acc);
   }
 }
 
@@ -328,8 +304,7 @@ function drawHair(g: Grid, style: string, c: Colors) {
 }
 
 function drawShortHair(g: Grid, c: Colors) {
-  const { hair: h, hairHi: hi, hairMid: mid, hairDark: dk, hairDeep: dp } = c;
-  // Crown
+  const { hair: h, hairHi: hi, hairMid: mid, hairDark: dk } = c;
   fillRow(g, 2, 17, 29, h);
   fillRow(g, 3, 14, 32, h);
   ditherRow(g, 3, 15, 17, hi, h);
@@ -338,27 +313,24 @@ function drawShortHair(g: Grid, c: Colors) {
   fillRow(g, 5, 10, 36, h);
   set(g, 5, 11, hi); set(g, 5, 12, hi);
   fillRect(g, 6, 9, 8, 37, h);
-  // Hair shine streak (HD-2D style highlight band)
+  // Hair shine
   fillRow(g, 4, 18, 22, hi);
   ditherRow(g, 5, 17, 23, hi, mid);
   fillRow(g, 6, 19, 21, hi);
-  // Sides going down
-  for (let r = 9; r <= 13; r++) {
+  // Sides
+  for (let r = 9; r <= 12; r++) {
     set(g, r, 8, h); set(g, r, 9, h); set(g, r, 10, h);
     set(g, r, 36, dk); set(g, r, 37, dk);
   }
-  // Taper
-  set(g, 14, 9, dk); set(g, 14, 10, dk);
-  set(g, 14, 37, dp);
-  // Dither transition on right side
-  for (let r = 10; r <= 13; r++) {
+  set(g, 13, 9, dk); set(g, 13, 10, dk);
+  set(g, 13, 37, dk);
+  for (let r = 10; r <= 12; r++) {
     dither(g, r, 35, h, dk);
   }
 }
 
 function drawLongHair(g: Grid, c: Colors) {
   const { hair: h, hairHi: hi, hairMid: mid, hairDark: dk, hairDeep: dp } = c;
-  // Crown (same as short)
   fillRow(g, 2, 17, 29, h);
   fillRow(g, 3, 14, 32, h);
   fillRow(g, 4, 12, 34, h);
@@ -366,23 +338,19 @@ function drawLongHair(g: Grid, c: Colors) {
   fillRow(g, 5, 10, 36, h);
   set(g, 5, 11, hi);
   fillRect(g, 6, 9, 8, 37, h);
-  // Shine
   fillRow(g, 4, 18, 22, hi);
   ditherRow(g, 5, 17, 23, hi, mid);
-  // Long flowing sides
-  for (let r = 9; r <= 18; r++) {
+  for (let r = 9; r <= 17; r++) {
     set(g, r, 6, h); set(g, r, 7, h); set(g, r, 8, h); set(g, r, 9, h); set(g, r, 10, h);
     set(g, r, 36, h); set(g, r, 37, h); set(g, r, 38, h); set(g, r, 39, dk);
   }
-  for (let r = 19; r <= 28; r++) {
+  for (let r = 18; r <= 27; r++) {
     set(g, r, 6, dk); set(g, r, 7, dk); set(g, r, 8, dk); set(g, r, 9, dk);
     set(g, r, 37, dk); set(g, r, 38, dp); set(g, r, 39, dp);
     dither(g, r, 10, h, dk);
   }
-  // Tapered ends
-  set(g, 29, 7, dp); set(g, 29, 8, dp); set(g, 29, 9, dp);
-  set(g, 29, 38, dp); set(g, 29, 39, dp);
-  // Strand highlights
+  set(g, 28, 7, dp); set(g, 28, 8, dp); set(g, 28, 9, dp);
+  set(g, 28, 38, dp); set(g, 28, 39, dp);
   for (let r = 12; r <= 22; r += 3) {
     set(g, r, 7, mid); set(g, r, 37, mid);
   }
@@ -391,7 +359,6 @@ function drawLongHair(g: Grid, c: Colors) {
 function drawPonytailHair(g: Grid, c: Colors) {
   drawShortHair(g, c);
   const { hair: h, hairHi: hi, hairDark: dk, hairDeep: dp } = c;
-  // Ponytail flowing right
   fillRect(g, 5, 37, 6, 39, h);
   set(g, 7, 38, h); set(g, 7, 39, h); set(g, 7, 40, h);
   set(g, 8, 39, h); set(g, 8, 40, h); set(g, 8, 41, h);
@@ -399,17 +366,14 @@ function drawPonytailHair(g: Grid, c: Colors) {
     set(g, r, 40, h); set(g, r, 41, dk);
   }
   set(g, 15, 41, dp); set(g, 16, 40, dp);
-  // Hair tie
   set(g, 6, 37, 0xe91e63); set(g, 6, 38, 0xe91e63);
   set(g, 7, 37, 0xe91e63);
-  // Shine on ponytail
   set(g, 9, 40, hi); set(g, 10, 40, hi);
 }
 
 function drawBunHair(g: Grid, c: Colors) {
   drawShortHair(g, c);
   const { hair: h, hairHi: hi } = c;
-  // Bun on top
   fillEllipse(g, 1, 23, 2, 4, h);
   set(g, 0, 22, hi); set(g, 0, 23, hi);
 }
@@ -421,22 +385,19 @@ function drawCurlyHair(g: Grid, c: Colors) {
   set(g, 2, 12, hi);
   fillRow(g, 3, 8, 38, h);
   fillRect(g, 4, 6, 8, 40, h);
-  // Curly bumps on sides
-  for (let r = 9; r <= 18; r++) {
+  for (let r = 9; r <= 17; r++) {
     const bump = r % 3 === 0 ? 2 : 0;
     set(g, r, 4 - bump, h); set(g, r, 5 - bump, h); set(g, r, 6, h); set(g, r, 7, h); set(g, r, 8, h);
     set(g, r, 38, h); set(g, r, 39, h); set(g, r, 40, dk); set(g, r, 41 + bump, dk);
   }
-  set(g, 19, 7, dp); set(g, 19, 8, dp);
-  set(g, 19, 39, dp); set(g, 19, 40, dp);
-  // Shine
+  set(g, 18, 7, dp); set(g, 18, 8, dp);
+  set(g, 18, 39, dp); set(g, 18, 40, dp);
   fillRow(g, 4, 18, 22, hi);
   ditherRow(g, 5, 17, 23, hi, h);
 }
 
 function drawSpikeHair(g: Grid, c: Colors) {
   const { hair: h, hairHi: hi, hairDark: dk } = c;
-  // Tall spikes
   set(g, 0, 12, hi); set(g, 0, 13, h);
   set(g, 0, 22, hi); set(g, 0, 23, h);
   set(g, 0, 32, hi); set(g, 0, 33, h);
@@ -458,13 +419,12 @@ function drawAfroHair(g: Grid, c: Colors) {
   fillRow(g, 2, 6, 40, h);
   fillRect(g, 3, 4, 5, 42, h);
   fillRect(g, 6, 4, 8, 42, h);
-  for (let r = 9; r <= 16; r++) {
+  for (let r = 9; r <= 15; r++) {
     set(g, r, 4, h); set(g, r, 5, h); set(g, r, 6, h); set(g, r, 7, h);
     set(g, r, 39, dk); set(g, r, 40, dk); set(g, r, 41, dp);
   }
-  set(g, 17, 6, dp); set(g, 17, 7, dp);
-  set(g, 17, 40, dp);
-  // Shine
+  set(g, 16, 6, dp); set(g, 16, 7, dp);
+  set(g, 16, 40, dp);
   fillRow(g, 3, 15, 20, hi);
 }
 
@@ -481,108 +441,98 @@ function drawMohawkHair(g: Grid, c: Colors) {
   fillRect(g, 6, 16, 8, 30, h);
 }
 
-// ─── BODY / SHIRT (rows 29-40) ───
+// ─── BODY / SHIRT (rows 28-38) ───
 function drawBody(g: Grid, shirtId: string, c: Colors) {
-  // Neck area already drawn by drawHead
+  // Collar / shoulders
+  fillRow(g, 29, 13, 33, c.shirt);
+  set(g, 29, 14, c.shirtHi); set(g, 29, 15, c.shirtHi);
 
-  // Collar / shoulders (row 30)
-  fillRow(g, 30, 12, 34, c.shirt);
-  set(g, 30, 13, c.shirtHi); set(g, 30, 14, c.shirtHi); set(g, 30, 15, c.shirtHi);
+  // Torso
+  fillRect(g, 30, 13, 37, 33, c.shirt);
 
-  // Torso with HD shading
-  fillRect(g, 31, 12, 38, 34, c.shirt);
-
-  // Left side highlight (light source top-left)
-  for (let r = 31; r <= 35; r++) {
-    set(g, r, 12, c.shirtHi); set(g, r, 13, c.shirtHi);
-    dither(g, r, 14, c.shirtHi, c.shirt);
+  // Left side highlight
+  for (let r = 30; r <= 34; r++) {
+    set(g, r, 13, c.shirtHi); set(g, r, 14, c.shirtHi);
+    dither(g, r, 15, c.shirtHi, c.shirt);
   }
 
   // Right side shadow
-  for (let r = 31; r <= 38; r++) {
-    set(g, r, 33, c.shirtShade); set(g, r, 34, c.shirtShade);
-    dither(g, r, 32, c.shirt, c.shirtShade);
+  for (let r = 30; r <= 37; r++) {
+    set(g, r, 32, c.shirtShade); set(g, r, 33, c.shirtShade);
+    dither(g, r, 31, c.shirt, c.shirtShade);
   }
 
-  // Bottom fold shadow
-  ditherRow(g, 37, 14, 32, c.shirt, c.shirtShade);
-  fillRow(g, 38, 14, 33, c.shirtShade);
-  // Deep shadow under arms
-  set(g, 32, 12, c.shirtDeep); set(g, 32, 34, c.shirtDeep);
+  // Bottom fold
+  ditherRow(g, 36, 15, 31, c.shirt, c.shirtShade);
+  fillRow(g, 37, 15, 32, c.shirtShade);
+  set(g, 31, 13, c.shirtDeep); set(g, 31, 33, c.shirtDeep);
 
-  // Waist (narrower)
-  fillRow(g, 39, 14, 32, c.shirtShade);
+  // Waist
+  fillRow(g, 38, 15, 31, c.shirtShade);
 
   applyShirtPattern(g, shirtId, c);
 }
 
 function applyShirtPattern(g: Grid, shirtId: string, c: Colors) {
   if (shirtId.includes("striped")) {
-    ditherRow(g, 33, 14, 32, c.shirtShade, c.shirt);
-    ditherRow(g, 36, 14, 32, c.shirtShade, c.shirt);
+    ditherRow(g, 32, 15, 31, c.shirtShade, c.shirt);
+    ditherRow(g, 35, 15, 31, c.shirtShade, c.shirt);
   } else if (shirtId.includes("superhero")) {
-    // Star emblem
-    set(g, 33, 22, 0xffd700); set(g, 33, 23, 0xffd700); set(g, 33, 24, 0xffd700);
-    set(g, 34, 21, 0xffd700); set(g, 34, 22, 0xffd700); set(g, 34, 23, 0xffd700); set(g, 34, 24, 0xffd700); set(g, 34, 25, 0xffd700);
-    set(g, 35, 22, 0xffd700); set(g, 35, 23, 0xffd700); set(g, 35, 24, 0xffd700);
+    set(g, 32, 22, 0xffd700); set(g, 32, 23, 0xffd700); set(g, 32, 24, 0xffd700);
+    set(g, 33, 21, 0xffd700); set(g, 33, 22, 0xffd700); set(g, 33, 23, 0xffd700); set(g, 33, 24, 0xffd700); set(g, 33, 25, 0xffd700);
+    set(g, 34, 22, 0xffd700); set(g, 34, 23, 0xffd700); set(g, 34, 24, 0xffd700);
   } else if (shirtId.includes("hoodie")) {
-    set(g, 30, 19, c.shirtShade); set(g, 30, 27, c.shirtShade);
-    set(g, 31, 20, c.shirtShade); set(g, 31, 26, c.shirtShade);
-    // Pocket
-    fillRect(g, 36, 17, 38, 29, c.shirtShade);
+    set(g, 29, 19, c.shirtShade); set(g, 29, 27, c.shirtShade);
+    set(g, 30, 20, c.shirtShade); set(g, 30, 26, c.shirtShade);
+    fillRect(g, 35, 18, 37, 28, c.shirtShade);
   } else if (shirtId.includes("tuxedo")) {
-    fillRect(g, 31, 20, 37, 26, 0xf0f0f0);
-    set(g, 31, 16, c.shirtShade); set(g, 31, 17, c.shirtShade);
-    set(g, 31, 29, c.shirtShade); set(g, 31, 30, c.shirtShade);
-    // Tie
-    set(g, 30, 22, 0xd32f2f); set(g, 30, 23, 0xd32f2f); set(g, 30, 24, 0xd32f2f);
-    set(g, 31, 22, 0xd32f2f); set(g, 31, 23, 0xd32f2f); set(g, 31, 24, 0xd32f2f);
+    fillRect(g, 30, 20, 36, 26, 0xf0f0f0);
+    set(g, 30, 17, c.shirtShade); set(g, 30, 18, c.shirtShade);
+    set(g, 30, 28, c.shirtShade); set(g, 30, 29, c.shirtShade);
+    set(g, 29, 22, 0xd32f2f); set(g, 29, 23, 0xd32f2f); set(g, 29, 24, 0xd32f2f);
+    set(g, 30, 23, 0xb71c1c); set(g, 31, 23, 0xb71c1c);
     set(g, 32, 23, 0xb71c1c); set(g, 33, 23, 0xb71c1c);
-    set(g, 34, 23, 0xb71c1c); set(g, 35, 23, 0xb71c1c);
   } else if (shirtId.includes("dragon")) {
-    set(g, 33, 19, lightenColor(c.shirt, 0.2)); set(g, 33, 27, lightenColor(c.shirt, 0.2));
-    set(g, 34, 21, lightenColor(c.shirt, 0.15)); set(g, 34, 25, lightenColor(c.shirt, 0.15));
-    set(g, 35, 22, 0xffd700); set(g, 35, 23, 0xffd700); set(g, 35, 24, 0xffd700);
+    set(g, 32, 20, lightenColor(c.shirt, 0.2)); set(g, 32, 26, lightenColor(c.shirt, 0.2));
+    set(g, 34, 22, 0xffd700); set(g, 34, 23, 0xffd700); set(g, 34, 24, 0xffd700);
   } else if (shirtId.includes("galaxy")) {
-    set(g, 32, 15, 0xffffff); set(g, 34, 28, 0xffffff); set(g, 36, 19, 0xffffff);
-    set(g, 33, 30, 0x7c4dff); set(g, 37, 15, 0x7c4dff);
+    set(g, 31, 16, 0xffffff); set(g, 33, 27, 0xffffff); set(g, 35, 20, 0xffffff);
+    set(g, 32, 29, 0x7c4dff); set(g, 36, 16, 0x7c4dff);
   }
 }
 
-// ─── ARMS (rows 31-40) ───
+// ─── ARMS (rows 30-39) ───
 function drawArms(g: Grid, c: Colors) {
-  // Left arm — sleeve with gradient
-  fillRect(g, 31, 7, 34, 11, c.shirt);
-  set(g, 31, 7, c.shirtHi); set(g, 31, 8, c.shirtHi);
-  set(g, 32, 7, c.shirtHi);
-  set(g, 34, 11, c.shirtShade);
-  dither(g, 33, 11, c.shirt, c.shirtShade);
+  // Left arm — sleeve
+  fillRect(g, 30, 8, 33, 12, c.shirt);
+  set(g, 30, 8, c.shirtHi); set(g, 30, 9, c.shirtHi);
+  set(g, 31, 8, c.shirtHi);
+  set(g, 33, 12, c.shirtShade);
   // Forearm skin
-  fillRect(g, 35, 7, 38, 11, c.skin);
-  set(g, 37, 7, c.skinHi);
-  set(g, 38, 11, c.skinShade);
-  // Hand with finger detail
-  fillRect(g, 39, 7, 41, 11, c.skin);
-  set(g, 39, 7, c.skinHi);
-  set(g, 40, 7, c.skinShade); set(g, 40, 8, c.skinShade);
-  set(g, 41, 8, c.skinShade); set(g, 41, 9, c.skin);
-  // Finger lines
-  set(g, 41, 10, c.skinShade);
-
-  // Right arm — sleeve (darker side)
-  fillRect(g, 31, 35, 34, 39, c.shirtShade);
-  set(g, 31, 35, c.shirt);
-  dither(g, 32, 35, c.shirt, c.shirtShade);
-  // Forearm
-  fillRect(g, 35, 35, 38, 39, c.skinShade);
-  set(g, 35, 35, c.skin); set(g, 36, 35, c.skin);
+  fillRect(g, 34, 8, 37, 12, c.skin);
+  set(g, 36, 8, c.skinHi);
+  set(g, 37, 12, c.skinShade);
   // Hand
-  fillRect(g, 39, 35, 41, 39, c.skinShade);
-  set(g, 39, 35, c.skin); set(g, 39, 36, c.skin);
-  set(g, 41, 36, c.skinDeep); set(g, 41, 37, c.skinShade);
+  fillRect(g, 38, 8, 40, 12, c.skin);
+  set(g, 38, 8, c.skinHi);
+  set(g, 39, 8, c.skinShade); set(g, 39, 9, c.skinShade);
+  set(g, 40, 9, c.skinShade); set(g, 40, 10, c.skin);
+  set(g, 40, 11, c.skinShade);
+
+  // Right arm — sleeve (darker)
+  fillRect(g, 30, 34, 33, 38, c.shirtShade);
+  set(g, 30, 34, c.shirt);
+  dither(g, 31, 34, c.shirt, c.shirtShade);
+  // Forearm
+  fillRect(g, 34, 34, 37, 38, c.skinShade);
+  set(g, 34, 34, c.skin); set(g, 35, 34, c.skin);
+  // Hand
+  fillRect(g, 38, 34, 40, 38, c.skinShade);
+  set(g, 38, 34, c.skin); set(g, 38, 35, c.skin);
+  set(g, 40, 35, c.skinDeep); set(g, 40, 36, c.skinShade);
 }
 
-// ─── LEGS / PANTS (rows 40-51) ───
+// ─── LEGS / PANTS (rows 39-50) ───
 function drawLegs(g: Grid, pantsId: string, c: Colors, walkFrame: number = 0) {
   const isShorts = pantsId.includes("shorts");
   const isSkirt = pantsId.includes("skirt");
@@ -591,62 +541,56 @@ function drawLegs(g: Grid, pantsId: string, c: Colors, walkFrame: number = 0) {
   const rOff = walkFrame === 1 ? 3 : walkFrame === 2 ? -3 : 0;
 
   if (isSkirt) {
-    fillRow(g, 40, 12, 34, c.pants);
+    fillRow(g, 39, 13, 33, c.pants);
+    fillRow(g, 40, 11, 35, c.pants);
     fillRow(g, 41, 10, 36, c.pants);
-    fillRow(g, 42, 9, 37, c.pants);
-    set(g, 42, 9, c.pantsShade); set(g, 42, 37, c.pantsShade);
-    ditherRow(g, 42, 34, 37, c.pants, c.pantsShade);
-    // Legs below skirt
-    fillRect(g, 43, 14 + lOff, 50, 20 + lOff, c.skin);
-    fillRect(g, 43, 26 + rOff, 50, 32 + rOff, c.skin);
-    // Leg shading
-    for (let r = 43; r <= 50; r++) {
-      set(g, r, 20 + lOff, c.skinShade);
-      set(g, r, 32 + rOff, c.skinShade);
+    set(g, 41, 10, c.pantsShade); set(g, 41, 36, c.pantsShade);
+    ditherRow(g, 41, 33, 36, c.pants, c.pantsShade);
+    fillRect(g, 42, 15 + lOff, 49, 21 + lOff, c.skin);
+    fillRect(g, 42, 25 + rOff, 49, 31 + rOff, c.skin);
+    for (let r = 42; r <= 49; r++) {
+      set(g, r, 21 + lOff, c.skinShade);
+      set(g, r, 31 + rOff, c.skinShade);
     }
   } else {
     // Waist band
-    fillRow(g, 40, 14, 32, c.pants);
-    ditherRow(g, 40, 14, 32, c.pantsHi, c.pants);
+    fillRow(g, 39, 15, 31, c.pants);
+    ditherRow(g, 39, 15, 31, c.pantsHi, c.pants);
 
     // Left leg
-    fillRect(g, 41, 14 + lOff, 47, 20 + lOff, c.pants);
+    fillRect(g, 40, 15 + lOff, 46, 21 + lOff, c.pants);
     // Right leg
-    fillRect(g, 41, 26 + rOff, 47, 32 + rOff, c.pants);
+    fillRect(g, 40, 25 + rOff, 46, 31 + rOff, c.pants);
 
     if (walkFrame === 0) {
-      // Crotch shadow
-      ditherRow(g, 41, 20, 26, c.pantsShade, c.pantsDeep);
+      ditherRow(g, 40, 21, 25, c.pantsShade, c.pantsDeep);
     }
 
-    // Shading on legs
-    for (let r = 41; r <= 47; r++) {
-      set(g, r, 20 + lOff, c.pantsShade);
-      set(g, r, 32 + rOff, c.pantsShade);
-      dither(g, r, 19 + lOff, c.pants, c.pantsShade);
-      dither(g, r, 31 + rOff, c.pants, c.pantsShade);
+    // Shading
+    for (let r = 40; r <= 46; r++) {
+      set(g, r, 21 + lOff, c.pantsShade);
+      set(g, r, 31 + rOff, c.pantsShade);
+      dither(g, r, 20 + lOff, c.pants, c.pantsShade);
+      dither(g, r, 30 + rOff, c.pants, c.pantsShade);
     }
 
     if (isShorts) {
-      // Exposed legs below shorts
-      fillRect(g, 45, 14 + lOff, 50, 20 + lOff, c.skin);
-      fillRect(g, 45, 26 + rOff, 50, 32 + rOff, c.skin);
-      for (let r = 45; r <= 50; r++) {
-        set(g, r, 20 + lOff, c.skinShade);
-        set(g, r, 32 + rOff, c.skinShade);
+      fillRect(g, 44, 15 + lOff, 49, 21 + lOff, c.skin);
+      fillRect(g, 44, 25 + rOff, 49, 31 + rOff, c.skin);
+      for (let r = 44; r <= 49; r++) {
+        set(g, r, 21 + lOff, c.skinShade);
+        set(g, r, 31 + rOff, c.skinShade);
       }
     } else {
-      // Lower legs
-      fillRect(g, 48, 14 + lOff, 50, 20 + lOff, c.pantsShade);
-      fillRect(g, 48, 26 + rOff, 50, 32 + rOff, c.pantsShade);
-      // Dither transition
-      ditherRow(g, 48, 14 + lOff, 20 + lOff, c.pants, c.pantsShade);
-      ditherRow(g, 48, 26 + rOff, 32 + rOff, c.pants, c.pantsShade);
+      fillRect(g, 47, 15 + lOff, 49, 21 + lOff, c.pantsShade);
+      fillRect(g, 47, 25 + rOff, 49, 31 + rOff, c.pantsShade);
+      ditherRow(g, 47, 15 + lOff, 21 + lOff, c.pants, c.pantsShade);
+      ditherRow(g, 47, 25 + rOff, 31 + rOff, c.pants, c.pantsShade);
     }
   }
 }
 
-// ─── SHOES (rows 51-55) ───
+// ─── SHOES (rows 50-54) ───
 function drawShoes(g: Grid, shoesId: string, c: Colors, walkFrame: number = 0) {
   const isRocket = shoesId.includes("rocket");
   const isBoots = shoesId.includes("boots") && !isRocket;
@@ -657,32 +601,32 @@ function drawShoes(g: Grid, shoesId: string, c: Colors, walkFrame: number = 0) {
   const rOff = walkFrame === 1 ? 3 : walkFrame === 2 ? -3 : 0;
 
   // Left shoe
-  fillRect(g, 51, 12 + lOff, 53, 22 + lOff, c.shoes);
-  fillRow(g, 54, 12 + lOff, 22 + lOff, c.shoesShade);
-  set(g, 51, 13 + lOff, c.shoesHi); set(g, 51, 14 + lOff, c.shoesHi);
-  dither(g, 52, 13 + lOff, c.shoesHi, c.shoes);
+  fillRect(g, 50, 13 + lOff, 52, 22 + lOff, c.shoes);
+  fillRow(g, 53, 13 + lOff, 22 + lOff, c.shoesShade);
+  set(g, 50, 14 + lOff, c.shoesHi); set(g, 50, 15 + lOff, c.shoesHi);
+  dither(g, 51, 14 + lOff, c.shoesHi, c.shoes);
 
   // Right shoe
-  fillRect(g, 51, 24 + rOff, 53, 34 + rOff, c.shoes);
-  fillRow(g, 54, 24 + rOff, 34 + rOff, c.shoesShade);
-  set(g, 51, 25 + rOff, c.shoesHi); set(g, 51, 26 + rOff, c.shoesHi);
-  dither(g, 52, 25 + rOff, c.shoesHi, c.shoes);
+  fillRect(g, 50, 24 + rOff, 52, 33 + rOff, c.shoes);
+  fillRow(g, 53, 24 + rOff, 33 + rOff, c.shoesShade);
+  set(g, 50, 25 + rOff, c.shoesHi); set(g, 50, 26 + rOff, c.shoesHi);
+  dither(g, 51, 25 + rOff, c.shoesHi, c.shoes);
 
   if (isRocket) {
-    fillRow(g, 55, 14 + lOff, 19 + lOff, 0xff6d00);
-    fillRow(g, 55, 27 + rOff, 32 + rOff, 0xff6d00);
-    set(g, 55, 16 + lOff, 0xffab00); set(g, 55, 29 + rOff, 0xffab00);
+    fillRow(g, 54, 15 + lOff, 20 + lOff, 0xff6d00);
+    fillRow(g, 54, 27 + rOff, 32 + rOff, 0xff6d00);
+    set(g, 54, 17 + lOff, 0xffab00); set(g, 54, 29 + rOff, 0xffab00);
   } else if (isBoots) {
-    fillRect(g, 48, 12 + lOff, 50, 22 + lOff, c.shoes);
-    fillRect(g, 48, 24 + rOff, 50, 34 + rOff, c.shoes);
+    fillRect(g, 47, 13 + lOff, 49, 22 + lOff, c.shoes);
+    fillRect(g, 47, 24 + rOff, 49, 33 + rOff, c.shoes);
   } else if (isHeels) {
-    set(g, 55, 12 + lOff, c.shoesShade); set(g, 55, 13 + lOff, c.shoesShade);
-    set(g, 55, 24 + rOff, c.shoesShade); set(g, 55, 25 + rOff, c.shoesShade);
+    set(g, 54, 13 + lOff, c.shoesShade); set(g, 54, 14 + lOff, c.shoesShade);
+    set(g, 54, 24 + rOff, c.shoesShade); set(g, 54, 25 + rOff, c.shoesShade);
   } else if (isCloud) {
-    fillRow(g, 55, 12 + lOff, 20 + lOff, 0xe3f2fd);
-    set(g, 55, 14 + lOff, 0xbbdefb); set(g, 55, 17 + lOff, 0xbbdefb);
-    fillRow(g, 55, 24 + rOff, 32 + rOff, 0xe3f2fd);
-    set(g, 55, 26 + rOff, 0xbbdefb); set(g, 55, 29 + rOff, 0xbbdefb);
+    fillRow(g, 54, 13 + lOff, 21 + lOff, 0xe3f2fd);
+    set(g, 54, 15 + lOff, 0xbbdefb); set(g, 54, 18 + lOff, 0xbbdefb);
+    fillRow(g, 54, 24 + rOff, 32 + rOff, 0xe3f2fd);
+    set(g, 54, 26 + rOff, 0xbbdefb); set(g, 54, 29 + rOff, 0xbbdefb);
   }
 }
 
@@ -698,7 +642,6 @@ function drawHatPixels(g: Grid, hatId: string, c: Colors) {
     fillRow(g, 3, 11, 35, h);
     fillRow(g, 4, 10, 36, h);
     fillRow(g, 5, 10, 36, h);
-    // Brim
     fillRow(g, 6, 7, 36, sh);
     fillRow(g, 7, 5, 36, sh);
     fillRow(g, 8, 5, 36, sh);
@@ -746,10 +689,10 @@ function drawHatPixels(g: Grid, hatId: string, c: Colors) {
   } else if (hatId.includes("headphones")) {
     fillRow(g, 3, 14, 32, h);
     fillRow(g, 4, 14, 32, h);
-    fillRect(g, 10, 5, 15, 10, h);
-    fillRect(g, 16, 5, 17, 10, sh);
-    fillRect(g, 10, 36, 15, 41, h);
-    fillRect(g, 16, 36, 17, 41, sh);
+    fillRect(g, 10, 5, 14, 10, h);
+    fillRect(g, 15, 5, 16, 10, sh);
+    fillRect(g, 10, 36, 14, 41, h);
+    fillRect(g, 15, 36, 16, 41, sh);
   } else if (hatId.includes("halo")) {
     fillRow(g, 0, 13, 33, 0xffd700);
     fillRow(g, 1, 13, 33, 0xffd700);
@@ -761,7 +704,7 @@ function drawHatPixels(g: Grid, hatId: string, c: Colors) {
   } else if (hatId.includes("astronaut")) {
     fillRow(g, 1, 11, 35, 0xe0e0e0);
     fillRect(g, 2, 8, 7, 38, 0xe0e0e0);
-    fillRect(g, 10, 13, 17, 33, 0x42a5f5);
+    fillRect(g, 10, 13, 16, 33, 0x42a5f5);
     set(g, 10, 14, 0x90caf9); set(g, 10, 15, 0x90caf9); set(g, 10, 16, 0x90caf9);
     set(g, 11, 14, 0x90caf9);
   }
@@ -771,25 +714,25 @@ function drawHatPixels(g: Grid, hatId: string, c: Colors) {
 function drawAccessoryBack(g: Grid, accId: string | null, c: Colors) {
   if (!accId) return;
   if (accId.includes("cape")) {
-    fillRect(g, 31, 3, 35, 7, c.acc);
-    fillRect(g, 36, 2, 40, 7, c.acc);
-    set(g, 40, 3, darkenColor(c.acc, 0.2)); set(g, 40, 4, darkenColor(c.acc, 0.2));
-    fillRect(g, 31, 39, 35, 43, c.acc);
-    fillRect(g, 36, 39, 40, 44, c.acc);
-    set(g, 40, 43, darkenColor(c.acc, 0.2)); set(g, 40, 44, darkenColor(c.acc, 0.2));
+    fillRect(g, 30, 3, 34, 7, c.acc);
+    fillRect(g, 35, 2, 39, 7, c.acc);
+    set(g, 39, 3, darkenColor(c.acc, 0.2)); set(g, 39, 4, darkenColor(c.acc, 0.2));
+    fillRect(g, 30, 39, 34, 43, c.acc);
+    fillRect(g, 35, 39, 39, 44, c.acc);
+    set(g, 39, 43, darkenColor(c.acc, 0.2)); set(g, 39, 44, darkenColor(c.acc, 0.2));
   } else if (accId.includes("wings")) {
-    fillRect(g, 30, 2, 33, 7, c.acc);
-    set(g, 30, 2, lightenColor(c.acc, 0.2)); set(g, 30, 3, lightenColor(c.acc, 0.2));
-    fillRect(g, 30, 39, 33, 44, c.acc);
-    set(g, 30, 43, lightenColor(c.acc, 0.2)); set(g, 30, 44, lightenColor(c.acc, 0.2));
+    fillRect(g, 29, 2, 32, 7, c.acc);
+    set(g, 29, 2, lightenColor(c.acc, 0.2)); set(g, 29, 3, lightenColor(c.acc, 0.2));
+    fillRect(g, 29, 39, 32, 44, c.acc);
+    set(g, 29, 43, lightenColor(c.acc, 0.2)); set(g, 29, 44, lightenColor(c.acc, 0.2));
   } else if (accId.includes("backpack")) {
-    fillRect(g, 30, 38, 38, 43, c.acc);
-    set(g, 36, 39, darkenColor(c.acc, 0.15)); set(g, 36, 40, darkenColor(c.acc, 0.15));
-    set(g, 38, 38, darkenColor(c.acc, 0.2)); set(g, 38, 43, darkenColor(c.acc, 0.2));
+    fillRect(g, 29, 38, 37, 43, c.acc);
+    set(g, 35, 39, darkenColor(c.acc, 0.15)); set(g, 35, 40, darkenColor(c.acc, 0.15));
+    set(g, 37, 38, darkenColor(c.acc, 0.2)); set(g, 37, 43, darkenColor(c.acc, 0.2));
   } else if (accId.includes("shield")) {
-    fillRect(g, 31, 2, 38, 7, c.acc);
-    set(g, 31, 3, lightenColor(c.acc, 0.2)); set(g, 31, 4, lightenColor(c.acc, 0.2));
-    set(g, 38, 3, darkenColor(c.acc, 0.2)); set(g, 38, 4, darkenColor(c.acc, 0.2));
+    fillRect(g, 30, 2, 37, 7, c.acc);
+    set(g, 30, 3, lightenColor(c.acc, 0.2)); set(g, 30, 4, lightenColor(c.acc, 0.2));
+    set(g, 37, 3, darkenColor(c.acc, 0.2)); set(g, 37, 4, darkenColor(c.acc, 0.2));
   }
 }
 
@@ -797,31 +740,30 @@ function drawAccessoryBack(g: Grid, accId: string | null, c: Colors) {
 function drawAccessoryFront(g: Grid, accId: string | null, c: Colors) {
   if (!accId) return;
   if (accId.includes("sword")) {
-    for (let r = 20; r <= 30; r++) set(g, r, 41, 0xc0c0c0);
-    set(g, 31, 41, 0x8d6e63); set(g, 32, 41, 0x8d6e63);
-    set(g, 30, 40, 0xffd700); set(g, 30, 42, 0xffd700);
-    set(g, 33, 41, 0x5d4037);
-    // Blade shine
-    set(g, 22, 41, 0xe0e0e0); set(g, 25, 41, 0xe0e0e0);
+    for (let r = 19; r <= 29; r++) set(g, r, 41, 0xc0c0c0);
+    set(g, 30, 41, 0x8d6e63); set(g, 31, 41, 0x8d6e63);
+    set(g, 29, 40, 0xffd700); set(g, 29, 42, 0xffd700);
+    set(g, 32, 41, 0x5d4037);
+    set(g, 21, 41, 0xe0e0e0); set(g, 24, 41, 0xe0e0e0);
   } else if (accId.includes("pet_cat")) {
-    fillRect(g, 52, 39, 55, 43, c.acc);
-    set(g, 51, 39, c.acc); set(g, 51, 43, c.acc);
-    set(g, 52, 40, c.eye); set(g, 52, 42, c.eye);
-    set(g, 55, 44, c.acc); set(g, 56, 45, darkenColor(c.acc, 0.2));
+    fillRect(g, 51, 39, 54, 43, c.acc);
+    set(g, 50, 39, c.acc); set(g, 50, 43, c.acc);
+    set(g, 51, 40, c.eye); set(g, 51, 42, c.eye);
+    set(g, 54, 44, c.acc); set(g, 55, 45, darkenColor(c.acc, 0.2));
   } else if (accId.includes("pet_dog")) {
-    fillRect(g, 52, 39, 55, 43, c.acc);
-    set(g, 51, 38, darkenColor(c.acc, 0.2)); set(g, 51, 44, darkenColor(c.acc, 0.2));
-    set(g, 52, 40, c.eye); set(g, 52, 42, c.eye);
-    set(g, 55, 44, c.acc); set(g, 56, 45, c.acc);
+    fillRect(g, 51, 39, 54, 43, c.acc);
+    set(g, 50, 38, darkenColor(c.acc, 0.2)); set(g, 50, 44, darkenColor(c.acc, 0.2));
+    set(g, 51, 40, c.eye); set(g, 51, 42, c.eye);
+    set(g, 54, 44, c.acc); set(g, 55, 45, c.acc);
   }
 }
 
-// ─── SHADOW (with gradient) ───
+// ─── SHADOW ───
 function drawShadow(g: Grid) {
-  fillRow(g, 58, 12, 34, -1);
-  fillRow(g, 59, 14, 32, -1);
-  fillRow(g, 60, 15, 31, -2);
-  fillRow(g, 61, 16, 30, -2);
+  fillRow(g, 57, 13, 33, -1);
+  fillRow(g, 58, 15, 31, -1);
+  fillRow(g, 59, 16, 30, -2);
+  fillRow(g, 60, 17, 29, -2);
 }
 
 // ─── HD AUTO-OUTLINE — anti-aliased thick border ───
@@ -830,7 +772,6 @@ function addHDOutline(g: Grid, outlineColor: number, softColor: number) {
   const dirs4: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
   const dirs8: [number, number][] = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 
-  // Pass 1: primary outline
   for (let r = 0; r < GRID_H; r++) {
     for (let c = 0; c < GRID_W; c++) {
       if (snap[r][c] !== null && snap[r][c]! > 0) {
@@ -844,7 +785,6 @@ function addHDOutline(g: Grid, outlineColor: number, softColor: number) {
     }
   }
 
-  // Pass 2: soft anti-alias on diagonals
   const snap2 = g.map(r => [...r]);
   for (let r = 0; r < GRID_H; r++) {
     for (let c = 0; c < GRID_W; c++) {
@@ -860,7 +800,7 @@ function addHDOutline(g: Grid, outlineColor: number, softColor: number) {
   }
 }
 
-// ─── RENDER GRID → PIXI (with shadow alpha levels) ───
+// ─── RENDER GRID → PIXI ───
 function renderGrid(container: Container, grid: Grid) {
   const gfx = new Graphics();
 

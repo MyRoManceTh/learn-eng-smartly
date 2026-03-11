@@ -422,6 +422,8 @@ export type Database = {
           mystery_box_last_claimed: string | null
           placement_completed: boolean | null
           placement_level: number | null
+          room: Json | null
+          room_inventory: Json | null
           school_name: string | null
           total_exp: number
           total_missions_completed: number | null
@@ -457,6 +459,8 @@ export type Database = {
           mystery_box_last_claimed?: string | null
           placement_completed?: boolean | null
           placement_level?: number | null
+          room?: Json | null
+          room_inventory?: Json | null
           school_name?: string | null
           total_exp?: number
           total_missions_completed?: number | null
@@ -492,6 +496,8 @@ export type Database = {
           mystery_box_last_claimed?: string | null
           placement_completed?: boolean | null
           placement_level?: number | null
+          room?: Json | null
+          room_inventory?: Json | null
           school_name?: string | null
           total_exp?: number
           total_missions_completed?: number | null
