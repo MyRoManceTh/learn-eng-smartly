@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useRef } from "react";
+import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/roomItems";
@@ -13,12 +13,45 @@ interface PixelRoomProps {
 }
 
 const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomProps) => {
-  const [charX, setCharX] = useState(50); // percentage from left
+  const [charX, setCharX] = useState(50);
   const [isWalking, setIsWalking] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
-  const [walkDuration, setWalkDuration] = useState(0.5); // seconds
+  const [walkDuration, setWalkDuration] = useState(0.5);
+  const [autoWalking, setAutoWalking] = useState(true);
   const roomRef = useRef<HTMLDivElement>(null);
+  const autoWalkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-walk: wander back and forth when idle
+  useEffect(() => {
+    if (!autoWalking) return;
+
+    const wander = () => {
+      // Pick a random target between 15-85%
+      const target = 15 + Math.random() * 70;
+      const distance = Math.abs(target - charX);
+      const duration = Math.max(1.5, Math.min(4, distance * 0.04));
+
+      setDirection(target > charX ? "right" : "left");
+      setWalkDuration(duration);
+      setIsWalking(true);
+      setCharX(target);
+
+      // Schedule next wander after arriving + idle pause
+      const idlePause = 1500 + Math.random() * 3000;
+      autoWalkTimer.current = setTimeout(() => {
+        setIsWalking(false);
+        autoWalkTimer.current = setTimeout(wander, idlePause);
+      }, duration * 1000);
+    };
+
+    // Start first wander after a short delay
+    autoWalkTimer.current = setTimeout(wander, 1000 + Math.random() * 2000);
+
+    return () => {
+      if (autoWalkTimer.current) clearTimeout(autoWalkTimer.current);
+    };
+  }, [autoWalking]); // intentionally only depend on autoWalking flag
 
   const wallStyle = useMemo(() => {
     const wall = WALLPAPER_COLORS[room.wallpaper || "wall_basic"] || WALLPAPER_COLORS.wall_basic;
@@ -36,7 +69,6 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
       .filter(Boolean);
   }, [room.items]);
 
-  // Items positioned in specific zones
   const wallItems = placedItems.filter(
     (i) => i && ["poster", "window", "shelf"].includes(i.category)
   );
@@ -58,36 +90,38 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
 
   const isDark = room.wallpaper === "wall_space" || room.wallpaper === "wall_ocean";
 
-  // Click-to-walk handler
+  // Click-to-walk handler (overrides auto-walk)
   const handleRoomClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!roomRef.current) return;
+
+    // Stop auto-walking when user clicks
+    setAutoWalking(false);
+    if (autoWalkTimer.current) clearTimeout(autoWalkTimer.current);
 
     const rect = roomRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    // Only respond to clicks on the floor area (bottom 40%)
     const floorTop = rect.height * 0.6;
     if (clickY < floorTop) return;
 
-    // Show click indicator
     setClickPos({ x: clickX, y: clickY });
     setTimeout(() => setClickPos(null), 500);
 
-    // Convert to percentage, clamp 10-90%
     const targetPercent = Math.max(10, Math.min(90, (clickX / rect.width) * 100));
-
-    // Determine direction
     const newDirection = targetPercent > charX ? "right" : "left";
     setDirection(newDirection);
 
-    // Dynamic transition duration based on distance
     const distance = Math.abs(targetPercent - charX);
     const duration = Math.max(0.3, Math.min(2.0, distance * 0.025));
 
     setWalkDuration(duration);
     setIsWalking(true);
     setCharX(targetPercent);
+
+    // Resume auto-walking after 8 seconds of no clicks
+    if (autoWalkTimer.current) clearTimeout(autoWalkTimer.current);
+    autoWalkTimer.current = setTimeout(() => setAutoWalking(true), 8000);
   }, [charX]);
 
   const handleTransitionEnd = useCallback((e: React.TransitionEvent<HTMLDivElement>) => {
@@ -206,7 +240,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
       >
         <PixelAvatar
           equipped={equipped}
-          size={size}
+          size="sm"
           animated
           evolutionStage={evolutionStage}
           walking={isWalking}
