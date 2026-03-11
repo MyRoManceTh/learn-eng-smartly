@@ -199,12 +199,21 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
               }}
               title={item.nameThai}
             >
-              <span
-                className={`text-2xl md:text-3xl block ${item.category === "pet" ? "animate-bounce" : ""}`}
-                style={item.category === "pet" ? { animationDuration: "2s" } : undefined}
-              >
-                {item.pixel}
-              </span>
+              {item.category === "pet" && PET_IMAGES[item.id] ? (
+                <img
+                  src={PET_IMAGES[item.id]}
+                  alt={item.nameThai}
+                  className="w-10 h-10 md:w-12 md:h-12 object-contain animate-bounce pixelated"
+                  style={{ animationDuration: "2.5s", imageRendering: "pixelated" }}
+                />
+              ) : (
+                <span
+                  className={`text-2xl md:text-3xl block ${item.category === "pet" ? "animate-bounce" : ""}`}
+                  style={item.category === "pet" ? { animationDuration: "2s" } : undefined}
+                >
+                  {item.pixel}
+                </span>
+              )}
               {/* Small shadow under item */}
               <div className="w-5 h-1.5 mx-auto -mt-0.5 rounded-full bg-black/15 blur-[2px]" />
             </div>
