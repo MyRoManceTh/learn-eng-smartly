@@ -32,7 +32,7 @@ const SLOT_POSITIONS: Record<string, { left: string; bottom: string; zIndex: num
   toy: { left: "42%", bottom: "15%", zIndex: 5, scale: 1.1 },
 };
 
-const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomProps) => {
+const PixelRoom = ({ equipped, room, evolutionStage, size = "md", petCare }: PixelRoomProps) => {
   const [charX, setCharX] = useState(50);
   const [isWalking, setIsWalking] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
