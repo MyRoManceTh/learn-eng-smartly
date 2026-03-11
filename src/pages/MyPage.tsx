@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { EquippedItems, DEFAULT_EQUIPPED, AvatarItem } from "@/types/avatar";
 import { RoomLayout, DEFAULT_ROOM } from "@/types/room";
+import { PetCareState, DEFAULT_PET_CARE, feedPet, PetFood } from "@/data/petCare";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
