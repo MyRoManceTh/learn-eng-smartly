@@ -1,85 +1,106 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { pathNodes, levelLabels, PathNode } from "@/data/pathNodes";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
+import { useSkillTreeProgress } from "@/hooks/useSkillTreeProgress";
+import { supabase } from "@/integrations/supabase/client";
 import { sampleQuiz } from "@/data/sampleLesson";
+import {
+  skillTreeModules,
+  skillTreePaths,
+  getModulesByPath,
+  getLessonsByModule,
+  SkillTreeModule,
+  SkillTreeLesson,
+  skillTreeLessons,
+} from "@/data/skillTreeData";
 import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
+import SkillTreeMap from "@/components/skilltree/SkillTreeMap";
+import ModuleDetail from "@/components/skilltree/ModuleDetail";
+import PathSwitcher from "@/components/skilltree/PathSwitcher";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Lock, CheckCircle2, Play, Loader2, Trophy, Star, Crown, Flame } from "lucide-react";
+import { ArrowLeft, Trophy, Flame, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-
-interface CompletedNode {
-  node_index: number;
-  quiz_score: number | null;
-  quiz_total: number | null;
-}
-
-const levelColorMap: Record<number, { bg: string; border: string; text: string; glow: string; badge: string }> = {
-  1: { bg: "bg-level-1/15", border: "border-level-1", text: "text-level-1", glow: "shadow-level-1/30", badge: "bg-level-1 text-primary-foreground" },
-  2: { bg: "bg-level-2/15", border: "border-level-2", text: "text-level-2", glow: "shadow-level-2/30", badge: "bg-level-2 text-primary-foreground" },
-  3: { bg: "bg-level-3/15", border: "border-level-3", text: "text-level-3", glow: "shadow-level-3/30", badge: "bg-level-3 text-primary-foreground" },
-  4: { bg: "bg-level-4/15", border: "border-level-4", text: "text-level-4", glow: "shadow-level-4/30", badge: "bg-level-4 text-primary-foreground" },
-  5: { bg: "bg-level-5/15", border: "border-level-5", text: "text-level-5", glow: "shadow-level-5/30", badge: "bg-level-5 text-primary-foreground" },
-};
-
-const levelIcons: Record<number, string> = {
-  1: "🌱",
-  2: "🌿",
-  3: "🌳",
-  4: "⭐",
-  5: "👑",
-};
+import { useDailyMissions } from "@/hooks/useDailyMissions";
 
 const LearningPathPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [completedNodes, setCompletedNodes] = useState<CompletedNode[]>([]);
-  const [selectedNode, setSelectedNode] = useState<PathNode | null>(null);
+  const { profile } = useProfile();
+  const { incrementMission } = useDailyMissions();
+  const {
+    isNodeCompleted,
+    getModuleProgress,
+    isModuleCompleted,
+    isModuleUnlocked,
+    completeLesson,
+    totalCompleted,
+    totalModulesCompleted,
+  } = useSkillTreeProgress();
+
+  // Path & view states
+  const [activePath, setActivePath] = useState(
+    (profile as any)?.active_path || "core"
+  );
+  const [selectedModule, setSelectedModule] = useState<SkillTreeModule | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<SkillTreeLesson | null>(null);
   const [lesson, setLesson] = useState<any>(null);
   const [quiz, setQuiz] = useState<any>(null);
   const [lessonImage, setLessonImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingLessonId, setLoadingLessonId] = useState<string | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("path_progress")
-      .select("node_index, quiz_score, quiz_total")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        if (data) setCompletedNodes(data);
-      });
-  }, [user]);
+  const placementLevel = (profile as any)?.placement_level || null;
 
-  const isCompleted = (index: number) => completedNodes.some((n) => n.node_index === index);
-  const isUnlocked = (index: number) => index === 0 || isCompleted(index - 1);
-  const getScore = (index: number) => completedNodes.find((n) => n.node_index === index);
+  // Modules for active path
+  const pathModules = getModulesByPath(activePath);
+  const totalLessons = skillTreeLessons.filter((l) =>
+    pathModules.some((m) => m.id === l.moduleId)
+  ).length;
 
-  const nextUnlockedIndex = completedNodes.length > 0
-    ? Math.max(...completedNodes.map((n) => n.node_index)) + 1
-    : 0;
+  // Path progress calculator
+  const getPathProgress = (pathId: string): number => {
+    const mods = getModulesByPath(pathId);
+    if (mods.length === 0) return 0;
+    const completed = mods.filter((m) => isModuleCompleted(m.id)).length;
+    return Math.round((completed / mods.length) * 100);
+  };
 
-  const handleNodeClick = async (node: PathNode) => {
+  // Find next unlocked uncompleted module in active path
+  const nextModuleId = pathModules.find(
+    (m) => isModuleUnlocked(m, placementLevel) && !isModuleCompleted(m.id)
+  )?.id || null;
+
+  // Handle module click
+  const handleModuleClick = (module: SkillTreeModule) => {
     if (!user) {
       toast.error("กรุณาเข้าสู่ระบบก่อนเริ่มเรียน");
       navigate("/auth");
       return;
     }
-    if (!isUnlocked(node.index)) return;
+    if (!isModuleUnlocked(module, placementLevel)) return;
+    setSelectedModule(module);
+  };
 
-    setSelectedNode(node);
+  // Handle lesson click
+  const handleLessonClick = async (lesson: SkillTreeLesson) => {
+    if (!user || !selectedModule) return;
+
+    setSelectedLesson(lesson);
     setShowQuiz(false);
     setLoading(true);
+    setLoadingLessonId(lesson.id);
 
     try {
-      const lessonOrder = node.index - (node.level - 1) * 10 + 1;
       const { data, error } = await supabase.functions.invoke("generate-lesson", {
-        body: { level: node.level, lessonOrder, topic: node.topic },
+        body: {
+          level: selectedModule.level,
+          lessonOrder: lesson.order,
+          topic: lesson.topic,
+        },
       });
       if (error) throw error;
       if (data.lesson) {
@@ -90,63 +111,74 @@ const LearningPathPage = () => {
     } catch (err) {
       console.error(err);
       toast.error("ไม่สามารถสร้างบทเรียนได้ กรุณาลองใหม่");
-      setSelectedNode(null);
+      setSelectedLesson(null);
     } finally {
       setLoading(false);
+      setLoadingLessonId(null);
     }
   };
 
+  // Handle quiz complete
   const handleQuizComplete = async (score: number) => {
-    if (!user || !selectedNode) return;
+    if (!user || !selectedLesson || !selectedModule) return;
 
-    const { error } = await supabase.from("path_progress").insert({
-      user_id: user.id,
-      node_index: selectedNode.index,
-      quiz_score: score,
-      quiz_total: quiz.length,
-    });
+    await completeLesson(
+      selectedLesson.id,
+      selectedModule.id,
+      selectedModule.pathId,
+      score,
+      quiz.length
+    );
 
-    if (!error) {
-      setCompletedNodes((prev) => [
-        ...prev,
-        { node_index: selectedNode.index, quiz_score: score, quiz_total: quiz.length },
-      ]);
-      await supabase.from("profiles").update({
-        lessons_completed: selectedNode.index + 1,
-        current_level: selectedNode.level,
-      }).eq("user_id", user.id);
-    }
+    // Update profile
+    await supabase
+      .from("profiles")
+      .update({
+        lessons_completed: totalCompleted + 1,
+        current_level: selectedModule.level,
+      } as any)
+      .eq("user_id", user.id);
+
+    // Track missions
+    incrementMission("complete_lesson", 1);
+    incrementMission("answer_quiz", quiz.length);
+    incrementMission("path_node", 1);
   };
 
-  // Lesson view
-  if (selectedNode && (loading || lesson)) {
-    const colors = levelColorMap[selectedNode.level];
+  // ─── Lesson View ────────────────────────────
+  if (selectedLesson && selectedModule && (loading || lesson)) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-20 md:pb-0">
-        <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 pb-20 md:pb-0">
+        <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl shadow-sm sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => { setSelectedNode(null); setLesson(null); }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white/70 hover:text-white hover:bg-white/10"
+              onClick={() => {
+                setSelectedLesson(null);
+                setLesson(null);
+              }}
+            >
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <div className={cn("px-2 py-0.5 rounded-md text-xs font-bold", colors.badge)}>
-              Lv.{selectedNode.level}
-            </div>
-            <span className="text-lg font-bold font-thai">
-              {selectedNode.icon} {selectedNode.topicThai}
+            <span className="text-lg">{selectedModule.icon}</span>
+            <span className="text-sm font-bold text-white font-thai">
+              {selectedLesson.topicThai}
             </span>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 py-6 animate-fade-in">
+        <main className="max-w-7xl mx-auto px-4 py-6 animate-in fade-in duration-300">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-20">
               <div className="relative">
-                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                <Loader2 className="w-12 h-12 animate-spin text-purple-400" />
                 <span className="absolute inset-0 flex items-center justify-center text-xl">
-                  {selectedNode.icon}
+                  {selectedModule.icon}
                 </span>
               </div>
-              <p className="font-thai mt-4 text-lg">กำลังสร้างบทเรียน...</p>
+              <p className="font-thai mt-4 text-lg text-white/60">กำลังสร้างบทเรียน...</p>
             </div>
           ) : (
             <>
@@ -166,7 +198,10 @@ const LearningPathPage = () => {
               </div>
               {!showQuiz ? (
                 <div className="text-center">
-                  <Button onClick={() => setShowQuiz(true)} variant="outline" className="font-thai">
+                  <Button
+                    onClick={() => setShowQuiz(true)}
+                    className="font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg"
+                  >
                     📝 ทำแบบทดสอบ
                   </Button>
                 </div>
@@ -182,232 +217,112 @@ const LearningPathPage = () => {
     );
   }
 
-  // Progress stats
-  const totalCompleted = completedNodes.length;
-  const progressPercent = Math.round((totalCompleted / pathNodes.length) * 100);
-
-  // Calculate streak (consecutive from 0)
-  let streak = 0;
-  for (let i = 0; i < pathNodes.length; i++) {
-    if (isCompleted(i)) streak++;
-    else break;
+  // ─── Module Detail View ─────────────────────
+  if (selectedModule) {
+    return (
+      <ModuleDetail
+        module={selectedModule}
+        isNodeCompleted={isNodeCompleted}
+        isModuleCompleted={isModuleCompleted(selectedModule.id)}
+        onLessonClick={handleLessonClick}
+        onBack={() => setSelectedModule(null)}
+        loadingLessonId={loadingLessonId}
+      />
+    );
   }
 
+  // ─── Skill Tree Map View ────────────────────
+  const progressPercent = totalLessons > 0
+    ? Math.round((totalCompleted / totalLessons) * 100)
+    : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 pb-20 md:pb-0">
       {/* Header */}
-      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
+      <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="text-white/70 hover:text-white hover:bg-white/10"
+          >
             <ArrowLeft className="w-4 h-4 mr-1" /> หน้าหลัก
           </Button>
           <div className="flex items-center gap-2 ml-auto">
-            <Flame className="w-5 h-5 text-destructive" />
-            <span className="font-bold text-sm font-thai">{streak} ต่อเนื่อง</span>
-            <div className="w-px h-4 bg-border mx-1" />
-            <Trophy className="w-5 h-5 text-star-gold" />
-            <span className="font-bold text-sm font-thai">{totalCompleted}/{pathNodes.length}</span>
+            <Trophy className="w-5 h-5 text-amber-400" />
+            <span className="font-bold text-sm text-white font-thai">
+              {totalModulesCompleted}/{pathModules.length}
+            </span>
           </div>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="bg-white/60 backdrop-blur-sm border-b border-white/50">
+      <div className="bg-white/5 border-b border-white/10">
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-1.5">
-            <h1 className="text-lg font-bold font-thai flex items-center gap-2">
+            <h1 className="text-lg font-bold text-white font-thai flex items-center gap-2">
               🗺️ เส้นทางการเรียน
             </h1>
-            <span className="text-sm font-bold text-primary">{progressPercent}%</span>
+            <span className="text-sm font-bold text-purple-300">{progressPercent}%</span>
           </div>
-          <div className="w-full h-3 bg-white/50 rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full progress-shimmer rounded-full transition-all duration-700 ease-out"
+              className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
+
+          {/* Stats card */}
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center">
+              <p className="text-lg font-bold text-white">📚 {totalCompleted}</p>
+              <p className="text-[10px] text-white/40 font-thai">บทเรียน</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center">
+              <p className="text-lg font-bold text-white">🏆 {totalModulesCompleted}</p>
+              <p className="text-[10px] text-white/40 font-thai">Modules</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center">
+              <p className="text-lg font-bold text-white">🔥 {(profile as any)?.streak_count || 0}</p>
+              <p className="text-[10px] text-white/40 font-thai">วันติดต่อ</p>
+            </div>
+          </div>
+
+          {/* Path Switcher */}
+          <div className="mt-3">
+            <PathSwitcher activePath={activePath} onPathChange={setActivePath} getPathProgress={getPathProgress} />
+          </div>
+
+          {/* Placement test prompt */}
+          {profile && !(profile as any).placement_completed && (
+            <button
+              onClick={() => navigate("/placement")}
+              className="mt-3 w-full flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-left hover:bg-amber-500/20 transition-colors"
+            >
+              <span className="text-2xl">🏰</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-amber-300 font-thai">ยังไม่ได้ทำแบบทดสอบวัดระดับ</p>
+                <p className="text-xs text-amber-400/60 font-thai">ทำเลยเพื่อเริ่มต้นที่ระดับที่เหมาะสม</p>
+              </div>
+              <span className="text-amber-400 text-sm font-bold">ทำเลย →</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Path */}
+      {/* Skill Tree */}
       <main className="max-w-3xl mx-auto px-4 py-8">
-        {[1, 2, 3, 4, 5].map((lvl) => {
-          const nodesInLevel = pathNodes.filter((n) => n.level === lvl);
-          const colors = levelColorMap[lvl];
-          const levelCompleted = nodesInLevel.every((n) => isCompleted(n.index));
-          const levelProgress = nodesInLevel.filter((n) => isCompleted(n.index)).length;
-
-          return (
-            <div key={lvl} className="mb-10 animate-fade-in" style={{ animationDelay: `${lvl * 80}ms` }}>
-              {/* Level header */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-lg",
-                  colors.badge
-                )}>
-                  {levelIcons[lvl]}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h2 className={cn("text-base font-bold font-thai", colors.text)}>
-                      Level {lvl} — {levelLabels[lvl]}
-                    </h2>
-                    {levelCompleted && (
-                      <CheckCircle2 className={cn("w-5 h-5", colors.text)} />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className={cn("h-full rounded-full transition-all duration-500", colors.badge)}
-                        style={{ width: `${(levelProgress / nodesInLevel.length) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground font-thai">
-                      {levelProgress}/{nodesInLevel.length}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Nodes - snake/zigzag path */}
-              <div className="relative pl-4">
-                {/* Vertical connector line */}
-                <div className={cn(
-                  "absolute left-[2.25rem] top-0 bottom-0 w-0.5 rounded-full",
-                  levelCompleted ? colors.badge : "bg-border"
-                )} />
-
-                <div className="flex flex-col gap-3">
-                  {nodesInLevel.map((node, i) => {
-                    const completed = isCompleted(node.index);
-                    const unlocked = isUnlocked(node.index);
-                    const isCurrent = node.index === nextUnlockedIndex;
-                    const score = getScore(node.index);
-                    const offset = i % 2 === 0 ? 0 : 40;
-
-                    return (
-                      <div
-                        key={node.index}
-                        className="animate-fade-in"
-                        style={{
-                          animationDelay: `${(lvl * 10 + i) * 50}ms`,
-                          paddingLeft: `${offset}px`,
-                        }}
-                      >
-                        <button
-                          onClick={() => handleNodeClick(node)}
-                          disabled={!unlocked}
-                          className={cn(
-                            "group relative flex items-center gap-3 w-full max-w-xs rounded-2xl p-3 transition-all duration-300",
-                            "border-2",
-                            completed && cn(colors.bg, colors.border, "shadow-md", `shadow-[0_4px_14px_-3px] ${colors.glow}`),
-                            isCurrent && !completed && cn(
-                              colors.bg, colors.border,
-                              "animate-path-glow",
-                              "shadow-lg"
-                            ),
-                            unlocked && !completed && !isCurrent && cn(
-                              "bg-card border-border",
-                              "hover:border-current hover:shadow-md",
-                              colors.text
-                            ),
-                            !unlocked && "bg-muted/50 border-muted-foreground/10 opacity-60 cursor-not-allowed"
-                          )}
-                        >
-                          {/* Node circle */}
-                          <div className={cn(
-                            "relative w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0 transition-transform duration-300",
-                            "border-2",
-                            completed && cn(colors.badge, colors.border),
-                            isCurrent && !completed && cn(colors.bg, colors.border, "animate-float"),
-                            unlocked && !completed && !isCurrent && cn("bg-card", colors.border, "group-hover:scale-110"),
-                            !unlocked && "bg-muted border-muted-foreground/20"
-                          )}>
-                            {completed ? (
-                              <CheckCircle2 className="w-6 h-6 text-primary-foreground" />
-                            ) : !unlocked ? (
-                              <Lock className="w-4 h-4 text-muted-foreground" />
-                            ) : (
-                              <span className={cn(isCurrent && "animate-float")}>{node.icon}</span>
-                            )}
-
-                            {isCurrent && !completed && (
-                              <span className={cn(
-                                "absolute -right-1 -top-1 w-5 h-5 rounded-full flex items-center justify-center animate-bounce-in",
-                                colors.badge
-                              )}>
-                                <Play className="w-3 h-3 text-primary-foreground fill-current" />
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Node info */}
-                          <div className="text-left flex-1 min-w-0">
-                            <p className={cn(
-                              "text-sm font-bold font-thai truncate",
-                              completed ? colors.text : unlocked ? "text-foreground" : "text-muted-foreground"
-                            )}>
-                              {node.topicThai}
-                            </p>
-                            <p className={cn(
-                              "text-xs truncate",
-                              completed ? colors.text + "/70" : "text-muted-foreground"
-                            )}>
-                              {node.topic}
-                            </p>
-
-                            {/* Stars */}
-                            {score && (
-                              <div className="flex items-center gap-0.5 mt-1">
-                                {Array.from({ length: score.quiz_total || 4 }).map((_, si) => (
-                                  <Star
-                                    key={si}
-                                    className={cn(
-                                      "w-3.5 h-3.5 transition-all duration-300",
-                                      si < (score.quiz_score || 0)
-                                        ? "text-star-gold fill-star-gold"
-                                        : "text-muted-foreground/20"
-                                    )}
-                                    style={{ animationDelay: `${si * 100}ms` }}
-                                  />
-                                ))}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Arrow / status */}
-                          {unlocked && !completed && (
-                            <div className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1",
-                              isCurrent ? colors.badge : "bg-muted"
-                            )}>
-                              <Play className={cn(
-                                "w-4 h-4 fill-current",
-                                isCurrent ? "text-primary-foreground" : "text-muted-foreground"
-                              )} />
-                            </div>
-                          )}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Completion celebration */}
-        {totalCompleted === pathNodes.length && (
-          <div className="text-center py-12 animate-bounce-in">
-            <div className="relative inline-block">
-              <Crown className="w-20 h-20 text-star-gold mx-auto animate-float" />
-            </div>
-            <h2 className="text-2xl font-bold font-thai mt-4">🎉 ยินดีด้วย!</h2>
-            <p className="text-muted-foreground font-thai mt-2">เรียนจบทุกบทเรียนแล้ว คุณเก่งมาก!</p>
-          </div>
-        )}
+        <SkillTreeMap
+          modules={pathModules}
+          isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
+          isModuleCompleted={isModuleCompleted}
+          getModuleProgress={getModuleProgress}
+          onModuleClick={handleModuleClick}
+          nextModuleId={nextModuleId}
+          activePath={activePath}
+        />
       </main>
     </div>
   );

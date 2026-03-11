@@ -9,7 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { sampleQuiz } from "@/data/sampleLesson";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
+import { useChallenges } from "@/hooks/useChallenges";
+import { useProfile } from "@/hooks/useProfile";
 import { trackEvent } from "@/utils/analytics";
+import ChallengeResult from "@/components/social/ChallengeResult";
 
 interface QuizLocationState {
   questions: QuizQuestion[];
@@ -17,6 +20,10 @@ interface QuizLocationState {
   lessonLevel: number;
   lessonId?: string;
   lessonOrder?: number;
+  challengeId?: string;
+  isChallenge?: boolean;
+  opponentName?: string;
+  opponentEvolution?: number;
 }
 
 const QuizPage = () => {
@@ -24,6 +31,8 @@ const QuizPage = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { incrementMission } = useDailyMissions();
+  const { submitScore: submitChallengeScore, sendChallenge } = useChallenges();
+  const { profile } = useProfile();
 
   const state = location.state as QuizLocationState | null;
   const questions = state?.questions || sampleQuiz;
@@ -31,6 +40,10 @@ const QuizPage = () => {
   const lessonLevel = state?.lessonLevel || 1;
   const lessonId = state?.lessonId;
   const lessonOrder = state?.lessonOrder || 1;
+  const challengeId = state?.challengeId;
+  const isChallenge = state?.isChallenge || false;
+  const opponentName = state?.opponentName || "เพื่อน";
+  const opponentEvolution = state?.opponentEvolution || 1;
 
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -156,6 +169,11 @@ const QuizPage = () => {
         incrementMission('answer_quiz', questions.length);
         trackEvent('quiz_complete', { score, total: questions.length, lessonTitle, level: lessonLevel });
 
+        // Submit challenge score if this is a challenge
+        if (challengeId) {
+          await submitChallengeScore(challengeId, score, questions.length);
+        }
+
         // Trigger next lesson generation in background
         supabase.functions.invoke("generate-lesson", {
           body: { action: "trigger-next", level: lessonLevel, lessonOrder },
@@ -175,6 +193,24 @@ const QuizPage = () => {
   if (!state && !questions.length) {
     navigate("/");
     return null;
+  }
+
+  if (finished && isChallenge && challengeId) {
+    return (
+      <ChallengeResult
+        myScore={score}
+        myTotal={questions.length}
+        opponentScore={null}
+        opponentTotal={null}
+        opponentName={opponentName}
+        myName={profile?.display_name || "คุณ"}
+        myEvolution={profile?.evolution_stage || 1}
+        opponentEvolution={opponentEvolution}
+        challengeId={challengeId}
+        earnedExp={earnedExp}
+        earnedCoins={earnedCoins}
+      />
+    );
   }
 
   if (finished) {
@@ -237,7 +273,9 @@ const QuizPage = () => {
       <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold font-thai">📝 แบบทดสอบ</h1>
+            <h1 className="text-lg font-bold font-thai">
+              {isChallenge ? "⚔️ Challenge Quiz" : "📝 แบบทดสอบ"}
+            </h1>
             <span className="text-sm text-muted-foreground font-thai">
               ข้อ {currentQ + 1}/{questions.length}
             </span>

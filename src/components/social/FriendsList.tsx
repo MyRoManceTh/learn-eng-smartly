@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFriends } from "@/hooks/useFriends";
+import { useChallenges } from "@/hooks/useChallenges";
 import { useProfile } from "@/hooks/useProfile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +10,10 @@ import { Input } from "@/components/ui/input";
 import { evolutionStages } from "@/data/evolutionStages";
 import { toast } from "sonner";
 import GiftModal from "./GiftModal";
+import ChallengeModal from "./ChallengeModal";
 
 export default function FriendsList() {
+  const navigate = useNavigate();
   const {
     friends,
     pendingRequests,
@@ -19,11 +23,16 @@ export default function FriendsList() {
     declineRequest,
     sendGift,
   } = useFriends();
+  const { sendChallenge } = useChallenges();
   const { profile } = useProfile();
 
   const [friendCode, setFriendCode] = useState("");
   const [adding, setAdding] = useState(false);
   const [giftTarget, setGiftTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [challengeTarget, setChallengeTarget] = useState<{
     id: string;
     name: string;
   } | null>(null);
@@ -197,7 +206,10 @@ export default function FriendsList() {
                       size="sm"
                       className="h-7 px-2 text-xs"
                       onClick={() =>
-                        toast.info("ฟีเจอร์ท้าทายกำลังมาเร็ว ๆ นี้!")
+                        setChallengeTarget({
+                          id: friend.user_id,
+                          name: friend.display_name,
+                        })
                       }
                     >
                       ⚔️ ท้าทาย
@@ -223,6 +235,21 @@ export default function FriendsList() {
           }}
           inventory={profile?.inventory || []}
           coins={profile?.coins || 0}
+        />
+      )}
+
+      {/* Challenge Modal */}
+      {challengeTarget && (
+        <ChallengeModal
+          open={!!challengeTarget}
+          friendId={challengeTarget.id}
+          friendName={challengeTarget.name}
+          onClose={() => setChallengeTarget(null)}
+          onSend={async (opponentId, lessonId) => {
+            const result = await sendChallenge(opponentId, lessonId);
+            setChallengeTarget(null);
+            return result;
+          }}
         />
       )}
     </>

@@ -175,6 +175,26 @@ export default {
   					transform: 'rotate(2deg)'
   				}
   			},
+  			'glow-pulse': {
+  				'0%, 100%': {
+  					opacity: '0.6',
+  					transform: 'scale(1)'
+  				},
+  				'50%': {
+  					opacity: '1',
+  					transform: 'scale(1.05)'
+  				}
+  			},
+  			'confetti': {
+  				'0%': {
+  					transform: 'translateY(0) rotate(0deg)',
+  					opacity: '1'
+  				},
+  				'100%': {
+  					transform: 'translateY(-80px) rotate(720deg)',
+  					opacity: '0'
+  				}
+  			},
   			'accordion-down': {
   				from: {
   					height: '0'
@@ -201,8 +221,8 @@ export default {
   			'float': 'float 3s ease-in-out infinite',
   			'shimmer': 'shimmer 3s linear infinite',
   			'wiggle': 'wiggle 0.3s ease-in-out',
-  			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
+  			'confetti': 'confetti 1s ease-out forwards'
   		}
   	}
   },

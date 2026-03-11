@@ -34,6 +34,9 @@ export function useProfile() {
         energy: d.energy ?? 5,
         is_premium: d.is_premium || false,
         total_missions_completed: d.total_missions_completed || 0,
+        placement_completed: d.placement_completed || false,
+        placement_level: d.placement_level || null,
+        active_path: d.active_path || 'core',
       } as ExtendedProfile;
     },
     enabled: !!user,

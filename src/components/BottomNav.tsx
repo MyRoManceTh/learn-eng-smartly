@@ -3,6 +3,7 @@ import { Home, GraduationCap, Gamepad2, ShoppingCart, User } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { useCallback, useRef } from "react";
 import { useFriends } from "@/hooks/useFriends";
+import { useChallenges } from "@/hooks/useChallenges";
 
 const tabs = [
   { path: "/", icon: Home, label: "หน้าหลัก" },
@@ -16,6 +17,8 @@ const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { notificationCount } = useFriends();
+  const { challengeNotificationCount } = useChallenges();
+  const totalNotifications = notificationCount + challengeNotificationCount;
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>, path: string) => {
@@ -78,9 +81,9 @@ const BottomNav = () => {
                     )}
                   />
                 </div>
-                {tab.path === "/my" && notificationCount > 0 && (
+                {tab.path === "/my" && totalNotifications > 0 && (
                   <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
-                    <span className="text-[8px] text-white font-bold">{notificationCount > 9 ? '9+' : notificationCount}</span>
+                    <span className="text-[8px] text-white font-bold">{totalNotifications > 9 ? '9+' : totalNotifications}</span>
                   </div>
                 )}
                 <span

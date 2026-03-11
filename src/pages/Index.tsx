@@ -18,6 +18,8 @@ import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import { getEvolutionStage } from "@/data/evolutionStages";
 import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
+import SocialHomeSection from "@/components/social/SocialHomeSection";
+import GachaSpinner from "@/components/gacha/GachaSpinner";
 import type { DailyMission, MissionType } from "@/types/dopamine";
 
 const missionIcons: Record<MissionType, string> = {
@@ -215,10 +217,10 @@ const Index = () => {
           </div>
         </div>
 
-        {/* === Daily Missions (Compact Chips) === */}
+        {/* === Daily Missions === */}
         {user && missions.length > 0 && (
           <div className="rounded-2xl bg-white/80 border border-white/60 p-3 shadow-sm backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-2">
                 <span className="text-sm">📋</span>
                 <span className="text-sm font-bold font-thai">ภารกิจวันนี้</span>
@@ -230,25 +232,56 @@ const Index = () => {
                 {completedCount}/{totalCount} {allCompleted && "🎉"}
               </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {missions.map((m: DailyMission) => (
-                <div
-                  key={m.id}
-                  className={cn(
-                    "flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-thai font-medium transition-all",
-                    m.current >= m.target
-                      ? "bg-emerald-100 text-emerald-700 line-through opacity-70"
-                      : "bg-gray-100 text-gray-700"
-                  )}
-                >
-                  <span>{missionIcons[m.type] || "📌"}</span>
-                  <span>{m.label}</span>
-                  {m.current >= m.target && <span>✅</span>}
-                </div>
-              ))}
+            <div className="space-y-2">
+              {missions.map((m: DailyMission) => {
+                const done = m.completed;
+                const progress = m.target_count > 0
+                  ? Math.min((m.current_count / m.target_count) * 100, 100)
+                  : 0;
+                return (
+                  <div
+                    key={m.id}
+                    className={cn(
+                      "flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all",
+                      done ? "bg-emerald-50/80 opacity-70" : "bg-gray-50/80"
+                    )}
+                  >
+                    <span className="text-base shrink-0">
+                      {done ? "✅" : (missionIcons[m.mission_type] || "📌")}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={cn(
+                          "text-xs font-thai font-medium truncate",
+                          done && "line-through text-muted-foreground"
+                        )}>
+                          {m.mission_title}
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-600 shrink-0">
+                          {m.current_count}/{m.target_count}
+                        </span>
+                      </div>
+                      {!done && (
+                        <div className="h-1.5 bg-gray-200/60 rounded-full overflow-hidden mt-1">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                            style={{ width: `${Math.max(progress, 2)}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-amber-600 font-bold shrink-0">
+                      +{m.reward_coins}🪙
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
+
+        {/* === Social Section (Friend Activity) === */}
+        {user && <SocialHomeSection />}
 
         {/* === Continue Learning Card === */}
         {currentLesson && (
@@ -301,6 +334,42 @@ const Index = () => {
           </div>
         </div>
 
+        {/* === Gacha Machine === */}
+        {user && (
+          <GachaSpinner
+            coins={coins}
+            gachaTickets={profile?.gacha_tickets || 0}
+            inventory={profile?.inventory || []}
+            lastFreeGacha={profile?.last_free_gacha || null}
+            onPullComplete={refreshProfile}
+          />
+        )}
+
+        {/* === Placement Test Banner === */}
+        {user && profile && !(profile as any).placement_completed && (
+          <button
+            onClick={() => navigate("/placement")}
+            className="w-full text-left rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 p-4 shadow-lg shadow-amber-500/20 hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.99]"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-100 text-xs font-thai mb-0.5">
+                  แนะนำสำหรับผู้เรียนใหม่
+                </p>
+                <h3 className="text-white font-bold text-base">
+                  🏰 ทำแบบทดสอบวัดระดับ
+                </h3>
+                <p className="text-amber-100 text-xs font-thai mt-0.5">
+                  วัดระดับเพื่อเริ่มเรียนที่จุดที่เหมาะสม
+                </p>
+              </div>
+              <div className="shrink-0 w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <ChevronRight className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </button>
+        )}
+
         {/* === Learning Path Preview === */}
         <button
           onClick={() => navigate("/path")}
@@ -313,7 +382,7 @@ const Index = () => {
               </div>
               <div>
                 <h3 className="font-bold font-thai text-sm">เส้นทางการเรียน</h3>
-                <p className="text-xs text-muted-foreground font-thai">เรียนตามลำดับ ปลดล็อคทีละด่าน</p>
+                <p className="text-xs text-muted-foreground font-thai">Skill Tree แบบ RPG เลือกเรียนตามสาย</p>
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
