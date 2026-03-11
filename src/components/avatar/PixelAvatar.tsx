@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo } from "react";
 import { Application, Container } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { createPixelApp } from "@/lib/pixi/pixiSetup";
-import { drawChibiCharacter, GRID_W } from "@/lib/pixi/drawChibiCharacter";
+import { drawChibiCharacter, GRID_W, GRID_H } from "@/lib/pixi/drawChibiCharacter";
 import {
   setupIdleAnimation,
   setupEvolutionEffects,
@@ -21,14 +21,14 @@ interface PixelAvatarProps {
 }
 
 // Internal rendering size must match GRID_W x GRID_H in drawChibiCharacter.
-const INTERNAL_W = 32;
-const INTERNAL_H = 42;
+const INTERNAL_W = 48;
+const INTERNAL_H = 64;
 
 // CSS sizes are exact integer multiples for pixel-perfect scaling
 const SIZE_CONFIG = {
-  sm: { cssWidth: 96, cssHeight: 126 },    // 3x
-  md: { cssWidth: 160, cssHeight: 210 },   // 5x
-  lg: { cssWidth: 256, cssHeight: 336 },   // 8x
+  sm: { cssWidth: 96, cssHeight: 128 },    // 2x
+  md: { cssWidth: 144, cssHeight: 192 },   // 3x
+  lg: { cssWidth: 240, cssHeight: 320 },   // 5x
 };
 
 const PixelAvatar: React.FC<PixelAvatarProps> = ({
