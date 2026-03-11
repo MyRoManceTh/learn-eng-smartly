@@ -80,7 +80,8 @@ function resolveColors(equipped: EquippedItems): Colors {
 export function drawChibiCharacter(
   container: Container,
   equipped: EquippedItems,
-  _canvasH: number
+  _canvasH: number,
+  walkFrame: number = 0 // 0=standing, 1=left-forward, 2=right-forward
 ): void {
   container.removeChildren();
 
@@ -95,8 +96,8 @@ export function drawChibiCharacter(
   drawAccessoryBack(grid, equipped.accessory, c);
   drawBody(grid, equipped.shirt, c);
   drawArms(grid, c);
-  drawLegs(grid, equipped.pants, c);
-  drawShoes(grid, equipped.shoes, c);
+  drawLegs(grid, equipped.pants, c, walkFrame);
+  drawShoes(grid, equipped.shoes, c, walkFrame);
   drawHead(grid, c);
   if (!hasHat) drawHair(grid, hairStyle, c);
   if (hasHat) drawHatPixels(grid, equipped.hat!, c);
@@ -362,62 +363,68 @@ function drawArms(g: Grid, c: Colors) {
 }
 
 // ─── LEGS / PANTS (rows 14-18) ───
-function drawLegs(g: Grid, pantsId: string, c: Colors) {
+function drawLegs(g: Grid, pantsId: string, c: Colors, walkFrame: number = 0) {
   const isShorts = pantsId.includes("shorts");
   const isSkirt = pantsId.includes("skirt");
 
+  // Walk frame offsets: shift legs apart (frame 1) or crossed (frame 2)
+  const lOff = walkFrame === 1 ? -1 : walkFrame === 2 ? 1 : 0; // left leg
+  const rOff = walkFrame === 1 ? 1 : walkFrame === 2 ? -1 : 0; // right leg
+
   if (isSkirt) {
-    // Skirt flares out
+    // Skirt flares out (top part stays still)
     fillRow(g, 14, 5, 11, c.pants);
     fillRow(g, 15, 4, 12, c.pants);
     set(g, 15, 4, c.pantsShade); set(g, 15, 12, c.pantsShade);
-    // Legs below
-    fillRow(g, 16, 5, 7, c.skin); fillRow(g, 16, 9, 11, c.skin);
-    fillRow(g, 17, 5, 7, c.skin); fillRow(g, 17, 9, 11, c.skin);
+    // Legs below skirt move with walk
+    fillRow(g, 16, 5 + lOff, 7 + lOff, c.skin); fillRow(g, 16, 9 + rOff, 11 + rOff, c.skin);
+    fillRow(g, 17, 5 + lOff, 7 + lOff, c.skin); fillRow(g, 17, 9 + rOff, 11 + rOff, c.skin);
   } else {
+    // Upper legs (waist area stays still)
     fillRow(g, 14, 5, 11, c.pants);
-    fillRow(g, 15, 5, 11, c.pants);
-    set(g, 15, 8, c.pantsShade); // seam
+    // Lower upper legs shift with walk
+    fillRow(g, 15, 5 + lOff, 7 + lOff, c.pants); fillRow(g, 15, 9 + rOff, 11 + rOff, c.pants);
+    if (walkFrame === 0) set(g, 15, 8, c.pantsShade); // seam only when standing
     // Lower legs
     if (isShorts) {
-      fillRow(g, 16, 5, 7, c.skin); fillRow(g, 16, 9, 11, c.skin);
-      fillRow(g, 17, 5, 7, c.skin); fillRow(g, 17, 9, 11, c.skin);
+      fillRow(g, 16, 5 + lOff, 7 + lOff, c.skin); fillRow(g, 16, 9 + rOff, 11 + rOff, c.skin);
+      fillRow(g, 17, 5 + lOff, 7 + lOff, c.skin); fillRow(g, 17, 9 + rOff, 11 + rOff, c.skin);
     } else {
-      fillRow(g, 16, 5, 7, c.pants); fillRow(g, 16, 9, 11, c.pants);
-      set(g, 16, 11, c.pantsShade);
-      fillRow(g, 17, 5, 7, c.pantsShade); fillRow(g, 17, 9, 11, c.pantsShade);
+      fillRow(g, 16, 5 + lOff, 7 + lOff, c.pants); fillRow(g, 16, 9 + rOff, 11 + rOff, c.pants);
+      set(g, 16, 11 + rOff, c.pantsShade);
+      fillRow(g, 17, 5 + lOff, 7 + lOff, c.pantsShade); fillRow(g, 17, 9 + rOff, 11 + rOff, c.pantsShade);
     }
   }
 }
 
 // ─── SHOES (rows 18-19) ───
-function drawShoes(g: Grid, shoesId: string, c: Colors) {
+function drawShoes(g: Grid, shoesId: string, c: Colors, walkFrame: number = 0) {
   const isRocket = shoesId.includes("rocket");
   const isBoots = shoesId.includes("boots") && !isRocket;
   const isHeels = shoesId.includes("heels");
   const isCloud = shoesId.includes("cloud");
 
+  // Walk frame offsets (same as legs)
+  const lOff = walkFrame === 1 ? -1 : walkFrame === 2 ? 1 : 0;
+  const rOff = walkFrame === 1 ? 1 : walkFrame === 2 ? -1 : 0;
+
   // Left shoe
-  fillRow(g, 18, 4, 7, c.shoes);
-  fillRow(g, 19, 4, 7, c.shoesShade);
+  fillRow(g, 18, 4 + lOff, 7 + lOff, c.shoes);
+  fillRow(g, 19, 4 + lOff, 7 + lOff, c.shoesShade);
   // Right shoe
-  fillRow(g, 18, 9, 12, c.shoes);
-  fillRow(g, 19, 9, 12, c.shoesShade);
+  fillRow(g, 18, 9 + rOff, 12 + rOff, c.shoes);
+  fillRow(g, 19, 9 + rOff, 12 + rOff, c.shoesShade);
 
   if (isRocket) {
-    // Flames below shoes
-    set(g, 20, 5, 0xff6d00); set(g, 20, 6, 0xffab00);
-    set(g, 20, 10, 0xff6d00); set(g, 20, 11, 0xffab00);
+    set(g, 20, 5 + lOff, 0xff6d00); set(g, 20, 6 + lOff, 0xffab00);
+    set(g, 20, 10 + rOff, 0xff6d00); set(g, 20, 11 + rOff, 0xffab00);
   } else if (isBoots) {
-    // Taller - extend upward
-    fillRow(g, 17, 4, 7, c.shoes); fillRow(g, 17, 9, 12, c.shoes);
+    fillRow(g, 17, 4 + lOff, 7 + lOff, c.shoes); fillRow(g, 17, 9 + rOff, 12 + rOff, c.shoes);
   } else if (isHeels) {
-    // Heel point
-    set(g, 20, 4, c.shoesShade); set(g, 20, 9, c.shoesShade);
+    set(g, 20, 4 + lOff, c.shoesShade); set(g, 20, 9 + rOff, c.shoesShade);
   } else if (isCloud) {
-    // Cloud puffs below
-    set(g, 20, 4, 0xe3f2fd); set(g, 20, 5, 0xbbdefb); set(g, 20, 6, 0xe3f2fd);
-    set(g, 20, 9, 0xe3f2fd); set(g, 20, 10, 0xbbdefb); set(g, 20, 11, 0xe3f2fd);
+    set(g, 20, 4 + lOff, 0xe3f2fd); set(g, 20, 5 + lOff, 0xbbdefb); set(g, 20, 6 + lOff, 0xe3f2fd);
+    set(g, 20, 9 + rOff, 0xe3f2fd); set(g, 20, 10 + rOff, 0xbbdefb); set(g, 20, 11 + rOff, 0xe3f2fd);
   }
 }
 

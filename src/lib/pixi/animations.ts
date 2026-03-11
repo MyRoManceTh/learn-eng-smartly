@@ -1,5 +1,7 @@
 import { Container, Graphics, Ticker } from "pixi.js";
 import { blendColor } from "./colorUtils";
+import { drawChibiCharacter } from "./drawChibiCharacter";
+import { EquippedItems } from "@/types/avatar";
 
 // ============================================================
 // 1. IDLE ANIMATION - Claw-Empire style sine-wave bounce
@@ -200,7 +202,48 @@ export function setupRainbowShimmer(
 }
 
 // ============================================================
-// 4. EQUIP TRANSITION - Flash + scale on change
+// 4. WALK CYCLE - Alternating leg animation
+// ============================================================
+
+const WALK_SEQUENCE = [1, 0, 2, 0]; // left-stand-right-stand
+
+export function setupWalkCycle(
+  characterContainer: Container,
+  ticker: Ticker,
+  equipped: EquippedItems,
+  canvasH: number
+): () => void {
+  let elapsed = 0;
+  const FRAME_DURATION = 9; // ~150ms at 60fps
+  let seqIndex = 0;
+  let currentFrame = 0;
+
+  const update = (dt: Ticker) => {
+    elapsed += dt.deltaTime;
+
+    if (elapsed >= FRAME_DURATION) {
+      elapsed = 0;
+      seqIndex = (seqIndex + 1) % WALK_SEQUENCE.length;
+      const newFrame = WALK_SEQUENCE[seqIndex];
+
+      if (newFrame !== currentFrame) {
+        currentFrame = newFrame;
+        drawChibiCharacter(characterContainer, equipped, canvasH, currentFrame);
+      }
+    }
+  };
+
+  ticker.add(update);
+
+  return () => {
+    ticker.remove(update);
+    // Return to standing pose
+    drawChibiCharacter(characterContainer, equipped, canvasH, 0);
+  };
+}
+
+// ============================================================
+// 5. EQUIP TRANSITION - Flash + scale on change
 // ============================================================
 
 export function playEquipTransition(

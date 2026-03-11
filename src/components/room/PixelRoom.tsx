@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback, useRef } from "react";
 import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/roomItems";
@@ -13,6 +13,13 @@ interface PixelRoomProps {
 }
 
 const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomProps) => {
+  const [charX, setCharX] = useState(50); // percentage from left
+  const [isWalking, setIsWalking] = useState(false);
+  const [direction, setDirection] = useState<"left" | "right">("right");
+  const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
+  const roomRef = useRef<HTMLDivElement>(null);
+  const characterRef = useRef<HTMLDivElement>(null);
+
   const wallStyle = useMemo(() => {
     const wall = WALLPAPER_COLORS[room.wallpaper || "wall_basic"] || WALLPAPER_COLORS.wall_basic;
     return { backgroundColor: wall.bg, backgroundImage: wall.pattern };
@@ -51,10 +58,51 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
 
   const isDark = room.wallpaper === "wall_space" || room.wallpaper === "wall_ocean";
 
+  // Click-to-walk handler
+  const handleRoomClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!roomRef.current) return;
+
+    const rect = roomRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    // Only respond to clicks on the floor area (bottom 40%)
+    const floorTop = rect.height * 0.6;
+    if (clickY < floorTop) return;
+
+    // Show click indicator
+    setClickPos({ x: clickX, y: clickY });
+    setTimeout(() => setClickPos(null), 500);
+
+    // Convert to percentage, clamp 10-90%
+    const targetPercent = Math.max(10, Math.min(90, (clickX / rect.width) * 100));
+
+    // Determine direction
+    const newDirection = targetPercent > charX ? "right" : "left";
+    setDirection(newDirection);
+
+    // Dynamic transition duration based on distance
+    const distance = Math.abs(targetPercent - charX);
+    const duration = Math.max(0.3, Math.min(2.0, distance * 0.025));
+
+    if (characterRef.current) {
+      characterRef.current.style.transitionDuration = `${duration}s`;
+    }
+
+    setIsWalking(true);
+    setCharX(targetPercent);
+  }, [charX]);
+
+  const handleTransitionEnd = useCallback(() => {
+    setIsWalking(false);
+  }, []);
+
   return (
     <div
-      className={`relative w-full ${sizeClasses[size]} rounded-none overflow-hidden pixelated`}
+      ref={roomRef}
+      className={`relative w-full ${sizeClasses[size]} rounded-none overflow-hidden pixelated cursor-pointer select-none`}
       style={{ imageRendering: "pixelated" }}
+      onClick={handleRoomClick}
     >
       {/* === PIXEL BORDER (8-bit frame) === */}
       <div className="absolute inset-0 z-20 pointer-events-none">
@@ -146,19 +194,37 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
         </div>
       </div>
 
-      {/* === CHARACTER (centered) === */}
-      <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 z-10">
+      {/* === CHARACTER (click-to-walk) === */}
+      <div
+        ref={characterRef}
+        className="absolute bottom-[25%] z-10"
+        style={{
+          left: `${charX}%`,
+          transform: "translateX(-50%)",
+          transition: "left 0.5s ease-in-out",
+        }}
+        onTransitionEnd={handleTransitionEnd}
+      >
         <PixelAvatar
           equipped={equipped}
           size={size}
           animated
           evolutionStage={evolutionStage}
+          walking={isWalking}
+          direction={direction}
         />
       </div>
 
       {/* === Evolution glow effects === */}
       {evolutionStage >= 3 && (
-        <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-20 h-20 z-0">
+        <div
+          className="absolute bottom-[20%] w-20 h-20 z-0 pointer-events-none"
+          style={{
+            left: `${charX}%`,
+            transform: "translateX(-50%)",
+            transition: "left 0.5s ease-in-out",
+          }}
+        >
           <div
             className="w-full h-full rounded-full blur-xl animate-pulse"
             style={{
@@ -170,6 +236,19 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
                     : "rgba(59,130,246,0.2)",
             }}
           />
+        </div>
+      )}
+
+      {/* === Click indicator === */}
+      {clickPos && (
+        <div
+          className="absolute z-30 pointer-events-none"
+          style={{
+            left: clickPos.x - 3,
+            top: clickPos.y - 3,
+          }}
+        >
+          <div className="w-1.5 h-1.5 bg-white/70 animate-ping" style={{ animationDuration: "0.5s" }} />
         </div>
       )}
     </div>

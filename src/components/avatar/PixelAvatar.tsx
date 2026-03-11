@@ -2,11 +2,12 @@ import React, { useRef, useEffect, useMemo } from "react";
 import { Application, Container } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { createPixelApp } from "@/lib/pixi/pixiSetup";
-import { drawChibiCharacter } from "@/lib/pixi/drawChibiCharacter";
+import { drawChibiCharacter, GRID_W } from "@/lib/pixi/drawChibiCharacter";
 import {
   setupIdleAnimation,
   setupEvolutionEffects,
   setupRainbowShimmer,
+  setupWalkCycle,
   playEquipTransition,
 } from "@/lib/pixi/animations";
 
@@ -15,6 +16,8 @@ interface PixelAvatarProps {
   size?: "sm" | "md" | "lg";
   animated?: boolean;
   evolutionStage?: number;
+  walking?: boolean;
+  direction?: "left" | "right";
 }
 
 // Internal (low-res) rendering size must match GRID_W x GRID_H in drawChibiCharacter.
@@ -34,11 +37,14 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   size = "md",
   animated = false,
   evolutionStage = 1,
+  walking = false,
+  direction = "right",
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<Application | null>(null);
   const characterRef = useRef<Container | null>(null);
   const cleanupFnsRef = useRef<(() => void)[]>([]);
+  const walkCleanupRef = useRef<(() => void) | null>(null);
   const prevEquippedRef = useRef<string>("");
   const initDoneRef = useRef(false);
 
@@ -103,6 +109,8 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       destroyed = true;
       cleanupFnsRef.current.forEach((fn) => fn());
       cleanupFnsRef.current = [];
+      walkCleanupRef.current?.();
+      walkCleanupRef.current = null;
       if (appRef.current) {
         appRef.current.destroy(true);
         appRef.current = null;
@@ -157,6 +165,44 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       cleanupFnsRef.current.push(cleanRainbow);
     }
   }, [evolutionStage, isRainbow]);
+
+  // Walk cycle animation
+  useEffect(() => {
+    if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
+
+    // Cleanup previous walk cycle
+    walkCleanupRef.current?.();
+    walkCleanupRef.current = null;
+
+    if (walking) {
+      const cleanup = setupWalkCycle(
+        characterRef.current,
+        appRef.current.ticker,
+        equipped,
+        INTERNAL_H
+      );
+      walkCleanupRef.current = cleanup;
+    }
+
+    return () => {
+      walkCleanupRef.current?.();
+      walkCleanupRef.current = null;
+    };
+  }, [walking, equippedKey]);
+
+  // Direction flip
+  useEffect(() => {
+    if (!characterRef.current) return;
+    const character = characterRef.current;
+
+    if (direction === "left") {
+      character.scale.x = -1;
+      character.x = GRID_W;
+    } else {
+      character.scale.x = 1;
+      character.x = 0;
+    }
+  }, [direction]);
 
   return (
     <canvas
