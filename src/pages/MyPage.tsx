@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { EquippedItems, DEFAULT_EQUIPPED, AvatarItem } from "@/types/avatar";
 import { RoomLayout, DEFAULT_ROOM } from "@/types/room";
-import { PetCareState, DEFAULT_PET_CARE, feedPet, PetFood } from "@/data/petCare";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
@@ -114,7 +113,6 @@ const MyPage = () => {
   const [room, setRoom] = useState<RoomLayout>(DEFAULT_ROOM);
   const [roomInventory, setRoomInventory] = useState<string[]>([]);
   const [selectedRoomCategory, setSelectedRoomCategory] = useState("wallpaper");
-  const [petCare, setPetCare] = useState<PetCareState>(DEFAULT_PET_CARE);
 
   // Profile state
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -151,11 +149,6 @@ const MyPage = () => {
         }
         const rmInv = d.room_inventory;
         setRoomInventory(Array.isArray(rmInv) ? rmInv : []);
-        // Pet care
-        const pc = d.pet_care;
-        if (pc && typeof pc === "object" && !Array.isArray(pc)) {
-          setPetCare(pc as PetCareState);
-        }
       }
       if (historyRes.data) setHistory(historyRes.data as LearningRecord[]);
       if (pathRes.data) setPathProgress(pathRes.data as PathProgress[]);
@@ -223,34 +216,22 @@ const MyPage = () => {
   // === Room handlers ===
   const handleBuyRoomItem = async (item: typeof roomItems[0]) => {
     if (!user) return;
-    // FREE BUY MODE for testing - no coin check
+    if (coins < item.price) {
+      toast.error("เหรียญไม่พอ! 🪙");
+      return;
+    }
+    const newCoins = coins - item.price;
     const newRoomInv = [...roomInventory, item.id];
     const { error } = await supabase
       .from("profiles")
-      .update({ room_inventory: newRoomInv as any } as any)
+      .update({ coins: newCoins, room_inventory: newRoomInv as any } as any)
       .eq("user_id", user.id);
     if (error) { toast.error("เกิดข้อผิดพลาด"); return; }
+    setCoins(newCoins);
     setRoomInventory(newRoomInv);
-    toast.success(`ได้รับ ${item.nameThai} แล้ว! 🎁`);
+    toast.success(`ซื้อ ${item.nameThai} สำเร็จ! 🏠`);
     confetti({ particleCount: 60, spread: 50, origin: { y: 0.6 } });
     handlePlaceRoomItem(item);
-  };
-
-  // === Feed pet handler ===
-  const handleFeedPet = async (petId: string, food: PetFood) => {
-    if (!user) return;
-    const result = feedPet(petCare, petId, food);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ pet_care: result.newCare as any } as any)
-      .eq("user_id", user.id);
-    if (error) { toast.error("เกิดข้อผิดพลาด"); return; }
-    setPetCare(result.newCare);
-    toast.success(`ให้ ${food.nameThai} แล้ว! +${food.expGain} EXP 🍖`);
-    if (result.leveledUp) {
-      toast.success(`🎉 สัตว์เลี้ยงเลเวลอัพ! → Lv.${result.newLevel}`);
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
-    }
   };
 
   const handlePlaceRoomItem = async (item: typeof roomItems[0]) => {
@@ -399,7 +380,6 @@ const MyPage = () => {
           room={room}
           evolutionStage={evolutionStage.stage}
           size="lg"
-          petCare={petCare}
         />
       </div>
 
@@ -743,11 +723,9 @@ const MyPage = () => {
               coins={coins}
               roomInventory={roomInventory}
               room={room}
-              petCare={petCare}
               onBuyPet={handleBuyRoomItem}
               onPlacePet={handlePlaceRoomItem}
               onRemovePet={handleRemoveRoomItem}
-              onFeedPet={handleFeedPet}
             />
           </TabsContent>
 

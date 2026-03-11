@@ -2,7 +2,6 @@ import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS, PET_IMAGES } from "@/data/roomItems";
-import { PetCareState } from "@/data/petCare";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import RoomPet from "@/components/room/RoomPet";
 import "@/components/ui/8bit/styles/retro.css";
@@ -12,7 +11,6 @@ interface PixelRoomProps {
   room: RoomLayout;
   evolutionStage: number;
   size?: "sm" | "md" | "lg";
-  petCare?: PetCareState;
 }
 
 /* ── furniture slot positions (percentage-based for responsiveness) ── */
@@ -32,7 +30,7 @@ const SLOT_POSITIONS: Record<string, { left: string; bottom: string; zIndex: num
   toy: { left: "42%", bottom: "15%", zIndex: 5, scale: 1.1 },
 };
 
-const PixelRoom = ({ equipped, room, evolutionStage, size = "md", petCare }: PixelRoomProps) => {
+const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomProps) => {
   const [charX, setCharX] = useState(50);
   const [isWalking, setIsWalking] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
@@ -214,7 +212,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md", petCare }: Pix
 
       {/* ── PETS (autonomous walking) ── */}
       {petItems.map((pet) =>
-        pet ? <RoomPet key={pet.id} pet={pet} charX={charX} petCare={petCare} /> : null
+        pet ? <RoomPet key={pet.id} pet={pet} charX={charX} /> : null
       )}
 
       {/* ── Ambient light effect ── */}

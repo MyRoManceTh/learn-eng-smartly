@@ -13,6 +13,10 @@ function getSupabase() {
   );
 }
 
+// =============================================
+// AI Content Generation
+// =============================================
+
 async function generateImage(apiKey: string, imagePrompt: string): Promise<string | null> {
   try {
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -70,22 +74,8 @@ async function uploadImageToStorage(base64DataUrl: string, lessonId: string): Pr
   }
 }
 
-async function generateAndSaveLesson(level: number, lessonOrder: number): Promise<void> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-
-  const topics: Record<number, string[]> = {
-    1: ["daily routine", "food and drinks", "my family", "at the market", "weather", "animals", "school life", "hobbies", "the park", "my house"],
-    2: ["traveling by bus", "going to the doctor", "cooking Thai food", "weekend plans", "shopping online", "exercise and health", "Thai festivals", "pets at home", "neighborhood", "at the restaurant"],
-    3: ["social media habits", "environmental problems", "Thai street food culture", "job interviews", "online learning", "recycling and waste", "public transportation", "healthy eating", "Thai music scene", "volunteering"],
-    4: ["climate change impact on Thailand", "digital nomad lifestyle", "Thai startup ecosystem", "mental health awareness", "sustainable tourism", "artificial intelligence in daily life", "cultural preservation", "urban vs rural living", "financial literacy", "remote work culture"],
-    5: ["geopolitical implications of trade", "philosophical perspectives on technology", "socioeconomic inequality", "bioethics and genetic engineering", "the psychology of decision-making", "globalization and cultural identity", "cryptocurrency regulations", "media literacy in the digital age"],
-  };
-
-  const levelTopics = topics[level] || topics[1];
-  const topic = levelTopics[(lessonOrder - 1) % levelTopics.length];
-
-  const prompt = `You are an English-Thai bilingual education content creator. Create a lesson about "${topic}" for level ${level}/5 learners.
+function buildPrompt(topic: string, level: number): string {
+  return `You are an English-Thai bilingual education content creator. Create a lesson about "${topic}" for level ${level}/5 learners.
 
 Return a valid JSON object (no markdown, no code blocks) with this exact structure:
 {
@@ -143,6 +133,18 @@ Examples of CORRECT phonetics:
 "apple"→"แอ๊ปเปิ้ล", "like"→"ไลค์", "after"→"อาฟเทอะ", "water"→"วอเทอะ",
 "catch"→"แค็ตช์", "cooking"→"คุกกิ้ง", "found"→"ฟาวนด์", "walked"→"วอคท์",
 "grateful"→"เกรทฟุล", "probably"→"พร็อบบะบลี"`;
+}
+
+async function generateAndSaveLesson(
+  moduleId: string,
+  level: number,
+  lessonOrder: number,
+  topic: string,
+): Promise<void> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+  const prompt = buildPrompt(topic, level);
 
   const textResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -151,7 +153,7 @@ Examples of CORRECT phonetics:
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -175,18 +177,20 @@ Examples of CORRECT phonetics:
 
   // Generate image
   const imagePrompt = parsed.imagePrompt || topic;
-  const tempId = `lesson-${level}-${lessonOrder}-${Date.now()}`;
+  const tempId = `${moduleId}-${lessonOrder}-${Date.now()}`;
   const base64Image = await generateImage(LOVABLE_API_KEY, imagePrompt);
   let imageUrl: string | null = null;
   if (base64Image) {
     imageUrl = await uploadImageToStorage(base64Image, tempId);
   }
 
-  // Save to DB
+  // Save to DB (upsert to avoid conflicts)
   const supabase = getSupabase();
-  const { error } = await supabase.from("lessons").insert({
+  const { error } = await supabase.from("lessons").upsert({
+    module_id: moduleId,
     level,
     lesson_order: lessonOrder,
+    topic,
     title: parsed.title,
     title_thai: parsed.titleThai,
     vocabulary: parsed.vocabulary,
@@ -196,138 +200,182 @@ Examples of CORRECT phonetics:
     image_prompt: imagePrompt,
     quiz: parsed.quiz,
     is_published: true,
-  });
+  }, { onConflict: "module_id,lesson_order" });
 
   if (error) {
     console.error("Failed to save lesson:", error);
     throw new Error("Failed to save lesson to database");
   }
 
-  console.log(`Generated and saved lesson: level ${level}, order ${lessonOrder}`);
+  console.log(`Generated: ${moduleId} lesson ${lessonOrder} - "${topic}"`);
 }
+
+// =============================================
+// Response helpers
+// =============================================
+
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function lessonResponse(row: any) {
+  return jsonResponse({
+    lesson: {
+      title: row.title,
+      titleThai: row.title_thai,
+      vocabulary: row.vocabulary,
+      articleSentences: row.article_sentences,
+      articleTranslation: row.article_translation,
+    },
+    quiz: row.quiz,
+    imageUrl: row.image_url,
+  });
+}
+
+// =============================================
+// Main handler
+// =============================================
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { action, level, lessonOrder, topic } = await req.json();
+    const body = await req.json();
+    const { action, moduleId, level, lessonOrder, topic } = body;
     const supabase = getSupabase();
 
-    // Default action: fetch existing lesson or generate on-the-fly
+    // ─── GET: ดึงบทเรียน (จาก DB หรือ generate ถ้าไม่มี) ───
     if (!action || action === "get") {
-      if (!level || !lessonOrder) {
-        return new Response(JSON.stringify({ error: "Missing level or lessonOrder" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      if (!moduleId || !lessonOrder) {
+        return jsonResponse({ error: "Missing moduleId or lessonOrder" }, 400);
       }
 
-      // Try to find existing lesson
+      // ค้นหาบทเรียนที่มีอยู่
       const { data: existing } = await supabase
         .from("lessons")
         .select("*")
-        .eq("level", level)
+        .eq("module_id", moduleId)
         .eq("lesson_order", lessonOrder)
         .eq("is_published", true)
         .single();
 
       if (existing) {
-        return new Response(JSON.stringify({
-          lesson: {
-            title: existing.title,
-            titleThai: existing.title_thai,
-            vocabulary: existing.vocabulary,
-            articleSentences: existing.article_sentences,
-            articleTranslation: existing.article_translation,
-          },
-          quiz: existing.quiz,
-          imageUrl: existing.image_url,
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return lessonResponse(existing);
       }
 
-      // Not found — generate, save, and return
-      await generateAndSaveLesson(level, lessonOrder);
+      // ไม่เจอ → generate ใหม่
+      if (!topic || !level) {
+        return jsonResponse({ error: "Lesson not found and missing topic/level to generate" }, 404);
+      }
+
+      await generateAndSaveLesson(moduleId, level, lessonOrder, topic);
 
       const { data: newLesson } = await supabase
         .from("lessons")
         .select("*")
-        .eq("level", level)
+        .eq("module_id", moduleId)
         .eq("lesson_order", lessonOrder)
         .single();
 
       if (!newLesson) {
-        return new Response(JSON.stringify({ error: "Failed to generate lesson" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ error: "Failed to generate lesson" }, 500);
       }
 
-      return new Response(JSON.stringify({
-        lesson: {
-          title: newLesson.title,
-          titleThai: newLesson.title_thai,
-          vocabulary: newLesson.vocabulary,
-          articleSentences: newLesson.article_sentences,
-          articleTranslation: newLesson.article_translation,
-        },
-        quiz: newLesson.quiz,
-        imageUrl: newLesson.image_url,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return lessonResponse(newLesson);
     }
 
-    if (action === "trigger-next") {
-      // Called after a user completes the latest lesson for a level
-      // Check if the next lesson already exists
-      const nextOrder = (lessonOrder || 1) + 1;
-      const { data: existing } = await supabase
-        .from("lessons")
-        .select("id")
-        .eq("level", level)
-        .eq("lesson_order", nextOrder)
-        .single();
-
-      if (!existing) {
-        // Generate the next lesson in background
-        console.log(`Triggering generation for level ${level}, order ${nextOrder}`);
-        // Don't await - let it run in background
-        generateAndSaveLesson(level, nextOrder).catch((e) => {
-          console.error("Background generation failed:", e);
-        });
+    // ─── SEED-MODULE: สร้างทุกบทเรียนใน 1 module ───
+    if (action === "seed-module") {
+      const { moduleId: mId, level: lvl, topics: topicList } = body;
+      if (!mId || !lvl || !topicList?.length) {
+        return jsonResponse({ error: "Missing moduleId, level, or topics" }, 400);
       }
 
-      return new Response(JSON.stringify({ ok: true, nextOrder }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+      const results: { order: number; topic: string; status: string }[] = [];
 
-    if (action === "seed") {
-      // Seed initial lessons for all levels if they don't exist
-      for (let lvl = 1; lvl <= 5; lvl++) {
+      for (let i = 0; i < topicList.length; i++) {
+        const t = topicList[i];
+        const order = i + 1;
+
+        // เช็คว่ามีอยู่แล้วหรือยัง
         const { data: existing } = await supabase
           .from("lessons")
           .select("id")
-          .eq("level", lvl)
-          .eq("lesson_order", 1)
+          .eq("module_id", mId)
+          .eq("lesson_order", order)
           .single();
 
-        if (!existing) {
-          await generateAndSaveLesson(lvl, 1);
+        if (existing) {
+          results.push({ order, topic: t, status: "exists" });
+          continue;
+        }
+
+        try {
+          await generateAndSaveLesson(mId, lvl, order, t);
+          results.push({ order, topic: t, status: "created" });
+        } catch (e) {
+          console.error(`Failed to generate ${mId} lesson ${order}:`, e);
+          results.push({ order, topic: t, status: `error: ${e instanceof Error ? e.message : "unknown"}` });
         }
       }
-      return new Response(JSON.stringify({ ok: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+
+      return jsonResponse({ ok: true, moduleId: mId, results });
     }
 
-    return new Response(JSON.stringify({ error: "Unknown action" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    // ─── SEED-BATCH: สร้างหลาย module ทีเดียว ───
+    if (action === "seed-batch") {
+      const { modules } = body;
+      if (!modules?.length) {
+        return jsonResponse({ error: "Missing modules array" }, 400);
+      }
+
+      const batchResults: { moduleId: string; created: number; skipped: number; errors: number }[] = [];
+
+      for (const mod of modules) {
+        const { moduleId: mId, level: lvl, topics: topicList } = mod;
+        let created = 0, skipped = 0, errors = 0;
+
+        for (let i = 0; i < topicList.length; i++) {
+          const t = topicList[i];
+          const order = i + 1;
+
+          const { data: existing } = await supabase
+            .from("lessons")
+            .select("id")
+            .eq("module_id", mId)
+            .eq("lesson_order", order)
+            .single();
+
+          if (existing) {
+            skipped++;
+            continue;
+          }
+
+          try {
+            await generateAndSaveLesson(mId, lvl, order, t);
+            created++;
+          } catch (e) {
+            console.error(`Failed: ${mId} lesson ${order}:`, e);
+            errors++;
+          }
+        }
+
+        batchResults.push({ moduleId: mId, created, skipped, errors });
+        console.log(`Module ${mId}: created=${created}, skipped=${skipped}, errors=${errors}`);
+      }
+
+      return jsonResponse({ ok: true, results: batchResults });
+    }
+
+    return jsonResponse({ error: "Unknown action" }, 400);
   } catch (e) {
     console.error("generate-lesson error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(
+      { error: e instanceof Error ? e.message : "Unknown error" },
+      500
+    );
   }
 });
