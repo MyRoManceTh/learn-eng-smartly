@@ -344,8 +344,51 @@ export type Database = {
         }
         Relationships: []
       }
+      placement_test_results: {
+        Row: {
+          created_at: string | null
+          detail: Json | null
+          grammar_score: number
+          id: string
+          listening_score: number
+          overall_level: number
+          reading_score: number
+          total_questions: number
+          total_score: number
+          user_id: string
+          vocabulary_score: number
+        }
+        Insert: {
+          created_at?: string | null
+          detail?: Json | null
+          grammar_score?: number
+          id?: string
+          listening_score?: number
+          overall_level: number
+          reading_score?: number
+          total_questions?: number
+          total_score?: number
+          user_id: string
+          vocabulary_score?: number
+        }
+        Update: {
+          created_at?: string | null
+          detail?: Json | null
+          grammar_score?: number
+          id?: string
+          listening_score?: number
+          overall_level?: number
+          reading_score?: number
+          total_questions?: number
+          total_score?: number
+          user_id?: string
+          vocabulary_score?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          active_path: string | null
           age: number | null
           avatar_url: string | null
           coins: number
@@ -371,6 +414,8 @@ export type Database = {
           lessons_completed: number
           longest_streak: number
           mystery_box_last_claimed: string | null
+          placement_completed: boolean | null
+          placement_level: number | null
           school_name: string | null
           total_exp: number
           total_missions_completed: number | null
@@ -378,6 +423,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active_path?: string | null
           age?: number | null
           avatar_url?: string | null
           coins?: number
@@ -403,6 +449,8 @@ export type Database = {
           lessons_completed?: number
           longest_streak?: number
           mystery_box_last_claimed?: string | null
+          placement_completed?: boolean | null
+          placement_level?: number | null
           school_name?: string | null
           total_exp?: number
           total_missions_completed?: number | null
@@ -410,6 +458,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active_path?: string | null
           age?: number | null
           avatar_url?: string | null
           coins?: number
@@ -435,6 +484,8 @@ export type Database = {
           lessons_completed?: number
           longest_streak?: number
           mystery_box_last_claimed?: string | null
+          placement_completed?: boolean | null
+          placement_level?: number | null
           school_name?: string | null
           total_exp?: number
           total_missions_completed?: number | null
@@ -516,6 +567,39 @@ export type Database = {
           is_premium?: boolean | null
           rewards_claimed?: Json | null
           season_month?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      skill_tree_progress: {
+        Row: {
+          completed_at: string | null
+          id: string
+          module_id: string
+          node_id: string
+          path_id: string
+          quiz_score: number | null
+          quiz_total: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          module_id: string
+          node_id: string
+          path_id?: string
+          quiz_score?: number | null
+          quiz_total?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          module_id?: string
+          node_id?: string
+          path_id?: string
+          quiz_score?: number | null
+          quiz_total?: number | null
           user_id?: string
         }
         Relationships: []
