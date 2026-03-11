@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo } from "react";
 import { Application, Container } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { createPixelApp } from "@/lib/pixi/pixiSetup";
-import { drawChibiCharacter, GRID_W } from "@/lib/pixi/drawChibiCharacter";
+import { drawChibiCharacter, GRID_W, GRID_H } from "@/lib/pixi/drawChibiCharacter";
 import {
   setupIdleAnimation,
   setupEvolutionEffects,
