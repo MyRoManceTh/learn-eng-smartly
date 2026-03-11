@@ -134,7 +134,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
         </div>
 
         {/* Wall-mounted furniture */}
-        {placedItems.map((item) => {
+        {nonPetItems.map((item) => {
           if (!item) return null;
           const slot = SLOT_POSITIONS[item.category];
           if (!slot || parseFloat(slot.bottom) < 40) return null; // only wall items
