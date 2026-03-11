@@ -16,6 +16,7 @@ import { getItemById } from "@/data/avatarItems";
 
 // Components
 import PixelRoom from "@/components/room/PixelRoom";
+import PetShop from "@/components/room/PetShop";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
 import EvolutionProgressBar from "@/components/avatar/EvolutionProgressBar";
