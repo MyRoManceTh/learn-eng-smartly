@@ -280,9 +280,11 @@ export type Database = {
           is_published: boolean
           lesson_order: number
           level: number
+          module_id: string | null
           quiz: Json
           title: string
           title_thai: string
+          topic: string | null
           vocabulary: Json
         }
         Insert: {
@@ -295,9 +297,11 @@ export type Database = {
           is_published?: boolean
           lesson_order?: number
           level?: number
+          module_id?: string | null
           quiz?: Json
           title: string
           title_thai: string
+          topic?: string | null
           vocabulary?: Json
         }
         Update: {
@@ -310,9 +314,11 @@ export type Database = {
           is_published?: boolean
           lesson_order?: number
           level?: number
+          module_id?: string | null
           quiz?: Json
           title?: string
           title_thai?: string
+          topic?: string | null
           vocabulary?: Json
         }
         Relationships: []
