@@ -223,22 +223,34 @@ const MyPage = () => {
   // === Room handlers ===
   const handleBuyRoomItem = async (item: typeof roomItems[0]) => {
     if (!user) return;
-    if (coins < item.price) {
-      toast.error("เหรียญไม่พอ! 🪙");
-      return;
-    }
-    const newCoins = coins - item.price;
+    // FREE BUY MODE for testing - no coin check
     const newRoomInv = [...roomInventory, item.id];
     const { error } = await supabase
       .from("profiles")
-      .update({ coins: newCoins, room_inventory: newRoomInv as any } as any)
+      .update({ room_inventory: newRoomInv as any } as any)
       .eq("user_id", user.id);
     if (error) { toast.error("เกิดข้อผิดพลาด"); return; }
-    setCoins(newCoins);
     setRoomInventory(newRoomInv);
-    toast.success(`ซื้อ ${item.nameThai} สำเร็จ! 🏠`);
+    toast.success(`ได้รับ ${item.nameThai} แล้ว! 🎁`);
     confetti({ particleCount: 60, spread: 50, origin: { y: 0.6 } });
     handlePlaceRoomItem(item);
+  };
+
+  // === Feed pet handler ===
+  const handleFeedPet = async (petId: string, food: PetFood) => {
+    if (!user) return;
+    const result = feedPet(petCare, petId, food);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ pet_care: result.newCare as any } as any)
+      .eq("user_id", user.id);
+    if (error) { toast.error("เกิดข้อผิดพลาด"); return; }
+    setPetCare(result.newCare);
+    toast.success(`ให้ ${food.nameThai} แล้ว! +${food.expGain} EXP 🍖`);
+    if (result.leveledUp) {
+      toast.success(`🎉 สัตว์เลี้ยงเลเวลอัพ! → Lv.${result.newLevel}`);
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+    }
   };
 
   const handlePlaceRoomItem = async (item: typeof roomItems[0]) => {
