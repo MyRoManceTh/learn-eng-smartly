@@ -3,6 +3,7 @@ import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS, PET_IMAGES } from "@/data/roomItems";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
+import RoomPet from "@/components/room/RoomPet";
 import "@/components/ui/8bit/styles/retro.css";
 
 interface PixelRoomProps {
@@ -74,6 +75,9 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
     return room.items.map((id) => getRoomItem(id)).filter(Boolean);
   }, [room.items]);
 
+  const petItems = useMemo(() => placedItems.filter((i) => i?.category === "pet"), [placedItems]);
+  const nonPetItems = useMemo(() => placedItems.filter((i) => i?.category !== "pet"), [placedItems]);
+
   const sizeClasses = { sm: "h-48", md: "h-64", lg: "h-80" };
   const isDark = room.wallpaper === "wall_space" || room.wallpaper === "wall_ocean";
 
@@ -130,7 +134,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
         </div>
 
         {/* Wall-mounted furniture */}
-        {placedItems.map((item) => {
+        {nonPetItems.map((item) => {
           if (!item) return null;
           const slot = SLOT_POSITIONS[item.category];
           if (!slot || parseFloat(slot.bottom) < 40) return null; // only wall items
@@ -181,11 +185,11 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
           }}
         />
 
-        {/* Floor furniture items */}
-        {placedItems.map((item) => {
+        {/* Floor furniture items (non-pet) */}
+        {nonPetItems.map((item) => {
           if (!item) return null;
           const slot = SLOT_POSITIONS[item.category];
-          if (!slot || parseFloat(slot.bottom) >= 40) return null; // only floor items
+          if (!slot || parseFloat(slot.bottom) >= 40) return null;
           return (
             <div
               key={item.id}
@@ -199,27 +203,17 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
               }}
               title={item.nameThai}
             >
-              {item.category === "pet" && PET_IMAGES[item.id] ? (
-                <img
-                  src={PET_IMAGES[item.id]}
-                  alt={item.nameThai}
-                  className="w-10 h-10 md:w-12 md:h-12 object-contain animate-bounce pixelated"
-                  style={{ animationDuration: "2.5s", imageRendering: "pixelated" }}
-                />
-              ) : (
-                <span
-                  className={`text-2xl md:text-3xl block ${item.category === "pet" ? "animate-bounce" : ""}`}
-                  style={item.category === "pet" ? { animationDuration: "2s" } : undefined}
-                >
-                  {item.pixel}
-                </span>
-              )}
-              {/* Small shadow under item */}
+              <span className="text-2xl md:text-3xl block">{item.pixel}</span>
               <div className="w-5 h-1.5 mx-auto -mt-0.5 rounded-full bg-black/15 blur-[2px]" />
             </div>
           );
         })}
       </div>
+
+      {/* ── PETS (autonomous walking) ── */}
+      {petItems.map((pet) =>
+        pet ? <RoomPet key={pet.id} pet={pet} charX={charX} /> : null
+      )}
 
       {/* ── Ambient light effect ── */}
       {!isDark && (
