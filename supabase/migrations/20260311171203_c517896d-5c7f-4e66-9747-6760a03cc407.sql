@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS room jsonb DEFAULT '{"wallpaper":"wall_basic","floor":"floor_wood","items":[]}'::jsonb;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS room_inventory jsonb DEFAULT '[]'::jsonb;
