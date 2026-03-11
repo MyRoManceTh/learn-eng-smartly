@@ -119,7 +119,7 @@ const SeasonPassPage = () => {
       const now = new Date();
       const seasonMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-      await supabase.from("season_pass_progress").upsert({
+      await supabase.from("season_pass" as any).upsert({
         user_id: user.id,
         season_month: seasonMonth,
         rewards_claimed: newClaimed,
