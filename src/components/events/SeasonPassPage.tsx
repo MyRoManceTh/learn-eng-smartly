@@ -53,10 +53,11 @@ const SeasonPassPage = () => {
         .single();
 
       if (data) {
+        const d = data as any;
         setSeasonProgress({
-          exp_earned: data.exp_earned || 0,
-          rewards_claimed: Array.isArray(data.rewards_claimed) ? (data.rewards_claimed as number[]) : [],
-          is_premium: data.is_premium || false,
+          exp_earned: d.exp_earned || 0,
+          rewards_claimed: Array.isArray(d.rewards_claimed) ? (d.rewards_claimed as number[]) : [],
+          is_premium: d.is_premium || false,
         });
       } else {
         // ใช้ total_exp จาก profile ถ้าไม่มีข้อมูล season

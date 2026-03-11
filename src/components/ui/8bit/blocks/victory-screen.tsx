@@ -13,7 +13,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/8bit/alert";
-import Image from "next/image";
+// Image component removed - using standard img tag instead
 import { cva } from "class-variance-authority";
 
 const rarityVariants = cva("", {

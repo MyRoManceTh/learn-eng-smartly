@@ -28,7 +28,7 @@ export function useSkillTreeProgress() {
         .from("skill_tree_progress" as any)
         .select("node_id, module_id, path_id, quiz_score, quiz_total")
         .eq("user_id", user.id);
-      return (data || []) as CompletedNode[];
+      return (data || []) as unknown as CompletedNode[];
     },
     enabled: !!user,
     staleTime: 30_000,

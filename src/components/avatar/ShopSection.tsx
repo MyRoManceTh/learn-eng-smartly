@@ -30,7 +30,7 @@ const ShopSection = ({ coins, inventory, equipped, onBuy, onEquip, onUnequip }: 
   const ownedSet = new Set(inventory);
 
   const getEquippedId = (category: ItemCategory): string | null => {
-    return (equipped as Record<string, string | null>)[category] || null;
+    return (equipped as unknown as Record<string, string | null>)[category] || null;
   };
 
   return (

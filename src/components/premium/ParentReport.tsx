@@ -41,8 +41,8 @@ const ParentReport = () => {
 
       // คำนวณคะแนนเฉลี่ยจาก quiz_results
       const { data: quizData } = await supabase
-        .from("quiz_results")
-        .select("score")
+        .from("learning_history" as any)
+        .select("quiz_score")
         .eq("user_id", user.id);
 
       if (quizData && quizData.length > 0) {

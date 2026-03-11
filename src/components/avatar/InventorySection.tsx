@@ -36,7 +36,7 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
   }, {} as Record<string, AvatarItem[]>);
 
   const getEquippedId = (category: ItemCategory): string | null => {
-    return (equipped as Record<string, string | null>)[category] || null;
+    return (equipped as unknown as Record<string, string | null>)[category] || null;
   };
 
   if (allOwned.length === 0) {
