@@ -46,17 +46,18 @@ const SeasonPassPage = () => {
       const seasonMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
       const { data } = await supabase
-        .from("season_pass_progress")
+        .from("season_pass" as any)
         .select("*")
         .eq("user_id", user.id)
         .eq("season_month", seasonMonth)
         .single();
 
       if (data) {
+        const d = data as any;
         setSeasonProgress({
-          exp_earned: data.exp_earned || 0,
-          rewards_claimed: Array.isArray(data.rewards_claimed) ? (data.rewards_claimed as number[]) : [],
-          is_premium: data.is_premium || false,
+          exp_earned: d.exp_earned || 0,
+          rewards_claimed: Array.isArray(d.rewards_claimed) ? (d.rewards_claimed as number[]) : [],
+          is_premium: d.is_premium || false,
         });
       } else {
         // ใช้ total_exp จาก profile ถ้าไม่มีข้อมูล season
@@ -119,7 +120,7 @@ const SeasonPassPage = () => {
       const now = new Date();
       const seasonMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-      await supabase.from("season_pass_progress").upsert({
+      await supabase.from("season_pass" as any).upsert({
         user_id: user.id,
         season_month: seasonMonth,
         rewards_claimed: newClaimed,

@@ -13,7 +13,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/8bit/alert";
-import Image from "next/image";
+// Image component removed - using standard img tag instead
 import { cva } from "class-variance-authority";
 
 const rarityVariants = cva("", {
@@ -102,7 +102,7 @@ function VictoryScreen({
                     <ItemContent className="flex flex-col md:flex-row items-center justify-between gap-2  truncate">
                       <div className="flex flex-row justify-center md:justify-start items-center gap-2 truncate w-full md:max-w-[65%]">
                         {showItemIcon && item.icon && (
-                          <Image
+                          <img
                             src={item.icon}
                             alt={item.name}
                             width={48}

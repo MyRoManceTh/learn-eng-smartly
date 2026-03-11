@@ -49,11 +49,11 @@ export function useFriendLeaderboard() {
       if (!user) return { entries: [] as FriendLeaderboardEntry[], myRank: 0 };
 
       // 1. Get accepted friend user IDs
-      const { data: friendships } = await supabase
-        .from("friendships")
+      const { data: friendships } = await (supabase
+        .from("friendships") as any)
         .select("requester_id, addressee_id")
         .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
-        .eq("status" as any, "accepted");
+        .eq("status", "accepted");
 
       const friendIds = ((friendships as any[]) || []).map((f) =>
         f.requester_id === user.id ? f.addressee_id : f.requester_id

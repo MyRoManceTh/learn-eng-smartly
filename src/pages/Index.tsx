@@ -209,7 +209,7 @@ const Index = () => {
                 <div className="h-2 bg-gray-200/60 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-700"
-                    style={{ width: `${Math.min(100, (totalExp / (evolutionStage.maxExp || totalExp + 100)) * 100)}%` }}
+                    style={{ width: `${Math.min(100, (totalExp / ((evolutionStage as any).maxExp || totalExp + 100)) * 100)}%` }}
                   />
                 </div>
               </div>
