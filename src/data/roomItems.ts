@@ -51,8 +51,14 @@ export const roomItems: RoomItem[] = [
   { id: "trophy_diamond", name: "Diamond Trophy", nameThai: "ถ้วยเพชร", category: "trophy", price: 0, rarity: "legendary", icon: "💎", pixel: "💎", position: { x: 0, y: 2 }, size: { w: 1, h: 1 }, unlockedBy: "legend_stage" },
 
   // === PETS ===
-  { id: "pet_cat", name: "Cat", nameThai: "แมว", category: "pet", price: 300, rarity: "rare", icon: "🐱", pixel: "🐱", position: { x: 4, y: 4 }, size: { w: 1, h: 1 } },
-  { id: "pet_dog", name: "Dog", nameThai: "หมา", category: "pet", price: 300, rarity: "rare", icon: "🐶", pixel: "🐶", position: { x: 5, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_hippo", name: "Pygmy Hippo", nameThai: "ฮิปโปแคระ", category: "pet", price: 500, rarity: "epic", icon: "🦛", pixel: "🦛", position: { x: 4, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_calico", name: "Calico Cat", nameThai: "แมวสามสี", category: "pet", price: 300, rarity: "rare", icon: "🐱", pixel: "🐱", position: { x: 4, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_corgi", name: "Corgi", nameThai: "คอร์กี้", category: "pet", price: 350, rarity: "rare", icon: "🐶", pixel: "🐶", position: { x: 5, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_hamster", name: "Hamster", nameThai: "แฮมสเตอร์", category: "pet", price: 200, rarity: "common", icon: "🐹", pixel: "🐹", position: { x: 3, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_penguin", name: "Penguin", nameThai: "เพนกวิน", category: "pet", price: 400, rarity: "epic", icon: "🐧", pixel: "🐧", position: { x: 4, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_redpanda", name: "Red Panda", nameThai: "แพนด้าแดง", category: "pet", price: 600, rarity: "epic", icon: "🦊", pixel: "🦊", position: { x: 5, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_sloth", name: "Sloth", nameThai: "สลอธ", category: "pet", price: 450, rarity: "rare", icon: "🦥", pixel: "🦥", position: { x: 3, y: 4 }, size: { w: 1, h: 1 } },
+  { id: "pet_axolotl", name: "Axolotl", nameThai: "แอกโซลอเติล", category: "pet", price: 700, rarity: "legendary", icon: "🦎", pixel: "🦎", position: { x: 4, y: 4 }, size: { w: 1, h: 1 } },
   { id: "pet_bunny", name: "Bunny", nameThai: "กระต่าย", category: "pet", price: 250, rarity: "rare", icon: "🐰", pixel: "🐰", position: { x: 3, y: 4 }, size: { w: 1, h: 1 } },
   { id: "pet_dragon", name: "Baby Dragon", nameThai: "มังกรน้อย", category: "pet", price: 800, rarity: "legendary", icon: "🐉", pixel: "🐉", position: { x: 4, y: 4 }, size: { w: 1, h: 1 } },
 
