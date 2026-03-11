@@ -399,6 +399,7 @@ const MyPage = () => {
           room={room}
           evolutionStage={evolutionStage.stage}
           size="lg"
+          petCare={petCare}
         />
       </div>
 
