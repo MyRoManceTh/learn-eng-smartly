@@ -717,6 +717,18 @@ const MyPage = () => {
             </div>
           </TabsContent>
 
+          {/* ============ TAB: PETS ============ */}
+          <TabsContent value="pets">
+            <PetShop
+              coins={coins}
+              roomInventory={roomInventory}
+              room={room}
+              onBuyPet={handleBuyRoomItem}
+              onPlacePet={handlePlaceRoomItem}
+              onRemovePet={handleRemoveRoomItem}
+            />
+          </TabsContent>
+
           {/* ============ TAB 4: INVENTORY ============ */}
           <TabsContent value="inventory">
             <div className="space-y-4">
