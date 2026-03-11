@@ -391,17 +391,20 @@ const MyPage = () => {
       {/* === MAIN TABS === */}
       <div className="max-w-3xl mx-auto px-4">
         <Tabs defaultValue="character" className="w-full">
-          <TabsList className="w-full mb-4 h-12 p-1 bg-white/50 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 grid grid-cols-4">
-            <TabsTrigger value="character" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+          <TabsList className="w-full mb-4 h-12 p-1 bg-white/50 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 grid grid-cols-5">
+            <TabsTrigger value="character" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               👤 ตัวเรา
             </TabsTrigger>
-            <TabsTrigger value="room" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="room" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               🛋️ ห้อง
             </TabsTrigger>
-            <TabsTrigger value="stats" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="pets" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+              🐾 สัตว์เลี้ยง
+            </TabsTrigger>
+            <TabsTrigger value="stats" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               📊 สถิติ
             </TabsTrigger>
-            <TabsTrigger value="inventory" className="font-thai text-xs font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="inventory" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
               📦 คลัง
             </TabsTrigger>
           </TabsList>
