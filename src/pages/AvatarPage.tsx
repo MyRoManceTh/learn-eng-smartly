@@ -119,7 +119,7 @@ const AvatarPage = () => {
     const defaults: Record<string, string | null> = {
       skin: "skin_default",
       hair: "hair_default",
-      hairColor: "haircolor_black",
+      hairColor: "haircolor_midnight",
       hat: null,
       shirt: "shirt_default",
       pants: "pants_default",

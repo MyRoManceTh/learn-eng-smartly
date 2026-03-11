@@ -200,7 +200,7 @@ const MyPage = () => {
   const handleUnequip = async (item: AvatarItem) => {
     if (!user) return;
     const defaults: Record<string, string | null> = {
-      skin: "skin_default", hair: "hair_default", hairColor: "haircolor_black",
+      skin: "skin_default", hair: "hair_default", hairColor: "haircolor_midnight",
       hat: null, shirt: "shirt_default", pants: "pants_default",
       shoes: "shoes_default", accessory: null,
     };

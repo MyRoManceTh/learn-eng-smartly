@@ -30,7 +30,7 @@ export interface EquippedItems {
 export const DEFAULT_EQUIPPED: EquippedItems = {
   skin: "skin_default",
   hair: "hair_default",
-  hairColor: "haircolor_black",
+  hairColor: "haircolor_midnight",
   hat: null,
   shirt: "shirt_default",
   pants: "pants_default",

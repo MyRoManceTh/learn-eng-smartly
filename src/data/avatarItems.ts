@@ -2,66 +2,103 @@ import { AvatarItem, ItemCategory, ItemRarity } from "@/types/avatar";
 import { gachaExclusiveItems } from "@/data/gachaItems";
 
 export const avatarItems: AvatarItem[] = [
-  // === SKIN (6) ===
-  { id: "skin_default", name: "Light", nameThai: "ผิวขาว", category: "skin", price: 0, rarity: "common", icon: "👤", svgProps: { color: "#F5D5C0" } },
-  { id: "skin_tan", name: "Tan", nameThai: "ผิวสองสี", category: "skin", price: 50, rarity: "common", icon: "👤", svgProps: { color: "#E8C4A0" } },
-  { id: "skin_brown", name: "Brown", nameThai: "ผิวคล้ำ", category: "skin", price: 50, rarity: "common", icon: "👤", svgProps: { color: "#C8956B" } },
-  { id: "skin_dark", name: "Dark", nameThai: "ผิวเข้ม", category: "skin", price: 50, rarity: "common", icon: "👤", svgProps: { color: "#8D6449" } },
-  { id: "skin_pink", name: "Rosy", nameThai: "ผิวชมพู", category: "skin", price: 100, rarity: "rare", icon: "🌸", svgProps: { color: "#FFD0E0" } },
-  { id: "skin_blue", name: "Cool Blue", nameThai: "ผิวฟ้า", category: "skin", price: 200, rarity: "epic", icon: "🔵", svgProps: { color: "#B0D4FF" } },
+  // ═══════════════════════════════════════════
+  // 🎨 SKIN (8) — โทนสี Diverse & Fantasy
+  // ═══════════════════════════════════════════
+  { id: "skin_default", name: "Peach", nameThai: "ผิวพีช", category: "skin", price: 0, rarity: "common", icon: "🍑", svgProps: { color: "#FDDCB5" } },
+  { id: "skin_warm", name: "Honey", nameThai: "ผิวน้ำผึ้ง", category: "skin", price: 50, rarity: "common", icon: "🍯", svgProps: { color: "#E8C49B" } },
+  { id: "skin_cocoa", name: "Cocoa", nameThai: "ผิวโกโก้", category: "skin", price: 50, rarity: "common", icon: "☕", svgProps: { color: "#C48B5C" } },
+  { id: "skin_espresso", name: "Espresso", nameThai: "ผิวเอสเปรสโซ", category: "skin", price: 50, rarity: "common", icon: "🫘", svgProps: { color: "#8B6248" } },
+  { id: "skin_rose", name: "Rose Petal", nameThai: "ผิวกลีบกุหลาบ", category: "skin", price: 100, rarity: "rare", icon: "🌹", svgProps: { color: "#FFD5E0" } },
+  { id: "skin_pearl", name: "Pearl", nameThai: "ผิวไข่มุก", category: "skin", price: 150, rarity: "rare", icon: "🦪", svgProps: { color: "#FFF5EE" } },
+  { id: "skin_lavender", name: "Lavender Dream", nameThai: "ผิวลาเวนเดอร์", category: "skin", price: 200, rarity: "epic", icon: "💜", svgProps: { color: "#E0C8FF" } },
+  { id: "skin_mint", name: "Mint Fresh", nameThai: "ผิวมินต์", category: "skin", price: 200, rarity: "epic", icon: "🌿", svgProps: { color: "#B8F0D8" } },
 
-  // === HAIR STYLES (8) ===
-  { id: "hair_default", name: "Short Hair", nameThai: "ผมสั้น", category: "hair", price: 0, rarity: "common", icon: "💇", svgProps: { path: "short" } },
-  { id: "hair_long", name: "Long Hair", nameThai: "ผมยาว", category: "hair", price: 80, rarity: "common", icon: "👱", svgProps: { path: "long" } },
-  { id: "hair_ponytail", name: "Ponytail", nameThai: "ผมหางม้า", category: "hair", price: 100, rarity: "rare", icon: "🎀", svgProps: { path: "ponytail" } },
-  { id: "hair_bun", name: "Bun", nameThai: "ผมมวย", category: "hair", price: 100, rarity: "rare", icon: "🥨", svgProps: { path: "bun" } },
-  { id: "hair_curly", name: "Curly", nameThai: "ผมหยิก", category: "hair", price: 150, rarity: "rare", icon: "🌀", svgProps: { path: "curly" } },
-  { id: "hair_spike", name: "Spiky", nameThai: "ผมตั้ง", category: "hair", price: 120, rarity: "rare", icon: "⚡", svgProps: { path: "spike" } },
-  { id: "hair_afro", name: "Afro", nameThai: "ผมแอฟโฟร", category: "hair", price: 200, rarity: "epic", icon: "☁️", svgProps: { path: "afro" } },
-  { id: "hair_mohawk", name: "Mohawk", nameThai: "ผมโมฮอว์ค", category: "hair", price: 250, rarity: "epic", icon: "🔥", svgProps: { path: "mohawk" } },
+  // ═══════════════════════════════════════════
+  // 💇 HAIR STYLES (10) — Kawaii & Trendy
+  // ═══════════════════════════════════════════
+  { id: "hair_default", name: "Soft Bob", nameThai: "บ๊อบนุ่มนิ่ม", category: "hair", price: 0, rarity: "common", icon: "💇", svgProps: { path: "softbob" } },
+  { id: "hair_long", name: "Silky Long", nameThai: "ผมยาวเรียบ", category: "hair", price: 80, rarity: "common", icon: "👱", svgProps: { path: "silkylong" } },
+  { id: "hair_twintails", name: "Twin Tails", nameThai: "ผมสองหาง", category: "hair", price: 120, rarity: "rare", icon: "🎀", svgProps: { path: "twintails" } },
+  { id: "hair_wavy", name: "Beach Waves", nameThai: "ผมลอนทะเล", category: "hair", price: 100, rarity: "rare", icon: "🌊", svgProps: { path: "wavy" } },
+  { id: "hair_messy", name: "Messy Cute", nameThai: "ผมยุ่งน่ารัก", category: "hair", price: 100, rarity: "rare", icon: "🌸", svgProps: { path: "messy" } },
+  { id: "hair_ponytail", name: "High Ponytail", nameThai: "หางม้าสูง", category: "hair", price: 120, rarity: "rare", icon: "✨", svgProps: { path: "highpony" } },
+  { id: "hair_spacebuns", name: "Space Buns", nameThai: "บันอวกาศ", category: "hair", price: 200, rarity: "epic", icon: "🪐", svgProps: { path: "spacebuns" } },
+  { id: "hair_fluffy", name: "Cloud Fluffy", nameThai: "ผมฟูเมฆ", category: "hair", price: 200, rarity: "epic", icon: "☁️", svgProps: { path: "fluffy" } },
+  { id: "hair_princess", name: "Princess Curls", nameThai: "ผมเจ้าหญิง", category: "hair", price: 250, rarity: "epic", icon: "👸", svgProps: { path: "princess" } },
+  { id: "hair_mohawk", name: "Electric Hawk", nameThai: "ม็อกฮอว์คเท่", category: "hair", price: 400, rarity: "legendary", icon: "⚡", svgProps: { path: "electrichawk" } },
 
-  // === HAIR COLORS (8) ===
-  { id: "haircolor_black", name: "Black", nameThai: "ดำ", category: "hairColor", price: 0, rarity: "common", icon: "⬛", svgProps: { color: "#2C2C2C" } },
-  { id: "haircolor_brown", name: "Brown", nameThai: "น้ำตาล", category: "hairColor", price: 50, rarity: "common", icon: "🟤", svgProps: { color: "#6B4226" } },
-  { id: "haircolor_blonde", name: "Blonde", nameThai: "บลอนด์", category: "hairColor", price: 80, rarity: "rare", icon: "🟡", svgProps: { color: "#F4D03F" } },
-  { id: "haircolor_red", name: "Red", nameThai: "แดง", category: "hairColor", price: 100, rarity: "rare", icon: "🔴", svgProps: { color: "#D32F2F" } },
-  { id: "haircolor_blue", name: "Blue", nameThai: "ฟ้า", category: "hairColor", price: 150, rarity: "epic", icon: "🔵", svgProps: { color: "#2196F3" } },
-  { id: "haircolor_pink", name: "Pink", nameThai: "ชมพู", category: "hairColor", price: 150, rarity: "epic", icon: "🩷", svgProps: { color: "#EC407A" } },
-  { id: "haircolor_green", name: "Green", nameThai: "เขียว", category: "hairColor", price: 180, rarity: "epic", icon: "🟢", svgProps: { color: "#4CAF50" } },
-  { id: "haircolor_rainbow", name: "Rainbow", nameThai: "รุ้ง", category: "hairColor", price: 300, rarity: "legendary", icon: "🌈", svgProps: { color: "rainbow" } },
+  // ═══════════════════════════════════════════
+  // 🎨 HAIR COLORS (10) — Vibrant Palette
+  // ═══════════════════════════════════════════
+  { id: "haircolor_midnight", name: "Midnight", nameThai: "มิดไนท์", category: "hairColor", price: 0, rarity: "common", icon: "🌙", svgProps: { color: "#1A1A2E" } },
+  { id: "haircolor_chestnut", name: "Chestnut", nameThai: "เกาลัด", category: "hairColor", price: 50, rarity: "common", icon: "🌰", svgProps: { color: "#7B4B2A" } },
+  { id: "haircolor_caramel", name: "Caramel", nameThai: "คาราเมล", category: "hairColor", price: 60, rarity: "common", icon: "🍮", svgProps: { color: "#C4914B" } },
+  { id: "haircolor_strawberry", name: "Strawberry", nameThai: "สตรอว์เบอร์รี่", category: "hairColor", price: 100, rarity: "rare", icon: "🍓", svgProps: { color: "#FF7B93" } },
+  { id: "haircolor_ocean", name: "Ocean Blue", nameThai: "มหาสมุทร", category: "hairColor", price: 100, rarity: "rare", icon: "🌊", svgProps: { color: "#3498DB" } },
+  { id: "haircolor_lavender", name: "Lavender", nameThai: "ลาเวนเดอร์", category: "hairColor", price: 150, rarity: "epic", icon: "💐", svgProps: { color: "#C39BD3" } },
+  { id: "haircolor_sakura", name: "Sakura Pink", nameThai: "ซากุระ", category: "hairColor", price: 150, rarity: "epic", icon: "🌸", svgProps: { color: "#FFB7C5" } },
+  { id: "haircolor_mint", name: "Mint", nameThai: "มินต์", category: "hairColor", price: 180, rarity: "epic", icon: "🍃", svgProps: { color: "#7DCEA0" } },
+  { id: "haircolor_sunset", name: "Sunset", nameThai: "พระอาทิตย์ตก", category: "hairColor", price: 200, rarity: "epic", icon: "🌅", svgProps: { color: "#FF6348" } },
+  { id: "haircolor_rainbow", name: "Holographic", nameThai: "โฮโลแกรม", category: "hairColor", price: 350, rarity: "legendary", icon: "🌈", svgProps: { color: "rainbow" } },
 
-  // === HATS (6) ===
-  { id: "hat_baseball", name: "Baseball Cap", nameThai: "หมวกแก๊ป", category: "hat", price: 80, rarity: "common", icon: "🧢", svgProps: { color: "#E53935" } },
-  { id: "hat_beanie", name: "Beanie", nameThai: "หมวกไหมพรม", category: "hat", price: 100, rarity: "common", icon: "🎩", svgProps: { color: "#5D4037" } },
-  { id: "hat_crown", name: "Crown", nameThai: "มงกุฎ", category: "hat", price: 500, rarity: "legendary", icon: "👑", svgProps: { color: "#FFD700" } },
-  { id: "hat_wizard", name: "Wizard Hat", nameThai: "หมวกพ่อมด", category: "hat", price: 250, rarity: "epic", icon: "🧙", svgProps: { color: "#7B1FA2" } },
-  { id: "hat_santa", name: "Santa Hat", nameThai: "หมวกซานตา", category: "hat", price: 200, rarity: "rare", icon: "🎅", svgProps: { color: "#C62828" } },
-  { id: "hat_headphones", name: "Headphones", nameThai: "หูฟัง", category: "hat", price: 150, rarity: "rare", icon: "🎧", svgProps: { color: "#212121" } },
+  // ═══════════════════════════════════════════
+  // 🎩 HATS (10) — Cute & Cool Headwear
+  // ═══════════════════════════════════════════
+  { id: "hat_beret", name: "Cute Beret", nameThai: "เบเรต์น่ารัก", category: "hat", price: 60, rarity: "common", icon: "🎨", svgProps: { color: "#FF8A9E" } },
+  { id: "hat_bucket", name: "Bucket Hat", nameThai: "หมวกบักเก็ต", category: "hat", price: 80, rarity: "common", icon: "🧢", svgProps: { color: "#A8D8EA" } },
+  { id: "hat_beanie", name: "Cozy Beanie", nameThai: "บีนนี่อุ่นสบาย", category: "hat", price: 80, rarity: "common", icon: "🧶", svgProps: { color: "#F0B27A" } },
+  { id: "hat_catears", name: "Cat Ears", nameThai: "หูแมว", category: "hat", price: 120, rarity: "rare", icon: "🐱", svgProps: { color: "#FFD1DC" } },
+  { id: "hat_bunnyears", name: "Bunny Ears", nameThai: "หูกระต่าย", category: "hat", price: 140, rarity: "rare", icon: "🐰", svgProps: { color: "#FFFFFF" } },
+  { id: "hat_flowerband", name: "Flower Crown", nameThai: "มงกุฎดอกไม้", category: "hat", price: 150, rarity: "rare", icon: "🌺", svgProps: { color: "#FFB6C1" } },
+  { id: "hat_headphones", name: "Neon Headphones", nameThai: "หูฟังนีออน", category: "hat", price: 160, rarity: "rare", icon: "🎧", svgProps: { color: "#00E5FF" } },
+  { id: "hat_witch", name: "Star Witch Hat", nameThai: "หมวกแม่มดดาว", category: "hat", price: 250, rarity: "epic", icon: "🧙‍♀️", svgProps: { color: "#7B1FA2" } },
+  { id: "hat_tiara", name: "Crystal Tiara", nameThai: "มงกุฎคริสตัล", category: "hat", price: 350, rarity: "epic", icon: "👸", svgProps: { color: "#E8E0F0" } },
+  { id: "hat_crown", name: "Royal Crown", nameThai: "มงกุฎราชา", category: "hat", price: 500, rarity: "legendary", icon: "👑", svgProps: { color: "#FFD700" } },
 
-  // === SHIRTS (5) ===
-  { id: "shirt_default", name: "Plain Tee", nameThai: "เสื้อยืด", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#4DB6AC" } },
-  { id: "shirt_striped", name: "Striped Tee", nameThai: "เสื้อลายทาง", category: "shirt", price: 100, rarity: "common", icon: "👕", svgProps: { pattern: "stripes", color: "#1565C0" } },
-  { id: "shirt_hoodie", name: "Hoodie", nameThai: "เสื้อฮู้ด", category: "shirt", price: 200, rarity: "rare", icon: "🧥", svgProps: { color: "#37474F" } },
-  { id: "shirt_superhero", name: "Superhero Suit", nameThai: "ชุดซูเปอร์ฮีโร่", category: "shirt", price: 400, rarity: "epic", icon: "🦸", svgProps: { color: "#D32F2F", pattern: "hero" } },
-  { id: "shirt_tuxedo", name: "Tuxedo", nameThai: "สูทหรู", category: "shirt", price: 500, rarity: "legendary", icon: "🤵", svgProps: { color: "#1A1A2E" } },
+  // ═══════════════════════════════════════════
+  // 👕 SHIRTS (8) — Fashion Forward
+  // ═══════════════════════════════════════════
+  { id: "shirt_default", name: "Comfy Tee", nameThai: "เสื้อยืดสบายๆ", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#A8D8EA", pattern: "vneck" } },
+  { id: "shirt_sailor", name: "Sailor Top", nameThai: "เสื้อนักเรียน", category: "shirt", price: 80, rarity: "common", icon: "⚓", svgProps: { color: "#FFFFFF", pattern: "sailor" } },
+  { id: "shirt_overalls", name: "Cute Overalls", nameThai: "เอี๊ยมน่ารัก", category: "shirt", price: 150, rarity: "rare", icon: "👗", svgProps: { color: "#82B1FF", pattern: "overalls" } },
+  { id: "shirt_hoodie", name: "Bear Hoodie", nameThai: "ฮู้ดหมีน้อย", category: "shirt", price: 180, rarity: "rare", icon: "🧸", svgProps: { color: "#D7BDE2", pattern: "bearhoodie" } },
+  { id: "shirt_cardigan", name: "Pastel Cardigan", nameThai: "คาร์ดิแกนพาสเทล", category: "shirt", price: 160, rarity: "rare", icon: "🧥", svgProps: { color: "#FADBD8", pattern: "cardigan" } },
+  { id: "shirt_magical", name: "Magical Dress", nameThai: "ชุดเมจิคอล", category: "shirt", price: 300, rarity: "epic", icon: "💫", svgProps: { color: "#FF69B4", pattern: "magical" } },
+  { id: "shirt_kimono", name: "Sakura Kimono", nameThai: "กิโมโนซากุระ", category: "shirt", price: 350, rarity: "epic", icon: "🌸", svgProps: { color: "#FFE4E1", pattern: "kimono" } },
+  { id: "shirt_celestial", name: "Celestial Robe", nameThai: "ชุดดวงดาว", category: "shirt", price: 500, rarity: "legendary", icon: "🌟", svgProps: { color: "#1A1A4E", pattern: "celestial" } },
 
-  // === PANTS (4) ===
-  { id: "pants_default", name: "Basic Pants", nameThai: "กางเกงขายาว", category: "pants", price: 0, rarity: "common", icon: "👖", svgProps: { color: "#4A90E2" } },
-  { id: "pants_jeans", name: "Jeans", nameThai: "ยีนส์", category: "pants", price: 80, rarity: "common", icon: "👖", svgProps: { color: "#1E3A5F" } },
-  { id: "pants_shorts", name: "Shorts", nameThai: "กางเกงขาสั้น", category: "pants", price: 60, rarity: "common", icon: "🩳", svgProps: { color: "#8D6E63" } },
-  { id: "pants_skirt", name: "Skirt", nameThai: "กระโปรง", category: "pants", price: 120, rarity: "rare", icon: "👗", svgProps: { color: "#EC407A" } },
+  // ═══════════════════════════════════════════
+  // 👖 PANTS (6) — Cute Bottoms
+  // ═══════════════════════════════════════════
+  { id: "pants_default", name: "Soft Joggers", nameThai: "กางเกงขายาวนุ่ม", category: "pants", price: 0, rarity: "common", icon: "👖", svgProps: { color: "#B0C4DE" } },
+  { id: "pants_shorts", name: "Puffy Shorts", nameThai: "กางเกงสั้นพอง", category: "pants", price: 60, rarity: "common", icon: "🩳", svgProps: { color: "#F8C8DC" } },
+  { id: "pants_pleated", name: "Pleated Skirt", nameThai: "กระโปรงพลีท", category: "pants", price: 120, rarity: "rare", icon: "👗", svgProps: { color: "#1B2A4A" } },
+  { id: "pants_cargo", name: "Cute Cargo", nameThai: "คาร์โก้น่ารัก", category: "pants", price: 100, rarity: "rare", icon: "🪖", svgProps: { color: "#8FBC8F" } },
+  { id: "pants_tutu", name: "Tutu Skirt", nameThai: "กระโปรงทูทู่", category: "pants", price: 250, rarity: "epic", icon: "🩰", svgProps: { color: "#FFB7D5" } },
+  { id: "pants_starry", name: "Galaxy Pants", nameThai: "กางเกงกาแล็กซี่", category: "pants", price: 300, rarity: "epic", icon: "🌌", svgProps: { color: "#1A1A3E" } },
 
-  // === SHOES (4) ===
-  { id: "shoes_default", name: "Sneakers", nameThai: "รองเท้าผ้าใบ", category: "shoes", price: 0, rarity: "common", icon: "👟", svgProps: { color: "#F0F0F0" } },
-  { id: "shoes_boots", name: "Boots", nameThai: "บูท", category: "shoes", price: 100, rarity: "common", icon: "🥾", svgProps: { color: "#5D4037" } },
-  { id: "shoes_heels", name: "High Heels", nameThai: "ส้นสูง", category: "shoes", price: 150, rarity: "rare", icon: "👠", svgProps: { color: "#C62828" } },
-  { id: "shoes_rocket", name: "Rocket Boots", nameThai: "รองเท้าจรวด", category: "shoes", price: 400, rarity: "legendary", icon: "🚀", svgProps: { color: "#FF6D00" } },
+  // ═══════════════════════════════════════════
+  // 👟 SHOES (6) — Trendy Kicks
+  // ═══════════════════════════════════════════
+  { id: "shoes_default", name: "Pastel Sneakers", nameThai: "ผ้าใบพาสเทล", category: "shoes", price: 0, rarity: "common", icon: "👟", svgProps: { color: "#FFE4F0" } },
+  { id: "shoes_sandals", name: "Flower Sandals", nameThai: "แตะดอกไม้", category: "shoes", price: 60, rarity: "common", icon: "🌼", svgProps: { color: "#FFE0B2" } },
+  { id: "shoes_boots", name: "Lace Boots", nameThai: "บูทผูกเชือก", category: "shoes", price: 120, rarity: "rare", icon: "🥾", svgProps: { color: "#6D4C41" } },
+  { id: "shoes_maryjane", name: "Mary Jane", nameThai: "แมรี่เจน", category: "shoes", price: 100, rarity: "rare", icon: "👠", svgProps: { color: "#1A1A1A" } },
+  { id: "shoes_platform", name: "Star Platform", nameThai: "แพลตฟอร์มดาว", category: "shoes", price: 250, rarity: "epic", icon: "⭐", svgProps: { color: "#FF69B4" } },
+  { id: "shoes_roller", name: "Roller Skates", nameThai: "โรลเลอร์สเก็ต", category: "shoes", price: 300, rarity: "epic", icon: "🛼", svgProps: { color: "#00BCD4" } },
 
-  // === ACCESSORIES (4) ===
-  { id: "acc_glasses", name: "Glasses", nameThai: "แว่นตา", category: "accessory", price: 120, rarity: "common", icon: "👓", svgProps: { color: "#212121" } },
-  { id: "acc_backpack", name: "Backpack", nameThai: "กระเป๋า", category: "accessory", price: 150, rarity: "rare", icon: "🎒", svgProps: { color: "#E65100" } },
-  { id: "acc_wings", name: "Wings", nameThai: "ปีก", category: "accessory", price: 500, rarity: "legendary", icon: "🦋", svgProps: { color: "#80DEEA" } },
-  { id: "acc_cape", name: "Cape", nameThai: "ผ้าคลุม", category: "accessory", price: 350, rarity: "epic", icon: "🦸", svgProps: { color: "#D32F2F" } },
+  // ═══════════════════════════════════════════
+  // 🎒 ACCESSORIES (8) — Fun & Sparkly
+  // ═══════════════════════════════════════════
+  { id: "acc_bow", name: "Silk Bow", nameThai: "โบว์ผ้าไหม", category: "accessory", price: 60, rarity: "common", icon: "🎀", svgProps: { color: "#FF4081" } },
+  { id: "acc_necklace", name: "Heart Pendant", nameThai: "จี้หัวใจ", category: "accessory", price: 80, rarity: "common", icon: "💗", svgProps: { color: "#FFD700" } },
+  { id: "acc_teddy", name: "Tiny Teddy", nameThai: "ตุ๊กตาหมีจิ๋ว", category: "accessory", price: 120, rarity: "rare", icon: "🧸", svgProps: { color: "#D2B48C" } },
+  { id: "acc_scarf", name: "Fluffy Scarf", nameThai: "ผ้าพันคอฟู", category: "accessory", price: 140, rarity: "rare", icon: "🧣", svgProps: { color: "#FFEFD5" } },
+  { id: "acc_bag", name: "Star Bag", nameThai: "กระเป๋าดาว", category: "accessory", price: 150, rarity: "rare", icon: "👜", svgProps: { color: "#E1BEE7" } },
+  { id: "acc_fairy_wings", name: "Fairy Wings", nameThai: "ปีกนางฟ้า", category: "accessory", price: 350, rarity: "epic", icon: "🧚", svgProps: { color: "#B2EBF2" } },
+  { id: "acc_wand", name: "Magic Wand", nameThai: "ไม้กายสิทธิ์", category: "accessory", price: 300, rarity: "epic", icon: "🪄", svgProps: { color: "#FFD700" } },
+  { id: "acc_halo_stars", name: "Star Halo", nameThai: "วงแหวนดาว", category: "accessory", price: 500, rarity: "legendary", icon: "🌟", svgProps: { color: "#FFD700" } },
 ];
 
 export const getItemsByCategory = (category: ItemCategory): AvatarItem[] =>
@@ -91,12 +128,12 @@ export const getRarityLabel = (rarity: ItemRarity): string => {
 };
 
 export const categoryLabels: { key: ItemCategory; label: string; icon: string }[] = [
-  { key: "skin", label: "สีผิว", icon: "👤" },
+  { key: "skin", label: "สีผิว", icon: "🍑" },
   { key: "hair", label: "ทรงผม", icon: "💇" },
   { key: "hairColor", label: "สีผม", icon: "🎨" },
-  { key: "hat", label: "หมวก", icon: "🧢" },
+  { key: "hat", label: "หมวก", icon: "🎩" },
   { key: "shirt", label: "เสื้อ", icon: "👕" },
   { key: "pants", label: "กางเกง", icon: "👖" },
   { key: "shoes", label: "รองเท้า", icon: "👟" },
-  { key: "accessory", label: "เครื่องประดับ", icon: "🎒" },
+  { key: "accessory", label: "เครื่องประดับ", icon: "✨" },
 ];
