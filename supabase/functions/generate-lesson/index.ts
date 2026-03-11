@@ -262,8 +262,15 @@ serve(async (req) => {
         .eq("is_published", true)
         .single();
 
+      // ถ้ามีบทเรียนอยู่แล้ว ตรวจสอบว่า topic ตรงกันหรือไม่
       if (existing) {
-        return lessonResponse(existing);
+        // ถ้า topic ตรงกัน หรือไม่ได้ส่ง topic มา → ใช้บทเรียนเดิม
+        if (!topic || existing.topic === topic) {
+          return lessonResponse(existing);
+        }
+        // topic ไม่ตรง → ลบบทเรียนเดิมแล้ว generate ใหม่
+        console.log(`Topic mismatch: DB="${existing.topic}" vs requested="${topic}". Regenerating...`);
+        await supabase.from("lessons").delete().eq("id", existing.id);
       }
 
       // ไม่เจอ → generate ใหม่
