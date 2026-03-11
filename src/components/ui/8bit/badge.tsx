@@ -62,7 +62,7 @@ function Badge({
   return (
     <div className={cn("relative inline-flex items-stretch", containerClasses)}>
       <ShadcnBadge
-        {...props}
+        {...(props as any)}
         className={cn(
           "h-full",
           "rounded-none",
