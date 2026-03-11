@@ -151,6 +151,11 @@ const MyPage = () => {
         }
         const rmInv = d.room_inventory;
         setRoomInventory(Array.isArray(rmInv) ? rmInv : []);
+        // Pet care
+        const pc = d.pet_care;
+        if (pc && typeof pc === "object" && !Array.isArray(pc)) {
+          setPetCare(pc as PetCareState);
+        }
       }
       if (historyRes.data) setHistory(historyRes.data as LearningRecord[]);
       if (pathRes.data) setPathProgress(pathRes.data as PathProgress[]);
