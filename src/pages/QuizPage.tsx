@@ -174,7 +174,10 @@ const QuizPage = () => {
           await submitChallengeScore(challengeId, score, questions.length);
         }
 
-        // บทเรียนถัดไปถูกสร้างไว้ล่วงหน้าแล้ว (pre-generated)
+        // Trigger next lesson generation in background
+        supabase.functions.invoke("generate-lesson", {
+          body: { action: "trigger-next", level: lessonLevel, lessonOrder },
+        }).catch((e) => console.error("Trigger next lesson error:", e));
       }
     } else {
       setCurrentQ((c) => c + 1);

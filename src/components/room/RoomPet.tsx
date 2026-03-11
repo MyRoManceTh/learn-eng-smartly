@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { PET_IMAGES } from "@/data/roomItems";
 import { RoomItem } from "@/types/room";
+import { PetCareState, getPetLevel, PET_LEVEL_TITLES } from "@/data/petCare";
 
 // ── Pet speech lines (bilingual) ──
 const PET_SPEECHES: Record<string, { th: string; en: string }[]> = {
@@ -87,12 +88,13 @@ const DEFAULT_SPEECHES = [
 
 interface RoomPetProps {
   pet: RoomItem;
-  charX: number; // character position %
+  charX: number;
+  petCare?: PetCareState;
 }
 
 type PetState = "idle" | "walking" | "approaching" | "cuddling";
 
-const RoomPet = ({ pet, charX }: RoomPetProps) => {
+const RoomPet = ({ pet, charX, petCare }: RoomPetProps) => {
   const [petX, setPetX] = useState(65);
   const [petState, setPetState] = useState<PetState>("idle");
   const [petDirection, setPetDirection] = useState<"left" | "right">("left");
@@ -177,6 +179,8 @@ const RoomPet = ({ pet, charX }: RoomPetProps) => {
         ? "animate-[wiggle_0.5s_ease-in-out_infinite]"
         : ""; // idle: no extra animation
 
+  const petLevel = petCare?.[pet.id] ? getPetLevel(petCare[pet.id].exp) : 0;
+
   return (
     <>
       {/* Pet sprite */}
@@ -190,6 +194,19 @@ const RoomPet = ({ pet, charX }: RoomPetProps) => {
           filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.25))",
         }}
       >
+        {/* Level badge */}
+        {petLevel > 0 && (
+          <div
+            className="absolute -top-2 left-1/2 -translate-x-1/2 z-10 px-1 py-0 rounded-full text-[7px] font-bold whitespace-nowrap"
+            style={{
+              background: "rgba(255,255,255,0.9)",
+              border: "1px solid rgba(0,0,0,0.15)",
+              transform: `translateX(-50%) scaleX(${petDirection === "left" ? -1 : 1})`,
+            }}
+          >
+            Lv.{petLevel}
+          </div>
+        )}
         <div className={animClass}>
           {petImage ? (
             <img

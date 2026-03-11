@@ -80,14 +80,9 @@ export function useAdminLessons(filterLevel?: number) {
   });
 
   const generateLesson = useMutation({
-    mutationFn: async (params: { moduleId: string; level: number; lessonOrder: number; topic: string }) => {
+    mutationFn: async (params: { level: number; lessonOrder: number; topic?: string }) => {
       const { data, error } = await supabase.functions.invoke("generate-lesson", {
-        body: {
-          moduleId: params.moduleId,
-          level: params.level,
-          lessonOrder: params.lessonOrder,
-          topic: params.topic,
-        },
+        body: { level: params.level, lessonOrder: params.lessonOrder, topic: params.topic },
       });
       if (error) throw error;
       return data;
@@ -99,26 +94,6 @@ export function useAdminLessons(filterLevel?: number) {
     onError: (err: any) => toast.error(`สร้างไม่สำเร็จ: ${err.message}`),
   });
 
-  const seedModule = useMutation({
-    mutationFn: async (params: { moduleId: string; level: number; topics: string[] }) => {
-      const { data, error } = await supabase.functions.invoke("generate-lesson", {
-        body: {
-          action: "seed-module",
-          moduleId: params.moduleId,
-          level: params.level,
-          topics: params.topics,
-        },
-      });
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-lessons"] });
-      toast.success(`สร้างบทเรียน module ${variables.moduleId} สำเร็จ`);
-    },
-    onError: (err: any) => toast.error(`Seed ไม่สำเร็จ: ${err.message}`),
-  });
-
   return {
     lessons: lessons || [],
     isLoading,
@@ -126,6 +101,5 @@ export function useAdminLessons(filterLevel?: number) {
     updateLesson,
     deleteLesson,
     generateLesson,
-    seedModule,
   };
 }

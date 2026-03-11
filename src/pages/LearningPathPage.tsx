@@ -97,7 +97,6 @@ const LearningPathPage = () => {
     try {
       const { data, error } = await supabase.functions.invoke("generate-lesson", {
         body: {
-          moduleId: selectedModule.id,
           level: selectedModule.level,
           lessonOrder: lesson.order,
           topic: lesson.topic,
