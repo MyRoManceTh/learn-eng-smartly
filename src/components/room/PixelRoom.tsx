@@ -3,6 +3,7 @@ import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS, PET_IMAGES } from "@/data/roomItems";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
+import RoomPet from "@/components/room/RoomPet";
 import "@/components/ui/8bit/styles/retro.css";
 
 interface PixelRoomProps {
