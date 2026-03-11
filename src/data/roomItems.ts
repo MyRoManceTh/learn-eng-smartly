@@ -1,5 +1,26 @@
 import { RoomItem } from "@/types/room";
 
+// Pet image imports
+import petHippo from "@/assets/pets/pet-hippo.png";
+import petHamster from "@/assets/pets/pet-hamster.png";
+import petPenguin from "@/assets/pets/pet-penguin.png";
+import petCorgi from "@/assets/pets/pet-corgi.png";
+import petCalico from "@/assets/pets/pet-calico.png";
+import petRedpanda from "@/assets/pets/pet-redpanda.png";
+import petSloth from "@/assets/pets/pet-sloth.png";
+import petAxolotl from "@/assets/pets/pet-axolotl.png";
+
+export const PET_IMAGES: Record<string, string> = {
+  pet_hippo: petHippo,
+  pet_calico: petCalico,
+  pet_corgi: petCorgi,
+  pet_hamster: petHamster,
+  pet_penguin: petPenguin,
+  pet_redpanda: petRedpanda,
+  pet_sloth: petSloth,
+  pet_axolotl: petAxolotl,
+};
+
 export const roomItems: RoomItem[] = [
   // === WALLPAPERS ===
   { id: "wall_basic", name: "Basic Wall", nameThai: "ผนังพื้นฐาน", category: "wallpaper", price: 0, rarity: "common", icon: "🧱", pixel: "🧱", position: { x: 0, y: 0 }, size: { w: 1, h: 1 } },
