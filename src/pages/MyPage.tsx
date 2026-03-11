@@ -742,9 +742,11 @@ const MyPage = () => {
               coins={coins}
               roomInventory={roomInventory}
               room={room}
+              petCare={petCare}
               onBuyPet={handleBuyRoomItem}
               onPlacePet={handlePlaceRoomItem}
               onRemovePet={handleRemoveRoomItem}
+              onFeedPet={handleFeedPet}
             />
           </TabsContent>
 
