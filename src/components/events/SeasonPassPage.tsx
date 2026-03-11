@@ -46,7 +46,7 @@ const SeasonPassPage = () => {
       const seasonMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
       const { data } = await supabase
-        .from("season_pass_progress")
+        .from("season_pass" as any)
         .select("*")
         .eq("user_id", user.id)
         .eq("season_month", seasonMonth)
