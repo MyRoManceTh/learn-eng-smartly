@@ -11,8 +11,8 @@ export async function createPixelApp(
   canvas: HTMLCanvasElement,
   options: PixiAppOptions
 ): Promise<Application> {
-  // Set nearest-neighbor globally for pixel-perfect textures
-  TextureStyle.defaultOptions.scaleMode = "nearest";
+  // Use linear scaling for smooth vector-style rendering
+  TextureStyle.defaultOptions.scaleMode = "linear";
 
   const app = new Application();
   await app.init({
@@ -21,15 +21,13 @@ export async function createPixelApp(
     height: options.height,
     backgroundColor: options.transparent ? 0x000000 : (options.backgroundColor ?? 0x000000),
     backgroundAlpha: options.transparent ? 0 : 1,
-    antialias: false,
-    // CRITICAL: resolution=1 to prevent hi-dpi smoothing.
-    // The 8-bit look comes from rendering at low res and CSS-upscaling.
-    resolution: 1,
-    autoDensity: false,
+    antialias: true,
+    resolution: 2, // 2x for crisp vector art on retina displays
+    autoDensity: true,
   });
 
-  // Ensure pixel-perfect CSS rendering (nearest-neighbor upscale)
-  canvas.style.imageRendering = "pixelated";
+  // Smooth rendering for LINE sticker vector art
+  canvas.style.imageRendering = "auto";
 
   return app;
 }

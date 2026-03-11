@@ -1,16 +1,18 @@
 import { useState, useRef } from "react";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight } from "lucide-react";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 
 interface QuizSectionProps {
   questions: QuizQuestion[];
   onComplete: (score: number) => void;
+  onNextLesson?: () => void;
+  nextLessonLabel?: string;
 }
 
-const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
+const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: QuizSectionProps) => {
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -71,6 +73,15 @@ const QuizSection = ({ questions, onComplete }: QuizSectionProps) => {
             ? "ดีมาก! ลองทบทวนคำที่ผิดอีกครั้ง"
             : "ลองทบทวนบทเรียนอีกครั้งนะ"}
         </p>
+        {onNextLesson && (
+          <Button
+            onClick={onNextLesson}
+            className="mt-4 w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25"
+          >
+            <ArrowRight className="w-4 h-4 mr-2" />
+            {nextLessonLabel || "บทเรียนถัดไป"}
+          </Button>
+        )}
       </div>
     );
   }

@@ -146,6 +146,38 @@ const LearningPathPage = () => {
     incrementMission("path_node", 1);
   };
 
+  // Navigate to next lesson in current module or next module
+  const handleNextLesson = () => {
+    if (!selectedLesson || !selectedModule) return;
+
+    const moduleLessons = getLessonsByModule(selectedModule.id);
+    const currentIdx = moduleLessons.findIndex((l) => l.id === selectedLesson.id);
+
+    // Next lesson in same module
+    if (currentIdx < moduleLessons.length - 1) {
+      const nextLesson = moduleLessons[currentIdx + 1];
+      handleLessonClick(nextLesson);
+      return;
+    }
+
+    // All lessons in module done → go back to module detail
+    setSelectedLesson(null);
+    setLesson(null);
+    setShowQuiz(false);
+  };
+
+  // Get next lesson label
+  const getNextLessonInfo = (): { hasNext: boolean; label: string } => {
+    if (!selectedLesson || !selectedModule) return { hasNext: false, label: "" };
+    const moduleLessons = getLessonsByModule(selectedModule.id);
+    const currentIdx = moduleLessons.findIndex((l) => l.id === selectedLesson.id);
+    if (currentIdx < moduleLessons.length - 1) {
+      const next = moduleLessons[currentIdx + 1];
+      return { hasNext: true, label: `บทถัดไป: ${next.topicThai}` };
+    }
+    return { hasNext: true, label: "กลับเลือกบทเรียน" };
+  };
+
   // ─── Lesson View ────────────────────────────
   if (selectedLesson && selectedModule && (loading || lesson)) {
     return (
@@ -208,7 +240,12 @@ const LearningPathPage = () => {
                 </div>
               ) : (
                 <div className="max-w-2xl mx-auto">
-                  <QuizSection questions={quiz} onComplete={handleQuizComplete} />
+                  <QuizSection
+                    questions={quiz}
+                    onComplete={handleQuizComplete}
+                    onNextLesson={handleNextLesson}
+                    nextLessonLabel={getNextLessonInfo().label}
+                  />
                 </div>
               )}
             </>

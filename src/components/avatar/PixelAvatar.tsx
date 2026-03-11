@@ -2,14 +2,24 @@ import React, { useRef, useEffect, useMemo } from "react";
 import { Application, Container } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { createPixelApp } from "@/lib/pixi/pixiSetup";
-import { drawChibiCharacter, GRID_W, GRID_H } from "@/lib/pixi/drawChibiCharacter";
 import {
-  setupIdleAnimation,
+  drawLineStickerCharacter,
+  GRID_W,
+  GRID_H,
+  StickerEmotion,
+} from "@/lib/pixi/drawLineStickerCharacter";
+import {
   setupEvolutionEffects,
   setupRainbowShimmer,
-  setupWalkCycle,
-  playEquipTransition,
 } from "@/lib/pixi/animations";
+import {
+  setupStickerIdle,
+  setupStickerBlink,
+  setupStickerWalkCycle,
+  playStickerEquipTransition,
+  playStickerEmotionReaction,
+  setupFloatingHearts,
+} from "@/lib/pixi/stickerAnimations";
 
 interface PixelAvatarProps {
   equipped: EquippedItems;
@@ -18,13 +28,13 @@ interface PixelAvatarProps {
   evolutionStage?: number;
   walking?: boolean;
   direction?: "left" | "right";
+  emotion?: StickerEmotion;
 }
 
-// Internal rendering size must match GRID_W x GRID_H in drawChibiCharacter.
-const INTERNAL_W = 48;
-const INTERNAL_H = 64;
+const INTERNAL_W = GRID_W; // 32
+const INTERNAL_H = GRID_H; // 42
 
-// CSS sizes are exact integer multiples for pixel-perfect scaling
+// CSS display sizes — smooth upscale for vector art
 const SIZE_CONFIG = {
   sm: { cssWidth: 96, cssHeight: 128 },    // 2x
   md: { cssWidth: 144, cssHeight: 192 },   // 3x
@@ -38,6 +48,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   evolutionStage = 1,
   walking = false,
   direction = "right",
+  emotion = "idle",
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<Application | null>(null);
@@ -45,20 +56,20 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   const cleanupFnsRef = useRef<(() => void)[]>([]);
   const walkCleanupRef = useRef<(() => void) | null>(null);
   const prevEquippedRef = useRef<string>("");
+  const prevEmotionRef = useRef<StickerEmotion>("idle");
   const initDoneRef = useRef(false);
 
   const config = SIZE_CONFIG[size];
   const equippedKey = useMemo(() => JSON.stringify(equipped), [equipped]);
   const isRainbow = equipped.hairColor === "haircolor_rainbow";
 
-  // Initialize PixiJS app at LOW internal resolution
+  // Initialize PixiJS app
   useEffect(() => {
     let destroyed = false;
 
     const init = async () => {
       if (!canvasRef.current) return;
 
-      // Render at 17x23 pixel grid size for true 8-bit pixel look
       const app = await createPixelApp(canvasRef.current, {
         width: INTERNAL_W,
         height: INTERNAL_H,
@@ -76,12 +87,17 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       app.stage.addChild(character);
       characterRef.current = character;
 
-      // Draw chibi on 17x23 pixel grid
-      drawChibiCharacter(character, equipped, INTERNAL_H);
+      // Draw LINE sticker character
+      drawLineStickerCharacter(character, equipped, INTERNAL_H, emotion);
 
       if (animated) {
-        const cleanIdle = setupIdleAnimation(character, app.ticker);
+        // Idle bounce + squash-stretch
+        const cleanIdle = setupStickerIdle(character, app.ticker);
         cleanupFnsRef.current.push(cleanIdle);
+
+        // Natural eye blink
+        const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion);
+        cleanupFnsRef.current.push(cleanBlink);
       }
 
       if (evolutionStage > 1) {
@@ -98,7 +114,14 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
         cleanupFnsRef.current.push(cleanRainbow);
       }
 
+      // Floating hearts for love emotion
+      if (emotion === "love") {
+        const cleanHearts = setupFloatingHearts(app.stage, app.ticker, INTERNAL_H);
+        cleanupFnsRef.current.push(cleanHearts);
+      }
+
       prevEquippedRef.current = equippedKey;
+      prevEmotionRef.current = emotion;
       initDoneRef.current = true;
     };
 
@@ -124,14 +147,27 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
     if (equippedKey === prevEquippedRef.current) return;
 
-    drawChibiCharacter(characterRef.current, equipped, INTERNAL_H);
+    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion);
 
     if (prevEquippedRef.current !== "") {
-      playEquipTransition(characterRef.current, appRef.current.ticker);
+      playStickerEquipTransition(characterRef.current, appRef.current.ticker);
     }
 
     prevEquippedRef.current = equippedKey;
-  }, [equippedKey, equipped]);
+  }, [equippedKey, equipped, emotion]);
+
+  // Update when emotion changes
+  useEffect(() => {
+    if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
+    if (emotion === prevEmotionRef.current) return;
+
+    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion);
+
+    // Play reaction animation
+    playStickerEmotionReaction(characterRef.current, appRef.current.ticker, emotion);
+
+    prevEmotionRef.current = emotion;
+  }, [emotion, equipped]);
 
   // Update evolution effects when stage changes
   useEffect(() => {
@@ -146,8 +182,11 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     if (!character) return;
 
     if (animated) {
-      const cleanIdle = setupIdleAnimation(character, app.ticker);
+      const cleanIdle = setupStickerIdle(character, app.ticker);
       cleanupFnsRef.current.push(cleanIdle);
+
+      const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion);
+      cleanupFnsRef.current.push(cleanBlink);
     }
 
     if (evolutionStage > 1) {
@@ -163,22 +202,26 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       );
       cleanupFnsRef.current.push(cleanRainbow);
     }
-  }, [evolutionStage, isRainbow]);
+
+    if (emotion === "love") {
+      const cleanHearts = setupFloatingHearts(app.stage, app.ticker, INTERNAL_H);
+      cleanupFnsRef.current.push(cleanHearts);
+    }
+  }, [evolutionStage, isRainbow, emotion]);
 
   // Walk cycle animation
   useEffect(() => {
     if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
 
-    // Cleanup previous walk cycle
     walkCleanupRef.current?.();
     walkCleanupRef.current = null;
 
     if (walking) {
-      const cleanup = setupWalkCycle(
+      const cleanup = setupStickerWalkCycle(
         characterRef.current,
         appRef.current.ticker,
         equipped,
-        INTERNAL_H
+        emotion,
       );
       walkCleanupRef.current = cleanup;
     }
@@ -187,7 +230,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       walkCleanupRef.current?.();
       walkCleanupRef.current = null;
     };
-  }, [walking, equippedKey]);
+  }, [walking, equippedKey, emotion]);
 
   // Direction flip
   useEffect(() => {
@@ -211,7 +254,6 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       style={{
         width: config.cssWidth,
         height: config.cssHeight,
-        imageRendering: "pixelated",
       }}
     />
   );

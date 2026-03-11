@@ -183,7 +183,40 @@ const QuizPage = () => {
     }
   };
 
-  const handleNextLesson = () => {
+  const handleNextLesson = async () => {
+    if (!user) {
+      navigate("/", { state: { generateNew: true } });
+      return;
+    }
+
+    // Find next uncompleted lesson at the same level
+    const { data: progress } = await supabase
+      .from("user_lesson_progress")
+      .select("lesson_id")
+      .eq("user_id", user.id);
+
+    const completedIds = new Set((progress || []).map((d: any) => d.lesson_id));
+
+    const { data: lessons } = await supabase
+      .from("lessons")
+      .select("id, title, title_thai, level, lesson_order")
+      .eq("level", lessonLevel)
+      .eq("is_published", true)
+      .order("lesson_order", { ascending: true });
+
+    if (lessons) {
+      // Find next lesson after current one that isn't completed
+      const currentIdx = lessons.findIndex((l: any) => l.id === lessonId);
+      const nextLesson = lessons.find((l: any, idx: number) => idx > currentIdx && !completedIds.has(l.id))
+        || lessons.find((l: any) => !completedIds.has(l.id));
+
+      if (nextLesson) {
+        navigate("/learn", { state: { lessonId: nextLesson.id } });
+        return;
+      }
+    }
+
+    // Fallback to home
     navigate("/", { state: { generateNew: true } });
   };
 
