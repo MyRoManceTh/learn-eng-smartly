@@ -16,8 +16,8 @@ export function setupIdleAnimation(
 
   const update = (dt: Ticker) => {
     time += dt.deltaTime * 0.04;
-    // Gentle bounce: 0.5px amplitude (canvas is only 23px tall)
-    characterContainer.y = baseY + Math.sin(time) * 0.5;
+    // Gentle bounce: 1px amplitude
+    characterContainer.y = baseY + Math.sin(time) * 1;
   };
 
   ticker.add(update);
@@ -88,7 +88,7 @@ export function setupEvolutionEffects(
         vy: -0.05 - Math.random() * 0.08,
         life: 0,
         maxLife: 50 + Math.random() * 30,
-        size: 0.4 + Math.random() * 0.4,
+        size: 0.6 + Math.random() * 0.6,
         color,
       });
     }
@@ -96,10 +96,10 @@ export function setupEvolutionEffects(
     // --- Stage 4+: Aura ring pulse ---
     if (stage >= 4) {
       const auraAlpha = 0.08 + Math.sin(time * 0.03) * 0.04;
-      const auraRadius = canvasSize * 0.35 + Math.sin(time * 0.025) * 1;
+      const auraRadius = canvasSize * 0.35 + Math.sin(time * 0.025) * 2;
       graphics
         .circle(cx, cy, auraRadius)
-        .stroke({ color, alpha: auraAlpha, width: 0.5 });
+        .stroke({ color, alpha: auraAlpha, width: 1 });
     }
 
     // --- Stage 5: Rising golden particles ---
@@ -107,11 +107,11 @@ export function setupEvolutionEffects(
       particles.push({
         x: cx + (Math.random() - 0.5) * canvasSize * 0.4,
         y: canvasSize * 0.85,
-        vx: (Math.random() - 0.5) * 0.05,
-        vy: -0.12 - Math.random() * 0.12,
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: -0.15 - Math.random() * 0.15,
         life: 0,
         maxLife: 70 + Math.random() * 30,
-        size: 0.4 + Math.random() * 0.4,
+        size: 0.6 + Math.random() * 0.6,
         color: 0xffd700,
       });
     }
@@ -173,9 +173,9 @@ export function setupRainbowShimmer(
     time += dt.deltaTime * 0.02;
     graphics.clear();
 
-    // Overlay a shifting color on the hair region (rows 0-3 in 17x23 grid)
+    // Overlay a shifting color on the hair region (rows 0-6 in 32x42 grid)
     const hairRowStart = 0;
-    const hairRowEnd = 4;
+    const hairRowEnd = 7;
     const width = canvasSize;
 
     const colorIndex = Math.floor(time * 3) % rainbowColors.length;

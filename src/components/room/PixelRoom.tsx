@@ -17,8 +17,8 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
   const [isWalking, setIsWalking] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
+  const [walkDuration, setWalkDuration] = useState(0.5); // seconds
   const roomRef = useRef<HTMLDivElement>(null);
-  const characterRef = useRef<HTMLDivElement>(null);
 
   const wallStyle = useMemo(() => {
     const wall = WALLPAPER_COLORS[room.wallpaper || "wall_basic"] || WALLPAPER_COLORS.wall_basic;
@@ -85,15 +85,15 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
     const distance = Math.abs(targetPercent - charX);
     const duration = Math.max(0.3, Math.min(2.0, distance * 0.025));
 
-    if (characterRef.current) {
-      characterRef.current.style.transitionDuration = `${duration}s`;
-    }
-
+    setWalkDuration(duration);
     setIsWalking(true);
     setCharX(targetPercent);
   }, [charX]);
 
-  const handleTransitionEnd = useCallback(() => {
+  const handleTransitionEnd = useCallback((e: React.TransitionEvent<HTMLDivElement>) => {
+    // Only respond to our own "left" transition, not child element transitions
+    if (e.target !== e.currentTarget) return;
+    if (e.propertyName !== "left") return;
     setIsWalking(false);
   }, []);
 
@@ -196,12 +196,11 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
 
       {/* === CHARACTER (click-to-walk) === */}
       <div
-        ref={characterRef}
         className="absolute bottom-[25%] z-10"
         style={{
           left: `${charX}%`,
           transform: "translateX(-50%)",
-          transition: "left 0.5s ease-in-out",
+          transition: `left ${walkDuration}s ease-in-out`,
         }}
         onTransitionEnd={handleTransitionEnd}
       >
@@ -222,7 +221,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
           style={{
             left: `${charX}%`,
             transform: "translateX(-50%)",
-            transition: "left 0.5s ease-in-out",
+            transition: `left ${walkDuration}s ease-in-out`,
           }}
         >
           <div

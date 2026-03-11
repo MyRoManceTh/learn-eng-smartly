@@ -20,16 +20,15 @@ interface PixelAvatarProps {
   direction?: "left" | "right";
 }
 
-// Internal (low-res) rendering size must match GRID_W x GRID_H in drawChibiCharacter.
-// The 8-bit look comes from rendering at 17x23 then CSS upscaling with pixelated.
-const INTERNAL_W = 17;
-const INTERNAL_H = 23;
+// Internal rendering size must match GRID_W x GRID_H in drawChibiCharacter.
+const INTERNAL_W = 32;
+const INTERNAL_H = 42;
 
 // CSS sizes are exact integer multiples for pixel-perfect scaling
 const SIZE_CONFIG = {
-  sm: { cssWidth: 102, cssHeight: 138 },   // 6x
-  md: { cssWidth: 170, cssHeight: 230 },   // 10x
-  lg: { cssWidth: 238, cssHeight: 322 },   // 14x
+  sm: { cssWidth: 96, cssHeight: 126 },    // 3x
+  md: { cssWidth: 160, cssHeight: 210 },   // 5x
+  lg: { cssWidth: 256, cssHeight: 336 },   // 8x
 };
 
 const PixelAvatar: React.FC<PixelAvatarProps> = ({
