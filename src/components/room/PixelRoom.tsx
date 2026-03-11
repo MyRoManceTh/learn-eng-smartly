@@ -214,7 +214,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md", petCare }: Pix
 
       {/* ── PETS (autonomous walking) ── */}
       {petItems.map((pet) =>
-        pet ? <RoomPet key={pet.id} pet={pet} charX={charX} /> : null
+        pet ? <RoomPet key={pet.id} pet={pet} charX={charX} petCare={petCare} /> : null
       )}
 
       {/* ── Ambient light effect ── */}
