@@ -240,7 +240,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
       >
         <PixelAvatar
           equipped={equipped}
-          size={size}
+          size="sm"
           animated
           evolutionStage={evolutionStage}
           walking={isWalking}
