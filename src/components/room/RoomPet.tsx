@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { PET_IMAGES } from "@/data/roomItems";
 import { RoomItem } from "@/types/room";
+import { PetCareState, getPetLevel, PET_LEVEL_TITLES } from "@/data/petCare";
 
 // ── Pet speech lines (bilingual) ──
 const PET_SPEECHES: Record<string, { th: string; en: string }[]> = {
