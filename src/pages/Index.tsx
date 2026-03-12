@@ -38,6 +38,14 @@ const quickActions = [
   { path: "/pronunciation", icon: Volume2, label: "ออกเสียง", color: "from-orange-400 to-amber-500", emoji: "🗣️" },
 ];
 
+const activities = [
+  { path: "/reading", icon: "📖", title: "ฝึกอ่าน", subtitle: "เรื่องสนุกๆ + บทเรียนแยก Level", color: "from-blue-400 to-indigo-500" },
+  { path: "/conversation", icon: "💬", title: "ฝึกบทสนทนา", subtitle: "จำลองสถานการณ์จริง", color: "from-pink-400 to-rose-500" },
+  { path: "/pronunciation", icon: "🗣️", title: "ฝึกออกเสียง", subtitle: "เน้นเสียงที่คนไทยออกยาก", color: "from-orange-400 to-amber-500" },
+  { path: "/news", icon: "📰", title: "ข่าวง่ายรายวัน", subtitle: "อ่านข่าวจริง เขียนใหม่ให้เข้าใจง่าย", color: "from-purple-400 to-violet-500" },
+  { path: "/library", icon: "📚", title: "คลังนิทาน", subtitle: "นิทานอีสปสนุกๆ พร้อม Quiz", color: "from-teal-400 to-cyan-500" },
+];
+
 interface CurrentLesson {
   id: string;
   title: string;
@@ -286,7 +294,7 @@ const Index = () => {
         {/* === Continue Learning Card === */}
         {currentLesson && (
           <button
-            onClick={() => navigate(`/learn`, { state: { lessonId: currentLesson.id } })}
+            onClick={() => navigate(`/reading`, { state: { lessonId: currentLesson.id } })}
             className="w-full text-left rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 p-4 shadow-lg shadow-purple-500/20 hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.99]"
           >
             <div className="flex items-center justify-between">
@@ -370,62 +378,37 @@ const Index = () => {
           </button>
         )}
 
-        {/* === Learning Path Preview === */}
-        <button
-          onClick={() => navigate("/path")}
-          className="w-full text-left rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm hover:shadow-md transition-all backdrop-blur-sm"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-xl shadow-md">
-                🗺️
-              </div>
-              <div>
-                <h3 className="font-bold font-thai text-sm">เส้นทางการเรียน</h3>
-                <p className="text-xs text-muted-foreground font-thai">Skill Tree แบบ RPG เลือกเรียนตามสาย</p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+        {/* === Activities Section === */}
+        <div>
+          <h3 className="text-sm font-bold font-thai text-foreground mb-2">
+            🎯 กิจกรรมทั้งหมด
+          </h3>
+          <div className="grid grid-cols-1 gap-2">
+            {activities.map((act) => (
+              <button
+                key={act.path}
+                onClick={() => navigate(act.path)}
+                className="group w-full text-left rounded-xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-3 shadow-sm hover:shadow-md transition-all active:scale-[0.98] overflow-hidden relative"
+              >
+                <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-gradient-to-b", act.color)} />
+                <div className="flex items-center gap-3 pl-2">
+                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm bg-gradient-to-br", act.color)}>
+                    <span>{act.icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold font-thai text-sm">{act.title}</h4>
+                    <p className="text-[10px] text-muted-foreground font-thai truncate">{act.subtitle}</p>
+                  </div>
+                  <div className="text-muted-foreground group-hover:translate-x-1 transition-transform">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
-        </button>
-
-        {/* === Daily News Card === */}
-        <button
-          onClick={() => navigate("/news")}
-          className="w-full text-left rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm hover:shadow-md transition-all backdrop-blur-sm"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-violet-500 flex items-center justify-center text-xl shadow-md">
-                📰
-              </div>
-              <div>
-                <h3 className="font-bold font-thai text-sm">ข่าววันนี้</h3>
-                <p className="text-xs text-muted-foreground font-thai">อ่านข่าวง่ายๆ ฝึกภาษาทุกวัน</p>
-              </div>
-            </div>
-            <span className="text-[10px] font-bold bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">Daily</span>
-          </div>
-        </button>
-
-        {/* === Library Card === */}
-        <button
-          onClick={() => navigate("/library")}
-          className="w-full text-left rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm hover:shadow-md transition-all backdrop-blur-sm"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center text-xl shadow-md">
-                📚
-              </div>
-              <div>
-                <h3 className="font-bold font-thai text-sm">คลังนิทาน</h3>
-                <p className="text-xs text-muted-foreground font-thai">นิทานอีสปสนุกๆ พร้อม Quiz</p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </div>
-        </button>
+        </div>
 
         {/* === Not logged in prompt === */}
         {!user && (

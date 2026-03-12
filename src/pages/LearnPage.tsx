@@ -1,356 +1,457 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
-import LevelSelector from "@/components/LevelSelector";
-import { LearnerLevel, QuizQuestion } from "@/types/lesson";
+import { useSkillTreeProgress } from "@/hooks/useSkillTreeProgress";
+import { supabase } from "@/integrations/supabase/client";
+import { sampleQuiz } from "@/data/sampleLesson";
+import {
+  skillTreePaths,
+  getModulesByPath,
+  getLessonsByModule,
+  SkillTreeModule,
+  SkillTreeLesson,
+  skillTreeLessons,
+} from "@/data/skillTreeData";
 import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
-import LessonSkeleton from "@/components/LessonSkeleton";
+import QuizSection from "@/components/QuizSection";
+import SkillTreeMap from "@/components/skilltree/SkillTreeMap";
+import ModuleDetail from "@/components/skilltree/ModuleDetail";
+import PathSelectionScreen from "@/components/skilltree/PathSelectionScreen";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronLeft, ChevronRight, Lock, CheckCircle2 } from "lucide-react";
-import { sampleLesson } from "@/data/sampleLesson";
+import { ArrowLeft, Trophy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { cn } from "@/lib/utils";
-import { trackEvent } from "@/utils/analytics";
-import defaultLessonImage from "@/assets/lesson-default.jpg";
-
-interface DbLesson {
-  id: string;
-  level: number;
-  lesson_order: number;
-  title: string;
-  title_thai: string;
-  vocabulary: any[];
-  article_sentences: any[][];
-  article_translation: string;
-  image_url: string | null;
-  quiz: QuizQuestion[];
-}
-
-const activities = [
-  { path: "/path", icon: "🗺️", title: "เส้นทางการเรียน", subtitle: "เรียนตามลำดับ ปลดล็อคทีละด่าน", color: "from-emerald-400 to-green-500" },
-  { path: "/reading", icon: "📖", title: "ฝึกอ่าน", subtitle: "เรื่องสนุกๆ แยกหมวด พร้อมรูปภาพ", color: "from-blue-400 to-indigo-500" },
-  { path: "/conversation", icon: "💬", title: "ฝึกบทสนทนา", subtitle: "จำลองสถานการณ์จริง", color: "from-pink-400 to-rose-500" },
-  { path: "/pronunciation", icon: "🗣️", title: "ฝึกออกเสียง", subtitle: "เน้นเสียงที่คนไทยออกยาก", color: "from-orange-400 to-amber-500" },
-  { path: "/news", icon: "📰", title: "ข่าวง่ายรายวัน", subtitle: "อ่านข่าวจริง เขียนใหม่ให้เข้าใจง่าย", color: "from-purple-400 to-violet-500" },
-  { path: "/library", icon: "📚", title: "คลังนิทาน", subtitle: "นิทานอีสปสนุกๆ พร้อม Quiz", color: "from-teal-400 to-cyan-500" },
-];
-
-type ViewMode = "hub" | "lesson";
 
 const LearnPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { profile } = useProfile();
+  const { profile, updateProfile } = useProfile();
+  const { incrementMission } = useDailyMissions();
+  const {
+    isNodeCompleted,
+    getModuleProgress,
+    isModuleCompleted,
+    isModuleUnlocked,
+    completeLesson,
+    totalCompleted,
+    totalModulesCompleted,
+  } = useSkillTreeProgress();
 
-  const [viewMode, setViewMode] = useState<ViewMode>("hub");
-  const [level, setLevel] = useState<LearnerLevel>((profile?.current_level || 1) as LearnerLevel);
-  const [lessons, setLessons] = useState<DbLesson[]>([]);
-  const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  // Path & view states
+  const [activePath, setActivePath] = useState(
+    (profile as any)?.active_path || "core"
+  );
+  const [showPathSelection, setShowPathSelection] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<SkillTreeModule | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<SkillTreeLesson | null>(null);
+  const [lesson, setLesson] = useState<any>(null);
+  const [quiz, setQuiz] = useState<any>(null);
+  const [lessonImage, setLessonImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingLessonId, setLoadingLessonId] = useState<string | null>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
 
-  // Lesson detail state
-  const [selectedLesson, setSelectedLesson] = useState<DbLesson | null>(null);
-  const [activeTab, setActiveTab] = useState<"vocab" | "article">("vocab");
+  const placementLevel = (profile as any)?.placement_level || null;
 
-  useEffect(() => {
-    trackEvent("page_view", { page: "learn" });
-  }, []);
+  // Core A1 completion check
+  const coreLevel1Modules = getModulesByPath("core").filter((m) => m.level === 1);
+  const coreLevel1Done = coreLevel1Modules.every((m) => isModuleCompleted(m.id));
 
-  // Handle incoming navigation state (from home "continue learning" card)
-  useEffect(() => {
-    const navState = location.state as { lessonId?: string } | null;
-    if (navState?.lessonId) {
-      window.history.replaceState({}, "");
-      // Will be handled after lessons load
-    }
-  }, [location.state]);
+  // Current specialty (non-core path)
+  const selectedSpecialty = activePath !== "core" ? activePath : null;
+  const specialtyPath = selectedSpecialty
+    ? skillTreePaths.find((p) => p.id === selectedSpecialty)
+    : null;
 
-  // Load lessons list
-  useEffect(() => {
-    const loadLessons = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("lessons")
-        .select("*")
-        .eq("level", level)
-        .eq("is_published", true)
-        .order("lesson_order", { ascending: true });
+  // Modules for active path
+  const pathModules = getModulesByPath(activePath);
+  const totalLessons = skillTreeLessons.filter((l) =>
+    pathModules.some((m) => m.id === l.moduleId)
+  ).length;
 
-      if (data) {
-        setLessons(data as unknown as DbLesson[]);
-      }
-      setLoading(false);
-    };
-    loadLessons();
-  }, [level]);
+  // Find next unlocked uncompleted module in active path
+  const nextModuleId = pathModules.find(
+    (m) => isModuleUnlocked(m, placementLevel) && !isModuleCompleted(m.id)
+  )?.id || null;
 
-  // Load completed lessons
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from("user_lesson_progress")
-      .select("lesson_id")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        if (data) {
-          setCompletedLessonIds(new Set(data.map((d: any) => d.lesson_id)));
-        }
-      });
-  }, [user]);
-
-  // Handle navigation state after lessons load
-  useEffect(() => {
-    const navState = location.state as { lessonId?: string } | null;
-    if (navState?.lessonId && lessons.length > 0) {
-      const target = lessons.find(l => l.id === navState.lessonId);
-      if (target) {
-        setSelectedLesson(target);
-        setViewMode("lesson");
-      }
-    }
-  }, [lessons, location.state]);
-
-  const handleLevelChange = (newLevel: LearnerLevel) => {
-    setLevel(newLevel);
-    setViewMode("hub");
-    setSelectedLesson(null);
+  // Handle path selection from RPG screen
+  const handlePathSelect = async (pathId: string) => {
+    setActivePath(pathId);
+    await updateProfile({ active_path: pathId });
   };
 
-  const openLesson = (lesson: DbLesson) => {
+  // Handle module click
+  const handleModuleClick = (module: SkillTreeModule) => {
+    if (!user) {
+      toast.error("กรุณาเข้าสู่ระบบก่อนเริ่มเรียน");
+      navigate("/auth");
+      return;
+    }
+    if (!isModuleUnlocked(module, placementLevel)) return;
+    setSelectedModule(module);
+  };
+
+  // Handle lesson click
+  const handleLessonClick = async (lesson: SkillTreeLesson) => {
+    if (!user || !selectedModule) return;
+
     setSelectedLesson(lesson);
-    setViewMode("lesson");
-    setActiveTab("vocab");
-    trackEvent("lesson_open", { lessonId: lesson.id, level: lesson.level });
-  };
+    setShowQuiz(false);
+    setLoading(true);
+    setLoadingLessonId(lesson.id);
 
-  const handleStartQuiz = () => {
-    if (!selectedLesson) return;
-    trackEvent("quiz_start", { lessonId: selectedLesson.id, level: selectedLesson.level });
-    navigate("/quiz", {
-      state: {
-        questions: selectedLesson.quiz,
-        lessonTitle: selectedLesson.title,
-        lessonLevel: selectedLesson.level,
-        lessonId: selectedLesson.id,
-        lessonOrder: selectedLesson.lesson_order,
-      },
-    });
-  };
-
-  const goToNextLesson = () => {
-    if (!selectedLesson) return;
-    const idx = lessons.findIndex(l => l.id === selectedLesson.id);
-    if (idx < lessons.length - 1) {
-      openLesson(lessons[idx + 1]);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-lesson", {
+        body: {
+          moduleId: selectedModule.id,
+          level: selectedModule.level,
+          lessonOrder: lesson.order,
+          topic: lesson.topic,
+        },
+      });
+      if (error) throw error;
+      if (data.lesson) {
+        setLesson(data.lesson);
+        setQuiz(data.quiz || sampleQuiz);
+        setLessonImage(data.imageUrl || null);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("ไม่สามารถสร้างบทเรียนได้ กรุณาลองใหม่");
+      setSelectedLesson(null);
+    } finally {
+      setLoading(false);
+      setLoadingLessonId(null);
     }
   };
 
-  const goToPrevLesson = () => {
-    if (!selectedLesson) return;
-    const idx = lessons.findIndex(l => l.id === selectedLesson.id);
-    if (idx > 0) {
-      openLesson(lessons[idx - 1]);
-    }
+  // Handle quiz complete
+  const handleQuizComplete = async (score: number) => {
+    if (!user || !selectedLesson || !selectedModule) return;
+
+    await completeLesson(
+      selectedLesson.id,
+      selectedModule.id,
+      selectedModule.pathId,
+      score,
+      quiz.length
+    );
+
+    await supabase
+      .from("profiles")
+      .update({
+        lessons_completed: totalCompleted + 1,
+        current_level: selectedModule.level,
+      } as any)
+      .eq("user_id", user.id);
+
+    incrementMission("complete_lesson", 1);
+    incrementMission("answer_quiz", quiz.length);
+    incrementMission("path_node", 1);
   };
 
-  // === LESSON DETAIL VIEW ===
-  if (viewMode === "lesson" && selectedLesson) {
-    const lesson = {
-      title: selectedLesson.title,
-      titleThai: selectedLesson.title_thai,
-      level: selectedLesson.level,
-      vocabulary: selectedLesson.vocabulary,
-      articleSentences: selectedLesson.article_sentences,
-      articleTranslation: selectedLesson.article_translation,
-    };
-    const lessonImage = selectedLesson.image_url || defaultLessonImage;
-    const isCompleted = completedLessonIds.has(selectedLesson.id);
-    const currentIdx = lessons.findIndex(l => l.id === selectedLesson.id);
+  // Navigate to next lesson in current module or next module
+  const handleNextLesson = () => {
+    if (!selectedLesson || !selectedModule) return;
 
+    const moduleLessons = getLessonsByModule(selectedModule.id);
+    const currentIdx = moduleLessons.findIndex((l) => l.id === selectedLesson.id);
+
+    if (currentIdx < moduleLessons.length - 1) {
+      const nextLesson = moduleLessons[currentIdx + 1];
+      handleLessonClick(nextLesson);
+      return;
+    }
+
+    setSelectedLesson(null);
+    setLesson(null);
+    setShowQuiz(false);
+  };
+
+  const getNextLessonInfo = (): { hasNext: boolean; label: string } => {
+    if (!selectedLesson || !selectedModule) return { hasNext: false, label: "" };
+    const moduleLessons = getLessonsByModule(selectedModule.id);
+    const currentIdx = moduleLessons.findIndex((l) => l.id === selectedLesson.id);
+    if (currentIdx < moduleLessons.length - 1) {
+      const next = moduleLessons[currentIdx + 1];
+      return { hasNext: true, label: `บทถัดไป: ${next.topicThai}` };
+    }
+    return { hasNext: true, label: "กลับเลือกบทเรียน" };
+  };
+
+  // ─── Path Selection Screen (RPG Class Selection) ──
+  if (showPathSelection) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-24">
-        <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={() => { setViewMode("hub"); setSelectedLesson(null); }}>
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-              <div>
-                <span className="font-bold font-thai text-sm">
-                  บทที่ {selectedLesson.lesson_order}
-                </span>
-                {isCompleted && <span className="ml-2 text-xs text-emerald-600">✅</span>}
-              </div>
-            </div>
-            <div className="flex gap-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8" disabled={currentIdx <= 0} onClick={goToPrevLesson}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8" disabled={currentIdx >= lessons.length - 1} onClick={goToNextLesson}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
+      <PathSelectionScreen
+        onSelect={handlePathSelect}
+        onBack={() => setShowPathSelection(false)}
+        currentPath={activePath}
+        isCoreLevel1Done={coreLevel1Done}
+      />
+    );
+  }
+
+  // ─── Lesson View ────────────────────────────
+  if (selectedLesson && selectedModule && (loading || lesson)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 pb-20 md:pb-0">
+        <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl shadow-sm sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white/70 hover:text-white hover:bg-white/10"
+              onClick={() => {
+                setSelectedLesson(null);
+                setLesson(null);
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
+            </Button>
+            <span className="text-lg">{selectedModule.icon}</span>
+            <span className="text-sm font-bold text-white font-thai">
+              {selectedLesson.topicThai}
+            </span>
           </div>
         </header>
 
-        <main className="px-4 py-4 max-w-lg mx-auto space-y-4">
-          {/* Lesson title card */}
-          <div className="rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm backdrop-blur-sm">
-            <h2 className="text-lg font-bold">{selectedLesson.title}</h2>
-            <p className="text-sm text-muted-foreground font-thai">{selectedLesson.title_thai}</p>
-          </div>
-
-          {/* Tab switcher */}
-          <div className="flex gap-1 bg-white/60 rounded-xl p-1 border border-white/50">
-            <button
-              onClick={() => setActiveTab("vocab")}
-              className={cn(
-                "flex-1 py-2 rounded-lg text-sm font-bold font-thai transition-all",
-                activeTab === "vocab"
-                  ? "bg-white shadow-sm text-purple-600"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              📝 คำศัพท์
-            </button>
-            <button
-              onClick={() => setActiveTab("article")}
-              className={cn(
-                "flex-1 py-2 rounded-lg text-sm font-bold font-thai transition-all",
-                activeTab === "article"
-                  ? "bg-white shadow-sm text-purple-600"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              📖 บทอ่าน
-            </button>
-          </div>
-
-          {/* Tab content */}
-          {activeTab === "vocab" ? (
-            <VocabTable vocabulary={lesson.vocabulary} />
+        <main className="max-w-7xl mx-auto px-4 py-6 animate-in fade-in duration-300">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="relative">
+                <Loader2 className="w-12 h-12 animate-spin text-purple-400" />
+                <span className="absolute inset-0 flex items-center justify-center text-xl">
+                  {selectedModule.icon}
+                </span>
+              </div>
+              <p className="font-thai mt-4 text-lg text-white/60">กำลังสร้างบทเรียน...</p>
+            </div>
           ) : (
-            <ArticleReader
-              sentences={lesson.articleSentences}
-              translation={lesson.articleTranslation}
-              title={lesson.title}
-              titleThai={lesson.titleThai}
-              imageUrl={lessonImage || undefined}
-            />
-          )}
-
-          {/* Quiz CTA */}
-          <div className="text-center pb-4">
-            <Button
-              onClick={handleStartQuiz}
-              className={cn(
-                "font-thai w-full max-w-xs h-12 text-base font-bold shadow-lg",
-                isCompleted
-                  ? "bg-white border-2 border-purple-300 text-purple-600 hover:bg-purple-50 shadow-purple-500/10"
-                  : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-purple-500/25"
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+                <div className="lg:col-span-2">
+                  <VocabTable vocabulary={lesson.vocabulary} />
+                </div>
+                <div className="lg:col-span-3">
+                  <ArticleReader
+                    sentences={lesson.articleSentences}
+                    translation={lesson.articleTranslation}
+                    title={lesson.title}
+                    titleThai={lesson.titleThai}
+                    imageUrl={lessonImage || undefined}
+                  />
+                </div>
+              </div>
+              {!showQuiz ? (
+                <div className="text-center">
+                  <Button
+                    onClick={() => setShowQuiz(true)}
+                    className="font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg"
+                  >
+                    📝 ทำแบบทดสอบ
+                  </Button>
+                </div>
+              ) : (
+                <div className="max-w-2xl mx-auto">
+                  <QuizSection
+                    questions={quiz}
+                    onComplete={handleQuizComplete}
+                    onNextLesson={handleNextLesson}
+                    nextLessonLabel={getNextLessonInfo().label}
+                  />
+                </div>
               )}
-            >
-              📝 {isCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
-            </Button>
-          </div>
+            </>
+          )}
         </main>
       </div>
     );
   }
 
-  // === LEARNING HUB VIEW ===
+  // ─── Module Detail View ─────────────────────
+  if (selectedModule) {
+    return (
+      <ModuleDetail
+        module={selectedModule}
+        isNodeCompleted={isNodeCompleted}
+        isModuleCompleted={isModuleCompleted(selectedModule.id)}
+        onLessonClick={handleLessonClick}
+        onBack={() => setSelectedModule(null)}
+        loadingLessonId={loadingLessonId}
+      />
+    );
+  }
+
+  // ─── Skill Tree Map View (Main Hub) ────────────────
+  const progressPercent = totalLessons > 0
+    ? Math.round((totalCompleted / totalLessons) * 100)
+    : 0;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-24">
-      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
-        <div className="px-4 py-3">
-          <h1 className="text-lg font-bold font-thai">
-            📚 เรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">รู้</span>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 pb-20 md:pb-0 relative overflow-hidden">
+      {/* Decorative background stars */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <span
+            key={i}
+            className="absolute text-white/5 animate-sparkle-twinkle"
+            style={{
+              left: `${(i * 23 + 7) % 100}%`,
+              top: `${(i * 37 + 13) % 100}%`,
+              animationDelay: `${i * 400}ms`,
+              fontSize: `${8 + (i % 4) * 4}px`,
+            }}
+          >
+            ✦
+          </span>
+        ))}
+      </div>
+
+      {/* Header - adapted for bottom nav tab (no back button) */}
+      <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <h1 className="text-lg font-bold text-white font-thai flex items-center gap-2">
+            🗺️ เรียน<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">รู้</span>
           </h1>
-          <div className="mt-2">
-            <LevelSelector currentLevel={level} onLevelChange={handleLevelChange} lessonsCompleted={profile?.lessons_completed || 0} />
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-amber-400" />
+            <span className="font-bold text-sm text-white font-thai">
+              {totalModulesCompleted}/{pathModules.length}
+            </span>
           </div>
         </div>
       </header>
 
-      <main className="px-4 py-4 max-w-lg mx-auto space-y-4">
-        {/* === Lesson List === */}
-        <div>
-          <h3 className="text-sm font-bold font-thai text-foreground mb-2">
-            📖 บทเรียน Level {level}
-          </h3>
-          {loading ? (
-            <LessonSkeleton />
-          ) : lessons.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground font-thai">ยังไม่มีบทเรียนสำหรับระดับนี้</p>
+      {/* Fun header section */}
+      <div className="bg-white/5 border-b border-white/10 relative overflow-hidden">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          {/* Title */}
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-bold text-white font-thai flex items-center gap-2">
+              <span className="text-xl animate-sway" style={{ display: 'inline-block' }}>⚔️</span>
+              เส้นทางการผจญภัย
+            </h2>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
+              <span className="text-sm font-bold text-purple-300">{progressPercent}%</span>
             </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-              {lessons.map((lesson, idx) => {
-                const isCompleted = completedLessonIds.has(lesson.id);
-                return (
-                  <button
-                    key={lesson.id}
-                    onClick={() => openLesson(lesson)}
-                    className={cn(
-                      "text-left rounded-xl border-2 p-3 transition-all hover:shadow-md active:scale-[0.98]",
-                      isCompleted
-                        ? "bg-emerald-50/80 border-emerald-200"
-                        : "bg-white/80 border-white/60 hover:border-purple-200"
-                    )}
-                  >
-                    <div className="flex items-start justify-between mb-1">
-                      <span className="text-xs text-muted-foreground font-thai">บทที่ {lesson.lesson_order}</span>
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                      ) : (
-                        <div className="w-4 h-4 rounded-full border-2 border-purple-300" />
-                      )}
-                    </div>
-                    <h4 className="font-bold text-sm leading-tight">{lesson.title}</h4>
-                    <p className="text-[10px] text-muted-foreground font-thai mt-0.5 truncate">{lesson.title_thai}</p>
-                  </button>
-                );
-              })}
+          </div>
+
+          {/* Progress bar */}
+          <div className="relative mb-3">
+            <div className="w-full h-5 bg-white/10 rounded-full overflow-hidden border-2 border-white/10">
+              <div
+                className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-700 ease-out relative"
+                style={{ width: `${Math.max(progressPercent, 2)}%` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" />
+              </div>
+            </div>
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-700"
+              style={{ left: `${Math.max(progressPercent, 3)}%` }}
+            >
+              <span className="text-lg drop-shadow-lg">🚀</span>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
+              <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '0ms' }}>
+                📚 {totalCompleted}
+              </p>
+              <p className="text-[10px] text-white/40 font-thai font-bold">บทเรียน</p>
+            </div>
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
+              <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '100ms' }}>
+                🏆 {totalModulesCompleted}
+              </p>
+              <p className="text-[10px] text-white/40 font-thai font-bold">Modules</p>
+            </div>
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
+              <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '200ms' }}>
+                🔥 {(profile as any)?.streak_count || 0}
+              </p>
+              <p className="text-[10px] text-white/40 font-thai font-bold">วันติดต่อ</p>
+            </div>
+          </div>
+
+          {/* Specialty path indicator */}
+          {selectedSpecialty && specialtyPath && (
+            <div className="flex items-center gap-2 mt-3">
+              <button
+                onClick={() => {
+                  setActivePath("core");
+                  updateProfile({ active_path: "core" });
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-2xl border-2 text-xs font-thai font-bold transition-all",
+                  activePath === "core"
+                    ? "bg-gradient-to-r from-purple-500/30 to-indigo-500/20 border-purple-400/40 text-white"
+                    : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
+                )}
+              >
+                <span>🏰</span> พื้นฐาน
+              </button>
+
+              <button
+                onClick={() => {
+                  setActivePath(selectedSpecialty);
+                  updateProfile({ active_path: selectedSpecialty });
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-2xl border-2 text-xs font-thai font-bold transition-all",
+                  activePath === selectedSpecialty
+                    ? cn("bg-gradient-to-r border-white/30 text-white shadow-md", specialtyPath.color)
+                    : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
+                )}
+              >
+                <span>{specialtyPath.icon}</span> {specialtyPath.nameThai}
+              </button>
+
+              <button
+                onClick={() => setShowPathSelection(true)}
+                className="ml-auto text-[10px] text-white/30 font-thai hover:text-white/60 transition-colors px-2 py-1"
+              >
+                เปลี่ยนสาย →
+              </button>
             </div>
           )}
-        </div>
 
-        {/* === Activities Collection === */}
-        <div>
-          <h3 className="text-sm font-bold font-thai text-foreground mb-2">
-            🎯 กิจกรรมอื่นๆ
-          </h3>
-          <div className="grid grid-cols-1 gap-2">
-            {activities.map((act) => (
-              <button
-                key={act.path}
-                onClick={() => navigate(act.path)}
-                className="group w-full text-left rounded-xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-3 shadow-sm hover:shadow-md transition-all active:scale-[0.98] overflow-hidden"
-              >
-                <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-gradient-to-b", act.color)} />
-                <div className="flex items-center gap-3 pl-2">
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm bg-gradient-to-br", act.color)}>
-                    <span>{act.icon}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold font-thai text-sm">{act.title}</h4>
-                    <p className="text-[10px] text-muted-foreground font-thai truncate">{act.subtitle}</p>
-                  </div>
-                  <div className="text-muted-foreground group-hover:translate-x-1 transition-transform">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
+          {/* Placement test prompt */}
+          {profile && !(profile as any).placement_completed && (
+            <button
+              onClick={() => navigate("/placement")}
+              className="mt-3 w-full flex items-center gap-3 rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3 text-left hover:bg-amber-500/15 hover:scale-[1.01] active:scale-[0.99] transition-all"
+            >
+              <span className="text-2xl animate-float-gentle">🏰</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-amber-300 font-thai">ยังไม่ได้ทำแบบทดสอบวัดระดับ</p>
+                <p className="text-xs text-amber-400/60 font-thai">ทำเลยเพื่อเริ่มต้นที่ระดับที่เหมาะสม</p>
+              </div>
+              <span className="text-amber-400 text-sm font-bold animate-hop">ทำเลย →</span>
+            </button>
+          )}
         </div>
+      </div>
+
+      {/* Skill Tree - Adventure Map */}
+      <main className="max-w-3xl mx-auto px-4 py-6 relative">
+        <SkillTreeMap
+          modules={pathModules}
+          isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
+          isModuleCompleted={isModuleCompleted}
+          getModuleProgress={getModuleProgress}
+          onModuleClick={handleModuleClick}
+          nextModuleId={nextModuleId}
+          activePath={activePath}
+          onBranchPointClick={() => setShowPathSelection(true)}
+          isCoreLevel1Done={coreLevel1Done}
+          selectedSpecialty={selectedSpecialty}
+        />
       </main>
     </div>
   );
