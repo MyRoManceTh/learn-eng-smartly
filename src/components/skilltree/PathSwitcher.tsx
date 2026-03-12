@@ -8,9 +8,18 @@ interface PathSwitcherProps {
   getPathProgress?: (pathId: string) => number;
 }
 
+// Short labels that fit on mobile
+const shortLabels: Record<string, string> = {
+  core: "พื้นฐาน",
+  business: "ธุรกิจ",
+  travel: "ท่องเที่ยว",
+  entertainment: "บันเทิง",
+  tech: "เทค",
+};
+
 const PathSwitcher = ({ activePath, onPathChange, getPathProgress }: PathSwitcherProps) => {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div className="grid grid-cols-5 gap-1.5">
       {skillTreePaths.map((path) => {
         const isActive = path.id === activePath;
         const isLocked = path.isLocked;
@@ -22,40 +31,53 @@ const PathSwitcher = ({ activePath, onPathChange, getPathProgress }: PathSwitche
             onClick={() => !isLocked && onPathChange(path.id)}
             disabled={isLocked}
             className={cn(
-              "relative flex items-center gap-1.5 px-3 py-2.5 rounded-2xl border-2 text-sm font-thai whitespace-nowrap transition-all duration-300 flex-shrink-0",
+              "relative flex flex-col items-center gap-1 py-2 rounded-2xl transition-all duration-300",
               isActive && cn(
-                "bg-gradient-to-r border-white/30 text-white",
-                "shadow-lg scale-[1.02]",
-                path.color,
-                "shadow-[0_4px_0_0_rgba(0,0,0,0.2)]"
+                "bg-gradient-to-b border-2",
+                path.color, "border-white/30",
+                "shadow-lg"
               ),
               !isActive && !isLocked && cn(
-                "bg-white/5 border-white/10 text-white/60",
-                "hover:bg-white/10 hover:text-white/80 hover:scale-[1.02] hover:border-white/20",
-                "active:scale-[0.98]"
+                "bg-white/5 border-2 border-transparent",
+                "hover:bg-white/10 active:scale-95"
               ),
-              isLocked && "bg-white/[0.02] border-white/5 text-white/20 cursor-not-allowed opacity-50"
+              isLocked && "opacity-40 cursor-not-allowed"
             )}
           >
+            {/* Icon circle */}
+            <div className={cn(
+              "w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-300",
+              isActive && "bg-white/20 scale-110",
+              !isActive && !isLocked && "bg-white/10",
+              isLocked && "bg-white/5"
+            )}>
+              {isLocked ? (
+                <Lock className="w-4 h-4 text-white/30" />
+              ) : (
+                <span className={cn(
+                  isActive && "animate-sway",
+                )} style={{ display: 'inline-block' }}>
+                  {path.icon}
+                </span>
+              )}
+            </div>
+
+            {/* Label */}
             <span className={cn(
-              "text-lg transition-transform duration-300",
-              isActive && "animate-sway"
-            )} style={{ display: 'inline-block' }}>
-              {path.icon}
+              "text-[10px] font-bold font-thai leading-tight text-center",
+              isActive ? "text-white" : isLocked ? "text-white/20" : "text-white/50"
+            )}>
+              {shortLabels[path.id] || path.nameThai}
             </span>
-            <span className="text-xs font-bold">{path.nameThai}</span>
-            {!isLocked && progress >= 0 && (
+
+            {/* Progress badge */}
+            {!isLocked && progress > 0 && (
               <span className={cn(
-                "text-[10px] font-bold px-1.5 py-0.5 rounded-full",
-                isActive ? "bg-white/20 text-white" : "bg-white/10 text-white/40"
+                "text-[9px] font-bold px-1.5 py-0.5 rounded-full -mt-0.5",
+                isActive ? "bg-white/20 text-white" : "bg-white/10 text-white/30"
               )}>
                 {progress}%
               </span>
-            )}
-            {isLocked && <Lock className="w-3 h-3 ml-0.5" />}
-            {/* Active indicator dot */}
-            {isActive && (
-              <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
             )}
           </button>
         );
