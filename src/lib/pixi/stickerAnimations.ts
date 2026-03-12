@@ -6,6 +6,7 @@
  */
 import { Container, Graphics, Ticker } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
+import type { CharacterPose } from "@/types/classroom";
 import {
   drawLineStickerCharacter,
   StickerEmotion,
@@ -66,6 +67,7 @@ export function setupStickerBlink(
   ticker: Ticker,
   equipped: EquippedItems,
   emotion: StickerEmotion,
+  pose: CharacterPose = "idle",
 ): () => void {
   let elapsed = 0;
   let blinkFrame = 0; // 0=open, 1=half, 2=closed
@@ -97,7 +99,7 @@ export function setupStickerBlink(
 
     if (newFrame !== blinkFrame) {
       blinkFrame = newFrame;
-      drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, 0, blinkFrame);
+      drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, 0, blinkFrame, pose);
     }
 
     if (progress >= 1) {
@@ -114,7 +116,7 @@ export function setupStickerBlink(
   return () => {
     ticker.remove(update);
     if (blinkFrame !== 0) {
-      drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, 0, 0);
+      drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, 0, 0, pose);
     }
   };
 }
@@ -191,18 +193,30 @@ export function setupStickerWalkCycle(
   ticker: Ticker,
   equipped: EquippedItems,
   emotion: StickerEmotion,
+  pose: CharacterPose = "idle",
 ): () => void {
   let elapsed = 0;
-  const FRAME_DURATION = 9; // ~150ms at 60fps
+  let totalTime = 0;
+  const FRAME_DURATION = 5; // ~83ms at 60fps → 12 FPS walk cycle
   let seqIndex = 0;
   let currentFrame = 0;
   const baseY = characterContainer.y;
+  const baseScaleX = characterContainer.scale.x;
+  const baseScaleY = characterContainer.scale.y;
 
   const update = (dt: Ticker) => {
     elapsed += dt.deltaTime;
+    totalTime += dt.deltaTime;
 
-    // Walk bounce
-    characterContainer.y = baseY + Math.abs(Math.sin(elapsed * 0.15)) * -1;
+    // Wobble Y — gentle sine bounce like game characters
+    const wobble = Math.sin(totalTime * 0.3) * 1.2;
+    characterContainer.y = baseY + wobble;
+
+    // Squash-stretch synced with steps
+    const squash = Math.sin(totalTime * 0.3) * 0.02;
+    const signX = baseScaleX < 0 ? -1 : 1;
+    characterContainer.scale.x = (Math.abs(baseScaleX) + squash) * signX;
+    characterContainer.scale.y = baseScaleY - squash;
 
     if (elapsed >= FRAME_DURATION) {
       elapsed = 0;
@@ -211,7 +225,7 @@ export function setupStickerWalkCycle(
 
       if (newFrame !== currentFrame) {
         currentFrame = newFrame;
-        drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, currentFrame);
+        drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, currentFrame, 0, pose);
       }
     }
   };
@@ -221,7 +235,9 @@ export function setupStickerWalkCycle(
   return () => {
     ticker.remove(update);
     characterContainer.y = baseY;
-    drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, 0);
+    characterContainer.scale.x = baseScaleX;
+    characterContainer.scale.y = baseScaleY;
+    drawLineStickerCharacter(characterContainer, equipped, GRID_H, emotion, 0, 0, pose);
   };
 }
 

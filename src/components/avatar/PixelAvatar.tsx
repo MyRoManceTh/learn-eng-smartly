@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useMemo } from "react";
 import { Application, Container } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
+import type { CharacterPose } from "@/types/classroom";
 import { createPixelApp } from "@/lib/pixi/pixiSetup";
 import {
   drawLineStickerCharacter,
@@ -29,6 +30,7 @@ interface PixelAvatarProps {
   walking?: boolean;
   direction?: "left" | "right";
   emotion?: StickerEmotion;
+  pose?: CharacterPose;
 }
 
 const INTERNAL_W = GRID_W; // 64
@@ -49,6 +51,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   walking = false,
   direction = "right",
   emotion = "idle",
+  pose = "idle",
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<Application | null>(null);
@@ -88,7 +91,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       characterRef.current = character;
 
       // Draw LINE sticker character
-      drawLineStickerCharacter(character, equipped, INTERNAL_H, emotion);
+      drawLineStickerCharacter(character, equipped, INTERNAL_H, emotion, 0, 0, pose);
 
       if (animated) {
         // Idle bounce + squash-stretch
@@ -96,7 +99,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
         cleanupFnsRef.current.push(cleanIdle);
 
         // Natural eye blink
-        const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion);
+        const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion, pose);
         cleanupFnsRef.current.push(cleanBlink);
       }
 
@@ -147,7 +150,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
     if (equippedKey === prevEquippedRef.current) return;
 
-    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion);
+    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion, 0, 0, pose);
 
     if (prevEquippedRef.current !== "") {
       playStickerEquipTransition(characterRef.current, appRef.current.ticker);
@@ -161,7 +164,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
     if (emotion === prevEmotionRef.current) return;
 
-    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion);
+    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion, 0, 0, pose);
 
     // Play reaction animation
     playStickerEmotionReaction(characterRef.current, appRef.current.ticker, emotion);
@@ -185,7 +188,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       const cleanIdle = setupStickerIdle(character, app.ticker);
       cleanupFnsRef.current.push(cleanIdle);
 
-      const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion);
+      const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion, pose);
       cleanupFnsRef.current.push(cleanBlink);
     }
 
@@ -207,7 +210,13 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       const cleanHearts = setupFloatingHearts(app.stage, app.ticker, INTERNAL_H);
       cleanupFnsRef.current.push(cleanHearts);
     }
-  }, [evolutionStage, isRainbow, emotion]);
+  }, [evolutionStage, isRainbow, emotion, pose]);
+
+  // Redraw when pose changes
+  useEffect(() => {
+    if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
+    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion, 0, 0, pose);
+  }, [pose]);
 
   // Walk cycle animation
   useEffect(() => {
@@ -222,6 +231,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
         appRef.current.ticker,
         equipped,
         emotion,
+        pose,
       );
       walkCleanupRef.current = cleanup;
     }
@@ -230,7 +240,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       walkCleanupRef.current?.();
       walkCleanupRef.current = null;
     };
-  }, [walking, equippedKey, emotion]);
+  }, [walking, equippedKey, emotion, pose]);
 
   // Direction flip
   useEffect(() => {

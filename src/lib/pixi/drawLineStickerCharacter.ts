@@ -9,6 +9,7 @@ import { Container, Graphics } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import { getItemById } from "@/data/avatarItems";
 import { parseColor, darkenColor, lightenColor } from "./colorUtils";
+import type { CharacterPose } from "@/types/classroom";
 
 // ─── Canvas dimensions ───
 export const GRID_W = 64;
@@ -88,6 +89,7 @@ export function drawLineStickerCharacter(
   emotion: StickerEmotion = "idle",
   walkFrame: number = 0,
   blinkFrame: number = 0,
+  pose: CharacterPose = "idle",
 ): void {
   container.removeChildren();
   const c = resolveColors(equipped);
@@ -100,26 +102,50 @@ export function drawLineStickerCharacter(
   const rOff = walkFrame === 1 ? 3 : walkFrame === 2 ? -3 : 0;
 
   // Draw order (back → front)
-  drawShadow(g);
+  drawShadow(g, pose);
   drawAccessoryBack(g, equipped.accessory, c);
-  drawLegs(g, c, lOff, rOff, equipped.pants);
-  drawShoes(g, c, lOff, rOff, equipped.shoes);
+
+  if (pose === "sitting") {
+    drawSittingLegs(g, c, equipped.pants);
+    drawSittingShoes(g, c, equipped.shoes);
+  } else {
+    drawLegs(g, c, lOff, rOff, equipped.pants);
+    drawShoes(g, c, lOff, rOff, equipped.shoes);
+  }
+
   drawBody(g, c, equipped.shirt);
-  drawArms(g, c, walkFrame);
+
+  if (pose === "reading") {
+    drawReadingArms(g, c);
+  } else if (pose === "sitting") {
+    drawSittingArms(g, c);
+  } else {
+    drawArms(g, c, walkFrame);
+  }
+
   drawNeck(g, c);
   drawHead(g, c);
   if (!hasHat) drawHair(g, hairStyle, c);
   if (hasHat) drawHat(g, equipped.hat!, c);
   drawFace(g, c, emotion, blinkFrame, equipped.accessory);
   drawAccessoryFront(g, equipped.accessory, c);
+
+  if (pose === "reading") {
+    drawBook(g);
+  }
 }
 
 // ═══════════════════════════════════════════
 // SHADOW
 // ═══════════════════════════════════════════
 
-function drawShadow(g: Graphics) {
-  g.ellipse(CX, 77, 14, 2.5).fill({ color: 0x000000, alpha: 0.12 });
+function drawShadow(g: Graphics, pose: CharacterPose = "idle") {
+  if (pose === "sitting") {
+    // Wider shadow for sitting pose
+    g.ellipse(CX, 77, 18, 3).fill({ color: 0x000000, alpha: 0.1 });
+  } else {
+    g.ellipse(CX, 77, 14, 2.5).fill({ color: 0x000000, alpha: 0.12 });
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -671,6 +697,128 @@ function drawAccessoryBack(g: Graphics, accId: string | null, c: Colors) {
       .stroke({ color: darkenColor(c.acc, 0.2), width: OL * 0.5 });
   }
 }
+
+// ═══════════════════════════════════════════
+// SITTING POSE — bent legs, resting arms
+// ═══════════════════════════════════════════
+
+function drawSittingLegs(g: Graphics, c: Colors, pantsId: string) {
+  const isShorts = pantsId.includes("shorts");
+  const isSkirt = pantsId.includes("skirt");
+  const thighW = 12;
+  const thighH = 7;
+
+  if (isSkirt) {
+    // Skirt draped over thighs
+    g.moveTo(BODY_CX - BODY_W / 2, LEG_TOP)
+      .lineTo(BODY_CX - BODY_W / 2 - 6, LEG_TOP + 8)
+      .lineTo(BODY_CX + BODY_W / 2 + 6, LEG_TOP + 8)
+      .lineTo(BODY_CX + BODY_W / 2, LEG_TOP).closePath().fill(c.pants);
+    g.moveTo(BODY_CX - BODY_W / 2, LEG_TOP)
+      .lineTo(BODY_CX - BODY_W / 2 - 6, LEG_TOP + 8)
+      .lineTo(BODY_CX + BODY_W / 2 + 6, LEG_TOP + 8)
+      .lineTo(BODY_CX + BODY_W / 2, LEG_TOP).closePath()
+      .stroke({ color: c.outline, width: OL * 0.7 });
+    // Calves below skirt
+    g.roundRect(CX - 10, LEG_TOP + 8, 7, 6, 2).fill(c.skin);
+    g.roundRect(CX + 3, LEG_TOP + 8, 7, 6, 2).fill(c.skin);
+    return;
+  }
+
+  // Thighs (wider, going forward)
+  g.roundRect(CX - 13, LEG_TOP, thighW, thighH, 3).fill(c.pants);
+  g.roundRect(CX - 13, LEG_TOP, thighW, thighH, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.roundRect(CX + 1, LEG_TOP, thighW, thighH, 3).fill(c.pantsShade);
+  g.roundRect(CX + 1, LEG_TOP, thighW, thighH, 3).stroke({ color: c.outline, width: OL * 0.7 });
+
+  // Calves hanging down
+  const calfTop = LEG_TOP + thighH - 2;
+  const calfH = isShorts ? 5 : 7;
+  const calfFill = isShorts ? c.skin : c.pants;
+  const calfFillR = isShorts ? c.skin : c.pantsShade;
+
+  g.roundRect(CX - 10, calfTop, 7, calfH, 2).fill(calfFill);
+  g.roundRect(CX - 10, calfTop, 7, calfH, 2).stroke({ color: c.outline, width: OL * 0.6 });
+  g.roundRect(CX + 3, calfTop, 7, calfH, 2).fill(calfFillR);
+  g.roundRect(CX + 3, calfTop, 7, calfH, 2).stroke({ color: c.outline, width: OL * 0.6 });
+}
+
+function drawSittingShoes(g: Graphics, c: Colors, _shoesId: string) {
+  const sy = LEG_TOP + 12;
+  const sw = 9, sh = 4;
+
+  g.roundRect(CX - 11, sy, sw, sh, 2).fill(c.shoes);
+  g.roundRect(CX - 11, sy, sw, sh, 2).stroke({ color: c.outline, width: OL * 0.6 });
+  g.roundRect(CX + 2, sy, sw, sh, 2).fill(c.shoesShade);
+  g.roundRect(CX + 2, sy, sw, sh, 2).stroke({ color: c.outline, width: OL * 0.6 });
+}
+
+function drawSittingArms(g: Graphics, c: Colors) {
+  const armY = BODY_TOP + 3;
+  const armW = 7;
+  const handR = 3;
+
+  // Left arm — resting on thigh
+  const lx = BODY_CX - BODY_W / 2 - armW + 2;
+  g.roundRect(lx, armY, armW, ARM_LEN - 3, 3).fill(c.shirt);
+  g.roundRect(lx, armY, armW, ARM_LEN - 3, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.circle(lx + armW / 2 + 1, armY + ARM_LEN - 2, handR).fill(c.skin);
+  g.circle(lx + armW / 2 + 1, armY + ARM_LEN - 2, handR).stroke({ color: c.outline, width: OL * 0.6 });
+
+  // Right arm — resting on thigh
+  const rx = BODY_CX + BODY_W / 2 - 1;
+  g.roundRect(rx, armY, armW, ARM_LEN - 3, 3).fill(c.shirtShade);
+  g.roundRect(rx, armY, armW, ARM_LEN - 3, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.circle(rx + armW / 2 - 1, armY + ARM_LEN - 2, handR).fill(c.skinShade);
+  g.circle(rx + armW / 2 - 1, armY + ARM_LEN - 2, handR).stroke({ color: c.outline, width: OL * 0.6 });
+}
+
+// ═══════════════════════════════════════════
+// READING POSE — arms hold a book
+// ═══════════════════════════════════════════
+
+function drawReadingArms(g: Graphics, c: Colors) {
+  const armY = BODY_TOP + 1;
+  const armW = 7;
+  const handR = 3;
+
+  // Left arm — angled inward to hold book
+  const lx = BODY_CX - BODY_W / 2 - armW + 3;
+  g.roundRect(lx, armY, armW, ARM_LEN - 4, 3).fill(c.shirt);
+  g.roundRect(lx, armY, armW, ARM_LEN - 4, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.circle(lx + armW - 1, armY + ARM_LEN - 5, handR).fill(c.skin);
+  g.circle(lx + armW - 1, armY + ARM_LEN - 5, handR).stroke({ color: c.outline, width: OL * 0.6 });
+
+  // Right arm — angled inward to hold book
+  const rx = BODY_CX + BODY_W / 2 - 3;
+  g.roundRect(rx, armY, armW, ARM_LEN - 4, 3).fill(c.shirtShade);
+  g.roundRect(rx, armY, armW, ARM_LEN - 4, 3).stroke({ color: c.outline, width: OL * 0.7 });
+  g.circle(rx + 1, armY + ARM_LEN - 5, handR).fill(c.skinShade);
+  g.circle(rx + 1, armY + ARM_LEN - 5, handR).stroke({ color: c.outline, width: OL * 0.6 });
+}
+
+function drawBook(g: Graphics) {
+  // Small book held in front at chest level
+  const bx = CX - 6;
+  const by = BODY_TOP + 3;
+  const bw = 12;
+  const bh = 9;
+
+  // Book cover (blue)
+  g.roundRect(bx, by, bw, bh, 1.5).fill(0x42a5f5);
+  // Pages (white edge)
+  g.roundRect(bx + bw - 2, by + 1, 2, bh - 2, 0.5).fill(0xfafafa);
+  // Outline
+  g.roundRect(bx, by, bw, bh, 1.5).stroke({ color: OL_COLOR, width: 1 });
+  // Text lines
+  g.moveTo(bx + 2, by + 2.5).lineTo(bx + bw - 3, by + 2.5).stroke({ color: 0x1565c0, width: 0.5 });
+  g.moveTo(bx + 2, by + 4.5).lineTo(bx + bw - 3, by + 4.5).stroke({ color: 0x1565c0, width: 0.5 });
+  g.moveTo(bx + 2, by + 6.5).lineTo(bx + bw - 4, by + 6.5).stroke({ color: 0x1565c0, width: 0.5 });
+}
+
+// ═══════════════════════════════════════════
+// ACCESSORIES
+// ═══════════════════════════════════════════
 
 function drawAccessoryFront(g: Graphics, accId: string | null, c: Colors) {
   if (!accId) return;

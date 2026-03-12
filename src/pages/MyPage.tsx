@@ -15,7 +15,7 @@ import { roomItems, getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/r
 import { getItemById } from "@/data/avatarItems";
 
 // Components
-import PixelRoom from "@/components/room/PixelRoom";
+import PixelClassroom from "@/components/classroom/PixelClassroom";
 import PetShop from "@/components/room/PetShop";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
@@ -375,11 +375,12 @@ const MyPage = () => {
 
       {/* === ROOM VIEW (8-bit area) === */}
       <div className="max-w-3xl mx-auto px-4 mt-4 mb-3">
-        <PixelRoom
+        <PixelClassroom
           equipped={equipped}
           room={room}
           evolutionStage={evolutionStage.stage}
           size="lg"
+          onZoneNavigate={(route) => navigate(route)}
         />
       </div>
 
