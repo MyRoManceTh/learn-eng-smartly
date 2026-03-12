@@ -1,5 +1,5 @@
 import { SkillTreeModule } from "@/data/skillTreeData";
-import { CheckCircle2, Lock, Play, Star } from "lucide-react";
+import { Lock, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SkillTreeNodeProps {
@@ -11,60 +11,61 @@ interface SkillTreeNodeProps {
   onClick: () => void;
 }
 
-const levelColorMap: Record<number, {
-  bg: string; border: string; text: string; badge: string; glow: string;
-  ring: string; shadow: string;
+// Level → cartoon color themes
+const levelTheme: Record<number, {
+  bg: string; border: string; shadow: string; glow: string;
+  ring: string; starColor: string; label: string;
 }> = {
   1: {
-    bg: "bg-purple-500/10",
-    border: "border-purple-500/50",
-    text: "text-purple-400",
-    badge: "bg-purple-500 text-white",
-    glow: "shadow-purple-500/30",
-    ring: "stroke-purple-500",
-    shadow: "shadow-[0_0_20px_rgba(168,85,247,0.3)]",
+    bg: "bg-gradient-to-br from-violet-400 to-purple-600",
+    border: "border-violet-300",
+    shadow: "shadow-[0_6px_0_0_rgb(109,40,217)]",
+    glow: "shadow-[0_0_24px_rgba(139,92,246,0.5)]",
+    ring: "stroke-violet-400",
+    starColor: "text-amber-400 fill-amber-400",
+    label: "text-violet-300",
   },
   2: {
-    bg: "bg-blue-500/10",
-    border: "border-blue-500/50",
-    text: "text-blue-400",
-    badge: "bg-blue-500 text-white",
-    glow: "shadow-blue-500/30",
-    ring: "stroke-blue-500",
-    shadow: "shadow-[0_0_20px_rgba(59,130,246,0.3)]",
+    bg: "bg-gradient-to-br from-sky-400 to-blue-600",
+    border: "border-sky-300",
+    shadow: "shadow-[0_6px_0_0_rgb(29,78,216)]",
+    glow: "shadow-[0_0_24px_rgba(56,189,248,0.5)]",
+    ring: "stroke-sky-400",
+    starColor: "text-amber-400 fill-amber-400",
+    label: "text-sky-300",
   },
   3: {
-    bg: "bg-green-500/10",
-    border: "border-green-500/50",
-    text: "text-green-400",
-    badge: "bg-green-500 text-white",
-    glow: "shadow-green-500/30",
-    ring: "stroke-green-500",
-    shadow: "shadow-[0_0_20px_rgba(34,197,94,0.3)]",
+    bg: "bg-gradient-to-br from-emerald-400 to-green-600",
+    border: "border-emerald-300",
+    shadow: "shadow-[0_6px_0_0_rgb(21,128,61)]",
+    glow: "shadow-[0_0_24px_rgba(52,211,153,0.5)]",
+    ring: "stroke-emerald-400",
+    starColor: "text-amber-400 fill-amber-400",
+    label: "text-emerald-300",
   },
   4: {
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/50",
-    text: "text-amber-400",
-    badge: "bg-amber-500 text-white",
-    glow: "shadow-amber-500/30",
-    ring: "stroke-amber-500",
-    shadow: "shadow-[0_0_20px_rgba(245,158,11,0.3)]",
+    bg: "bg-gradient-to-br from-amber-400 to-orange-600",
+    border: "border-amber-300",
+    shadow: "shadow-[0_6px_0_0_rgb(194,65,12)]",
+    glow: "shadow-[0_0_24px_rgba(251,191,36,0.5)]",
+    ring: "stroke-amber-400",
+    starColor: "text-amber-400 fill-amber-400",
+    label: "text-amber-300",
   },
   5: {
-    bg: "bg-red-500/10",
-    border: "border-red-500/50",
-    text: "text-red-400",
-    badge: "bg-red-500 text-white",
-    glow: "shadow-red-500/30",
-    ring: "stroke-red-500",
-    shadow: "shadow-[0_0_20px_rgba(239,68,68,0.3)]",
+    bg: "bg-gradient-to-br from-rose-400 to-red-600",
+    border: "border-rose-300",
+    shadow: "shadow-[0_6px_0_0_rgb(185,28,28)]",
+    glow: "shadow-[0_0_24px_rgba(251,113,133,0.5)]",
+    ring: "stroke-rose-400",
+    starColor: "text-amber-400 fill-amber-400",
+    label: "text-rose-300",
   },
 };
 
-// SVG circular progress ring
-const ProgressRing = ({ progress, size = 52, strokeWidth = 3, color }: {
-  progress: number; size?: number; strokeWidth?: number; color: string;
+// Progress ring SVG
+const ProgressRing = ({ progress, size = 80, strokeWidth = 4, colorClass }: {
+  progress: number; size?: number; strokeWidth?: number; colorClass: string;
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -72,19 +73,17 @@ const ProgressRing = ({ progress, size = 52, strokeWidth = 3, color }: {
 
   return (
     <svg width={size} height={size} className="absolute inset-0 -rotate-90">
-      {/* Track */}
       <circle
         cx={size / 2} cy={size / 2} r={radius}
         fill="none" strokeWidth={strokeWidth}
         className="stroke-white/10"
       />
-      {/* Progress */}
       {progress > 0 && (
         <circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="none" strokeWidth={strokeWidth}
           strokeLinecap="round"
-          className={cn(color, "transition-all duration-700 ease-out")}
+          className={cn(colorClass, "transition-all duration-700 ease-out")}
           strokeDasharray={circumference}
           strokeDashoffset={offset}
         />
@@ -101,123 +100,132 @@ const SkillTreeNode = ({
   progress,
   onClick,
 }: SkillTreeNodeProps) => {
-  const colors = levelColorMap[module.level] || levelColorMap[1];
+  const theme = levelTheme[module.level] || levelTheme[1];
   const progressPct = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
 
   return (
-    <button
-      onClick={onClick}
-      disabled={!isUnlocked}
-      className={cn(
-        "group relative flex items-center gap-3 w-full rounded-2xl p-3 transition-all duration-300 border",
-        isCompleted && cn(colors.bg, colors.border, colors.shadow),
-        isCurrent && !isCompleted && cn(colors.bg, colors.border, "animate-glow-pulse", colors.shadow),
-        isUnlocked && !isCompleted && !isCurrent && cn(
-          "bg-white/[0.03] border-white/10",
-          "hover:border-white/25 hover:bg-white/[0.06] hover:shadow-lg"
-        ),
-        !isUnlocked && "bg-white/[0.01] border-white/5 opacity-35 cursor-not-allowed"
-      )}
-    >
-      {/* Icon with SVG ring */}
-      <div className="relative w-[52px] h-[52px] flex-shrink-0">
-        <ProgressRing
-          progress={isUnlocked ? progressPct : 0}
-          color={colors.ring}
-        />
-        <div
-          className={cn(
-            "absolute inset-[4px] rounded-xl flex items-center justify-center text-xl transition-all duration-300",
-            isCompleted && cn(colors.badge),
-            isCurrent && !isCompleted && cn(colors.bg, "border", colors.border),
-            isUnlocked && !isCompleted && !isCurrent && cn("bg-white/5 group-hover:scale-110"),
-            !isUnlocked && "bg-white/5"
-          )}
-        >
-          {!isUnlocked ? (
-            <Lock className="w-4 h-4 text-white/20" />
-          ) : isCompleted ? (
-            <span className="relative">
-              {module.icon}
-              <CheckCircle2 className="absolute -right-1.5 -bottom-1.5 w-4 h-4 text-white drop-shadow-md" />
-            </span>
-          ) : (
-            <span>{module.icon}</span>
-          )}
+    <div className="flex flex-col items-center gap-1.5">
+      {/* Bouncing arrow for current node */}
+      {isCurrent && !isCompleted && (
+        <div className="animate-hop text-2xl -mb-1 drop-shadow-lg">
+          👇
         </div>
+      )}
 
-        {/* Play badge for current */}
-        {isCurrent && !isCompleted && (
-          <span className={cn(
-            "absolute -right-1 -top-1 w-5 h-5 rounded-full flex items-center justify-center animate-bounce z-10",
-            colors.badge
-          )}>
-            <Play className="w-3 h-3 fill-current" />
+      {/* Main circle button */}
+      <button
+        onClick={onClick}
+        disabled={!isUnlocked}
+        className={cn(
+          "relative w-[76px] h-[76px] rounded-full transition-all duration-300 flex items-center justify-center",
+          // Completed: golden crown style
+          isCompleted && cn(
+            "bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500",
+            "border-[4px] border-amber-200",
+            "shadow-[0_6px_0_0_rgb(180,83,9),0_0_20px_rgba(251,191,36,0.4)]",
+            "hover:scale-105 active:scale-95 active:shadow-[0_2px_0_0_rgb(180,83,9)]",
+            "active:translate-y-1"
+          ),
+          // Current: vibrant + glow pulse
+          isCurrent && !isCompleted && cn(
+            theme.bg,
+            "border-[4px]", theme.border,
+            theme.shadow, theme.glow,
+            "animate-float-gentle",
+            "hover:scale-110 active:scale-95 active:translate-y-1",
+            "cursor-pointer"
+          ),
+          // Unlocked: colored but subdued
+          isUnlocked && !isCompleted && !isCurrent && cn(
+            theme.bg, "opacity-75",
+            "border-[4px] border-white/20",
+            theme.shadow,
+            "hover:opacity-100 hover:scale-105 active:scale-95 active:translate-y-1",
+            "cursor-pointer"
+          ),
+          // Locked: grey
+          !isUnlocked && cn(
+            "bg-gradient-to-br from-slate-600 to-slate-700",
+            "border-[4px] border-slate-500/50",
+            "shadow-[0_6px_0_0_rgb(51,65,85)]",
+            "opacity-50 cursor-not-allowed"
+          )
+        )}
+      >
+        {/* Progress ring (only for unlocked, non-completed) */}
+        {isUnlocked && !isCompleted && progressPct > 0 && (
+          <ProgressRing progress={progressPct} colorClass={theme.ring} />
+        )}
+
+        {/* Icon or lock */}
+        <span className={cn(
+          "relative z-10 select-none transition-transform duration-200",
+          isCompleted ? "text-3xl drop-shadow-md" : "text-2xl",
+          !isUnlocked && "grayscale"
+        )}>
+          {!isUnlocked ? (
+            <Lock className="w-6 h-6 text-slate-400" />
+          ) : (
+            module.icon
+          )}
+        </span>
+
+        {/* Completed checkmark badge */}
+        {isCompleted && (
+          <span className="absolute -right-0.5 -top-0.5 w-7 h-7 rounded-full bg-green-500 border-[3px] border-green-300 flex items-center justify-center shadow-lg z-20 animate-cartoon-pop">
+            <span className="text-sm">✓</span>
           </span>
         )}
-      </div>
 
-      {/* Info */}
-      <div className="text-left flex-1 min-w-0">
+        {/* Reward badge */}
+        {module.reward && isCompleted && (
+          <span className="absolute -left-1 -bottom-1 text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-bold shadow-md z-20 animate-cartoon-pop border-2 border-amber-300">
+            {module.reward.type === 'coins' ? '🪙' : module.reward.type === 'exp' ? '⚡' : '🎁'}
+          </span>
+        )}
+
+        {/* Sparkle effects for completed */}
+        {isCompleted && (
+          <>
+            <span className="absolute -top-2 -right-3 text-sm animate-sparkle-twinkle" style={{ animationDelay: '0ms' }}>✨</span>
+            <span className="absolute -bottom-1 -left-3 text-xs animate-sparkle-twinkle" style={{ animationDelay: '600ms' }}>⭐</span>
+          </>
+        )}
+      </button>
+
+      {/* Stars for completed modules */}
+      {isCompleted && (
+        <div className="flex items-center gap-0.5 -mt-0.5">
+          {[1, 2, 3].map((s) => (
+            <Star
+              key={s}
+              className={cn(
+                "w-4 h-4 drop-shadow-[0_0_4px_rgba(251,191,36,0.6)]",
+                progressPct >= (s / 3) * 100
+                  ? "text-amber-400 fill-amber-400"
+                  : "text-white/20 fill-white/10"
+              )}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Module name label */}
+      <div className="text-center max-w-[100px]">
         <p className={cn(
-          "text-sm font-bold font-thai truncate",
-          isCompleted ? colors.text : isUnlocked ? "text-white" : "text-white/25"
+          "text-xs font-bold font-thai leading-tight truncate",
+          isCompleted ? "text-amber-300" : isUnlocked ? "text-white/90" : "text-white/30"
         )}>
           {module.nameThai}
         </p>
-        <p className={cn(
-          "text-xs truncate",
-          isCompleted ? "text-white/50" : isUnlocked ? "text-white/35" : "text-white/15"
-        )}>
-          {module.name}
-        </p>
-
-        {/* Stars + progress count */}
-        {isUnlocked && (
-          <div className="flex items-center gap-2 mt-1">
-            {isCompleted ? (
-              <div className="flex items-center gap-0.5">
-                {[1, 2, 3].map((s) => (
-                  <Star
-                    key={s}
-                    className={cn(
-                      "w-3.5 h-3.5",
-                      progressPct >= (s / 3) * 100
-                        ? "text-amber-400 fill-amber-400 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]"
-                        : "text-white/10"
-                    )}
-                  />
-                ))}
-              </div>
-            ) : (
-              <span className="text-[10px] text-white/30 font-thai">
-                {progress.completed}/{progress.total}
-              </span>
-            )}
-          </div>
+        {/* Progress count for in-progress */}
+        {isUnlocked && !isCompleted && progress.completed > 0 && (
+          <p className="text-[10px] text-white/40 font-thai mt-0.5">
+            {progress.completed}/{progress.total}
+          </p>
         )}
       </div>
-
-      {/* Play arrow */}
-      {isUnlocked && !isCompleted && (
-        <div className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center transition-all group-hover:translate-x-0.5",
-          isCurrent ? cn(colors.badge, "shadow-lg") : "bg-white/10 group-hover:bg-white/15"
-        )}>
-          <Play className={cn(
-            "w-4 h-4 fill-current",
-            isCurrent ? "text-white" : "text-white/40"
-          )} />
-        </div>
-      )}
-
-      {/* Reward badge */}
-      {module.reward && isCompleted && (
-        <div className="absolute -right-1 -bottom-1 text-xs bg-amber-500/90 text-white px-1.5 py-0.5 rounded-lg font-bold shadow-lg backdrop-blur-sm">
-          {module.reward.type === 'coins' ? '🪙' : module.reward.type === 'exp' ? '⚡' : '🎁'}
-        </div>
-      )}
-    </button>
+    </div>
   );
 };
 

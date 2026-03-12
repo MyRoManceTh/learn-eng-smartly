@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { SkillTreeModule, getLessonsByModule, SkillTreeLesson } from "@/data/skillTreeData";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2, Lock, Play, Loader2 } from "lucide-react";
@@ -13,12 +12,15 @@ interface ModuleDetailProps {
   loadingLessonId: string | null;
 }
 
-const levelColors: Record<number, { gradient: string; dot: string; glow: string }> = {
-  1: { gradient: "from-purple-500 to-purple-400", dot: "bg-purple-500", glow: "shadow-purple-500/20" },
-  2: { gradient: "from-blue-500 to-blue-400", dot: "bg-blue-500", glow: "shadow-blue-500/20" },
-  3: { gradient: "from-green-500 to-green-400", dot: "bg-green-500", glow: "shadow-green-500/20" },
-  4: { gradient: "from-amber-500 to-amber-400", dot: "bg-amber-500", glow: "shadow-amber-500/20" },
-  5: { gradient: "from-red-500 to-red-400", dot: "bg-red-500", glow: "shadow-red-500/20" },
+const levelColors: Record<number, {
+  gradient: string; dot: string; glow: string;
+  bg: string; border: string; badge: string;
+}> = {
+  1: { gradient: "from-violet-500 to-purple-500", dot: "bg-violet-500", glow: "shadow-violet-500/20", bg: "bg-violet-500/10", border: "border-violet-500/30", badge: "bg-violet-500" },
+  2: { gradient: "from-sky-500 to-blue-500", dot: "bg-sky-500", glow: "shadow-sky-500/20", bg: "bg-sky-500/10", border: "border-sky-500/30", badge: "bg-sky-500" },
+  3: { gradient: "from-emerald-500 to-green-500", dot: "bg-emerald-500", glow: "shadow-emerald-500/20", bg: "bg-emerald-500/10", border: "border-emerald-500/30", badge: "bg-emerald-500" },
+  4: { gradient: "from-amber-500 to-orange-500", dot: "bg-amber-500", glow: "shadow-amber-500/20", bg: "bg-amber-500/10", border: "border-amber-500/30", badge: "bg-amber-500" },
+  5: { gradient: "from-rose-500 to-red-500", dot: "bg-rose-500", glow: "shadow-rose-500/20", bg: "bg-rose-500/10", border: "border-rose-500/30", badge: "bg-rose-500" },
 };
 
 const ModuleDetail = ({
@@ -32,6 +34,7 @@ const ModuleDetail = ({
   const lessons = getLessonsByModule(module.id);
   const completedCount = lessons.filter((l) => isNodeCompleted(l.id)).length;
   const colors = levelColors[module.level] || levelColors[1];
+  const progressPct = (completedCount / lessons.length) * 100;
 
   const getIsLessonUnlocked = (lesson: SkillTreeLesson, index: number) => {
     if (index === 0) return true;
@@ -54,45 +57,75 @@ const ModuleDetail = ({
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
             <div className="flex items-center gap-2 ml-auto">
-              <span className="text-lg">{module.icon}</span>
+              <span className="text-xl">{module.icon}</span>
               <span className="text-sm font-bold text-white font-thai">{module.nameThai}</span>
             </div>
           </div>
-          {/* Progress */}
-          <div className="mt-2 flex items-center gap-2">
-            <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+          {/* Progress bar - cartoon style */}
+          <div className="mt-2 relative">
+            <div className="w-full h-4 bg-white/10 rounded-full overflow-hidden border-2 border-white/10">
               <div
-                className={cn("h-full rounded-full transition-all duration-500 bg-gradient-to-r", colors.gradient)}
-                style={{ width: `${(completedCount / lessons.length) * 100}%` }}
-              />
+                className={cn(
+                  "h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r relative",
+                  colors.gradient
+                )}
+                style={{ width: `${progressPct}%` }}
+              >
+                {/* Shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" />
+              </div>
             </div>
-            <span className="text-xs text-white/50 font-thai">
+            <span className="absolute right-2 top-0.5 text-[10px] font-bold text-white drop-shadow">
               {completedCount}/{lessons.length}
             </span>
           </div>
         </div>
       </header>
 
-      {/* Module info */}
+      {/* Module info card - cartoon style */}
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4 mb-4 animate-in fade-in duration-300">
-          <h2 className="text-lg font-bold text-white">{module.name}</h2>
-          <p className="text-sm text-white/50 font-thai mt-1">
-            Level {module.level} | {lessons.length} บทเรียน
-          </p>
-          {module.reward && (
-            <p className="text-xs text-amber-400 font-thai mt-2">
-              รางวัลจบ module: {module.reward.label}
-            </p>
-          )}
+        <div className={cn(
+          "rounded-2xl border-2 p-4 mb-6 animate-cartoon-pop relative overflow-hidden",
+          colors.border, colors.bg
+        )}>
+          {/* Decorative corner circles */}
+          <div className={cn("absolute -top-4 -right-4 w-16 h-16 rounded-full opacity-20", colors.badge)} />
+          <div className={cn("absolute -bottom-3 -left-3 w-10 h-10 rounded-full opacity-10", colors.badge)} />
+
+          <div className="relative flex items-center gap-3">
+            <div className={cn(
+              "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl border-2",
+              "bg-white/10 backdrop-blur-sm",
+              colors.border
+            )}>
+              {module.icon}
+            </div>
+            <div className="flex-1">
+              <h2 className="text-base font-bold text-white">{module.name}</h2>
+              <p className="text-xs text-white/50 font-thai mt-0.5">
+                Level {module.level} · {lessons.length} บทเรียน
+              </p>
+              {module.reward && (
+                <p className="text-xs text-amber-400 font-thai mt-1 flex items-center gap-1">
+                  <span>🎁</span> รางวัล: {module.reward.label}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Lesson list with vertical connector */}
+        {/* Lesson list - cartoon path style */}
         <div className="relative">
-          {/* Vertical connector line */}
-          <div className="absolute left-[1.4rem] top-4 bottom-4 w-0.5 bg-white/10 rounded-full" />
+          {/* Vertical connector line (cartoon dashed) */}
+          <div className="absolute left-[2rem] top-4 bottom-4 w-1 rounded-full overflow-hidden">
+            <div className={cn("w-full h-full bg-white/10")} />
+            <div
+              className={cn("absolute top-0 left-0 w-full rounded-full bg-gradient-to-b", colors.gradient)}
+              style={{ height: `${progressPct}%`, transition: "height 0.7s ease-out" }}
+            />
+          </div>
 
-          <div className="flex flex-col gap-0">
+          <div className="flex flex-col gap-3">
             {lessons.map((lesson, index) => {
               const completed = isNodeCompleted(lesson.id);
               const unlocked = getIsLessonUnlocked(lesson, index);
@@ -103,61 +136,55 @@ const ModuleDetail = ({
               return (
                 <div
                   key={lesson.id}
-                  className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: `${index * 60}ms` }}
+                  className="animate-cartoon-pop"
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  {/* Connector dot */}
-                  <div className="flex items-center gap-0 mb-1 mt-1">
-                    <div className="w-[2.8rem] flex justify-center relative z-10">
-                      <span className={cn(
-                        "w-3 h-3 rounded-full border-2 transition-all",
-                        completed
-                          ? cn(colors.dot, "border-transparent shadow-md", colors.glow)
-                          : isNext
-                            ? cn(colors.dot, "border-transparent animate-pulse shadow-md", colors.glow)
-                            : "bg-slate-800 border-white/20"
-                      )} />
-                    </div>
-                  </div>
-
-                  {/* Lesson card */}
                   <button
                     onClick={() => unlocked && !isLoading && onLessonClick(lesson)}
                     disabled={!unlocked || isLoading}
                     className={cn(
-                      "w-full flex items-center gap-3 rounded-xl p-3 border transition-all duration-200 ml-[2.8rem] mr-0",
-                      "max-w-[calc(100%-2.8rem)]",
-                      completed && "bg-green-500/10 border-green-500/30",
-                      isNext && !completed && cn("bg-white/[0.06] border-white/20 shadow-lg", colors.glow),
+                      "w-full flex items-center gap-3 rounded-2xl p-3 border-2 transition-all duration-200",
+                      // Completed
+                      completed && "bg-green-500/10 border-green-500/30 hover:bg-green-500/15",
+                      // Next (current)
+                      isNext && !completed && cn(
+                        colors.bg, colors.border,
+                        "shadow-lg", colors.glow,
+                        "hover:scale-[1.02] active:scale-[0.98]"
+                      ),
+                      // Unlocked
                       unlocked && !completed && !isNext && "bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-md",
+                      // Locked
                       !unlocked && "bg-white/[0.02] border-white/5 opacity-40 cursor-not-allowed"
                     )}
                   >
-                    {/* Number */}
-                    <div
-                      className={cn(
-                        "w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 border",
-                        completed && "bg-green-500/20 border-green-500/40 text-green-400",
-                        isNext && !completed && cn("bg-white/10 border-white/20 text-white"),
-                        unlocked && !completed && !isNext && "bg-white/5 border-white/10 text-white/50",
-                        !unlocked && "bg-white/[0.02] border-white/5 text-white/20"
-                      )}
-                    >
+                    {/* Number circle */}
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0",
+                      "border-2 transition-all",
+                      completed && "bg-green-500 border-green-400 text-white shadow-[0_3px_0_0_rgb(21,128,61)]",
+                      isNext && !completed && cn(
+                        "bg-gradient-to-br text-white shadow-[0_3px_0_0_rgba(0,0,0,0.3)]",
+                        colors.gradient, colors.border
+                      ),
+                      unlocked && !completed && !isNext && "bg-white/10 border-white/10 text-white/50",
+                      !unlocked && "bg-white/5 border-white/5 text-white/20"
+                    )}>
                       {completed ? (
-                        <CheckCircle2 className="w-4 h-4" />
+                        <CheckCircle2 className="w-5 h-5" />
                       ) : !unlocked ? (
-                        <Lock className="w-3 h-3" />
+                        <Lock className="w-4 h-4" />
                       ) : isLoading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        lesson.order
+                        <span>{lesson.order}</span>
                       )}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 text-left min-w-0">
                       <p className={cn(
-                        "text-sm font-thai truncate",
+                        "text-sm font-thai font-bold truncate",
                         completed ? "text-green-300" : unlocked ? "text-white" : "text-white/30"
                       )}>
                         {lesson.topicThai}
@@ -170,18 +197,26 @@ const ModuleDetail = ({
                       </p>
                     </div>
 
-                    {/* Action */}
+                    {/* Action button */}
                     {unlocked && !completed && (
                       <div className={cn(
-                        "w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110",
-                        isNext ? cn("bg-gradient-to-r text-white shadow-md", colors.gradient) : "bg-white/10 text-white/40"
+                        "w-9 h-9 rounded-full flex items-center justify-center transition-all",
+                        "border-2 shadow-sm",
+                        isNext
+                          ? cn("bg-gradient-to-br text-white animate-float-gentle", colors.gradient, colors.border)
+                          : "bg-white/10 border-white/10 text-white/40 hover:bg-white/20"
                       )}>
                         {isLoading ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          <Play className="w-3.5 h-3.5 fill-current" />
+                          <Play className="w-4 h-4 fill-current" />
                         )}
                       </div>
+                    )}
+
+                    {/* Completed sparkle */}
+                    {completed && (
+                      <span className="text-lg animate-sparkle-twinkle">⭐</span>
                     )}
                   </button>
                 </div>
@@ -192,16 +227,16 @@ const ModuleDetail = ({
 
         {/* Module complete celebration */}
         {isModuleCompleted && (
-          <div className="mt-6 text-center py-6 rounded-xl border border-amber-500/20 bg-amber-500/5 animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">
+          <div className="mt-8 text-center py-8 rounded-2xl border-2 border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-amber-600/5 animate-cartoon-bounce relative overflow-hidden">
             {/* Confetti particles */}
             <div className="absolute inset-0 pointer-events-none">
-              {['🎊', '✨', '🌟', '💫', '⭐'].map((emoji, i) => (
+              {['🎊', '✨', '🌟', '💫', '⭐', '🎉', '🥳', '🪅'].map((emoji, i) => (
                 <span
                   key={i}
                   className="absolute animate-confetti text-lg"
                   style={{
-                    left: `${15 + i * 18}%`,
-                    animationDelay: `${i * 200}ms`,
+                    left: `${8 + i * 12}%`,
+                    animationDelay: `${i * 150}ms`,
                     bottom: '20%',
                   }}
                 >
@@ -209,13 +244,24 @@ const ModuleDetail = ({
                 </span>
               ))}
             </div>
-            <div className="text-4xl mb-2 animate-bounce">🎉</div>
-            <p className="text-amber-300 font-bold font-thai text-lg">จบ Module แล้ว!</p>
-            {module.reward && (
-              <p className="text-sm text-amber-400/70 font-thai mt-1">
-                ได้รับ: {module.reward.label}
+
+            <div className="relative z-10">
+              <div className="text-5xl mb-3 animate-hop">🏆</div>
+              <p className="text-amber-300 font-bold font-thai text-xl">
+                🎉 จบ Module แล้ว! 🎉
               </p>
-            )}
+              <p className="text-sm text-amber-400/60 font-thai mt-1">
+                {module.nameThai}
+              </p>
+              {module.reward && (
+                <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30">
+                  <span className="text-lg">🎁</span>
+                  <span className="text-sm text-amber-300 font-bold font-thai">
+                    ได้รับ: {module.reward.label}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

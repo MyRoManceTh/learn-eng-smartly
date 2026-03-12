@@ -195,6 +195,47 @@ export default {
   					opacity: '0'
   				}
   			},
+  			'cartoon-bounce': {
+  				'0%': { transform: 'scale(0) rotate(-8deg)', opacity: '0' },
+  				'40%': { transform: 'scale(1.15) rotate(3deg)', opacity: '1' },
+  				'60%': { transform: 'scale(0.9) rotate(-2deg)' },
+  				'80%': { transform: 'scale(1.05) rotate(1deg)' },
+  				'100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' }
+  			},
+  			'cartoon-pop': {
+  				'0%': { transform: 'scale(0.3)', opacity: '0' },
+  				'50%': { transform: 'scale(1.12)' },
+  				'70%': { transform: 'scale(0.95)' },
+  				'100%': { transform: 'scale(1)', opacity: '1' }
+  			},
+  			'float-gentle': {
+  				'0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+  				'25%': { transform: 'translateY(-4px) rotate(1deg)' },
+  				'75%': { transform: 'translateY(2px) rotate(-1deg)' }
+  			},
+  			'float-cloud': {
+  				'0%': { transform: 'translateX(0px)' },
+  				'50%': { transform: 'translateX(12px)' },
+  				'100%': { transform: 'translateX(0px)' }
+  			},
+  			'sparkle-twinkle': {
+  				'0%, 100%': { opacity: '0.3', transform: 'scale(0.8) rotate(0deg)' },
+  				'50%': { opacity: '1', transform: 'scale(1.2) rotate(180deg)' }
+  			},
+  			'hop': {
+  				'0%, 100%': { transform: 'translateY(0)' },
+  				'30%': { transform: 'translateY(-12px)' },
+  				'50%': { transform: 'translateY(-2px)' },
+  				'70%': { transform: 'translateY(-6px)' }
+  			},
+  			'dash-flow': {
+  				'0%': { strokeDashoffset: '20' },
+  				'100%': { strokeDashoffset: '0' }
+  			},
+  			'sway': {
+  				'0%, 100%': { transform: 'rotate(-3deg)' },
+  				'50%': { transform: 'rotate(3deg)' }
+  			},
   			'accordion-down': {
   				from: {
   					height: '0'
@@ -222,7 +263,15 @@ export default {
   			'shimmer': 'shimmer 3s linear infinite',
   			'wiggle': 'wiggle 0.3s ease-in-out',
   			'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
-  			'confetti': 'confetti 1s ease-out forwards'
+  			'confetti': 'confetti 1s ease-out forwards',
+  			'cartoon-bounce': 'cartoon-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+  			'cartoon-pop': 'cartoon-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+  			'float-gentle': 'float-gentle 4s ease-in-out infinite',
+  			'float-cloud': 'float-cloud 8s ease-in-out infinite',
+  			'sparkle-twinkle': 'sparkle-twinkle 2s ease-in-out infinite',
+  			'hop': 'hop 0.8s ease-in-out infinite',
+  			'dash-flow': 'dash-flow 1s linear infinite',
+  			'sway': 'sway 3s ease-in-out infinite'
   		}
   	}
   },

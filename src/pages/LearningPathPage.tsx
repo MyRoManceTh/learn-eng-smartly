@@ -275,7 +275,25 @@ const LearningPathPage = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 pb-20 md:pb-0">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 pb-20 md:pb-0 relative overflow-hidden">
+      {/* Decorative background stars */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <span
+            key={i}
+            className="absolute text-white/5 animate-sparkle-twinkle"
+            style={{
+              left: `${(i * 23 + 7) % 100}%`,
+              top: `${(i * 37 + 13) % 100}%`,
+              animationDelay: `${i * 400}ms`,
+              fontSize: `${8 + (i % 4) * 4}px`,
+            }}
+          >
+            ✦
+          </span>
+        ))}
+      </div>
+
       {/* Header */}
       <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -296,35 +314,59 @@ const LearningPathPage = () => {
         </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="bg-white/5 border-b border-white/10">
-        <div className="max-w-3xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between mb-1.5">
+      {/* Fun header section */}
+      <div className="bg-white/5 border-b border-white/10 relative overflow-hidden">
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          {/* Title with fun icon */}
+          <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-bold text-white font-thai flex items-center gap-2">
-              🗺️ เส้นทางการเรียน
+              <span className="text-2xl animate-sway" style={{ display: 'inline-block' }}>🗺️</span>
+              เส้นทางการผจญภัย
             </h1>
-            <span className="text-sm font-bold text-purple-300">{progressPercent}%</span>
-          </div>
-          <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${progressPercent}%` }}
-            />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
+              <span className="text-sm font-bold text-purple-300">{progressPercent}%</span>
+            </div>
           </div>
 
-          {/* Stats card */}
-          <div className="grid grid-cols-3 gap-2 mt-3">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center">
-              <p className="text-lg font-bold text-white">📚 {totalCompleted}</p>
-              <p className="text-[10px] text-white/40 font-thai">บทเรียน</p>
+          {/* Progress bar - cartoon style */}
+          <div className="relative mb-3">
+            <div className="w-full h-5 bg-white/10 rounded-full overflow-hidden border-2 border-white/10">
+              <div
+                className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-700 ease-out relative"
+                style={{ width: `${Math.max(progressPercent, 2)}%` }}
+              >
+                {/* Shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" />
+              </div>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center">
-              <p className="text-lg font-bold text-white">🏆 {totalModulesCompleted}</p>
-              <p className="text-[10px] text-white/40 font-thai">Modules</p>
+            {/* Progress character on the bar */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-700"
+              style={{ left: `${Math.max(progressPercent, 3)}%` }}
+            >
+              <span className="text-lg drop-shadow-lg">🚀</span>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-center">
-              <p className="text-lg font-bold text-white">🔥 {(profile as any)?.streak_count || 0}</p>
-              <p className="text-[10px] text-white/40 font-thai">วันติดต่อ</p>
+          </div>
+
+          {/* Fun stats cards */}
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center hover:bg-white/8 transition-colors">
+              <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '0ms' }}>
+                📚 {totalCompleted}
+              </p>
+              <p className="text-[10px] text-white/40 font-thai font-bold">บทเรียน</p>
+            </div>
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center hover:bg-white/8 transition-colors">
+              <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '100ms' }}>
+                🏆 {totalModulesCompleted}
+              </p>
+              <p className="text-[10px] text-white/40 font-thai font-bold">Modules</p>
+            </div>
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center hover:bg-white/8 transition-colors">
+              <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '200ms' }}>
+                🔥 {(profile as any)?.streak_count || 0}
+              </p>
+              <p className="text-[10px] text-white/40 font-thai font-bold">วันติดต่อ</p>
             </div>
           </div>
 
@@ -337,21 +379,21 @@ const LearningPathPage = () => {
           {profile && !(profile as any).placement_completed && (
             <button
               onClick={() => navigate("/placement")}
-              className="mt-3 w-full flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-left hover:bg-amber-500/20 transition-colors"
+              className="mt-3 w-full flex items-center gap-3 rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3 text-left hover:bg-amber-500/15 hover:scale-[1.01] active:scale-[0.99] transition-all"
             >
-              <span className="text-2xl">🏰</span>
+              <span className="text-2xl animate-float-gentle">🏰</span>
               <div className="flex-1">
                 <p className="text-sm font-bold text-amber-300 font-thai">ยังไม่ได้ทำแบบทดสอบวัดระดับ</p>
                 <p className="text-xs text-amber-400/60 font-thai">ทำเลยเพื่อเริ่มต้นที่ระดับที่เหมาะสม</p>
               </div>
-              <span className="text-amber-400 text-sm font-bold">ทำเลย →</span>
+              <span className="text-amber-400 text-sm font-bold animate-hop">ทำเลย →</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Skill Tree */}
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      {/* Skill Tree - Adventure Map */}
+      <main className="max-w-3xl mx-auto px-4 py-6 relative">
         <SkillTreeMap
           modules={pathModules}
           isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
