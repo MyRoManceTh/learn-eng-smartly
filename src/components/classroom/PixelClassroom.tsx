@@ -3,7 +3,7 @@ import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem } from "@/data/roomItems";
 import { CLASSROOM_ZONES } from "@/data/classroomZones";
-import PixelAvatar from "@/components/avatar/PixelAvatar";
+import SpriteAvatar from "@/components/avatar/SpriteAvatar";
 import RoomPet from "@/components/room/RoomPet";
 import ClassroomBackground from "./ClassroomBackground";
 import ClassroomZoneComponent from "./ClassroomZone";
@@ -99,11 +99,8 @@ const PixelClassroom = ({
         }}
         onTransitionEnd={handleTransitionEnd}
       >
-        <PixelAvatar
-          equipped={equipped}
+        <SpriteAvatar
           size="sm"
-          animated
-          evolutionStage={evolutionStage}
           walking={isWalking}
           direction={direction}
           pose={currentPose}
