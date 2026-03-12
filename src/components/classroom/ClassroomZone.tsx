@@ -1,4 +1,6 @@
+import { useRef, useEffect } from "react";
 import type { ClassroomZone as ZoneType } from "@/types/classroom";
+import { generateFurnitureCanvas, getFurnitureSize } from "@/lib/pixi/furnitureSprites";
 import "@/components/ui/8bit/styles/retro.css";
 
 interface ClassroomZoneProps {
@@ -8,6 +10,30 @@ interface ClassroomZoneProps {
 }
 
 const ClassroomZone = ({ zone, active, onClick }: ClassroomZoneProps) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawnRef = useRef(false);
+
+  // Draw pixel furniture onto canvas
+  useEffect(() => {
+    if (drawnRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const furnitureCanvas = generateFurnitureCanvas(zone.id);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(furnitureCanvas, 0, 0);
+    drawnRef.current = true;
+  }, [zone.id]);
+
+  const size = getFurnitureSize(zone.id);
+  // Scale 3× for display (pixel art looks good at integer scales)
+  const displayW = size.w * 2;
+  const displayH = size.h * 2;
+
   return (
     <div
       className={`absolute cursor-pointer group transition-transform duration-150 ${
@@ -17,7 +43,6 @@ const ClassroomZone = ({ zone, active, onClick }: ClassroomZoneProps) => {
         left: zone.furniturePosition.left,
         bottom: zone.furniturePosition.bottom,
         zIndex: zone.furniturePosition.zIndex,
-        transform: `scale(${zone.furniturePosition.scale || 1})`,
       }}
       onClick={(e) => {
         e.stopPropagation();
@@ -30,28 +55,25 @@ const ClassroomZone = ({ zone, active, onClick }: ClassroomZoneProps) => {
       {/* Hover glow effect */}
       <div className="absolute -inset-2 rounded-lg bg-yellow-200/0 group-hover:bg-yellow-200/30 transition-colors duration-300 group-hover:animate-pulse" />
 
-      {/* Main furniture emoji */}
+      {/* Pixel art furniture */}
       <div className="relative">
-        <span className="text-2xl md:text-3xl block drop-shadow-lg">{zone.furnitureEmoji}</span>
-        {/* Shadow under furniture */}
-        <div className="w-5 h-1.5 mx-auto -mt-0.5 rounded-full bg-black/15 blur-[2px]" />
-      </div>
-
-      {/* Decor emojis */}
-      {zone.decorEmojis?.map((emoji, i) => (
-        <span
-          key={i}
-          className="absolute text-xs md:text-sm opacity-70"
+        <canvas
+          ref={canvasRef}
+          width={size.w}
+          height={size.h}
           style={{
-            top: i === 0 ? "-8px" : "auto",
-            bottom: i === 1 ? "-4px" : "auto",
-            right: i === 0 ? "-12px" : "auto",
-            left: i === 1 ? "-10px" : "auto",
+            width: displayW,
+            height: displayH,
+            imageRendering: "pixelated",
           }}
-        >
-          {emoji}
-        </span>
-      ))}
+          className="drop-shadow-lg"
+        />
+        {/* Shadow under furniture */}
+        <div
+          className="mx-auto -mt-0.5 rounded-full bg-black/15 blur-[2px]"
+          style={{ width: displayW * 0.7, height: 4 }}
+        />
+      </div>
 
       {/* Zone label */}
       <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">

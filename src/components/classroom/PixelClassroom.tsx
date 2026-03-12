@@ -4,7 +4,7 @@ import { RoomLayout } from "@/types/room";
 import { getRoomItem } from "@/data/roomItems";
 import { CLASSROOM_ZONES } from "@/data/classroomZones";
 import SpriteAvatar from "@/components/avatar/SpriteAvatar";
-import RoomPet from "@/components/room/RoomPet";
+import PixelPet from "./PixelPet";
 import ClassroomBackground from "./ClassroomBackground";
 import ClassroomZoneComponent from "./ClassroomZone";
 import ClassroomSpeechBubble from "./ClassroomSpeechBubble";
@@ -81,7 +81,7 @@ const PixelClassroom = ({
 
       {/* Pets */}
       {petItems.map((pet) =>
-        pet ? <RoomPet key={pet.id} pet={pet} charX={charX} /> : null,
+        pet ? <PixelPet key={pet.id} pet={pet} charX={charX} /> : null,
       )}
 
       {/* Speech bubble */}
@@ -100,6 +100,7 @@ const PixelClassroom = ({
         onTransitionEnd={handleTransitionEnd}
       >
         <SpriteAvatar
+          equipped={equipped}
           size="sm"
           walking={isWalking}
           direction={direction}

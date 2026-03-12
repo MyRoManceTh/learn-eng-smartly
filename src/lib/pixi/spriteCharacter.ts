@@ -3,16 +3,29 @@
  *
  * Takes a sprite sheet canvas (from studentSpriteSheet.ts) and creates
  * an animated PixiJS character with pose switching.
+ *
+ * Supports EquippedItems via SpritePalette for dynamic colors
+ * and equipment overlays (hair/hat/accessory).
  */
 
 import { Container, Texture, Sprite, Ticker } from "pixi.js";
 import type { CharacterPose } from "@/types/classroom";
+import type { EquippedItems } from "@/types/avatar";
 import {
   generateStudentSpriteSheet,
   SPRITE_FRAME_W,
   SPRITE_FRAME_H,
   type SpriteSheetData,
+  type EquipmentOverlay,
 } from "./studentSpriteSheet";
+import {
+  resolveSpritePalette,
+  resolveHairStyle,
+  resolveHatId,
+  resolveHatColor,
+  resolveAccessoryId,
+  resolveAccessoryColor,
+} from "./spriteColors";
 
 /** Maps CharacterPose → sprite sheet animation name */
 const POSE_ANIM_MAP: Record<CharacterPose, string> = {
@@ -37,13 +50,45 @@ export interface SpriteCharacterState {
   destroy: () => void;
 }
 
-let _cachedSheet: SpriteSheetData | null = null;
+/** Cache sprite sheets by equipment key to avoid re-generating */
+const _sheetCache = new Map<string, SpriteSheetData>();
+const MAX_CACHE_SIZE = 10;
 
-function getSpriteSheet(): SpriteSheetData {
-  if (!_cachedSheet) {
-    _cachedSheet = generateStudentSpriteSheet();
+function getEquipKey(equipped?: EquippedItems): string {
+  if (!equipped) return "__default__";
+  return JSON.stringify(equipped);
+}
+
+function resolveEquipOverlay(equipped?: EquippedItems): EquipmentOverlay | null {
+  if (!equipped) return null;
+  return {
+    hairStyle: resolveHairStyle(equipped),
+    hatId: resolveHatId(equipped),
+    hatColor: resolveHatColor(equipped),
+    accessoryId: resolveAccessoryId(equipped),
+    accessoryColor: resolveAccessoryColor(equipped),
+  };
+}
+
+function getSpriteSheet(equipped?: EquippedItems): SpriteSheetData {
+  const key = getEquipKey(equipped);
+
+  const cached = _sheetCache.get(key);
+  if (cached) return cached;
+
+  // Generate new sheet
+  const palette = equipped ? resolveSpritePalette(equipped) : undefined;
+  const overlay = resolveEquipOverlay(equipped);
+  const sheet = generateStudentSpriteSheet(palette, overlay);
+
+  // Evict oldest if cache is full
+  if (_sheetCache.size >= MAX_CACHE_SIZE) {
+    const firstKey = _sheetCache.keys().next().value;
+    if (firstKey !== undefined) _sheetCache.delete(firstKey);
   }
-  return _cachedSheet;
+  _sheetCache.set(key, sheet);
+
+  return sheet;
 }
 
 /**
@@ -53,8 +98,9 @@ function getSpriteSheet(): SpriteSheetData {
 export function createSpriteCharacter(
   ticker: Ticker,
   initialPose: CharacterPose = "idle",
+  equipped?: EquippedItems,
 ): SpriteCharacterState {
-  const sheet = getSpriteSheet();
+  const sheet = getSpriteSheet(equipped);
   const container = new Container();
 
   // Extract frame textures from the sprite sheet canvas

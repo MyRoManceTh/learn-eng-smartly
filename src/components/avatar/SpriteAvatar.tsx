@@ -1,10 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { Application } from "pixi.js";
+import type { EquippedItems } from "@/types/avatar";
 import type { CharacterPose } from "@/types/classroom";
 import { createSpriteCharacter, type SpriteCharacterState } from "@/lib/pixi/spriteCharacter";
 import { SPRITE_FRAME_W, SPRITE_FRAME_H } from "@/lib/pixi/studentSpriteSheet";
 
 interface SpriteAvatarProps {
+  equipped?: EquippedItems;
   size?: "sm" | "md" | "lg";
   walking?: boolean;
   direction?: "left" | "right";
@@ -19,6 +21,7 @@ const SIZE_CONFIG = {
 };
 
 const SpriteAvatar: React.FC<SpriteAvatarProps> = ({
+  equipped,
   size = "md",
   walking = false,
   direction = "right",
@@ -30,6 +33,7 @@ const SpriteAvatar: React.FC<SpriteAvatarProps> = ({
   const initDoneRef = useRef(false);
 
   const config = SIZE_CONFIG[size];
+  const equippedKey = useMemo(() => equipped ? JSON.stringify(equipped) : "", [equipped]);
 
   // Initialize PixiJS app + sprite character
   useEffect(() => {
@@ -56,7 +60,7 @@ const SpriteAvatar: React.FC<SpriteAvatarProps> = ({
       appRef.current = app;
 
       const activePose = walking ? "walking" : pose;
-      const character = createSpriteCharacter(app.ticker, activePose);
+      const character = createSpriteCharacter(app.ticker, activePose, equipped);
       character.setDirection(direction);
       app.stage.addChild(character.container);
       charRef.current = character;
@@ -73,7 +77,7 @@ const SpriteAvatar: React.FC<SpriteAvatarProps> = ({
       appRef.current = null;
       initDoneRef.current = false;
     };
-  }, []);
+  }, [equippedKey]); // Re-create when equipped changes
 
   // Update pose
   useEffect(() => {

@@ -13,7 +13,7 @@ import DailyRewardModal from "@/components/daily/DailyRewardModal";
 import StreakFireDisplay from "@/components/daily/StreakFireDisplay";
 import EnergyDisplay from "@/components/daily/EnergyDisplay";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
-import PixelAvatar from "@/components/avatar/PixelAvatar";
+import SpriteAvatar from "@/components/avatar/SpriteAvatar";
 import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import { getEvolutionStage } from "@/data/evolutionStages";
 import { trackEvent } from "@/utils/analytics";
@@ -193,7 +193,7 @@ const Index = () => {
               onClick={() => navigate("/my")}
               className="shrink-0 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 p-1 shadow-inner hover:scale-105 transition-transform"
             >
-              <PixelAvatar equipped={equipped} size="sm" animated evolutionStage={evolutionStage.stage} />
+              <SpriteAvatar equipped={equipped} size="sm" />
             </button>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-muted-foreground font-thai">

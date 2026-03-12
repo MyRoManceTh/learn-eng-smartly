@@ -17,7 +17,7 @@ import { getItemById } from "@/data/avatarItems";
 // Components
 import PixelClassroom from "@/components/classroom/PixelClassroom";
 import PetShop from "@/components/room/PetShop";
-import PixelAvatar from "@/components/avatar/PixelAvatar";
+import SpriteAvatar from "@/components/avatar/SpriteAvatar";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
 import EvolutionProgressBar from "@/components/avatar/EvolutionProgressBar";
 import ShopSection from "@/components/avatar/ShopSection";
@@ -580,11 +580,9 @@ const MyPage = () => {
             <div className="space-y-4">
               {/* Avatar preview - 8-bit pixel character */}
               <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-8 shadow-lg flex justify-center items-center">
-                <PixelAvatar
+                <SpriteAvatar
                   equipped={equipped}
                   size="lg"
-                  animated
-                  evolutionStage={evolutionStage.stage}
                 />
               </div>
 
