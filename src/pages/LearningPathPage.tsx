@@ -6,7 +6,6 @@ import { useSkillTreeProgress } from "@/hooks/useSkillTreeProgress";
 import { supabase } from "@/integrations/supabase/client";
 import { sampleQuiz } from "@/data/sampleLesson";
 import {
-  skillTreeModules,
   skillTreePaths,
   getModulesByPath,
   getLessonsByModule,
@@ -19,16 +18,17 @@ import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
 import SkillTreeMap from "@/components/skilltree/SkillTreeMap";
 import ModuleDetail from "@/components/skilltree/ModuleDetail";
-import PathSwitcher from "@/components/skilltree/PathSwitcher";
+import PathSelectionScreen from "@/components/skilltree/PathSelectionScreen";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trophy, Flame, Loader2 } from "lucide-react";
+import { ArrowLeft, Trophy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
+import { cn } from "@/lib/utils";
 
 const LearningPathPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { profile } = useProfile();
+  const { profile, updateProfile } = useProfile();
   const { incrementMission } = useDailyMissions();
   const {
     isNodeCompleted,
@@ -44,6 +44,7 @@ const LearningPathPage = () => {
   const [activePath, setActivePath] = useState(
     (profile as any)?.active_path || "core"
   );
+  const [showPathSelection, setShowPathSelection] = useState(false);
   const [selectedModule, setSelectedModule] = useState<SkillTreeModule | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<SkillTreeLesson | null>(null);
   const [lesson, setLesson] = useState<any>(null);
@@ -55,24 +56,32 @@ const LearningPathPage = () => {
 
   const placementLevel = (profile as any)?.placement_level || null;
 
+  // Core A1 completion check
+  const coreLevel1Modules = getModulesByPath("core").filter((m) => m.level === 1);
+  const coreLevel1Done = coreLevel1Modules.every((m) => isModuleCompleted(m.id));
+
+  // Current specialty (non-core path)
+  const selectedSpecialty = activePath !== "core" ? activePath : null;
+  const specialtyPath = selectedSpecialty
+    ? skillTreePaths.find((p) => p.id === selectedSpecialty)
+    : null;
+
   // Modules for active path
   const pathModules = getModulesByPath(activePath);
   const totalLessons = skillTreeLessons.filter((l) =>
     pathModules.some((m) => m.id === l.moduleId)
   ).length;
 
-  // Path progress calculator
-  const getPathProgress = (pathId: string): number => {
-    const mods = getModulesByPath(pathId);
-    if (mods.length === 0) return 0;
-    const completed = mods.filter((m) => isModuleCompleted(m.id)).length;
-    return Math.round((completed / mods.length) * 100);
-  };
-
   // Find next unlocked uncompleted module in active path
   const nextModuleId = pathModules.find(
     (m) => isModuleUnlocked(m, placementLevel) && !isModuleCompleted(m.id)
   )?.id || null;
+
+  // Handle path selection from RPG screen
+  const handlePathSelect = async (pathId: string) => {
+    setActivePath(pathId);
+    await updateProfile({ active_path: pathId });
+  };
 
   // Handle module click
   const handleModuleClick = (module: SkillTreeModule) => {
@@ -131,7 +140,6 @@ const LearningPathPage = () => {
       quiz.length
     );
 
-    // Update profile
     await supabase
       .from("profiles")
       .update({
@@ -140,7 +148,6 @@ const LearningPathPage = () => {
       } as any)
       .eq("user_id", user.id);
 
-    // Track missions
     incrementMission("complete_lesson", 1);
     incrementMission("answer_quiz", quiz.length);
     incrementMission("path_node", 1);
@@ -153,20 +160,17 @@ const LearningPathPage = () => {
     const moduleLessons = getLessonsByModule(selectedModule.id);
     const currentIdx = moduleLessons.findIndex((l) => l.id === selectedLesson.id);
 
-    // Next lesson in same module
     if (currentIdx < moduleLessons.length - 1) {
       const nextLesson = moduleLessons[currentIdx + 1];
       handleLessonClick(nextLesson);
       return;
     }
 
-    // All lessons in module done → go back to module detail
     setSelectedLesson(null);
     setLesson(null);
     setShowQuiz(false);
   };
 
-  // Get next lesson label
   const getNextLessonInfo = (): { hasNext: boolean; label: string } => {
     if (!selectedLesson || !selectedModule) return { hasNext: false, label: "" };
     const moduleLessons = getLessonsByModule(selectedModule.id);
@@ -177,6 +181,18 @@ const LearningPathPage = () => {
     }
     return { hasNext: true, label: "กลับเลือกบทเรียน" };
   };
+
+  // ─── Path Selection Screen (RPG Class Selection) ──
+  if (showPathSelection) {
+    return (
+      <PathSelectionScreen
+        onSelect={handlePathSelect}
+        onBack={() => setShowPathSelection(false)}
+        currentPath={activePath}
+        isCoreLevel1Done={coreLevel1Done}
+      />
+    );
+  }
 
   // ─── Lesson View ────────────────────────────
   if (selectedLesson && selectedModule && (loading || lesson)) {
@@ -317,7 +333,7 @@ const LearningPathPage = () => {
       {/* Fun header section */}
       <div className="bg-white/5 border-b border-white/10 relative overflow-hidden">
         <div className="max-w-3xl mx-auto px-4 py-4">
-          {/* Title with fun icon */}
+          {/* Title */}
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-bold text-white font-thai flex items-center gap-2">
               <span className="text-2xl animate-sway" style={{ display: 'inline-block' }}>🗺️</span>
@@ -328,18 +344,16 @@ const LearningPathPage = () => {
             </div>
           </div>
 
-          {/* Progress bar - cartoon style */}
+          {/* Progress bar */}
           <div className="relative mb-3">
             <div className="w-full h-5 bg-white/10 rounded-full overflow-hidden border-2 border-white/10">
               <div
                 className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-700 ease-out relative"
                 style={{ width: `${Math.max(progressPercent, 2)}%` }}
               >
-                {/* Shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full" />
               </div>
             </div>
-            {/* Progress character on the bar */}
             <div
               className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-700"
               style={{ left: `${Math.max(progressPercent, 3)}%` }}
@@ -348,21 +362,21 @@ const LearningPathPage = () => {
             </div>
           </div>
 
-          {/* Fun stats cards */}
+          {/* Stats */}
           <div className="grid grid-cols-3 gap-2 mb-3">
-            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center hover:bg-white/8 transition-colors">
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '0ms' }}>
                 📚 {totalCompleted}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">บทเรียน</p>
             </div>
-            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center hover:bg-white/8 transition-colors">
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '100ms' }}>
                 🏆 {totalModulesCompleted}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">Modules</p>
             </div>
-            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center hover:bg-white/8 transition-colors">
+            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '200ms' }}>
                 🔥 {(profile as any)?.streak_count || 0}
               </p>
@@ -370,10 +384,47 @@ const LearningPathPage = () => {
             </div>
           </div>
 
-          {/* Path Switcher */}
-          <div className="mt-3">
-            <PathSwitcher activePath={activePath} onPathChange={setActivePath} getPathProgress={getPathProgress} />
-          </div>
+          {/* Specialty path indicator (shows when user has selected a specialty) */}
+          {selectedSpecialty && specialtyPath && (
+            <div className="flex items-center gap-2 mt-3">
+              <button
+                onClick={() => {
+                  setActivePath("core");
+                  updateProfile({ active_path: "core" });
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-2xl border-2 text-xs font-thai font-bold transition-all",
+                  activePath === "core"
+                    ? "bg-gradient-to-r from-purple-500/30 to-indigo-500/20 border-purple-400/40 text-white"
+                    : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
+                )}
+              >
+                <span>🏰</span> พื้นฐาน
+              </button>
+
+              <button
+                onClick={() => {
+                  setActivePath(selectedSpecialty);
+                  updateProfile({ active_path: selectedSpecialty });
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-2xl border-2 text-xs font-thai font-bold transition-all",
+                  activePath === selectedSpecialty
+                    ? cn("bg-gradient-to-r border-white/30 text-white shadow-md", specialtyPath.color)
+                    : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
+                )}
+              >
+                <span>{specialtyPath.icon}</span> {specialtyPath.nameThai}
+              </button>
+
+              <button
+                onClick={() => setShowPathSelection(true)}
+                className="ml-auto text-[10px] text-white/30 font-thai hover:text-white/60 transition-colors px-2 py-1"
+              >
+                เปลี่ยนสาย →
+              </button>
+            </div>
+          )}
 
           {/* Placement test prompt */}
           {profile && !(profile as any).placement_completed && (
@@ -402,6 +453,9 @@ const LearningPathPage = () => {
           onModuleClick={handleModuleClick}
           nextModuleId={nextModuleId}
           activePath={activePath}
+          onBranchPointClick={() => setShowPathSelection(true)}
+          isCoreLevel1Done={coreLevel1Done}
+          selectedSpecialty={selectedSpecialty}
         />
       </main>
     </div>

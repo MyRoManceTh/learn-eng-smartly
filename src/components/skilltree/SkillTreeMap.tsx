@@ -11,6 +11,10 @@ interface SkillTreeMapProps {
   onModuleClick: (module: SkillTreeModule) => void;
   nextModuleId: string | null;
   activePath?: string;
+  // Branch point (RPG class selection)
+  onBranchPointClick?: () => void;
+  isCoreLevel1Done?: boolean;
+  selectedSpecialty?: string | null;
 }
 
 // ─── Wave position calculation ──────────────────
@@ -216,6 +220,10 @@ const SkillTreeMap = ({
   getModuleProgress,
   onModuleClick,
   nextModuleId,
+  activePath,
+  onBranchPointClick,
+  isCoreLevel1Done,
+  selectedSpecialty,
 }: SkillTreeMapProps) => {
   const levels = [...new Set(modules.map((m) => m.level))].sort();
   const currentNodeRef = useRef<HTMLDivElement>(null);
@@ -344,8 +352,75 @@ const SkillTreeMap = ({
               })}
             </div>
 
-            {/* Level transition decoration */}
-            {levelIdx < levels.length - 1 && (
+            {/* Branch Point: after level 1 on core path */}
+            {level === 1 && activePath === "core" && onBranchPointClick && (
+              <div className="flex flex-col items-center gap-3 py-8">
+                {/* Connector line */}
+                <div className="w-0.5 h-6 bg-gradient-to-b from-violet-500/40 to-transparent rounded-full" />
+
+                {/* Branch point button */}
+                <button
+                  onClick={onBranchPointClick}
+                  disabled={!isCoreLevel1Done}
+                  className={cn(
+                    "relative flex flex-col items-center gap-2 px-6 py-4 rounded-3xl border-2 transition-all duration-300",
+                    isCoreLevel1Done
+                      ? cn(
+                          "bg-gradient-to-b from-amber-500/20 via-orange-500/10 to-amber-600/5",
+                          "border-amber-400/40",
+                          "shadow-[0_0_30px_rgba(251,191,36,0.2)]",
+                          "hover:scale-[1.03] active:scale-[0.97]",
+                          "animate-float-gentle cursor-pointer"
+                        )
+                      : cn(
+                          "bg-white/[0.03] border-white/10",
+                          "opacity-50 cursor-not-allowed"
+                        )
+                  )}
+                >
+                  {/* Icon */}
+                  <div className={cn(
+                    "w-16 h-16 rounded-full flex items-center justify-center text-3xl border-[3px]",
+                    isCoreLevel1Done
+                      ? "bg-gradient-to-br from-amber-400 to-orange-500 border-amber-300 shadow-[0_6px_0_0_rgb(194,65,12)]"
+                      : "bg-slate-700 border-slate-600"
+                  )}>
+                    {isCoreLevel1Done ? "⚔️" : "🔒"}
+                  </div>
+
+                  <p className={cn(
+                    "text-sm font-bold font-thai",
+                    isCoreLevel1Done ? "text-amber-300" : "text-white/30"
+                  )}>
+                    {isCoreLevel1Done ? "เลือกสายผจญภัย!" : "จบพื้นฐานก่อน"}
+                  </p>
+
+                  <p className={cn(
+                    "text-[10px] font-thai",
+                    isCoreLevel1Done ? "text-amber-400/60" : "text-white/20"
+                  )}>
+                    {isCoreLevel1Done
+                      ? (selectedSpecialty ? "กดเพื่อเปลี่ยนสาย" : "ปลดล็อคแล้ว! กดเลย")
+                      : `จบ A1 ทั้ง ${modules.filter(m => m.level === 1).length} modules`
+                    }
+                  </p>
+
+                  {/* Sparkle effects when unlocked */}
+                  {isCoreLevel1Done && (
+                    <>
+                      <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">✨</span>
+                      <span className="absolute -bottom-1 -left-2 text-sm animate-sparkle-twinkle" style={{ animationDelay: '700ms' }}>⭐</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Connector to next level */}
+                <div className="w-0.5 h-6 bg-gradient-to-b from-transparent to-white/10 rounded-full" />
+              </div>
+            )}
+
+            {/* Level transition decoration (non-core or non-level-1) */}
+            {levelIdx < levels.length - 1 && !(level === 1 && activePath === "core" && onBranchPointClick) && (
               <div className="flex items-center justify-center gap-2 py-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/10" />
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
