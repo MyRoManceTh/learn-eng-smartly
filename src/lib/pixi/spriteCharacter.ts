@@ -112,13 +112,10 @@ export function createSpriteCharacter(
     for (let i = 0; i < animDef.frameCount; i++) {
       const frameIndex = animDef.startFrame + i;
       const x = frameIndex * sheet.frameWidth;
+      const { Rectangle } = await import("pixi.js");
       const tex = new Texture({
         source: baseTexture.source,
-        frame: {
-          x, y: 0,
-          width: sheet.frameWidth,
-          height: sheet.frameHeight,
-        },
+        frame: new Rectangle(x, 0, sheet.frameWidth, sheet.frameHeight),
       });
       textures.push(tex);
     }
