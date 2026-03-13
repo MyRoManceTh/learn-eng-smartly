@@ -8,7 +8,7 @@
  * and equipment overlays (hair/hat/accessory).
  */
 
-import { Container, Texture, Sprite, Ticker } from "pixi.js";
+import { Container, Texture, Sprite, Ticker, Rectangle } from "pixi.js";
 import type { CharacterPose } from "@/types/classroom";
 import type { EquippedItems } from "@/types/avatar";
 import {
@@ -114,11 +114,7 @@ export function createSpriteCharacter(
       const x = frameIndex * sheet.frameWidth;
       const tex = new Texture({
         source: baseTexture.source,
-        frame: {
-          x, y: 0,
-          width: sheet.frameWidth,
-          height: sheet.frameHeight,
-        },
+        frame: new Rectangle(x, 0, sheet.frameWidth, sheet.frameHeight),
       });
       textures.push(tex);
     }

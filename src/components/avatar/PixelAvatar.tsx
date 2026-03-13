@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useMemo, useCallback } from "react";
 import { Application, Container } from "pixi.js";
 import { EquippedItems } from "@/types/avatar";
 import type { CharacterPose } from "@/types/classroom";
@@ -36,11 +36,10 @@ interface PixelAvatarProps {
 const INTERNAL_W = GRID_W; // 64
 const INTERNAL_H = GRID_H; // 80
 
-// CSS display sizes — pet is ~36-44px, character should be ~2x bigger
 const SIZE_CONFIG = {
-  sm: { cssWidth: 96, cssHeight: 120 },    // 1.5x — room (2x pet size)
-  md: { cssWidth: 160, cssHeight: 200 },   // 2.5x — home page
-  lg: { cssWidth: 256, cssHeight: 320 },   // 4x — avatar page
+  sm: { cssWidth: 96, cssHeight: 120 },
+  md: { cssWidth: 160, cssHeight: 200 },
+  lg: { cssWidth: 256, cssHeight: 320 },
 };
 
 const PixelAvatar: React.FC<PixelAvatarProps> = ({
@@ -58,9 +57,37 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   const characterRef = useRef<Container | null>(null);
   const cleanupFnsRef = useRef<(() => void)[]>([]);
   const walkCleanupRef = useRef<(() => void) | null>(null);
-  const prevEquippedRef = useRef<string>("");
-  const prevEmotionRef = useRef<StickerEmotion>("idle");
   const initDoneRef = useRef(false);
+
+  // Use refs for latest values so ticker callbacks always see current state
+  const equippedRef = useRef(equipped);
+  const emotionRef = useRef(emotion);
+  const poseRef = useRef(pose);
+  equippedRef.current = equipped;
+  emotionRef.current = emotion;
+  poseRef.current = pose;
+
+  // Debounced redraw to prevent multiple concurrent redraws
+  const redrawTimerRef = useRef<number | null>(null);
+  const redraw = useCallback((playTransition = false) => {
+    if (redrawTimerRef.current) cancelAnimationFrame(redrawTimerRef.current);
+    redrawTimerRef.current = requestAnimationFrame(() => {
+      redrawTimerRef.current = null;
+      if (!characterRef.current || !appRef.current) return;
+      drawLineStickerCharacter(
+        characterRef.current,
+        equippedRef.current,
+        INTERNAL_H,
+        emotionRef.current,
+        0,
+        0,
+        poseRef.current,
+      );
+      if (playTransition && appRef.current) {
+        playStickerEquipTransition(characterRef.current, appRef.current.ticker);
+      }
+    });
+  }, []);
 
   const config = SIZE_CONFIG[size];
   const equippedKey = useMemo(() => JSON.stringify(equipped), [equipped]);
@@ -90,41 +117,35 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       app.stage.addChild(character);
       characterRef.current = character;
 
-      // Draw LINE sticker character
-      drawLineStickerCharacter(character, equipped, INTERNAL_H, emotion, 0, 0, pose);
+      // Draw character (direct, no debounce for initial)
+      drawLineStickerCharacter(character, equippedRef.current, INTERNAL_H, emotionRef.current, 0, 0, poseRef.current);
 
       if (animated) {
-        // Idle bounce + squash-stretch
         const cleanIdle = setupStickerIdle(character, app.ticker);
         cleanupFnsRef.current.push(cleanIdle);
 
-        // Natural eye blink
-        const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion, pose);
+        // Blink uses refs so it always reads latest equipped/emotion/pose
+        const cleanBlink = setupStickerBlinkWithRefs(
+          character, app.ticker, equippedRef, emotionRef, poseRef,
+        );
         cleanupFnsRef.current.push(cleanBlink);
       }
 
       if (evolutionStage > 1) {
-        const cleanEvo = setupEvolutionEffects(
-          app.stage, app.ticker, evolutionStage, INTERNAL_H
-        );
+        const cleanEvo = setupEvolutionEffects(app.stage, app.ticker, evolutionStage, INTERNAL_H);
         cleanupFnsRef.current.push(cleanEvo);
       }
 
       if (isRainbow) {
-        const cleanRainbow = setupRainbowShimmer(
-          app.stage, app.ticker, INTERNAL_H, INTERNAL_H / 260
-        );
+        const cleanRainbow = setupRainbowShimmer(app.stage, app.ticker, INTERNAL_H, INTERNAL_H / 260);
         cleanupFnsRef.current.push(cleanRainbow);
       }
 
-      // Floating hearts for love emotion
       if (emotion === "love") {
         const cleanHearts = setupFloatingHearts(app.stage, app.ticker, INTERNAL_H);
         cleanupFnsRef.current.push(cleanHearts);
       }
 
-      prevEquippedRef.current = equippedKey;
-      prevEmotionRef.current = emotion;
       initDoneRef.current = true;
     };
 
@@ -132,6 +153,7 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
 
     return () => {
       destroyed = true;
+      if (redrawTimerRef.current) cancelAnimationFrame(redrawTimerRef.current);
       cleanupFnsRef.current.forEach((fn) => fn());
       cleanupFnsRef.current = [];
       walkCleanupRef.current?.();
@@ -145,32 +167,28 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     };
   }, [animated]);
 
-  // Update character when equipped changes
+  // Update character when equipped changes — debounced
+  const prevEquippedKeyRef = useRef(equippedKey);
   useEffect(() => {
-    if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
-    if (equippedKey === prevEquippedRef.current) return;
+    if (!initDoneRef.current) return;
+    if (equippedKey === prevEquippedKeyRef.current) return;
+    const isFirstChange = prevEquippedKeyRef.current !== "";
+    prevEquippedKeyRef.current = equippedKey;
+    redraw(isFirstChange);
+  }, [equippedKey, redraw]);
 
-    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion, 0, 0, pose);
-
-    if (prevEquippedRef.current !== "") {
-      playStickerEquipTransition(characterRef.current, appRef.current.ticker);
-    }
-
-    prevEquippedRef.current = equippedKey;
-  }, [equippedKey, equipped, emotion]);
-
-  // Update when emotion changes
+  // Update when emotion changes — debounced
+  const prevEmotionRef = useRef(emotion);
   useEffect(() => {
-    if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
+    if (!initDoneRef.current) return;
     if (emotion === prevEmotionRef.current) return;
-
-    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion, 0, 0, pose);
-
-    // Play reaction animation
-    playStickerEmotionReaction(characterRef.current, appRef.current.ticker, emotion);
-
     prevEmotionRef.current = emotion;
-  }, [emotion, equipped]);
+    redraw(false);
+
+    if (appRef.current && characterRef.current) {
+      playStickerEmotionReaction(characterRef.current, appRef.current.ticker, emotion);
+    }
+  }, [emotion, redraw]);
 
   // Update evolution effects when stage changes
   useEffect(() => {
@@ -188,21 +206,19 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       const cleanIdle = setupStickerIdle(character, app.ticker);
       cleanupFnsRef.current.push(cleanIdle);
 
-      const cleanBlink = setupStickerBlink(character, app.ticker, equipped, emotion, pose);
+      const cleanBlink = setupStickerBlinkWithRefs(
+        character, app.ticker, equippedRef, emotionRef, poseRef,
+      );
       cleanupFnsRef.current.push(cleanBlink);
     }
 
     if (evolutionStage > 1) {
-      const cleanEvo = setupEvolutionEffects(
-        app.stage, app.ticker, evolutionStage, INTERNAL_H
-      );
+      const cleanEvo = setupEvolutionEffects(app.stage, app.ticker, evolutionStage, INTERNAL_H);
       cleanupFnsRef.current.push(cleanEvo);
     }
 
     if (isRainbow) {
-      const cleanRainbow = setupRainbowShimmer(
-        app.stage, app.ticker, INTERNAL_H, INTERNAL_H / 260
-      );
+      const cleanRainbow = setupRainbowShimmer(app.stage, app.ticker, INTERNAL_H, INTERNAL_H / 260);
       cleanupFnsRef.current.push(cleanRainbow);
     }
 
@@ -214,11 +230,11 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
 
   // Redraw when pose changes
   useEffect(() => {
-    if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
-    drawLineStickerCharacter(characterRef.current, equipped, INTERNAL_H, emotion, 0, 0, pose);
-  }, [pose]);
+    if (!initDoneRef.current) return;
+    redraw(false);
+  }, [pose, redraw]);
 
-  // Walk cycle animation
+  // Walk cycle
   useEffect(() => {
     if (!initDoneRef.current || !appRef.current || !characterRef.current) return;
 
@@ -229,9 +245,9 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       const cleanup = setupStickerWalkCycle(
         characterRef.current,
         appRef.current.ticker,
-        equipped,
-        emotion,
-        pose,
+        equippedRef.current,
+        emotionRef.current,
+        poseRef.current,
       );
       walkCleanupRef.current = cleanup;
     }
@@ -246,7 +262,6 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
   useEffect(() => {
     if (!characterRef.current) return;
     const character = characterRef.current;
-
     if (direction === "left") {
       character.scale.x = -1;
       character.x = GRID_W;
@@ -268,5 +283,82 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     />
   );
 };
+
+/**
+ * Blink animation that reads latest state from refs instead of closures.
+ * Prevents stale equipped/emotion data from triggering unnecessary redraws.
+ */
+function setupStickerBlinkWithRefs(
+  characterContainer: Container,
+  ticker: import("pixi.js").Ticker,
+  equippedRef: React.MutableRefObject<EquippedItems>,
+  emotionRef: React.MutableRefObject<StickerEmotion>,
+  poseRef: React.MutableRefObject<CharacterPose>,
+): () => void {
+  let elapsed = 0;
+  let blinkFrame = 0;
+  let nextBlinkAt = 180 + Math.random() * 180;
+  let blinkPhase = -1;
+  const BLINK_DURATION = 8;
+
+  const update = (dt: import("pixi.js").Ticker) => {
+    elapsed += dt.deltaTime;
+
+    if (blinkPhase === -1) {
+      if (elapsed >= nextBlinkAt) {
+        blinkPhase = 0;
+        elapsed = 0;
+      }
+      return;
+    }
+
+    blinkPhase += dt.deltaTime;
+    const progress = blinkPhase / BLINK_DURATION;
+
+    let newFrame: number;
+    if (progress < 0.2) newFrame = 1;
+    else if (progress < 0.5) newFrame = 2;
+    else if (progress < 0.7) newFrame = 1;
+    else newFrame = 0;
+
+    if (newFrame !== blinkFrame) {
+      blinkFrame = newFrame;
+      // Read latest values from refs — no stale closures
+      drawLineStickerCharacter(
+        characterContainer,
+        equippedRef.current,
+        GRID_H,
+        emotionRef.current,
+        0,
+        blinkFrame,
+        poseRef.current,
+      );
+    }
+
+    if (progress >= 1) {
+      blinkPhase = -1;
+      elapsed = 0;
+      blinkFrame = 0;
+      nextBlinkAt = 180 + Math.random() * 180;
+      if (Math.random() < 0.2) nextBlinkAt = 15;
+    }
+  };
+
+  ticker.add(update);
+  return () => {
+    ticker.remove(update);
+    if (blinkFrame !== 0) {
+      drawLineStickerCharacter(
+        characterContainer,
+        equippedRef.current,
+        GRID_H,
+        emotionRef.current,
+        0,
+        0,
+        poseRef.current,
+      );
+    }
+  };
+}
 
 export default PixelAvatar;
