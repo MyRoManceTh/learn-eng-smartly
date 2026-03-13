@@ -497,7 +497,7 @@ function drawEquipHat(
       px(ctx, ox+20, oy+3, 1, 1, hatColor);
       break;
 
-    case "astronaut":
+    case "astronaut": {
       px(ctx, ox+12, oy+0, 8, 1, hatColor);
       px(ctx, ox+10, oy+1, 12, 1, hatColor);
       px(ctx, ox+9,  oy+2, 14, 1, hatColor);
@@ -516,11 +516,114 @@ function drawEquipHat(
       px(ctx, ox+9,  oy+8, 14, 1, hatColor);
       px(ctx, ox+10, oy+9, 12, 1, shadow);
       break;
+    }
+
+    case "beret":
+      // French beret — flat round cap
+      px(ctx, ox+14, oy+1, 6, 1, hatColor);
+      px(ctx, ox+12, oy+2, 9, 1, hatColor);
+      px(ctx, ox+13, oy+2, 2, 1, highlight);
+      px(ctx, ox+11, oy+3, 10, 1, hatColor);
+      px(ctx, ox+10, oy+4, 12, 1, hatColor);
+      px(ctx, ox+10, oy+5, 12, 1, shadow);
+      // stem nub on top
+      px(ctx, ox+16, oy+0, 2, 1, shadow);
+      break;
+
+    case "bucket":
+      // Bucket hat — wide brim all around
+      px(ctx, ox+14, oy+1, 4, 1, hatColor);
+      px(ctx, ox+13, oy+1, 1, 1, highlight);
+      px(ctx, ox+12, oy+2, 8, 1, hatColor);
+      px(ctx, ox+11, oy+3, 10, 1, hatColor);
+      px(ctx, ox+10, oy+4, 12, 1, hatColor);
+      // wide brim
+      px(ctx, ox+7,  oy+5, 18, 1, hatColor);
+      px(ctx, ox+7,  oy+5, 1, 1, shadow);
+      px(ctx, ox+24, oy+5, 1, 1, shadow);
+      px(ctx, ox+8,  oy+6, 16, 1, shadow);
+      break;
+
+    case "catears":
+      // Cat ears — two triangles on top of head
+      // Left ear
+      px(ctx, ox+10, oy+0, 2, 1, hatColor);
+      px(ctx, ox+9,  oy+1, 4, 1, hatColor);
+      px(ctx, ox+10, oy+1, 2, 1, highlight); // inner
+      px(ctx, ox+9,  oy+2, 4, 1, hatColor);
+      px(ctx, ox+10, oy+2, 2, 1, "#ffb6c1"); // pink inner
+      px(ctx, ox+9,  oy+3, 4, 1, hatColor);
+      // Right ear
+      px(ctx, ox+20, oy+0, 2, 1, hatColor);
+      px(ctx, ox+19, oy+1, 4, 1, hatColor);
+      px(ctx, ox+20, oy+1, 2, 1, highlight); // inner
+      px(ctx, ox+19, oy+2, 4, 1, hatColor);
+      px(ctx, ox+20, oy+2, 2, 1, "#ffb6c1"); // pink inner
+      px(ctx, ox+19, oy+3, 4, 1, hatColor);
+      break;
+
+    case "bunnyears":
+      // Bunny ears — two tall ears
+      // Left ear
+      px(ctx, ox+11, oy-4, 2, 1, hatColor);
+      px(ctx, ox+10, oy-3, 4, 1, hatColor);
+      px(ctx, ox+11, oy-3, 2, 1, "#ffb6c1"); // pink inner
+      px(ctx, ox+10, oy-2, 4, 1, hatColor);
+      px(ctx, ox+11, oy-2, 2, 1, "#ffb6c1");
+      px(ctx, ox+10, oy-1, 4, 1, hatColor);
+      px(ctx, ox+11, oy-1, 2, 1, "#ffb6c1");
+      px(ctx, ox+10, oy+0, 4, 1, hatColor);
+      px(ctx, ox+10, oy+1, 4, 1, hatColor);
+      // Right ear
+      px(ctx, ox+19, oy-4, 2, 1, hatColor);
+      px(ctx, ox+18, oy-3, 4, 1, hatColor);
+      px(ctx, ox+19, oy-3, 2, 1, "#ffb6c1");
+      px(ctx, ox+18, oy-2, 4, 1, hatColor);
+      px(ctx, ox+19, oy-2, 2, 1, "#ffb6c1");
+      px(ctx, ox+18, oy-1, 4, 1, hatColor);
+      px(ctx, ox+19, oy-1, 2, 1, "#ffb6c1");
+      px(ctx, ox+18, oy+0, 4, 1, hatColor);
+      px(ctx, ox+18, oy+1, 4, 1, hatColor);
+      break;
+
+    case "flowerband":
+      // Flower crown headband — colorful flowers
+      px(ctx, ox+9,  oy+4, 14, 1, "#4caf50"); // green vine
+      px(ctx, ox+10, oy+3, 12, 1, "#4caf50");
+      // flowers
+      px(ctx, ox+10, oy+2, 2, 2, "#ff6b9d"); // pink flower
+      px(ctx, ox+11, oy+2, 1, 1, "#ffeb3b"); // center
+      px(ctx, ox+14, oy+2, 2, 2, "#42a5f5"); // blue flower
+      px(ctx, ox+15, oy+2, 1, 1, "#ffeb3b");
+      px(ctx, ox+18, oy+2, 2, 2, "#ff6b9d"); // pink flower
+      px(ctx, ox+19, oy+2, 1, 1, "#ffeb3b");
+      px(ctx, ox+21, oy+3, 2, 1, "#42a5f5"); // small blue
+      // leaves
+      px(ctx, ox+12, oy+3, 1, 1, "#66bb6a");
+      px(ctx, ox+17, oy+3, 1, 1, "#66bb6a");
+      break;
+
+    case "tiara":
+      // Small princess tiara with gem
+      px(ctx, ox+13, oy+2, 6, 1, hatColor);
+      px(ctx, ox+14, oy+2, 1, 1, highlight);
+      px(ctx, ox+12, oy+3, 8, 1, hatColor);
+      px(ctx, ox+11, oy+4, 10, 1, shadow);
+      // peaks
+      px(ctx, ox+13, oy+1, 1, 1, hatColor);
+      px(ctx, ox+16, oy+0, 1, 1, hatColor); // center tall
+      px(ctx, ox+15, oy+1, 2, 1, hatColor);
+      px(ctx, ox+18, oy+1, 1, 1, hatColor);
+      // gem
+      px(ctx, ox+16, oy+1, 1, 1, "#e040fb"); // purple gem
+      px(ctx, ox+13, oy+2, 1, 1, "#4fc3f7"); // side gem
+      px(ctx, ox+18, oy+2, 1, 1, "#4fc3f7"); // side gem
+      break;
   }
 }
 
 /**
- * Accessory overlays (glasses, etc.) — drawn on face area.
+ * Accessory overlays — drawn on face/body area.
  */
 function drawEquipAccessory(
   ctx: CanvasRenderingContext2D,
@@ -530,9 +633,22 @@ function drawEquipAccessory(
 ) {
   if (accId.includes("glasses")) {
     drawSpriteGlasses(ctx, ox, oy, accColor);
+  } else if (accId.includes("bow")) {
+    drawSpriteBow(ctx, ox, oy, accColor);
+  } else if (accId.includes("necklace")) {
+    drawSpriteNecklace(ctx, ox, oy, accColor);
+  } else if (accId.includes("scarf")) {
+    drawSpriteScarf(ctx, ox, oy, accColor);
+  } else if (accId.includes("wand")) {
+    drawSpriteWand(ctx, ox, oy, accColor);
+  } else if (accId.includes("fairy_wings") || accId.includes("wings")) {
+    drawSpriteWings(ctx, ox, oy, accColor);
+  } else if (accId.includes("bag")) {
+    drawSpriteBag(ctx, ox, oy, accColor);
+  } else if (accId.includes("halo_stars") || accId.includes("halo")) {
+    drawSpriteStarHalo(ctx, ox, oy);
   }
-  // Back-layer accessories (cape, wings, backpack) are harder to show
-  // on a small 32×40 sprite — skip for now, they're visible on avatar page
+  // acc_teddy = decorative item, not drawn on sprite
 }
 
 function drawSpriteGlasses(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
@@ -550,6 +666,115 @@ function drawSpriteGlasses(ctx: CanvasRenderingContext2D, ox: number, oy: number
   // Temples
   px(ctx, ox+10, oy+8, 1, 1, color);
   px(ctx, ox+21, oy+8, 1, 1, color);
+}
+
+function drawSpriteBow(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
+  const shadow = darkenHex(color, 0.2);
+  const hi = lightenHex(color, 0.25);
+  // Bow on right side of head
+  // Left wing
+  px(ctx, ox+19, oy+2, 2, 1, color);
+  px(ctx, ox+18, oy+3, 3, 1, color);
+  px(ctx, ox+19, oy+3, 1, 1, hi);
+  // Center knot
+  px(ctx, ox+21, oy+2, 1, 2, shadow);
+  // Right wing
+  px(ctx, ox+22, oy+2, 2, 1, color);
+  px(ctx, ox+22, oy+3, 3, 1, color);
+  px(ctx, ox+23, oy+3, 1, 1, hi);
+}
+
+function drawSpriteNecklace(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
+  const hi = lightenHex(color, 0.3);
+  // Chain around neck
+  px(ctx, ox+12, oy+15, 8, 1, color);
+  px(ctx, ox+13, oy+15, 1, 1, hi);
+  px(ctx, ox+17, oy+15, 1, 1, hi);
+  // Heart pendant
+  px(ctx, ox+15, oy+16, 2, 1, color);
+  px(ctx, ox+15, oy+17, 2, 1, color);
+  px(ctx, ox+16, oy+17, 1, 1, hi);
+}
+
+function drawSpriteScarf(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
+  const shadow = darkenHex(color, 0.2);
+  const hi = lightenHex(color, 0.2);
+  // Scarf wrapped around neck
+  px(ctx, ox+10, oy+14, 12, 1, color);
+  px(ctx, ox+9,  oy+15, 14, 1, color);
+  px(ctx, ox+10, oy+15, 2, 1, hi); // stripe
+  px(ctx, ox+16, oy+15, 2, 1, hi); // stripe
+  px(ctx, ox+10, oy+16, 12, 1, shadow);
+  // Hanging tail on right
+  px(ctx, ox+22, oy+16, 2, 3, color);
+  px(ctx, ox+22, oy+19, 2, 2, shadow);
+  px(ctx, ox+23, oy+17, 1, 1, hi); // stripe on tail
+}
+
+function drawSpriteWand(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
+  // Magic wand held on right side
+  const stick = darkenHex(color, 0.1);
+  // Stick (diagonal-ish)
+  px(ctx, ox+24, oy+18, 1, 6, stick);
+  px(ctx, ox+25, oy+17, 1, 2, stick);
+  // Star on top
+  px(ctx, ox+24, oy+15, 3, 1, "#ffd700");
+  px(ctx, ox+25, oy+14, 1, 1, "#ffd700");
+  px(ctx, ox+25, oy+16, 1, 1, "#ffd700");
+  px(ctx, ox+25, oy+14, 1, 1, "#ffecb3"); // sparkle
+  // Sparkles
+  px(ctx, ox+23, oy+13, 1, 1, "#ffecb3");
+  px(ctx, ox+27, oy+15, 1, 1, "#ffecb3");
+}
+
+function drawSpriteWings(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
+  const hi = lightenHex(color, 0.3);
+  const shadow = darkenHex(color, 0.15);
+  // Left wing (behind character)
+  px(ctx, ox+5,  oy+17, 2, 1, color);
+  px(ctx, ox+4,  oy+18, 3, 1, color);
+  px(ctx, ox+5,  oy+18, 1, 1, hi);
+  px(ctx, ox+3,  oy+19, 4, 1, color);
+  px(ctx, ox+4,  oy+19, 1, 1, hi);
+  px(ctx, ox+4,  oy+20, 3, 1, shadow);
+  // Right wing
+  px(ctx, ox+25, oy+17, 2, 1, color);
+  px(ctx, ox+25, oy+18, 3, 1, color);
+  px(ctx, ox+26, oy+18, 1, 1, hi);
+  px(ctx, ox+25, oy+19, 4, 1, color);
+  px(ctx, ox+27, oy+19, 1, 1, hi);
+  px(ctx, ox+25, oy+20, 3, 1, shadow);
+}
+
+function drawSpriteBag(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
+  const shadow = darkenHex(color, 0.2);
+  const hi = lightenHex(color, 0.2);
+  // Bag hanging on right side
+  // Strap
+  px(ctx, ox+22, oy+17, 1, 3, shadow);
+  // Bag body
+  px(ctx, ox+23, oy+20, 4, 1, color);
+  px(ctx, ox+23, oy+21, 4, 3, color);
+  px(ctx, ox+24, oy+21, 1, 1, hi); // buckle highlight
+  px(ctx, ox+23, oy+24, 4, 1, shadow);
+  // Flap
+  px(ctx, ox+23, oy+20, 4, 1, shadow);
+  px(ctx, ox+24, oy+20, 2, 1, color);
+}
+
+function drawSpriteStarHalo(ctx: CanvasRenderingContext2D, ox: number, oy: number) {
+  // Star halo floating above head
+  const gold = "#ffd700";
+  const sparkle = "#ffecb3";
+  // Ring of stars above head
+  px(ctx, ox+11, oy-2, 1, 1, gold);
+  px(ctx, ox+14, oy-3, 1, 1, sparkle);
+  px(ctx, ox+17, oy-3, 1, 1, gold);
+  px(ctx, ox+20, oy-2, 1, 1, sparkle);
+  // Connecting sparkles
+  px(ctx, ox+12, oy-2, 1, 1, sparkle);
+  px(ctx, ox+15, oy-2, 2, 1, gold);
+  px(ctx, ox+19, oy-2, 1, 1, sparkle);
 }
 
 /* ─── color helpers ──────────────────────────────── */
@@ -578,10 +803,17 @@ function lightenHex(hex: string, amount: number): string {
 }
 
 function getHatStyleFromId(hatId: string): string {
+  // Map avatarItems IDs (hat_beret, hat_catears, etc.) to drawer names
+  if (hatId.includes("beret")) return "beret";
+  if (hatId.includes("bucket")) return "bucket";
+  if (hatId.includes("catears") || hatId.includes("cat_ears")) return "catears";
+  if (hatId.includes("bunnyears") || hatId.includes("bunny_ears")) return "bunnyears";
+  if (hatId.includes("flowerband") || hatId.includes("flower")) return "flowerband";
+  if (hatId.includes("tiara")) return "tiara";
+  if (hatId.includes("witch") || hatId.includes("wizard")) return "wizard";
   if (hatId.includes("baseball")) return "baseball";
   if (hatId.includes("beanie")) return "beanie";
   if (hatId.includes("crown")) return "crown";
-  if (hatId.includes("wizard")) return "wizard";
   if (hatId.includes("santa")) return "santa";
   if (hatId.includes("headphones")) return "headphones";
   if (hatId.includes("halo")) return "halo";

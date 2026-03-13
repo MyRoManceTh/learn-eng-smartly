@@ -1,5 +1,7 @@
+import { memo } from "react";
 import { AvatarItem } from "@/types/avatar";
 import { getRarityColor, getRarityLabel } from "@/data/avatarItems";
+import PixelItemPreview from "./PixelItemPreview";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,7 +45,7 @@ const rarityGlow: Record<string, string> = {
   legendary: "shadow-yellow-400/40 animate-legendary-glow",
 };
 
-const ItemCard = ({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: ItemCardProps) => {
+const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: ItemCardProps) => {
   const canAfford = coins >= item.price;
   const isFree = item.price === 0;
   const isDefaultOwned = isFree;
@@ -78,14 +80,14 @@ const ItemCard = ({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: I
         </div>
       )}
 
-      {/* Item icon with background circle */}
+      {/* Item pixel preview with background circle */}
       <div className="mt-3 mb-1 flex justify-center">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-3xl
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center
           bg-white/60 shadow-inner backdrop-blur-sm
           ${item.rarity === "legendary" ? "animate-pulse-soft" : ""}
           ${item.rarity === "epic" ? "animate-float" : ""}
         `}>
-          {item.icon}
+          <PixelItemPreview item={item} size="sm" />
         </div>
       </div>
 
@@ -132,7 +134,11 @@ const ItemCard = ({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: I
             <AlertDialogContent className="rounded-3xl border-4 mx-4" style={{ borderColor: getRarityColor(item.rarity) }}>
               <AlertDialogHeader>
                 <AlertDialogTitle className="font-thai text-center">
-                  <div className="text-6xl block mb-3 animate-bounce">{item.icon}</div>
+                  <div className="flex justify-center mb-3 animate-bounce">
+                    <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/60 shadow-inner">
+                      <PixelItemPreview item={item} size="lg" />
+                    </div>
+                  </div>
                   <div className="text-xl">ซื้อ {item.nameThai}?</div>
                 </AlertDialogTitle>
                 <AlertDialogDescription asChild>
@@ -171,6 +177,8 @@ const ItemCard = ({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: I
       </div>
     </div>
   );
-};
+});
+
+ItemCard.displayName = "ItemCard";
 
 export default ItemCard;
