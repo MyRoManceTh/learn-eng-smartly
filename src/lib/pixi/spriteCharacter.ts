@@ -8,7 +8,7 @@
  * and equipment overlays (hair/hat/accessory).
  */
 
-import { Container, Texture, Sprite, Ticker } from "pixi.js";
+import { Container, Texture, Sprite, Ticker, Rectangle } from "pixi.js";
 import type { CharacterPose } from "@/types/classroom";
 import type { EquippedItems } from "@/types/avatar";
 import {
