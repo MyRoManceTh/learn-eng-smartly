@@ -1,5 +1,5 @@
 // Core A1 Lesson Data - All 8 Modules (43 lessons total)
-export { LessonSeedData } from './core-a1-greetings';
+export type { LessonSeedData } from './core-a1-greetings';
 export { coreA1GreetingsLessons } from './core-a1-greetings';
 export { coreA1NumbersLessons } from './core-a1-numbers';
 export { coreA1FamilyLessons } from './core-a1-family';
