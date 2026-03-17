@@ -125,8 +125,8 @@ serve(async (req) => {
       provider: "line",
     };
 
-    // Try to create user; if already exists, find and update
-    let userId: string;
+    // Try to create user; if already exists, continue with existing email
+    let userId: string | undefined;
     let isNewUser = false;
     const { data: newUser, error: createError } =
       await supabase.auth.admin.createUser({
@@ -140,10 +140,12 @@ serve(async (req) => {
         createError.message?.includes("already been registered") ||
         createError.message?.includes("already exists")
       ) {
-        // Find existing user by email using paginated REST calls
+        // Best-effort lookup so we can refresh metadata/profile for returning users,
+        // but do not fail login if the auth admin listing does not return the user.
         let existing: { id: string } | undefined;
         const perPage = 500;
         let page = 1;
+
         while (!existing) {
           const listRes = await fetch(
             `${supabaseUrl}/auth/v1/admin/users?page=${page}&per_page=${perPage}`,
@@ -154,34 +156,41 @@ serve(async (req) => {
               },
             }
           );
+
           if (!listRes.ok) {
             console.error("Failed to list users, status:", listRes.status);
             break;
           }
+
           const body = await listRes.json();
           const users = body.users || body;
           if (!Array.isArray(users) || users.length === 0) break;
+
           existing = users.find(
             (u: { email?: string; id: string }) => u.email === lineEmail
           );
+
           if (users.length < perPage) break;
           page++;
         }
-        
-        if (!existing) {
-          console.error("Could not find user with email:", lineEmail);
-          throw new Error("User exists but could not be found");
-        }
 
-        userId = existing.id;
-        await supabase.auth.admin.updateUserById(userId, {
-          user_metadata: userMetadata,
-        });
-        // Update display_name in profiles for returning users too
-        await supabase
-          .from("profiles")
-          .update({ display_name: lineProfile.displayName })
-          .eq("user_id", userId);
+        userId = existing?.id;
+
+        if (userId) {
+          await supabase.auth.admin.updateUserById(userId, {
+            user_metadata: userMetadata,
+          });
+
+          await supabase
+            .from("profiles")
+            .update({ display_name: lineProfile.displayName })
+            .eq("user_id", userId);
+        } else {
+          console.warn(
+            "Existing LINE user not found in admin listing, proceeding with magic link only:",
+            lineEmail
+          );
+        }
       } else {
         throw createError;
       }
