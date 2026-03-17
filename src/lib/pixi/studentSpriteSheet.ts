@@ -200,29 +200,33 @@ function drawHairUnderHat(
   hairStyle: string,
   P: SpritePalette,
 ) {
-  // Always draw basic side hair and bangs peeking below the hat
-  // Bangs peeking below hat brim
-  px(ctx, ox+9,  oy+6, 3, 2, P.hair);
-  px(ctx, ox+20, oy+6, 3, 2, P.hair);
-  // Side hair
-  px(ctx, ox+8,  oy+8, 3, 4, P.hair);
-  px(ctx, ox+21, oy+8, 3, 3, P.hair);
-
-  // Additional hair per style
+  // Only draw side hair that hangs below the hat line (oy+8 and below).
+  // Do NOT draw bangs/top — the hat covers that area and floating pixels look broken.
   switch (hairStyle) {
+    case "softbob":
+    case "messy":
+    case "electrichawk":
+      // Short styles — small side tufts
+      px(ctx, ox+8,  oy+8, 2, 3, P.hair);
+      px(ctx, ox+22, oy+8, 2, 3, P.hair);
+      break;
+
     case "silkylong":
-      px(ctx, ox+8, oy+8, 2, 5, P.hair);
+      px(ctx, ox+8,  oy+8, 2, 5, P.hair);
       px(ctx, ox+22, oy+8, 2, 5, P.hair);
       break;
 
     case "twintails":
-      // Twin tails still hang below the hat
-      px(ctx, ox+7, oy+8, 2, 8, P.hair);
-      px(ctx, ox+6, oy+10, 2, 4, P.hair);
-      px(ctx, ox+7, oy+9, 1, 1, P.hairHi);
-      px(ctx, ox+23, oy+8, 2, 8, P.hair);
-      px(ctx, ox+24, oy+10, 2, 4, P.hair);
-      px(ctx, ox+23, oy+9, 1, 1, P.hairHi);
+      // Side tufts + twin tails hanging down
+      px(ctx, ox+8,  oy+8, 2, 3, P.hair);
+      px(ctx, ox+22, oy+8, 2, 3, P.hair);
+      // Twin tails
+      px(ctx, ox+7, oy+9, 2, 7, P.hair);
+      px(ctx, ox+6, oy+11, 2, 3, P.hair);
+      px(ctx, ox+7, oy+10, 1, 1, P.hairHi);
+      px(ctx, ox+23, oy+9, 2, 7, P.hair);
+      px(ctx, ox+24, oy+11, 2, 3, P.hair);
+      px(ctx, ox+23, oy+10, 1, 1, P.hairHi);
       break;
 
     case "wavy":
@@ -234,17 +238,19 @@ function drawHairUnderHat(
       px(ctx, ox+23, oy+13, 2, 2, P.hair);
       break;
 
-    case "messy":
-      px(ctx, ox+8, oy+8, 3, 4, P.hair);
-      px(ctx, ox+21, oy+8, 3, 3, P.hair);
+    case "highpony":
+      // Side tufts + ponytail on right
+      px(ctx, ox+8,  oy+8, 2, 3, P.hair);
+      px(ctx, ox+22, oy+8, 2, 3, P.hair);
+      px(ctx, ox+23, oy+8, 2, 3, P.hair);
+      px(ctx, ox+24, oy+11, 2, 3, P.hair);
+      px(ctx, ox+23, oy+9, 1, 1, P.hairHi);
       break;
 
-    case "highpony":
-      // Ponytail still visible on the side
-      px(ctx, ox+22, oy+5, 2, 2, P.hair);
-      px(ctx, ox+23, oy+7, 2, 4, P.hair);
-      px(ctx, ox+24, oy+11, 2, 3, P.hair);
-      px(ctx, ox+22, oy+6, 1, 1, P.hairHi);
+    case "spacebuns":
+      // Side tufts only (buns hidden under hat)
+      px(ctx, ox+8,  oy+8, 2, 3, P.hair);
+      px(ctx, ox+22, oy+8, 2, 3, P.hair);
       break;
 
     case "fluffy":
@@ -255,6 +261,7 @@ function drawHairUnderHat(
       break;
 
     case "princess":
+      // Long wavy sides
       px(ctx, ox+7, oy+8, 3, 2, P.hair);
       px(ctx, ox+6, oy+10, 3, 3, P.hair);
       px(ctx, ox+7, oy+13, 2, 4, P.hair);
@@ -267,9 +274,10 @@ function drawHairUnderHat(
       px(ctx, ox+25, oy+19, 2, 1, P.hairHi);
       break;
 
-    case "electrichawk":
-      px(ctx, ox+8, oy+8, 2, 2, P.hair);
-      px(ctx, ox+22, oy+8, 2, 2, P.hair);
+    default:
+      // Fallback — basic side tufts
+      px(ctx, ox+8,  oy+8, 2, 3, P.hair);
+      px(ctx, ox+22, oy+8, 2, 3, P.hair);
       break;
   }
 }

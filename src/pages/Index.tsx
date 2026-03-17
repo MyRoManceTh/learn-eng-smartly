@@ -92,14 +92,14 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("equipped_items")
+      .select("equipped")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         if (data) {
           const d = data as any;
-          if (d.equipped_items && typeof d.equipped_items === "object") {
-            setEquipped({ ...DEFAULT_EQUIPPED, ...d.equipped_items });
+          if (d.equipped && typeof d.equipped === "object") {
+            setEquipped({ ...DEFAULT_EQUIPPED, ...d.equipped });
           }
         }
       });
