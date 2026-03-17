@@ -231,4 +231,7 @@ export interface ExtendedProfile {
   is_premium: boolean;
   total_missions_completed: number;
   friend_code: string | null;
+  placement_completed: boolean | null;
+  placement_level: number | null;
+  active_path: string | null;
 }
