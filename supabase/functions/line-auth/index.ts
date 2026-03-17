@@ -137,10 +137,22 @@ serve(async (req) => {
         createError.message?.includes("already been registered") ||
         createError.message?.includes("already exists")
       ) {
-        const { data: allUsers } = await supabase.auth.admin.listUsers();
-        const existing = allUsers?.users?.find(
-          (u: { email?: string; id: string }) => u.email === lineEmail
-        );
+        // Use paginated search to find user by email
+        let existing: { id: string } | undefined;
+        let page = 1;
+        const perPage = 100;
+        while (!existing) {
+          const { data: listData, error: listError } = await supabase.auth.admin.listUsers({
+            page,
+            perPage,
+          });
+          if (listError || !listData?.users?.length) break;
+          existing = listData.users.find(
+            (u: { email?: string; id: string }) => u.email === lineEmail
+          );
+          if (listData.users.length < perPage) break;
+          page++;
+        }
         if (!existing) throw new Error("User exists but could not be found");
 
         userId = existing.id;
