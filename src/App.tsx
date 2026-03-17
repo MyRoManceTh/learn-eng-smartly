@@ -28,6 +28,7 @@ import PremiumPage from "@/components/premium/PremiumPage";
 import ParentReport from "@/components/premium/ParentReport";
 import AdminPage from "@/pages/AdminPage";
 import PlacementTestPage from "./pages/PlacementTestPage";
+import LineCallbackPage from "./pages/LineCallbackPage";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/auth/line/callback" element={<LineCallbackPage />} />
               <Route path="/quiz" element={<QuizPage />} />
               <Route path="/my" element={<MyPage />} />
               <Route path="/profile" element={<MyPage />} />
