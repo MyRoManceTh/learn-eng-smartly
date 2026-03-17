@@ -47,6 +47,12 @@ const ReadingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStory, setSelectedStory] = useState<ReadingStory | null>(null);
   const [showStoryQuiz, setShowStoryQuiz] = useState(false);
+  const [completedStoryIds, setCompletedStoryIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("completedStoryIds");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
 
   // === Lessons tab state ===
   const [level, setLevel] = useState<LearnerLevel>((profile?.current_level || 1) as LearnerLevel);
@@ -97,6 +103,14 @@ const ReadingPage = () => {
       await addExp(exp);
       await addCoins(coins);
       toast.success(`+${exp} EXP, +${coins} เหรียญ!`);
+
+      // Mark story as completed
+      setCompletedStoryIds(prev => {
+        const next = new Set(prev);
+        next.add(selectedStory.id);
+        localStorage.setItem("completedStoryIds", JSON.stringify([...next]));
+        return next;
+      });
     }
   };
 
@@ -253,32 +267,48 @@ const ReadingPage = () => {
         </header>
         <main className="px-4 py-5 max-w-3xl mx-auto">
           <div className="space-y-3">
-            {stories.map((story) => (
-              <button
-                key={story.id}
-                onClick={() => setSelectedStory(story)}
-                className="w-full text-left rounded-2xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-4 shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3].map(s => (
-                        <Star key={s} className={cn("w-3 h-3", s <= story.level ? "text-amber-400 fill-amber-400" : "text-gray-200")} />
-                      ))}
+            {stories.map((story) => {
+              const isRead = completedStoryIds.has(story.id);
+              return (
+                <button
+                  key={story.id}
+                  onClick={() => setSelectedStory(story)}
+                  className={cn(
+                    "w-full text-left rounded-2xl border-2 p-4 shadow-md hover:shadow-lg transition-all active:scale-[0.98] backdrop-blur-sm",
+                    isRead
+                      ? "bg-emerald-50/80 border-emerald-200"
+                      : "bg-white/80 border-white/60"
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3].map(s => (
+                          <Star key={s} className={cn("w-3 h-3", s <= story.level ? "text-amber-400 fill-amber-400" : "text-gray-200")} />
+                        ))}
+                      </div>
+                      <span className={cn("text-[9px] font-bold px-1.5 py-0.5 rounded-full", levelColor[story.level])}>
+                        {levelLabel[story.level]}
+                      </span>
                     </div>
-                    <span className={cn("text-[9px] font-bold px-1.5 py-0.5 rounded-full", levelColor[story.level])}>
-                      {levelLabel[story.level]}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold font-thai text-foreground">{story.titleThai}</h3>
+                        {isRead && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full shrink-0">
+                            <CheckCircle2 className="w-3 h-3" />
+                            อ่านแล้ว
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground font-reading">{story.title}</p>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{story.preview}</p>
+                    </div>
+                    <svg className="w-5 h-5 text-muted-foreground mt-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold font-thai text-foreground">{story.titleThai}</h3>
-                    <p className="text-sm text-muted-foreground font-reading">{story.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{story.preview}</p>
-                  </div>
-                  <svg className="w-5 h-5 text-muted-foreground mt-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
             {stories.length === 0 && (
               <p className="text-center text-muted-foreground font-thai py-8">ยังไม่มีเรื่องในหมวดนี้</p>
             )}

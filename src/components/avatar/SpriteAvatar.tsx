@@ -30,14 +30,14 @@ const SpriteAvatar: React.FC<SpriteAvatarProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<Application | null>(null);
   const charRef = useRef<SpriteCharacterState | null>(null);
-  const initDoneRef = useRef(false);
+  const appReadyRef = useRef(false);
 
   const config = SIZE_CONFIG[size];
   const equippedKey = useMemo(() => equipped ? JSON.stringify(equipped) : "", [equipped]);
 
-  // Initialize PixiJS app + sprite character
+  // Initialize PixiJS Application once on mount, destroy on unmount
   useEffect(() => {
-    let destroyed = false;
+    let cancelled = false;
 
     const init = async () => {
       if (!canvasRef.current) return;
@@ -52,43 +52,72 @@ const SpriteAvatar: React.FC<SpriteAvatarProps> = ({
         resolution: 1,
       });
 
-      if (destroyed) {
-        app.destroy(true);
+      if (cancelled) {
+        app.destroy();
         return;
       }
 
       appRef.current = app;
-
-      const activePose = walking ? "walking" : pose;
-      const character = createSpriteCharacter(app.ticker, activePose, equipped);
-      character.setDirection(direction);
-      app.stage.addChild(character.container);
-      charRef.current = character;
-      initDoneRef.current = true;
+      appReadyRef.current = true;
     };
 
     init();
 
     return () => {
-      destroyed = true;
+      cancelled = true;
       charRef.current?.destroy();
       charRef.current = null;
-      appRef.current?.destroy(true);
+      appReadyRef.current = false;
+      // Don't pass true — that removes the React-managed canvas from the DOM
+      appRef.current?.destroy();
       appRef.current = null;
-      initDoneRef.current = false;
     };
-  }, [equippedKey]); // Re-create when equipped changes
+  }, []); // App lifecycle = component lifecycle
+
+  // Create / recreate sprite character when equipment changes
+  useEffect(() => {
+    if (!appReadyRef.current || !appRef.current) return;
+    const app = appRef.current;
+
+    // Destroy previous character
+    if (charRef.current) {
+      charRef.current.destroy();
+      charRef.current = null;
+    }
+
+    const activePose = walking ? "walking" : pose;
+    const character = createSpriteCharacter(app.ticker, activePose, equipped);
+    character.setDirection(direction);
+    app.stage.addChild(character.container);
+    charRef.current = character;
+  }, [equippedKey]);
+
+  // Retry character creation if app wasn't ready when equippedKey first set
+  useEffect(() => {
+    if (charRef.current) return; // Already created
+    const timer = setInterval(() => {
+      if (!appReadyRef.current || !appRef.current) return;
+      clearInterval(timer);
+      const app = appRef.current;
+      const activePose = walking ? "walking" : pose;
+      const character = createSpriteCharacter(app.ticker, activePose, equipped);
+      character.setDirection(direction);
+      app.stage.addChild(character.container);
+      charRef.current = character;
+    }, 50);
+    return () => clearInterval(timer);
+  }, [equippedKey]);
 
   // Update pose
   useEffect(() => {
-    if (!initDoneRef.current || !charRef.current) return;
+    if (!charRef.current) return;
     const activePose = walking ? "walking" : pose;
     charRef.current.setPose(activePose);
   }, [pose, walking]);
 
   // Update direction
   useEffect(() => {
-    if (!initDoneRef.current || !charRef.current) return;
+    if (!charRef.current) return;
     charRef.current.setDirection(direction);
   }, [direction]);
 

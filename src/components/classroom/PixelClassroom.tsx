@@ -53,18 +53,17 @@ const PixelClassroom = ({
   return (
     <div
       ref={roomRef}
-      className={`relative w-full ${sizeClasses[size]} rounded-xl overflow-hidden cursor-pointer select-none`}
+      className={`relative w-full ${sizeClasses[size]} overflow-hidden cursor-pointer select-none`}
       style={{ imageRendering: "pixelated" }}
       onClick={(e) => handleFloorClick(e, roomRef)}
     >
-      {/* 8-bit pixel border */}
+      {/* Star-Office-UI style pixel border */}
       <div
-        className="absolute inset-0 z-30 pointer-events-none rounded-xl"
-        style={{
-          boxShadow:
-            "inset 0 0 0 3px hsl(var(--foreground) / 0.8), inset 0 0 0 5px hsl(var(--foreground) / 0.15)",
-        }}
+        className="absolute inset-0 z-30 pointer-events-none pixel-border"
       />
+
+      {/* CRT scanline effect */}
+      <div className="scanline-overlay" />
 
       {/* Background (wall + floor) */}
       <ClassroomBackground wallpaper={room.wallpaper} floor={room.floor} />
@@ -133,12 +132,9 @@ const PixelClassroom = ({
         </div>
       )}
 
-      {/* Help text */}
-      <div className="absolute bottom-2 right-3 z-20 pointer-events-none opacity-40">
-        <span
-          className="text-[8px] retro"
-          style={{ color: isDark ? "#fff" : "#000" }}
-        >
+      {/* Help text — retro style */}
+      <div className="absolute bottom-2 right-3 z-20 pointer-events-none">
+        <span className="retro-label text-[7px]">
           🎮 TAP FURNITURE
         </span>
       </div>

@@ -52,8 +52,14 @@ const ClassroomZone = ({ zone, active, onClick }: ClassroomZoneProps) => {
       {/* Extended hit area for mobile */}
       <div className="absolute -inset-4" />
 
-      {/* Hover glow effect */}
-      <div className="absolute -inset-2 rounded-lg bg-yellow-200/0 group-hover:bg-yellow-200/30 transition-colors duration-300 group-hover:animate-pulse" />
+      {/* Hover glow — Star-Office-UI style (gold, no rounded) */}
+      <div
+        className="absolute -inset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        style={{
+          boxShadow: "0 0 8px 2px rgba(255,215,0,0.4)",
+          border: "1px solid rgba(255,215,0,0.3)",
+        }}
+      />
 
       {/* Pixel art furniture */}
       <div className="relative">
@@ -66,18 +72,21 @@ const ClassroomZone = ({ zone, active, onClick }: ClassroomZoneProps) => {
             height: displayH,
             imageRendering: "pixelated",
           }}
-          className="drop-shadow-lg"
         />
-        {/* Shadow under furniture */}
+        {/* Flat pixel shadow under furniture */}
         <div
-          className="mx-auto -mt-0.5 rounded-full bg-black/15 blur-[2px]"
-          style={{ width: displayW * 0.7, height: 4 }}
+          className="mx-auto -mt-0.5"
+          style={{
+            width: displayW * 0.6,
+            height: 3,
+            backgroundColor: "rgba(0,0,0,0.15)",
+          }}
         />
       </div>
 
-      {/* Zone label */}
+      {/* Zone label — retro pixel style */}
       <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-        <span className="retro text-[5px] md:text-[7px] px-1 py-0.5 rounded bg-black/20 text-white/80">
+        <span className="retro-label text-[5px] md:text-[7px]">
           {zone.nameEn}
         </span>
       </div>

@@ -34,15 +34,34 @@ const ClassroomSpeechBubble = ({ speech, charX }: ClassroomSpeechBubbleProps) =>
         transform: "translateX(-50%)",
       }}
     >
-      <div className="bg-white rounded-xl px-3 py-2 shadow-lg border-2 border-gray-800/20 min-w-[80px] max-w-[160px] text-center relative">
-        <p className="text-[9px] md:text-[11px] font-bold text-gray-800 leading-tight">
+      {/* Star-Office-UI style speech bubble — no rounded corners, hard border */}
+      <div
+        className="px-3 py-2 min-w-[80px] max-w-[160px] text-center relative"
+        style={{
+          backgroundColor: "#ffffff",
+          border: "2px solid #1a1a2e",
+          boxShadow: "2px 2px 0px #1a1a2e",
+        }}
+      >
+        <p className="text-[9px] md:text-[11px] font-bold leading-tight" style={{ color: "#1a1a2e" }}>
           {currentSpeech.th}
         </p>
-        <p className="text-[7px] md:text-[9px] text-gray-400 leading-tight mt-0.5">
+        <p className="text-[7px] md:text-[9px] leading-tight mt-0.5" style={{ color: "#64748b" }}>
           {currentSpeech.en}
         </p>
-        {/* Triangle tail pointing down */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-white" />
+        {/* Pixel tail pointing down */}
+        <div
+          className="absolute -bottom-[6px] left-1/2 -translate-x-1/2"
+          style={{
+            width: 8,
+            height: 6,
+            backgroundColor: "#ffffff",
+            borderRight: "2px solid #1a1a2e",
+            borderBottom: "2px solid #1a1a2e",
+            transform: "translateX(-50%) rotate(45deg)",
+            marginBottom: -1,
+          }}
+        />
       </div>
     </div>
   );

@@ -23,6 +23,8 @@ const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: Q
 
   const question = questions[currentQ];
 
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
+
   const handleSelect = (idx: number) => {
     if (showResult) return;
     setSelected(idx);
@@ -41,6 +43,10 @@ const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: Q
       setShaking(true);
       setTimeout(() => setShaking(false), 500);
     }
+    // Scroll the next button into view so it's not hidden behind bottom nav
+    setTimeout(() => {
+      nextBtnRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
   };
 
   const handleNext = () => {
@@ -128,7 +134,7 @@ const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: Q
       </div>
 
       {showResult && (
-        <Button onClick={handleNext} className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
+        <Button ref={nextBtnRef} onClick={handleNext} className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25 mb-2">
           {currentQ + 1 >= questions.length ? "ดูผลคะแนน" : "ข้อถัดไป →"}
         </Button>
       )}

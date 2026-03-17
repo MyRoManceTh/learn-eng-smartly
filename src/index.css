@@ -87,16 +87,16 @@
 
 @layer utilities {
   .interlinear-word {
-    @apply inline-flex flex-col items-center mx-0.5;
+    @apply inline-flex flex-col items-center mx-1 sm:mx-1.5 mb-1;
   }
 
   .interlinear-eng {
-    @apply text-base sm:text-lg font-reading;
+    @apply text-base sm:text-lg font-reading leading-snug;
     color: hsl(var(--english-text));
   }
 
   .interlinear-thai {
-    @apply text-[10px] sm:text-xs font-thai;
+    @apply text-[10px] sm:text-xs font-thai leading-none mt-0.5;
     color: hsl(var(--thai-phonetic));
   }
 
@@ -281,6 +281,18 @@
 
 .animate-rainbow-shimmer {
   animation: rainbow-shimmer 2s linear infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }
 
 /* Scrollbar hide */

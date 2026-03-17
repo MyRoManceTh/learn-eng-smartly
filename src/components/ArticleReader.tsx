@@ -46,9 +46,9 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
       )}
 
       {/* Interlinear text */}
-      <div className="mb-4 sm:mb-6 leading-relaxed">
+      <div className="mb-4 sm:mb-6">
         {sentences.map((sentence, si) => (
-          <span key={si} className="inline">
+          <span key={si} className="inline mr-2">
             {sentence.map((word, wi) => (
               <span
                 key={wi}
@@ -61,7 +61,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
                 <span className="interlinear-thai">{word.thai}</span>
               </span>
             ))}
-            <span className="mx-1" />
+            <span className="inline-block w-3" />
           </span>
         ))}
       </div>

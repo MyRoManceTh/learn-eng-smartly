@@ -18,20 +18,42 @@ const AuthPage = () => {
     setLoading(true);
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          console.error("Login error:", error);
+          throw error;
+        }
+        console.log("Login successful:", data);
         toast.success("เข้าสู่ระบบสำเร็จ!");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin },
         });
-        if (error) throw error;
+        if (error) {
+          console.error("SignUp error:", error);
+          throw error;
+        }
+        console.log("SignUp successful:", data);
         toast.success("สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบอีเมลเพื่อยืนยัน");
       }
     } catch (err: any) {
-      toast.error(err.message || "เกิดข้อผิดพลาด");
+      console.error("Auth error details:", err);
+      // แสดง error message ที่ชัดเจนขึ้น
+      let errorMessage = "เกิดข้อผิดพลาด";
+      if (err.message) {
+        if (err.message.includes("Invalid login credentials")) {
+          errorMessage = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+        } else if (err.message.includes("Email not confirmed")) {
+          errorMessage = "กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ";
+        } else if (err.message.includes("User already registered")) {
+          errorMessage = "อีเมลนี้ถูกใช้งานแล้ว";
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

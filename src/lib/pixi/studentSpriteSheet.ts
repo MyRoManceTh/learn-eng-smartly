@@ -190,6 +190,90 @@ function drawShadow(ctx: CanvasRenderingContext2D, ox: number, oy: number, wide:
  *
  * Maps avatarItems svgProps.path → sprite overlay.
  */
+/**
+ * Draw hair peeking out from under a hat — side tufts and bangs visible
+ * below the hat brim, varying by hair style.
+ */
+function drawHairUnderHat(
+  ctx: CanvasRenderingContext2D,
+  ox: number, oy: number,
+  hairStyle: string,
+  P: SpritePalette,
+) {
+  // Always draw basic side hair and bangs peeking below the hat
+  // Bangs peeking below hat brim
+  px(ctx, ox+9,  oy+6, 3, 2, P.hair);
+  px(ctx, ox+20, oy+6, 3, 2, P.hair);
+  // Side hair
+  px(ctx, ox+8,  oy+8, 3, 4, P.hair);
+  px(ctx, ox+21, oy+8, 3, 3, P.hair);
+
+  // Additional hair per style
+  switch (hairStyle) {
+    case "silkylong":
+      px(ctx, ox+8, oy+8, 2, 5, P.hair);
+      px(ctx, ox+22, oy+8, 2, 5, P.hair);
+      break;
+
+    case "twintails":
+      // Twin tails still hang below the hat
+      px(ctx, ox+7, oy+8, 2, 8, P.hair);
+      px(ctx, ox+6, oy+10, 2, 4, P.hair);
+      px(ctx, ox+7, oy+9, 1, 1, P.hairHi);
+      px(ctx, ox+23, oy+8, 2, 8, P.hair);
+      px(ctx, ox+24, oy+10, 2, 4, P.hair);
+      px(ctx, ox+23, oy+9, 1, 1, P.hairHi);
+      break;
+
+    case "wavy":
+      px(ctx, ox+7, oy+8, 3, 2, P.hair);
+      px(ctx, ox+6, oy+10, 2, 3, P.hair);
+      px(ctx, ox+7, oy+13, 2, 2, P.hair);
+      px(ctx, ox+22, oy+8, 3, 2, P.hair);
+      px(ctx, ox+24, oy+10, 2, 3, P.hair);
+      px(ctx, ox+23, oy+13, 2, 2, P.hair);
+      break;
+
+    case "messy":
+      px(ctx, ox+8, oy+8, 3, 4, P.hair);
+      px(ctx, ox+21, oy+8, 3, 3, P.hair);
+      break;
+
+    case "highpony":
+      // Ponytail still visible on the side
+      px(ctx, ox+22, oy+5, 2, 2, P.hair);
+      px(ctx, ox+23, oy+7, 2, 4, P.hair);
+      px(ctx, ox+24, oy+11, 2, 3, P.hair);
+      px(ctx, ox+22, oy+6, 1, 1, P.hairHi);
+      break;
+
+    case "fluffy":
+      px(ctx, ox+6, oy+8, 4, 3, P.hair);
+      px(ctx, ox+7, oy+11, 2, 2, P.hair);
+      px(ctx, ox+22, oy+8, 4, 3, P.hair);
+      px(ctx, ox+23, oy+11, 2, 2, P.hair);
+      break;
+
+    case "princess":
+      px(ctx, ox+7, oy+8, 3, 2, P.hair);
+      px(ctx, ox+6, oy+10, 3, 3, P.hair);
+      px(ctx, ox+7, oy+13, 2, 4, P.hair);
+      px(ctx, ox+6, oy+17, 2, 3, P.hair);
+      px(ctx, ox+22, oy+8, 3, 2, P.hair);
+      px(ctx, ox+23, oy+10, 3, 3, P.hair);
+      px(ctx, ox+23, oy+13, 2, 4, P.hair);
+      px(ctx, ox+24, oy+17, 2, 3, P.hair);
+      px(ctx, ox+5, oy+19, 2, 1, P.hairHi);
+      px(ctx, ox+25, oy+19, 2, 1, P.hairHi);
+      break;
+
+    case "electrichawk":
+      px(ctx, ox+8, oy+8, 2, 2, P.hair);
+      px(ctx, ox+22, oy+8, 2, 2, P.hair);
+      break;
+  }
+}
+
 function drawEquipHair(
   ctx: CanvasRenderingContext2D,
   ox: number, oy: number,
@@ -197,7 +281,11 @@ function drawEquipHair(
   P: SpritePalette,
   hasHat: boolean,
 ) {
-  if (hasHat) return; // hat overrides hair
+  // When hat is equipped, draw partial hair peeking out instead of nothing
+  if (hasHat) {
+    drawHairUnderHat(ctx, ox, oy, hairStyle, P);
+    return;
+  }
 
   switch (hairStyle) {
     case "softbob":
@@ -857,6 +945,25 @@ function drawEquipOverlays(
   }
 }
 
+/** Decide whether to draw full hair or partial hair under hat */
+function drawHairForFrame(ctx: CanvasRenderingContext2D, ox: number, oy: number, P: SpritePalette, equip: EquipmentOverlay | null) {
+  const hasHat = !!equip?.hatId;
+  const isCustomHair = equip?.hairStyle && equip.hairStyle !== "softbob";
+
+  if (isCustomHair) {
+    // Custom hair styles are handled by drawEquipOverlays → drawEquipHair
+    return;
+  }
+
+  // Default "softbob" hair
+  if (hasHat) {
+    // Draw partial default hair peeking under hat
+    drawHairUnderHat(ctx, ox, oy, "softbob", P);
+  } else {
+    drawHair(ctx, ox, oy, P);
+  }
+}
+
 function drawIdleFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: number, P: SpritePalette, equip: EquipmentOverlay | null) {
   const bob = [0, -1, 0, 1][frameIdx] || 0;
   const blink = frameIdx === 2;
@@ -867,9 +974,7 @@ function drawIdleFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
   drawArmsIdle(ctx, ox, bob, P);
   drawNeck(ctx, ox, bob, P);
   drawFace(ctx, ox, bob, blink, P);
-  if (!equip?.hairStyle || equip.hairStyle === "softbob") {
-    drawHair(ctx, ox, bob, P);
-  }
+  drawHairForFrame(ctx, ox, bob, P, equip);
   drawEquipOverlays(ctx, ox, bob, equip, P);
 }
 
@@ -882,9 +987,7 @@ function drawWalkFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
   drawArmsWalk(ctx, ox, bob, frameIdx, P);
   drawNeck(ctx, ox, bob, P);
   drawFace(ctx, ox, bob, false, P);
-  if (!equip?.hairStyle || equip.hairStyle === "softbob") {
-    drawHair(ctx, ox, bob, P);
-  }
+  drawHairForFrame(ctx, ox, bob, P, equip);
   drawEquipOverlays(ctx, ox, bob, equip, P);
 }
 
@@ -898,9 +1001,7 @@ function drawSitFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numbe
   drawArmsSitting(ctx, ox, sitOffset + bob, P);
   drawNeck(ctx, ox, sitOffset + bob, P);
   drawFace(ctx, ox, sitOffset + bob, false, P);
-  if (!equip?.hairStyle || equip.hairStyle === "softbob") {
-    drawHair(ctx, ox, sitOffset + bob, P);
-  }
+  drawHairForFrame(ctx, ox, sitOffset + bob, P, equip);
   drawEquipOverlays(ctx, ox, sitOffset + bob, equip, P);
 }
 
@@ -915,9 +1016,7 @@ function drawReadFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
   drawBook(ctx, ox, sitOffset + bob, P);
   drawNeck(ctx, ox, sitOffset + bob, P);
   drawFace(ctx, ox, sitOffset + bob, false, P);
-  if (!equip?.hairStyle || equip.hairStyle === "softbob") {
-    drawHair(ctx, ox, sitOffset + bob, P);
-  }
+  drawHairForFrame(ctx, ox, sitOffset + bob, P, equip);
   drawEquipOverlays(ctx, ox, sitOffset + bob, equip, P);
 }
 
