@@ -140,41 +140,32 @@ serve(async (req) => {
         createError.message?.includes("already been registered") ||
         createError.message?.includes("already exists")
       ) {
-        // Find existing user by email using direct REST call for reliability
-        const listRes = await fetch(
-          `${supabaseUrl}/auth/v1/admin/users?page=1&per_page=50`,
-          {
-            headers: {
-              Authorization: `Bearer ${supabaseServiceKey}`,
-              apikey: supabaseServiceKey,
-            },
-          }
-        );
-        
+        // Find existing user by email using paginated REST calls
         let existing: { id: string } | undefined;
-        if (listRes.ok) {
+        const perPage = 500;
+        let page = 1;
+        while (!existing) {
+          const listRes = await fetch(
+            `${supabaseUrl}/auth/v1/admin/users?page=${page}&per_page=${perPage}`,
+            {
+              headers: {
+                Authorization: `Bearer ${supabaseServiceKey}`,
+                apikey: supabaseServiceKey,
+              },
+            }
+          );
+          if (!listRes.ok) {
+            console.error("Failed to list users, status:", listRes.status);
+            break;
+          }
           const body = await listRes.json();
           const users = body.users || body;
-          if (Array.isArray(users)) {
-            existing = users.find(
-              (u: { email?: string; id: string }) => u.email === lineEmail
-            );
-          }
-        }
-        
-        // Fallback: paginated SDK search
-        if (!existing) {
-          let page = 1;
-          const perPage = 100;
-          while (!existing) {
-            const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page, perPage });
-            if (listError || !listData?.users?.length) break;
-            existing = listData.users.find(
-              (u: { email?: string; id: string }) => u.email === lineEmail
-            );
-            if (listData.users.length < perPage) break;
-            page++;
-          }
+          if (!Array.isArray(users) || users.length === 0) break;
+          existing = users.find(
+            (u: { email?: string; id: string }) => u.email === lineEmail
+          );
+          if (users.length < perPage) break;
+          page++;
         }
         
         if (!existing) {
