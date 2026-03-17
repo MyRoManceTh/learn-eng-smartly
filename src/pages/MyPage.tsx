@@ -362,7 +362,9 @@ const MyPage = () => {
             </div>
             <div>
               <h1 className="text-lg font-bold font-thai text-foreground">
-                {profileData?.display_name || "ห้องของฉัน"}
+                {profileData?.display_name && !profileData.display_name.includes("@line.local")
+                  ? profileData.display_name
+                  : user?.user_metadata?.display_name || user?.user_metadata?.full_name || "ห้องของฉัน"}
               </h1>
               <p className="text-xs text-muted-foreground font-thai">
                 {evolutionStage.nameThai} {evolutionStage.icon} · Lv.{profileData?.current_level || 1}

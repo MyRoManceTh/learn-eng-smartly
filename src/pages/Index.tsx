@@ -80,12 +80,23 @@ const Index = () => {
   const currentStreak = profile?.current_streak || 0;
   const coins = profile?.coins || 0;
   const level = (profile?.current_level || 1) as LearnerLevel;
-  const displayName = profile?.display_name || "นักเรียน";
+  const rawName = profile?.display_name;
+  const displayName =
+    rawName && !rawName.includes("@line.local")
+      ? rawName
+      : user?.user_metadata?.display_name || user?.user_metadata?.full_name || "นักเรียน";
   const evolutionStage = getEvolutionStage(totalExp);
 
   useEffect(() => {
     trackEvent("page_view", { page: "home" });
   }, []);
+
+  // Auto-redirect first-time users to placement test
+  useEffect(() => {
+    if (user && profile && !profile.placement_completed) {
+      navigate("/placement", { replace: true });
+    }
+  }, [user, profile, navigate]);
 
   // Load equipped avatar items
   useEffect(() => {

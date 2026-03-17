@@ -119,12 +119,15 @@ serve(async (req) => {
     const lineEmail = `line_${lineProfile.userId}@line.local`;
     const userMetadata = {
       line_user_id: lineProfile.userId,
+      full_name: lineProfile.displayName,
       display_name: lineProfile.displayName,
       avatar_url: lineProfile.pictureUrl,
       provider: "line",
     };
 
+    // Try to create user; if already exists, find and update
     let userId: string;
+    let isNewUser = false;
     const { data: newUser, error: createError } =
       await supabase.auth.admin.createUser({
         email: lineEmail,
@@ -159,16 +162,26 @@ serve(async (req) => {
         await supabase.auth.admin.updateUserById(userId, {
           user_metadata: userMetadata,
         });
+        // Update display_name in profiles for returning users too
+        await supabase
+          .from("profiles")
+          .update({ display_name: lineProfile.displayName })
+          .eq("user_id", userId);
       } else {
         throw createError;
       }
     } else {
       userId = newUser.user!.id;
+      isNewUser = true;
 
+      // Wait briefly for the DB trigger to create the profile row
+      await new Promise((r) => setTimeout(r, 500));
+
+      // Update display_name in profiles table (trigger may have set it to email)
       await supabase
         .from("profiles")
         .update({ display_name: lineProfile.displayName })
-        .eq("id", userId);
+        .eq("user_id", userId);
     }
 
     const { data: linkData, error: linkError } =
@@ -185,6 +198,7 @@ serve(async (req) => {
     return json({
       hashed_token: linkData.properties.hashed_token,
       email: lineEmail,
+      is_new_user: isNewUser,
       line_profile: {
         userId: lineProfile.userId,
         displayName: lineProfile.displayName,

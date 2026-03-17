@@ -21,7 +21,7 @@ export async function redirectToLineLogin() {
 export async function handleLineCallback(
   code: string,
   state: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; isNewUser?: boolean }> {
   const { data, error } = await supabase.functions.invoke("line-auth", {
     body: { code, state },
   });
@@ -45,5 +45,5 @@ export async function handleLineCallback(
     return { success: false, error: "เข้าสู่ระบบด้วย LINE ล้มเหลว" };
   }
 
-  return { success: true };
+  return { success: true, isNewUser: data.is_new_user };
 }

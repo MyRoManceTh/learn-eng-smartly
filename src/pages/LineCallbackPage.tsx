@@ -31,7 +31,8 @@ const LineCallbackPage = () => {
     handleLineCallback(code, state).then((result) => {
       if (result.success) {
         toast.success("เข้าสู่ระบบด้วย LINE สำเร็จ!");
-        navigate("/");
+        // New users → placement test, returning users → home
+        navigate(result.isNewUser ? "/placement" : "/");
       } else {
         setError(result.error || "เกิดข้อผิดพลาด");
         toast.error(result.error || "เข้าสู่ระบบด้วย LINE ล้มเหลว");
