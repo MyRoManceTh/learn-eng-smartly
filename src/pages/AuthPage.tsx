@@ -69,9 +69,9 @@ const AuthPage = () => {
     }
   };
 
-  const handleLineLogin = () => {
+  const handleLineLogin = async () => {
     try {
-      redirectToLineLogin();
+      await redirectToLineLogin();
     } catch {
       toast.error("เข้าสู่ระบบด้วย LINE ล้มเหลว");
     }

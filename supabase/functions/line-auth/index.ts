@@ -21,7 +21,7 @@ serve(async (req) => {
     const { code, redirect_uri } = await req.json();
     if (!code) return json({ error: "Missing authorization code" }, 400);
 
-    const LINE_CHANNEL_ID = Deno.env.get("LINE_CHANNEL_ID");
+    const LINE_CHANNEL_ID = Deno.env.get("VITE_LINE_CHANNEL_ID") || Deno.env.get("LINE_CHANNEL_ID");
     const LINE_CHANNEL_SECRET = Deno.env.get("LINE_CHANNEL_SECRET");
     if (!LINE_CHANNEL_ID || !LINE_CHANNEL_SECRET) {
       throw new Error("LINE credentials not configured");
