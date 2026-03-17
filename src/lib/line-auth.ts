@@ -1,26 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Generate a random state string for CSRF protection
- */
-function generateState(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/**
  * Redirect user to LINE Login authorization page
  */
 export async function redirectToLineLogin() {
-  const state = generateState();
-  sessionStorage.setItem("line_oauth_state", state);
-
-  const redirectUri = `${window.location.origin}/auth/line/callback`;
-
-  // Get login URL from edge function (LINE_CHANNEL_ID is stored server-side)
   const { data, error } = await supabase.functions.invoke("line-login-url", {
-    body: { redirect_uri: redirectUri, state },
+    body: {},
   });
 
   if (error || !data?.login_url) {
@@ -37,18 +22,8 @@ export async function handleLineCallback(
   code: string,
   state: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Verify state to prevent CSRF
-  const savedState = sessionStorage.getItem("line_oauth_state");
-  if (state !== savedState) {
-    return { success: false, error: "Invalid state parameter" };
-  }
-  sessionStorage.removeItem("line_oauth_state");
-
-  const redirectUri = `${window.location.origin}/auth/line/callback`;
-
-  // Call our Edge Function to exchange code for tokens
   const { data, error } = await supabase.functions.invoke("line-auth", {
-    body: { code, redirect_uri: redirectUri },
+    body: { code, state },
   });
 
   if (error) {
@@ -60,7 +35,6 @@ export async function handleLineCallback(
     return { success: false, error: data.error };
   }
 
-  // Verify OTP with the hashed token to get a session
   const { error: otpError } = await supabase.auth.verifyOtp({
     token_hash: data.hashed_token,
     type: "magiclink",
