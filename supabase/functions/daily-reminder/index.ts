@@ -103,8 +103,7 @@ serve(async (req) => {
     const { data: inactiveProfiles, error: profileError } = await supabase
       .from("profiles")
       .select("user_id, display_name, current_streak")
-      .or(`last_activity_date.is.null,last_activity_date.lt.${today}`)
-      .neq("is_banned", true);
+      .or(`last_activity_date.is.null,last_activity_date.lt.${today}`);
 
     if (profileError) {
       console.error("Failed to query profiles:", profileError);
