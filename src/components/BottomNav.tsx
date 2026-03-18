@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, GraduationCap, Gamepad2, ShoppingCart, User } from "lucide-react";
+import { Home, GraduationCap, Gamepad2, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useRef } from "react";
 import { useFriends } from "@/hooks/useFriends";
@@ -9,7 +9,6 @@ const tabs = [
   { path: "/", icon: Home, label: "หน้าหลัก" },
   { path: "/learn", icon: GraduationCap, label: "เรียนรู้" },
   { path: "/games", icon: Gamepad2, label: "เกม" },
-  { path: "/shop", icon: ShoppingCart, label: "ร้านค้า" },
   { path: "/my", icon: User, label: "ฉัน" },
 ];
 
@@ -54,7 +53,6 @@ const BottomNav = () => {
             const isActive =
               location.pathname === tab.path ||
               (tab.path === "/learn" && learnSubPaths.includes(location.pathname)) ||
-              (tab.path === "/shop" && location.pathname === "/avatar") ||
               (tab.path === "/my" && ["/profile", "/avatar", "/my"].includes(location.pathname));
             const Icon = tab.icon;
             return (

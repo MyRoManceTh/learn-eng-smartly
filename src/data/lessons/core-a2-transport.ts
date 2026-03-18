@@ -1,0 +1,528 @@
+import { VocabWord, InterlinearWord, QuizQuestion } from '@/types/lesson';
+import { LessonSeedData } from './core-a1-greetings';
+
+export const coreA2TransportLessons: LessonSeedData[] = [
+  // ==========================================
+  // Lesson 1: Types of transport
+  // ==========================================
+  {
+    module_id: 'core-a2-transport',
+    lesson_order: 1,
+    level: 2,
+    topic: 'Types of transport',
+    title: 'Getting Around Bangkok',
+    title_thai: 'เดินทางรอบกรุงเทพ',
+    vocabulary: [
+      { word: 'bus', phonetic: 'บัส', meaning: 'รถเมล์', partOfSpeech: 'n.' },
+      { word: 'train', phonetic: 'เทรน', meaning: 'รถไฟ', partOfSpeech: 'n.' },
+      { word: 'boat', phonetic: 'โบ๊ท', meaning: 'เรือ', partOfSpeech: 'n.' },
+      { word: 'motorcycle', phonetic: 'มอเตอร์ไซเคิล', meaning: 'รถมอเตอร์ไซค์', partOfSpeech: 'n.' },
+      { word: 'traffic', phonetic: 'แทรฟฟิก', meaning: 'การจราจร', partOfSpeech: 'n.' },
+      { word: 'fast', phonetic: 'ฟาสท์', meaning: 'เร็ว', partOfSpeech: 'adj.' },
+      { word: 'slow', phonetic: 'สโลว์', meaning: 'ช้า', partOfSpeech: 'adj.' },
+      { word: 'cheap', phonetic: 'ชีพ', meaning: 'ถูก/ราคาไม่แพง', partOfSpeech: 'adj.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Kai', thai: 'ไก่' },
+        { english: 'lives', thai: 'ลิฟวส์' },
+        { english: 'in', thai: 'อิน' },
+        { english: 'Bangkok.', thai: 'แบงค็อก' },
+      ],
+      [
+        { english: 'Every', thai: 'เอฟวรี' },
+        { english: 'day,', thai: 'เดย์,' },
+        { english: 'he', thai: 'ฮี' },
+        { english: 'takes', thai: 'เทคส์' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'bus', thai: 'บัส' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'work.', thai: 'เวิร์ค' },
+      ],
+      [
+        { english: 'The', thai: 'เดอะ' },
+        { english: 'bus', thai: 'บัส' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'cheap,', thai: 'ชีพ,' },
+        { english: 'but', thai: 'บัท' },
+        { english: 'it', thai: 'อิท' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'slow.', thai: 'สโลว์' },
+      ],
+      [
+        { english: 'The', thai: 'เดอะ' },
+        { english: 'train', thai: 'เทรน' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'fast,', thai: 'ฟาสท์,' },
+        { english: 'but', thai: 'บัท' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'traffic', thai: 'แทรฟฟิก' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'bad.', thai: 'แบด' },
+      ],
+      [
+        { english: 'Sometimes,', thai: 'ซัมไทมส์,' },
+        { english: 'Kai', thai: 'ไก่' },
+        { english: 'takes', thai: 'เทคส์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'boat', thai: 'โบ๊ท' },
+        { english: 'on', thai: 'ออน' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'river.', thai: 'ริเวอร์' },
+      ],
+      [
+        { english: 'A', thai: 'อะ' },
+        { english: 'motorcycle', thai: 'มอเตอร์ไซเคิล' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'fast,', thai: 'ฟาสท์,' },
+        { english: 'but', thai: 'บัท' },
+        { english: 'not', thai: 'น็อท' },
+        { english: 'safe.', thai: 'เซฟ' },
+      ],
+    ],
+    article_translation:
+      'ไก่อาศัยอยู่ในกรุงเทพ ทุกวันเขานั่งรถเมล์ไปทำงาน รถเมล์ถูกแต่ช้า รถไฟเร็ว แต่การจราจรแย่ บางครั้งไก่นั่งเรือไปตามแม่น้ำ มอเตอร์ไซค์เร็ว แต่ไม่ปลอดภัย',
+    image_prompt:
+      'Thai man standing at a busy Bangkok street with various transport options visible — bus, BTS skytrain, motorcycle taxi, and a river boat in the background, colorful and lively',
+    quiz: [
+      {
+        question: 'คำว่า "bus" แปลว่าอะไร?',
+        options: ['รถไฟ', 'รถเมล์', 'เรือ', 'รถมอเตอร์ไซค์'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "cheap" แปลว่าอะไร?',
+        options: ['แพง', 'เร็ว', 'ถูก', 'ช้า'],
+        correctIndex: 2,
+        type: 'vocab',
+      },
+      {
+        question: 'ไก่นั่งอะไรไปทำงานทุกวัน?',
+        options: ['รถไฟ', 'มอเตอร์ไซค์', 'เรือ', 'รถเมล์'],
+        correctIndex: 3,
+        type: 'comprehension',
+      },
+      {
+        question: 'ทำไมรถเมล์ถึงไม่สะดวก?',
+        options: ['เพราะแพง', 'เพราะช้า', 'เพราะไม่ปลอดภัย', 'เพราะไกล'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 2: Buying a ticket
+  // ==========================================
+  {
+    module_id: 'core-a2-transport',
+    lesson_order: 2,
+    level: 2,
+    topic: 'Buying a ticket',
+    title: 'A Trip to Chiang Mai',
+    title_thai: 'เดินทางไปเชียงใหม่',
+    vocabulary: [
+      { word: 'ticket', phonetic: 'ทิกเก็ต', meaning: 'ตั๋ว', partOfSpeech: 'n.' },
+      { word: 'station', phonetic: 'สเตชั่น', meaning: 'สถานี', partOfSpeech: 'n.' },
+      { word: 'platform', phonetic: 'แพลตฟอร์ม', meaning: 'ชานชาลา', partOfSpeech: 'n.' },
+      { word: 'single', phonetic: 'ซิงเกิล', meaning: 'เที่ยวเดียว', partOfSpeech: 'adj.' },
+      { word: 'return', phonetic: 'รีเทิร์น', meaning: 'ไป-กลับ', partOfSpeech: 'adj.' },
+      { word: 'how much', phonetic: 'ฮาวมัช', meaning: 'เท่าไหร่', partOfSpeech: 'phr.' },
+      { word: 'seat', phonetic: 'ซีท', meaning: 'ที่นั่ง', partOfSpeech: 'n.' },
+      { word: 'departure', phonetic: 'ดีพาร์เจอร์', meaning: 'การออกเดินทาง', partOfSpeech: 'n.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Som', thai: 'ส้ม' },
+        { english: 'goes', thai: 'โกส์' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'train', thai: 'เทรน' },
+        { english: 'station.', thai: 'สเตชั่น' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'asks,', thai: 'อาสค์ส,' },
+        { english: '"How much', thai: '"ฮาวมัช' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'return', thai: 'รีเทิร์น' },
+        { english: 'ticket', thai: 'ทิกเก็ต' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'Chiang Mai?"', thai: 'เชียงใหม่?"' },
+      ],
+      [
+        { english: 'The', thai: 'เดอะ' },
+        { english: 'man', thai: 'แมน' },
+        { english: 'says,', thai: 'เซส์,' },
+        { english: '"It', thai: '"อิท' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'eight hundred', thai: 'เอทฮันเดรด' },
+        { english: 'baht."', thai: 'บาท"' },
+      ],
+      [
+        { english: 'Som', thai: 'ส้ม' },
+        { english: 'buys', thai: 'บายส์' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'ticket', thai: 'ทิกเก็ต' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'finds', thai: 'ไฟนด์ส' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'seat.', thai: 'ซีท' },
+      ],
+      [
+        { english: 'The', thai: 'เดอะ' },
+        { english: 'departure', thai: 'ดีพาร์เจอร์' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'at', thai: 'แอท' },
+        { english: 'platform', thai: 'แพลตฟอร์ม' },
+        { english: 'three.', thai: 'ธรี' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'excited', thai: 'เอ็กไซเต็ด' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'travel!', thai: 'แทรเวิล!' },
+      ],
+    ],
+    article_translation:
+      'ส้มไปที่สถานีรถไฟ เธอถามว่า "ตั๋วไป-กลับเชียงใหม่ราคาเท่าไหร่?" ผู้ชายตอบว่า "แปดร้อยบาท" ส้มซื้อตั๋วและหาที่นั่ง รถไฟออกจากชานชาลาสาม เธอตื่นเต้นที่จะได้เดินทาง!',
+    image_prompt:
+      'Thai woman buying a train ticket at Hua Lamphong railway station counter, the grand station interior visible behind her',
+    quiz: [
+      {
+        question: 'คำว่า "ticket" แปลว่าอะไร?',
+        options: ['สถานี', 'ที่นั่ง', 'ตั๋ว', 'ชานชาลา'],
+        correctIndex: 2,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "return" (ในบริบทตั๋ว) แปลว่าอะไร?',
+        options: ['เที่ยวเดียว', 'ไป-กลับ', 'กลับบ้าน', 'คืนตั๋ว'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'ส้มจะเดินทางไปที่ไหน?',
+        options: ['ภูเก็ต', 'พัทยา', 'เชียงใหม่', 'หัวหิน'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+      {
+        question: 'ตั๋วไป-กลับราคาเท่าไหร่?',
+        options: ['ห้าร้อยบาท', 'หกร้อยบาท', 'เจ็ดร้อยบาท', 'แปดร้อยบาท'],
+        correctIndex: 3,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 3: Taking a taxi
+  // ==========================================
+  {
+    module_id: 'core-a2-transport',
+    lesson_order: 3,
+    level: 2,
+    topic: 'Taking a taxi',
+    title: 'Nok Takes a Taxi',
+    title_thai: 'นกนั่งแท็กซี่',
+    vocabulary: [
+      { word: 'taxi', phonetic: 'แท็กซี่', meaning: 'รถแท็กซี่', partOfSpeech: 'n.' },
+      { word: 'driver', phonetic: 'ไดรเวอร์', meaning: 'คนขับ', partOfSpeech: 'n.' },
+      { word: 'meter', phonetic: 'มิเตอร์', meaning: 'มิเตอร์', partOfSpeech: 'n.' },
+      { word: 'turn', phonetic: 'เทิร์น', meaning: 'เลี้ยว', partOfSpeech: 'v.' },
+      { word: 'left', phonetic: 'เลฟท์', meaning: 'ซ้าย', partOfSpeech: 'n.' },
+      { word: 'right', phonetic: 'ไรท์', meaning: 'ขวา', partOfSpeech: 'n.' },
+      { word: 'stop', phonetic: 'สต็อป', meaning: 'หยุด', partOfSpeech: 'v.' },
+      { word: 'straight', phonetic: 'สเตรท', meaning: 'ตรงไป', partOfSpeech: 'adv.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Nok', thai: 'นก' },
+        { english: 'needs', thai: 'นีดส์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'taxi', thai: 'แท็กซี่' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'hospital.', thai: 'ฮอสพิทัล' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'tells', thai: 'เทลส์' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'driver,', thai: 'ไดรเวอร์,' },
+        { english: '"Please', thai: '"พลีส' },
+        { english: 'use', thai: 'ยูส' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'meter."', thai: 'มิเตอร์"' },
+      ],
+      [
+        { english: '"Go', thai: '"โก' },
+        { english: 'straight', thai: 'สเตรท' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'turn', thai: 'เทิร์น' },
+        { english: 'left."', thai: 'เลฟท์"' },
+      ],
+      [
+        { english: 'Then', thai: 'เด็น' },
+        { english: 'she', thai: 'ชี' },
+        { english: 'says,', thai: 'เซส์,' },
+        { english: '"Turn', thai: '"เทิร์น' },
+        { english: 'right', thai: 'ไรท์' },
+        { english: 'at', thai: 'แอท' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'light."', thai: 'ไลท์"' },
+      ],
+      [
+        { english: '"Please', thai: '"พลีส' },
+        { english: 'stop', thai: 'สต็อป' },
+        { english: 'here!"', thai: 'เฮียร์!"' },
+      ],
+      [
+        { english: 'The', thai: 'เดอะ' },
+        { english: 'meter', thai: 'มิเตอร์' },
+        { english: 'says', thai: 'เซส์' },
+        { english: 'seventy-five', thai: 'เซเวนตี้ไฟว์' },
+        { english: 'baht.', thai: 'บาท' },
+      ],
+    ],
+    article_translation:
+      'นกต้องการแท็กซี่ไปโรงพยาบาล เธอบอกคนขับว่า "กรุณาเปิดมิเตอร์ด้วย" "ไปตรงแล้วเลี้ยวซ้าย" จากนั้นเธอพูดว่า "เลี้ยวขวาตรงไฟแดง" "กรุณาจอดที่นี่!" มิเตอร์แสดงเจ็ดสิบห้าบาท',
+    image_prompt:
+      'Thai woman sitting in the back of a bright pink Bangkok taxi, giving directions to the driver, city streets visible through the window',
+    quiz: [
+      {
+        question: 'คำว่า "driver" แปลว่าอะไร?',
+        options: ['ผู้โดยสาร', 'คนขับ', 'ตำรวจ', 'คนเดินถนน'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "turn left" แปลว่าอะไร?',
+        options: ['เลี้ยวขวา', 'ไปตรง', 'เลี้ยวซ้าย', 'หยุด'],
+        correctIndex: 2,
+        type: 'vocab',
+      },
+      {
+        question: 'นกจะไปที่ไหน?',
+        options: ['ห้างสรรพสินค้า', 'สนามบิน', 'โรงเรียน', 'โรงพยาบาล'],
+        correctIndex: 3,
+        type: 'comprehension',
+      },
+      {
+        question: 'ค่าแท็กซี่เท่าไหร่?',
+        options: ['ห้าสิบบาท', 'เจ็ดสิบห้าบาท', 'ร้อยบาท', 'ร้อยห้าสิบบาท'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 4: At the airport
+  // ==========================================
+  {
+    module_id: 'core-a2-transport',
+    lesson_order: 4,
+    level: 2,
+    topic: 'At the airport',
+    title: 'Ploy Flies to Japan',
+    title_thai: 'พลอยบินไปญี่ปุ่น',
+    vocabulary: [
+      { word: 'airport', phonetic: 'แอร์พอร์ท', meaning: 'สนามบิน', partOfSpeech: 'n.' },
+      { word: 'flight', phonetic: 'ฟไลท์', meaning: 'เที่ยวบิน', partOfSpeech: 'n.' },
+      { word: 'passport', phonetic: 'พาสพอร์ท', meaning: 'หนังสือเดินทาง', partOfSpeech: 'n.' },
+      { word: 'boarding pass', phonetic: 'บอร์ดิงพาส', meaning: 'บัตรขึ้นเครื่อง', partOfSpeech: 'n.' },
+      { word: 'luggage', phonetic: 'ลักเกจ', meaning: 'กระเป๋าเดินทาง', partOfSpeech: 'n.' },
+      { word: 'gate', phonetic: 'เกท', meaning: 'ประตูขึ้นเครื่อง', partOfSpeech: 'n.' },
+      { word: 'check in', phonetic: 'เช็คอิน', meaning: 'เช็คอิน', partOfSpeech: 'v.' },
+      { word: 'delay', phonetic: 'ดีเลย์', meaning: 'ล่าช้า', partOfSpeech: 'n.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Ploy', thai: 'พลอย' },
+        { english: 'arrives', thai: 'อะไรฟส์' },
+        { english: 'at', thai: 'แอท' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'airport.', thai: 'แอร์พอร์ท' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'checks in', thai: 'เช็คส์อิน' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'luggage', thai: 'ลักเกจ' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'shows', thai: 'โชว์ส' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'passport.', thai: 'พาสพอร์ท' },
+      ],
+      [
+        { english: 'The', thai: 'เดอะ' },
+        { english: 'staff', thai: 'สตาฟฟ์' },
+        { english: 'gives', thai: 'กิฟส์' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'boarding pass.', thai: 'บอร์ดิงพาส' },
+      ],
+      [
+        { english: 'Her', thai: 'เฮอร์' },
+        { english: 'flight', thai: 'ฟไลท์' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'at', thai: 'แอท' },
+        { english: 'gate', thai: 'เกท' },
+        { english: 'twelve.', thai: 'ทเวลฟ์' },
+      ],
+      [
+        { english: 'But', thai: 'บัท' },
+        { english: 'there', thai: 'แดร์' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'small', thai: 'สมอล' },
+        { english: 'delay.', thai: 'ดีเลย์' },
+      ],
+      [
+        { english: 'Ploy', thai: 'พลอย' },
+        { english: 'waits', thai: 'เวทส์' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'reads', thai: 'รีดส์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'book.', thai: 'บุ๊ค' },
+      ],
+    ],
+    article_translation:
+      'พลอยมาถึงสนามบิน เธอเช็คอินกระเป๋าเดินทางและแสดงหนังสือเดินทาง เจ้าหน้าที่ให้บัตรขึ้นเครื่อง เที่ยวบินของเธออยู่ที่ประตูสิบสอง แต่มีความล่าช้าเล็กน้อย พลอยรอและอ่านหนังสือ',
+    image_prompt:
+      'Thai woman at Suvarnabhumi airport check-in counter, handing over her passport with luggage beside her, the modern airport interior in the background',
+    quiz: [
+      {
+        question: 'คำว่า "passport" แปลว่าอะไร?',
+        options: ['บัตรขึ้นเครื่อง', 'ตั๋ว', 'หนังสือเดินทาง', 'กระเป๋าเดินทาง'],
+        correctIndex: 2,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "delay" แปลว่าอะไร?',
+        options: ['ตรงเวลา', 'ล่าช้า', 'ยกเลิก', 'เร็ว'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'พลอยจะบินไปที่ไหน?',
+        options: ['เกาหลี', 'ญี่ปุ่น', 'จีน', 'สิงคโปร์'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+      {
+        question: 'เที่ยวบินของพลอยอยู่ประตูอะไร?',
+        options: ['ประตูห้า', 'ประตูเจ็ด', 'ประตูสิบ', 'ประตูสิบสอง'],
+        correctIndex: 3,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 5: Travel problems
+  // ==========================================
+  {
+    module_id: 'core-a2-transport',
+    lesson_order: 5,
+    level: 2,
+    topic: 'Travel problems',
+    title: 'A Difficult Journey',
+    title_thai: 'การเดินทางที่ยากลำบาก',
+    vocabulary: [
+      { word: 'lost', phonetic: 'ลอสท์', meaning: 'หลงทาง/สูญหาย', partOfSpeech: 'adj.' },
+      { word: 'late', phonetic: 'เลท', meaning: 'สาย/ล่าช้า', partOfSpeech: 'adj.' },
+      { word: 'miss', phonetic: 'มิส', meaning: 'พลาด/ตก', partOfSpeech: 'v.' },
+      { word: 'cancel', phonetic: 'แคนเซิล', meaning: 'ยกเลิก', partOfSpeech: 'v.' },
+      { word: 'help', phonetic: 'เฮลพ์', meaning: 'ช่วย', partOfSpeech: 'v.' },
+      { word: 'map', phonetic: 'แม็พ', meaning: 'แผนที่', partOfSpeech: 'n.' },
+      { word: 'worry', phonetic: 'เวอร์รี่', meaning: 'กังวล', partOfSpeech: 'v.' },
+      { word: 'next', phonetic: 'เน็กซ์ท', meaning: 'ถัดไป', partOfSpeech: 'adj.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Som', thai: 'ส้ม' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'Kai', thai: 'ไก่' },
+        { english: 'are', thai: 'อาร์' },
+        { english: 'late.', thai: 'เลท' },
+      ],
+      [
+        { english: 'They', thai: 'เดย์' },
+        { english: 'miss', thai: 'มิส' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'bus', thai: 'บัส' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'Ayutthaya.', thai: 'อยุธยา' },
+      ],
+      [
+        { english: 'Kai', thai: 'ไก่' },
+        { english: 'looks', thai: 'ลุคส์' },
+        { english: 'at', thai: 'แอท' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'map', thai: 'แม็พ' },
+        { english: 'on', thai: 'ออน' },
+        { english: 'his', thai: 'ฮิส' },
+        { english: 'phone.', thai: 'โฟน' },
+      ],
+      [
+        { english: '"Don\'t', thai: '"โดนท์' },
+        { english: 'worry,"', thai: 'เวอร์รี่,"' },
+        { english: 'he', thai: 'ฮี' },
+        { english: 'says.', thai: 'เซส์' },
+      ],
+      [
+        { english: '"The', thai: '"เดอะ' },
+        { english: 'next', thai: 'เน็กซ์ท' },
+        { english: 'bus', thai: 'บัส' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'in', thai: 'อิน' },
+        { english: 'thirty', thai: 'เธอร์ตี้' },
+        { english: 'minutes."', thai: 'มินนิทส์"' },
+      ],
+      [
+        { english: 'Som', thai: 'ส้ม' },
+        { english: 'asks', thai: 'อาสค์ส' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'guard', thai: 'การ์ด' },
+        { english: 'for', thai: 'ฟอร์' },
+        { english: 'help.', thai: 'เฮลพ์' },
+      ],
+    ],
+    article_translation:
+      'ส้มกับไก่มาสาย พวกเขาตกรถเมล์ไปอยุธยา ไก่ดูแผนที่ในโทรศัพท์ "ไม่ต้องกังวล" เขาพูด "รถเมล์คันถัดไปอีกสามสิบนาที" ส้มขอความช่วยเหลือจากเจ้าหน้าที่',
+    image_prompt:
+      'Thai couple looking worried at a bus terminal, checking a phone map, a departing bus visible in the background, Mo Chit bus station setting',
+    quiz: [
+      {
+        question: 'คำว่า "miss" (ในบริบทการเดินทาง) แปลว่าอะไร?',
+        options: ['คิดถึง', 'พลาด/ตก', 'หาย', 'ยกเลิก'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "late" แปลว่าอะไร?',
+        options: ['เร็ว', 'ตรงเวลา', 'สาย/ล่าช้า', 'ถัดไป'],
+        correctIndex: 2,
+        type: 'vocab',
+      },
+      {
+        question: 'ส้มกับไก่จะไปที่ไหน?',
+        options: ['เชียงใหม่', 'ภูเก็ต', 'อยุธยา', 'กรุงเทพ'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+      {
+        question: 'รถเมล์คันถัดไปมาอีกกี่นาที?',
+        options: ['สิบนาที', 'ยี่สิบนาที', 'สามสิบนาที', 'หนึ่งชั่วโมง'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+    ],
+  },
+];

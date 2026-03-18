@@ -1,0 +1,423 @@
+import { VocabWord, InterlinearWord, QuizQuestion } from '@/types/lesson';
+import { LessonSeedData } from './core-a1-greetings';
+
+export const entA2SocialLessons: LessonSeedData[] = [
+  // ==========================================
+  // Lesson 1: Social media platforms
+  // ==========================================
+  {
+    module_id: 'ent-a2-social',
+    lesson_order: 1,
+    level: 2,
+    topic: 'Social media platforms',
+    title: 'Nong Fah Joins Social Media',
+    title_thai: 'น้องฟ้าเล่นโซเชียล',
+    vocabulary: [
+      { word: 'social media', phonetic: 'โซเชียล-มีเดีย', meaning: 'สื่อสังคมออนไลน์', partOfSpeech: 'n.' },
+      { word: 'account', phonetic: 'อะเคาท์', meaning: 'บัญชีผู้ใช้', partOfSpeech: 'n.' },
+      { word: 'post', phonetic: 'โพสต์', meaning: 'โพสต์/ข้อความ', partOfSpeech: 'n.' },
+      { word: 'follow', phonetic: 'ฟอลโล่ว์', meaning: 'ติดตาม', partOfSpeech: 'v.' },
+      { word: 'profile', phonetic: 'โปรไฟล์', meaning: 'โปรไฟล์', partOfSpeech: 'n.' },
+      { word: 'share', phonetic: 'แชร์', meaning: 'แชร์/แบ่งปัน', partOfSpeech: 'v.' },
+      { word: 'platform', phonetic: 'แพลตฟอร์ม', meaning: 'แพลตฟอร์ม', partOfSpeech: 'n.' },
+      { word: 'feed', phonetic: 'ฟีด', meaning: 'ฟีดข่าว', partOfSpeech: 'n.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Nong Fah', thai: 'น้องฟ้า' },
+        { english: 'wants', thai: 'วอนท์ส' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'join', thai: 'จอยน์' },
+        { english: 'social media.', thai: 'โซเชียลมีเดีย' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'creates', thai: 'ครีเอทส์' },
+        { english: 'an', thai: 'แอน' },
+        { english: 'account', thai: 'อะเคาท์' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'sets up', thai: 'เซ็ทอัพ' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'profile.', thai: 'โปรไฟล์' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'follows', thai: 'ฟอลโล่ว์ส' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'friends', thai: 'เฟรนด์ส' },
+        { english: 'on', thai: 'ออน' },
+        { english: 'many', thai: 'เมนนี' },
+        { english: 'platforms.', thai: 'แพลตฟอร์มส์' },
+      ],
+      [
+        { english: 'Her', thai: 'เฮอร์' },
+        { english: 'feed', thai: 'ฟีด' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'full', thai: 'ฟูล' },
+        { english: 'of', thai: 'ออฟ' },
+        { english: 'fun', thai: 'ฟัน' },
+        { english: 'posts.', thai: 'โพสต์ส' },
+      ],
+      [
+        { english: 'Nong Fah', thai: 'น้องฟ้า' },
+        { english: 'shares', thai: 'แชร์ส' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'photo', thai: 'โฟโต้' },
+        { english: 'of', thai: 'ออฟ' },
+        { english: 'her', thai: 'เฮอร์' },
+        { english: 'cat.', thai: 'แคท' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'loves', thai: 'เลิฟส์' },
+        { english: 'social media!', thai: 'โซเชียลมีเดีย!' },
+      ],
+    ],
+    article_translation:
+      'น้องฟ้าอยากเล่นโซเชียลมีเดีย เธอสร้างบัญชีผู้ใช้และตั้งค่าโปรไฟล์ เธอติดตามเพื่อนๆ บนหลายแพลตฟอร์ม ฟีดของเธอเต็มไปด้วยโพสต์สนุกๆ น้องฟ้าแชร์รูปแมวของเธอ เธอรักโซเชียลมีเดีย!',
+    image_prompt:
+      'Thai teenage girl happily setting up a social media profile on her phone, colorful app icons floating around, cozy bedroom background',
+    quiz: [
+      {
+        question: 'คำว่า "account" แปลว่าอะไร?',
+        options: ['โพสต์', 'บัญชีผู้ใช้', 'ฟีดข่าว', 'แพลตฟอร์ม'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "follow" แปลว่าอะไร?',
+        options: ['แชร์', 'โพสต์', 'ติดตาม', 'สร้าง'],
+        correctIndex: 2,
+        type: 'vocab',
+      },
+      {
+        question: 'น้องฟ้าแชร์รูปอะไร?',
+        options: ['รูปอาหาร', 'รูปเพื่อน', 'รูปแมว', 'รูปทิวทัศน์'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+      {
+        question: 'ฟีดของน้องฟ้าเป็นอย่างไร?',
+        options: ['ว่างเปล่า', 'น่าเบื่อ', 'เต็มไปด้วยโพสต์สนุกๆ', 'มีแต่โฆษณา'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 2: Hashtags and trends
+  // ==========================================
+  {
+    module_id: 'ent-a2-social',
+    lesson_order: 2,
+    level: 2,
+    topic: 'Hashtags and trends',
+    title: 'Boom Discovers Trending Topics',
+    title_thai: 'บูมค้นพบเทรนด์ฮิต',
+    vocabulary: [
+      { word: 'hashtag', phonetic: 'แฮชแท็ก', meaning: 'แฮชแท็ก', partOfSpeech: 'n.' },
+      { word: 'trending', phonetic: 'เทรนดิ้ง', meaning: 'กำลังเป็นที่นิยม', partOfSpeech: 'adj.' },
+      { word: 'viral', phonetic: 'ไวรัล', meaning: 'ไวรัล/แพร่กระจายเร็ว', partOfSpeech: 'adj.' },
+      { word: 'like', phonetic: 'ไลค์', meaning: 'กดไลค์/ถูกใจ', partOfSpeech: 'v.' },
+      { word: 'comment', phonetic: 'คอมเมนท์', meaning: 'แสดงความคิดเห็น', partOfSpeech: 'v.' },
+      { word: 'popular', phonetic: 'พ็อพพิวล่าร์', meaning: 'เป็นที่นิยม', partOfSpeech: 'adj.' },
+      { word: 'topic', phonetic: 'ท็อปปิค', meaning: 'หัวข้อ', partOfSpeech: 'n.' },
+      { word: 'search', phonetic: 'เสิร์ช', meaning: 'ค้นหา', partOfSpeech: 'v.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Boom', thai: 'บูม' },
+        { english: 'opens', thai: 'โอเพ่นส์' },
+        { english: 'his', thai: 'ฮิส' },
+        { english: 'app', thai: 'แอป' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'sees', thai: 'ซีส์' },
+        { english: 'trending', thai: 'เทรนดิ้ง' },
+        { english: 'topics.', thai: 'ท็อปปิคส์' },
+      ],
+      [
+        { english: 'A', thai: 'อะ' },
+        { english: 'hashtag', thai: 'แฮชแท็ก' },
+        { english: 'about', thai: 'อะเบาท์' },
+        { english: 'Thai', thai: 'ไทย' },
+        { english: 'food', thai: 'ฟู้ด' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'very', thai: 'เวรี่' },
+        { english: 'popular.', thai: 'พ็อพพิวล่าร์' },
+      ],
+      [
+        { english: 'He', thai: 'ฮี' },
+        { english: 'searches', thai: 'เสิร์ชเชส' },
+        { english: 'for', thai: 'ฟอร์' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'hashtag', thai: 'แฮชแท็ก' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'finds', thai: 'ไฟน์ดส์' },
+        { english: 'many', thai: 'เมนนี' },
+        { english: 'posts.', thai: 'โพสต์ส' },
+      ],
+      [
+        { english: 'One', thai: 'วัน' },
+        { english: 'video', thai: 'วิดีโอ' },
+        { english: 'is', thai: 'อิส' },
+        { english: 'viral.', thai: 'ไวรัล' },
+      ],
+      [
+        { english: 'Boom', thai: 'บูม' },
+        { english: 'likes', thai: 'ไลค์ส' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'video', thai: 'วิดีโอ' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'comments', thai: 'คอมเมนท์ส' },
+        { english: '"Looks delicious!"', thai: '"ดูอร่อย!"' },
+      ],
+    ],
+    article_translation:
+      'บูมเปิดแอปแล้วเห็นหัวข้อที่กำลังเทรนด์ แฮชแท็กเกี่ยวกับอาหารไทยเป็นที่นิยมมาก เขาค้นหาแฮชแท็กแล้วเจอโพสต์เยอะมาก วิดีโอหนึ่งเป็นไวรัล บูมกดไลค์วิดีโอแล้วคอมเมนท์ว่า "ดูอร่อย!"',
+    image_prompt:
+      'Thai young man browsing trending hashtags on his phone, food photos and hashtag symbols floating on screen, Thai street food market background',
+    quiz: [
+      {
+        question: 'คำว่า "hashtag" แปลว่าอะไร?',
+        options: ['แฮชแท็ก', 'หัวข้อ', 'คอมเมนท์', 'วิดีโอ'],
+        correctIndex: 0,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "viral" แปลว่าอะไร?',
+        options: ['เป็นที่นิยม', 'ไวรัล/แพร่กระจายเร็ว', 'ค้นหา', 'ถูกใจ'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'แฮชแท็กที่กำลังเทรนด์เกี่ยวกับอะไร?',
+        options: ['เพลงไทย', 'อาหารไทย', 'ภาพยนตร์', 'กีฬา'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+      {
+        question: 'บูมคอมเมนท์ว่าอะไร?',
+        options: ['"สวยมาก!"', '"ดูอร่อย!"', '"ตลกดี!"', '"เจ๋งมาก!"'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 3: Writing captions
+  // ==========================================
+  {
+    module_id: 'ent-a2-social',
+    lesson_order: 3,
+    level: 2,
+    topic: 'Writing captions',
+    title: 'Mint Writes the Perfect Caption',
+    title_thai: 'มิ้นท์เขียนแคปชั่นเพอร์เฟกต์',
+    vocabulary: [
+      { word: 'caption', phonetic: 'แคปชั่น', meaning: 'คำบรรยายภาพ', partOfSpeech: 'n.' },
+      { word: 'emoji', phonetic: 'อิโมจิ', meaning: 'อิโมจิ', partOfSpeech: 'n.' },
+      { word: 'photo', phonetic: 'โฟโต้', meaning: 'รูปถ่าย', partOfSpeech: 'n.' },
+      { word: 'upload', phonetic: 'อัปโหลด', meaning: 'อัปโหลด', partOfSpeech: 'v.' },
+      { word: 'filter', phonetic: 'ฟิลเตอร์', meaning: 'ฟิลเตอร์', partOfSpeech: 'n.' },
+      { word: 'describe', phonetic: 'ดิสไครบ์', meaning: 'อธิบาย/บรรยาย', partOfSpeech: 'v.' },
+      { word: 'creative', phonetic: 'ครีเอทีฟ', meaning: 'สร้างสรรค์', partOfSpeech: 'adj.' },
+      { word: 'location', phonetic: 'โลเคชั่น', meaning: 'สถานที่', partOfSpeech: 'n.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Mint', thai: 'มิ้นท์' },
+        { english: 'takes', thai: 'เทคส์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'beautiful', thai: 'บิวตี้ฟูล' },
+        { english: 'photo', thai: 'โฟโต้' },
+        { english: 'at', thai: 'แอท' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'beach.', thai: 'บีช' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'adds', thai: 'แอดส์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'pretty', thai: 'พริตตี้' },
+        { english: 'filter', thai: 'ฟิลเตอร์' },
+        { english: 'to', thai: 'ทู' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'photo.', thai: 'โฟโต้' },
+      ],
+      [
+        { english: 'Now', thai: 'นาว' },
+        { english: 'she', thai: 'ชี' },
+        { english: 'needs', thai: 'นีดส์' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'creative', thai: 'ครีเอทีฟ' },
+        { english: 'caption.', thai: 'แคปชั่น' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'describes', thai: 'ดิสไครบ์ส' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'sunset', thai: 'ซันเซ็ท' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'adds', thai: 'แอดส์' },
+        { english: 'emojis.', thai: 'อิโมจิส' },
+      ],
+      [
+        { english: 'She', thai: 'ชี' },
+        { english: 'tags', thai: 'แท็กส์' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'location', thai: 'โลเคชั่น' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'uploads', thai: 'อัปโหลดส์' },
+        { english: 'it.', thai: 'อิท' },
+      ],
+      [
+        { english: 'Her', thai: 'เฮอร์' },
+        { english: 'friends', thai: 'เฟรนด์ส' },
+        { english: 'love', thai: 'เลิฟ' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'post!', thai: 'โพสต์!' },
+      ],
+    ],
+    article_translation:
+      'มิ้นท์ถ่ายรูปสวยๆ ที่ชายหาด เธอใส่ฟิลเตอร์สวยๆ ให้รูป ตอนนี้เธอต้องการแคปชั่นที่สร้างสรรค์ เธอบรรยายพระอาทิตย์ตกและใส่อิโมจิ เธอแท็กสถานที่แล้วอัปโหลด เพื่อนๆ ของเธอชอบโพสต์นี้มาก!',
+    image_prompt:
+      'Thai young woman writing a caption on her phone at a tropical beach during sunset, warm golden light, waves in background',
+    quiz: [
+      {
+        question: 'คำว่า "caption" แปลว่าอะไร?',
+        options: ['รูปถ่าย', 'คำบรรยายภาพ', 'ฟิลเตอร์', 'สถานที่'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "upload" แปลว่าอะไร?',
+        options: ['ดาวน์โหลด', 'อัปโหลด', 'ลบ', 'แก้ไข'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'มิ้นท์ถ่ายรูปที่ไหน?',
+        options: ['ที่ห้างสรรพสินค้า', 'ที่บ้าน', 'ที่ชายหาด', 'ที่โรงเรียน'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+      {
+        question: 'มิ้นท์ใส่อะไรในแคปชั่น?',
+        options: ['แค่ข้อความ', 'อิโมจิ', 'ลิงก์วิดีโอ', 'เบอร์โทรศัพท์'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+    ],
+  },
+
+  // ==========================================
+  // Lesson 4: Online slang and abbreviations
+  // ==========================================
+  {
+    module_id: 'ent-a2-social',
+    lesson_order: 4,
+    level: 2,
+    topic: 'Online slang and abbreviations',
+    title: 'Pong Learns Internet Speak',
+    title_thai: 'ป้องเรียนรู้ภาษาอินเทอร์เน็ต',
+    vocabulary: [
+      { word: 'LOL', phonetic: 'แอลโอแอล', meaning: 'หัวเราะเสียงดัง (laugh out loud)', partOfSpeech: 'abbr.' },
+      { word: 'DM', phonetic: 'ดีเอ็ม', meaning: 'ข้อความส่วนตัว (direct message)', partOfSpeech: 'abbr.' },
+      { word: 'BRB', phonetic: 'บีอาร์บี', meaning: 'เดี๋ยวกลับมา (be right back)', partOfSpeech: 'abbr.' },
+      { word: 'ASAP', phonetic: 'เอเอสเอพี', meaning: 'เร็วที่สุด (as soon as possible)', partOfSpeech: 'abbr.' },
+      { word: 'slang', phonetic: 'สแลง', meaning: 'ภาษาสแลง/คำไม่เป็นทางการ', partOfSpeech: 'n.' },
+      { word: 'abbreviation', phonetic: 'แอบบรีวิเอชั่น', meaning: 'คำย่อ', partOfSpeech: 'n.' },
+      { word: 'chat', phonetic: 'แชท', meaning: 'แชท/สนทนา', partOfSpeech: 'v.' },
+      { word: 'reply', phonetic: 'รีพลาย', meaning: 'ตอบกลับ', partOfSpeech: 'v.' },
+    ],
+    article_sentences: [
+      [
+        { english: 'Pong', thai: 'ป้อง' },
+        { english: 'chats', thai: 'แชทส์' },
+        { english: 'with', thai: 'วิธ' },
+        { english: 'his', thai: 'ฮิส' },
+        { english: 'foreign', thai: 'ฟอเรน' },
+        { english: 'friend', thai: 'เฟรนด์' },
+        { english: 'online.', thai: 'ออนไลน์' },
+      ],
+      [
+        { english: 'His', thai: 'ฮิส' },
+        { english: 'friend', thai: 'เฟรนด์' },
+        { english: 'sends', thai: 'เซนด์ส' },
+        { english: 'a', thai: 'อะ' },
+        { english: 'funny', thai: 'ฟันนี่' },
+        { english: 'meme', thai: 'มีม' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'writes', thai: 'ไรท์ส' },
+        { english: '"LOL!"', thai: '"แอลโอแอล!"' },
+      ],
+      [
+        { english: 'Pong', thai: 'ป้อง' },
+        { english: 'does not', thai: 'ดัสน็อท' },
+        { english: 'understand', thai: 'อันเดอร์สแตนด์' },
+        { english: 'the', thai: 'เดอะ' },
+        { english: 'abbreviation.', thai: 'แอบบรีวิเอชั่น' },
+      ],
+      [
+        { english: 'He', thai: 'ฮี' },
+        { english: 'replies,', thai: 'รีพลายส์,' },
+        { english: '"What', thai: '"วอท' },
+        { english: 'does', thai: 'ดัส' },
+        { english: 'LOL', thai: 'แอลโอแอล' },
+        { english: 'mean?"', thai: 'มีน?"' },
+      ],
+      [
+        { english: 'His', thai: 'ฮิส' },
+        { english: 'friend', thai: 'เฟรนด์' },
+        { english: 'says,', thai: 'เซส์,' },
+        { english: '"It means', thai: '"อิท มีนส์' },
+        { english: 'laugh out loud!', thai: 'ลาฟ เอาท์ ลาวด์!' },
+        { english: 'BRB,', thai: 'บีอาร์บี,' },
+        { english: 'DM', thai: 'ดีเอ็ม' },
+        { english: 'me', thai: 'มี' },
+        { english: 'ASAP!"', thai: 'เอเอสเอพี!"' },
+      ],
+      [
+        { english: 'Pong', thai: 'ป้อง' },
+        { english: 'laughs', thai: 'ลาฟส์' },
+        { english: 'and', thai: 'แอนด์' },
+        { english: 'learns', thai: 'เลิร์นส์' },
+        { english: 'new', thai: 'นิว' },
+        { english: 'internet', thai: 'อินเทอร์เน็ต' },
+        { english: 'slang.', thai: 'สแลง' },
+      ],
+    ],
+    article_translation:
+      'ป้องแชทกับเพื่อนต่างชาติออนไลน์ เพื่อนส่งมีมตลกมาแล้วเขียนว่า "LOL!" ป้องไม่เข้าใจคำย่อนี้ เขาตอบกลับว่า "LOL แปลว่าอะไร?" เพื่อนบอกว่า "มันแปลว่าหัวเราะเสียงดัง! เดี๋ยวกลับมา ส่ง DM มาเร็วที่สุดนะ!" ป้องหัวเราะแล้วเรียนรู้สแลงอินเทอร์เน็ตใหม่',
+    image_prompt:
+      'Thai young man looking at his phone confused then smiling, chat bubbles with LOL BRB DM floating around, modern cafe background',
+    quiz: [
+      {
+        question: 'คำว่า "LOL" แปลว่าอะไร?',
+        options: ['รักมาก', 'หัวเราะเสียงดัง', 'ขอโทษ', 'เดี๋ยวกลับมา'],
+        correctIndex: 1,
+        type: 'vocab',
+      },
+      {
+        question: 'คำว่า "DM" แปลว่าอะไร?',
+        options: ['ข้อความส่วนตัว', 'คำย่อ', 'อิโมจิ', 'ฟีดข่าว'],
+        correctIndex: 0,
+        type: 'vocab',
+      },
+      {
+        question: 'ป้องไม่เข้าใจอะไร?',
+        options: ['ภาษาไทย', 'คำย่อ LOL', 'รูปภาพ', 'ชื่อเพื่อน'],
+        correctIndex: 1,
+        type: 'comprehension',
+      },
+      {
+        question: 'ป้องแชทกับใคร?',
+        options: ['แม่ของเขา', 'ครู', 'เพื่อนต่างชาติ', 'พี่สาว'],
+        correctIndex: 2,
+        type: 'comprehension',
+      },
+    ],
+  },
+];
