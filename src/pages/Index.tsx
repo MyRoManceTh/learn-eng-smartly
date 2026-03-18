@@ -20,6 +20,7 @@ import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
 import SocialHomeSection from "@/components/social/SocialHomeSection";
 import GachaSpinner from "@/components/gacha/GachaSpinner";
+import NotificationBell from "@/components/NotificationBell";
 import type { DailyMission, MissionType } from "@/types/dopamine";
 
 const missionIcons: Record<MissionType, string> = {
@@ -179,6 +180,7 @@ const Index = () => {
           <div className="flex items-center gap-1.5 shrink-0">
             {user && (
               <>
+                <NotificationBell />
                 <StreakFireDisplay streak={currentStreak} size="sm" />
                 <EnergyDisplay energy={energy} />
               </>
