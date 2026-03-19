@@ -17,11 +17,10 @@ import VocabTable from "@/components/VocabTable";
 import ArticleReader from "@/components/ArticleReader";
 import QuizSection from "@/components/QuizSection";
 import SkillTreeMap from "@/components/skilltree/SkillTreeMap";
-import SkillTreeCardView from "@/components/skilltree/SkillTreeCardView";
 import ModuleDetail from "@/components/skilltree/ModuleDetail";
 import PathSelectionScreen from "@/components/skilltree/PathSelectionScreen";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trophy, Loader2, Map, LayoutGrid } from "lucide-react";
+import { ArrowLeft, Trophy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { cn } from "@/lib/utils";
@@ -42,7 +41,6 @@ const LearnPage = () => {
   } = useSkillTreeProgress();
 
   // Path & view states
-  const [viewMode, setViewMode] = useState<"map" | "cards">("cards");
   const [activePath, setActivePath] = useState(
     (profile as any)?.active_path || "core"
   );
@@ -440,55 +438,20 @@ const LearnPage = () => {
         </div>
       </div>
 
-      {/* View mode toggle */}
-      <div className="max-w-3xl mx-auto px-4 pt-4 flex justify-end">
-        <div className="flex gap-1 bg-black/20 rounded-full p-0.5">
-          <button
-            onClick={() => setViewMode("cards")}
-            className={cn(
-              "flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-all",
-              viewMode === "cards" ? "bg-white text-foreground shadow-sm" : "text-white/70 hover:text-white"
-            )}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" /> การ์ด
-          </button>
-          <button
-            onClick={() => setViewMode("map")}
-            className={cn(
-              "flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-all",
-              viewMode === "map" ? "bg-white text-foreground shadow-sm" : "text-white/70 hover:text-white"
-            )}
-          >
-            <Map className="w-3.5 h-3.5" /> แผนที่
-          </button>
-        </div>
-      </div>
-
-      {/* Skill Tree */}
-      <main className="max-w-3xl mx-auto px-4 py-4 relative">
-        {viewMode === "cards" ? (
-          <SkillTreeCardView
-            modules={pathModules}
-            isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
-            isModuleCompleted={isModuleCompleted}
-            getModuleProgress={getModuleProgress}
-            onModuleClick={handleModuleClick}
-            nextModuleId={nextModuleId}
-          />
-        ) : (
-          <SkillTreeMap
-            modules={pathModules}
-            isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
-            isModuleCompleted={isModuleCompleted}
-            getModuleProgress={getModuleProgress}
-            onModuleClick={handleModuleClick}
-            nextModuleId={nextModuleId}
-            activePath={activePath}
-            onBranchPointClick={() => setShowPathSelection(true)}
-            isCoreLevel1Done={coreLevel1Done}
-            selectedSpecialty={selectedSpecialty}
-          />
-        )}
+      {/* Skill Tree - Adventure Map */}
+      <main className="max-w-3xl mx-auto px-4 py-6 relative">
+        <SkillTreeMap
+          modules={pathModules}
+          isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
+          isModuleCompleted={isModuleCompleted}
+          getModuleProgress={getModuleProgress}
+          onModuleClick={handleModuleClick}
+          nextModuleId={nextModuleId}
+          activePath={activePath}
+          onBranchPointClick={() => setShowPathSelection(true)}
+          isCoreLevel1Done={coreLevel1Done}
+          selectedSpecialty={selectedSpecialty}
+        />
       </main>
     </div>
   );

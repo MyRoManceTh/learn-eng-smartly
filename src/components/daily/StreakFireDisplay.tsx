@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { getStreakTier, getNextStreakTier } from "@/data/streakTiers";
 
 interface Props {
   streak: number;
@@ -8,20 +7,6 @@ interface Props {
 
 const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
   const isSm = size === "sm";
-  const tier = getStreakTier(streak);
-  const nextTier = getNextStreakTier(streak);
-
-  const TierBadge = () => {
-    if (!tier || isSm) return null;
-    return (
-      <span className={cn(
-        "text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-gradient-to-r text-white ml-1",
-        tier.color
-      )}>
-        {tier.emoji} {tier.nameThai}
-      </span>
-    );
-  };
 
   // ระดับ 0: ไม่มีไฟ
   if (streak <= 0) {
@@ -52,7 +37,6 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
         >
           {streak}
         </span>
-        <TierBadge />
       </div>
     );
   }
@@ -77,7 +61,6 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
         >
           {streak}
         </span>
-        <TierBadge />
       </div>
     );
   }
@@ -121,7 +104,6 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
         >
           {streak}
         </span>
-        <TierBadge />
       </div>
     );
   }
@@ -173,7 +155,6 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
       >
         {streak}
       </span>
-      <TierBadge />
     </div>
   );
 };

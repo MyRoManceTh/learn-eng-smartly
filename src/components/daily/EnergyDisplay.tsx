@@ -60,7 +60,7 @@ const EnergyDisplay = ({ energy }: Props) => {
           filled ? "opacity-100" : "opacity-25 grayscale"
         )}
       >
-        ❤️
+        ⚡
       </span>
     );
   }
@@ -71,7 +71,7 @@ const EnergyDisplay = ({ energy }: Props) => {
     <div
       className={cn(
         "flex items-center gap-1.5 px-2 py-1 rounded-full bg-card/80 border border-border/50",
-        isUrgent && "animate-pulse border-rose-500/50"
+        isUrgent && "animate-pulse border-amber-500/50"
       )}
     >
       {/* ไอคอน bolt */}
@@ -82,7 +82,7 @@ const EnergyDisplay = ({ energy }: Props) => {
         className={cn(
           "text-xs font-bold tabular-nums",
           isUrgent
-            ? "text-rose-500"
+            ? "text-amber-500"
             : current === 0
               ? "text-destructive"
               : "text-foreground"
@@ -94,7 +94,7 @@ const EnergyDisplay = ({ energy }: Props) => {
       {/* นับถอยหลัง */}
       {!isFull && countdown && (
         <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-          เติมหัวใจใน {countdown}
+          ชาร์จใน {countdown}
         </span>
       )}
     </div>

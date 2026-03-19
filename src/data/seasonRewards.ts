@@ -17,7 +17,7 @@ export const seasonTiers: SeasonTier[] = [
     tier: 3,
     expRequired: 300,
     freeReward: { coins: 40, exp: 20 },
-    premiumReward: { coins: 80, item: "season_acc_1" },
+    premiumReward: { coins: 80, item: "season_hat_1" },
   },
   {
     tier: 4,

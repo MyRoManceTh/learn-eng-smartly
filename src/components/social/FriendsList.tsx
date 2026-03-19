@@ -207,10 +207,10 @@ export default function FriendsList() {
                         </div>
                       </div>
                       {/* Energy display */}
-                      <div className="flex items-center gap-0.5 shrink-0" title={`หัวใจ ${friend.energy}/5`}>
+                      <div className="flex items-center gap-0.5 shrink-0" title={`ไฟ ${friend.energy}/5`}>
                         {Array.from({ length: 5 }).map((_, i) => (
                           <span key={i} className={`text-xs ${i < friend.energy ? "opacity-100" : "opacity-20"}`}>
-                            ❤️
+                            ⚡
                           </span>
                         ))}
                       </div>
@@ -223,7 +223,7 @@ export default function FriendsList() {
                         size="sm"
                         className={`h-8 px-3 text-xs flex-1 ${
                           canSendEnergy
-                            ? "bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0"
+                            ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
                             : "opacity-50"
                         }`}
                         disabled={!canSendEnergy || isSendingEnergy}
@@ -233,7 +233,7 @@ export default function FriendsList() {
                           setSendingEnergyTo(null);
                         }}
                       >
-                        {isSendingEnergy ? "กำลังเติม..." : "❤️ เติมหัวใจ"}
+                        {isSendingEnergy ? "กำลังเติม..." : "🔥 เติมไฟ"}
                       </Button>
                       <Button
                         variant="ghost"
@@ -266,7 +266,7 @@ export default function FriendsList() {
                     {/* Hint if friend hasn't completed any lesson */}
                     {!canSendEnergy && (
                       <p className="text-[10px] text-muted-foreground text-center font-thai">
-                        เพื่อนต้องเรียนจบอย่างน้อย 1 บท ถึงจะเติมหัวใจได้
+                        เพื่อนต้องเรียนจบอย่างน้อย 1 บท ถึงจะเติมไฟได้
                       </p>
                     )}
                   </div>

@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { sendLineNotify } from "@/lib/lineNotify";
 
 export interface FriendData {
   friendship_id: string;
@@ -176,13 +175,6 @@ export function useFriends() {
       }
 
       toast.success("ส่งคำขอเป็นเพื่อนแล้ว!");
-      // Notify the friend via LINE
-      const { data: myProfile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .single();
-      sendLineNotify("friend_request", fp.user_id, (myProfile as any)?.display_name || "ใครบางคน");
       loadFriends();
       return true;
     },
@@ -191,35 +183,14 @@ export function useFriends() {
 
   const acceptRequest = useCallback(
     async (friendshipId: string) => {
-      // Find who sent this request
-      const { data: friendship } = await supabase
-        .from("friendships")
-        .select("requester_id")
-        .eq("id", friendshipId)
-        .single();
-
       await supabase
         .from("friendships")
         .update({ status: "accepted", updated_at: new Date().toISOString() } as any)
         .eq("id", friendshipId);
       toast.success("ยอมรับคำขอเป็นเพื่อนแล้ว!");
-
-      // Notify the requester
-      if (user && friendship) {
-        const { data: myProfile } = await supabase
-          .from("profiles")
-          .select("display_name")
-          .eq("user_id", user.id)
-          .single();
-        sendLineNotify(
-          "friend_accepted",
-          (friendship as any).requester_id,
-          (myProfile as any)?.display_name || "เพื่อน"
-        );
-      }
       loadFriends();
     },
-    [user, loadFriends]
+    [loadFriends]
   );
 
   const declineRequest = useCallback(
@@ -242,16 +213,6 @@ export function useFriends() {
         message: message || null,
       } as any);
       toast.success("ส่งของขวัญแล้ว! 🎁");
-      // Notify friend via LINE
-      const { data: myProfile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .single();
-      sendLineNotify("gift_received", friendId, (myProfile as any)?.display_name || "เพื่อน", {
-        coins: coins || 0,
-        message: message || "",
-      });
     },
     [user]
   );
@@ -263,7 +224,7 @@ export function useFriends() {
       // Check if friend completed at least 1 lesson
       const friend = friends.find((f) => f.user_id === friendId);
       if (!friend || friend.lessons_completed < 1) {
-        toast.error("เพื่อนต้องเรียนจบอย่างน้อย 1 บทก่อน ถึงจะเติมหัวใจได้");
+        toast.error("เพื่อนต้องเรียนจบอย่างน้อย 1 บทก่อน ถึงจะเติมไฟได้");
         return false;
       }
 
@@ -283,7 +244,7 @@ export function useFriends() {
         .limit(1);
 
       if (existingGift && (existingGift as any[]).length > 0) {
-        toast.error("วันนี้เติมหัวใจให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
+        toast.error("วันนี้เติมไฟให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
         return false;
       }
 
@@ -293,7 +254,7 @@ export function useFriends() {
         receiver_id: friendId,
         item_id: "energy",
         coins: 0,
-        message: "เติมหัวใจให้~ สู้ๆ นะ! ❤️",
+        message: "เติมไฟให้~ สู้ๆ นะ! 🔥",
       } as any);
 
       if (error) {
@@ -301,14 +262,7 @@ export function useFriends() {
         return false;
       }
 
-      toast.success("เติมหัวใจให้เพื่อนแล้ว! ❤️");
-      // Notify friend via LINE
-      const { data: myProfile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .single();
-      sendLineNotify("friend_energy", friendId, (myProfile as any)?.display_name || "เพื่อน");
+      toast.success("เติมไฟให้เพื่อนแล้ว! 🔥⚡");
       return true;
     },
     [user, friends]
