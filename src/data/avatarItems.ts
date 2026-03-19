@@ -43,20 +43,6 @@ export const avatarItems: AvatarItem[] = [
   { id: "haircolor_rainbow", name: "Holographic", nameThai: "โฮโลแกรม", category: "hairColor", price: 350, rarity: "legendary", icon: "🌈", svgProps: { color: "rainbow" } },
 
   // ═══════════════════════════════════════════
-  // 🎩 HATS (10) — Cute & Cool Headwear
-  // ═══════════════════════════════════════════
-  { id: "hat_beret", name: "Cute Beret", nameThai: "เบเรต์น่ารัก", category: "hat", price: 60, rarity: "common", icon: "🎨", svgProps: { color: "#FF8A9E" } },
-  { id: "hat_bucket", name: "Bucket Hat", nameThai: "หมวกบักเก็ต", category: "hat", price: 80, rarity: "common", icon: "🧢", svgProps: { color: "#A8D8EA" } },
-  { id: "hat_beanie", name: "Cozy Beanie", nameThai: "บีนนี่อุ่นสบาย", category: "hat", price: 80, rarity: "common", icon: "🧶", svgProps: { color: "#F0B27A" } },
-  { id: "hat_catears", name: "Cat Ears", nameThai: "หูแมว", category: "hat", price: 120, rarity: "rare", icon: "🐱", svgProps: { color: "#FFD1DC" } },
-  { id: "hat_bunnyears", name: "Bunny Ears", nameThai: "หูกระต่าย", category: "hat", price: 140, rarity: "rare", icon: "🐰", svgProps: { color: "#FFFFFF" } },
-  { id: "hat_flowerband", name: "Flower Crown", nameThai: "มงกุฎดอกไม้", category: "hat", price: 150, rarity: "rare", icon: "🌺", svgProps: { color: "#FFB6C1" } },
-  { id: "hat_headphones", name: "Neon Headphones", nameThai: "หูฟังนีออน", category: "hat", price: 160, rarity: "rare", icon: "🎧", svgProps: { color: "#00E5FF" } },
-  { id: "hat_witch", name: "Star Witch Hat", nameThai: "หมวกแม่มดดาว", category: "hat", price: 250, rarity: "epic", icon: "🧙‍♀️", svgProps: { color: "#7B1FA2" } },
-  { id: "hat_tiara", name: "Crystal Tiara", nameThai: "มงกุฎคริสตัล", category: "hat", price: 350, rarity: "epic", icon: "👸", svgProps: { color: "#E8E0F0" } },
-  { id: "hat_crown", name: "Royal Crown", nameThai: "มงกุฎราชา", category: "hat", price: 500, rarity: "legendary", icon: "👑", svgProps: { color: "#FFD700" } },
-
-  // ═══════════════════════════════════════════
   // 👕 SHIRTS (8) — Fashion Forward
   // ═══════════════════════════════════════════
   { id: "shirt_default", name: "Comfy Tee", nameThai: "เสื้อยืดสบายๆ", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#A8D8EA", pattern: "vneck" } },
@@ -131,7 +117,6 @@ export const categoryLabels: { key: ItemCategory; label: string; icon: string }[
   { key: "skin", label: "สีผิว", icon: "🍑" },
   { key: "hair", label: "ทรงผม", icon: "💇" },
   { key: "hairColor", label: "สีผม", icon: "🎨" },
-  { key: "hat", label: "หมวก", icon: "🎩" },
   { key: "shirt", label: "เสื้อ", icon: "👕" },
   { key: "pants", label: "กางเกง", icon: "👖" },
   { key: "shoes", label: "รองเท้า", icon: "👟" },
