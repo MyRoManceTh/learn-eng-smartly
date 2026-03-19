@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { sendLineNotify } from "@/lib/lineNotify";
 
 export interface FriendData {
   friendship_id: string;
@@ -175,6 +176,13 @@ export function useFriends() {
       }
 
       toast.success("ส่งคำขอเป็นเพื่อนแล้ว!");
+      // Notify the friend via LINE
+      const { data: myProfile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+      sendLineNotify("friend_request", fp.user_id, (myProfile as any)?.display_name || "ใครบางคน");
       loadFriends();
       return true;
     },
@@ -183,14 +191,35 @@ export function useFriends() {
 
   const acceptRequest = useCallback(
     async (friendshipId: string) => {
+      // Find who sent this request
+      const { data: friendship } = await supabase
+        .from("friendships")
+        .select("requester_id")
+        .eq("id", friendshipId)
+        .single();
+
       await supabase
         .from("friendships")
         .update({ status: "accepted", updated_at: new Date().toISOString() } as any)
         .eq("id", friendshipId);
       toast.success("ยอมรับคำขอเป็นเพื่อนแล้ว!");
+
+      // Notify the requester
+      if (user && friendship) {
+        const { data: myProfile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("user_id", user.id)
+          .single();
+        sendLineNotify(
+          "friend_accepted",
+          (friendship as any).requester_id,
+          (myProfile as any)?.display_name || "เพื่อน"
+        );
+      }
       loadFriends();
     },
-    [loadFriends]
+    [user, loadFriends]
   );
 
   const declineRequest = useCallback(
@@ -213,6 +242,16 @@ export function useFriends() {
         message: message || null,
       } as any);
       toast.success("ส่งของขวัญแล้ว! 🎁");
+      // Notify friend via LINE
+      const { data: myProfile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+      sendLineNotify("gift_received", friendId, (myProfile as any)?.display_name || "เพื่อน", {
+        coins: coins || 0,
+        message: message || "",
+      });
     },
     [user]
   );
@@ -263,6 +302,13 @@ export function useFriends() {
       }
 
       toast.success("เติมหัวใจให้เพื่อนแล้ว! ❤️");
+      // Notify friend via LINE
+      const { data: myProfile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+      sendLineNotify("friend_energy", friendId, (myProfile as any)?.display_name || "เพื่อน");
       return true;
     },
     [user, friends]
