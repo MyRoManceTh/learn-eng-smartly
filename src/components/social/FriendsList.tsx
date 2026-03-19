@@ -22,6 +22,7 @@ export default function FriendsList() {
     acceptRequest,
     declineRequest,
     sendGift,
+    sendEnergy,
   } = useFriends();
   const { sendChallenge } = useChallenges();
   const { profile } = useProfile();
@@ -36,6 +37,7 @@ export default function FriendsList() {
     id: string;
     name: string;
   } | null>(null);
+  const [sendingEnergyTo, setSendingEnergyTo] = useState<string | null>(null);
 
   const getEvolutionIcon = (stage: number) => {
     const evo = evolutionStages.find((s) => s.stage === stage);
@@ -168,55 +170,96 @@ export default function FriendsList() {
               <h4 className="text-sm font-semibold">
                 เพื่อนของคุณ ({friends.length})
               </h4>
-              {friends.map((friend) => (
-                <div
-                  key={friend.friendship_id}
-                  className="flex items-center gap-2 rounded-lg border p-2 transition-colors hover:bg-muted/30"
-                >
-                  <span className="text-lg">
-                    {getEvolutionIcon(friend.evolution_stage)}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {friend.display_name}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>
-                        ⚡ {friend.total_exp.toLocaleString()} EXP
+              {friends.map((friend) => {
+                const canSendEnergy = friend.lessons_completed >= 1;
+                const isSendingEnergy = sendingEnergyTo === friend.user_id;
+
+                return (
+                  <div
+                    key={friend.friendship_id}
+                    className="rounded-xl border p-3 transition-colors hover:bg-muted/30 space-y-2"
+                  >
+                    {/* Top row: avatar + info */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">
+                        {getEvolutionIcon(friend.evolution_stage)}
                       </span>
-                      <span>🔥 {friend.current_streak} วัน</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {friend.display_name}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>⚡ {friend.total_exp.toLocaleString()} EXP</span>
+                          <span>🔥 {friend.current_streak} วัน</span>
+                          <span>📚 {friend.lessons_completed} บท</span>
+                        </div>
+                      </div>
+                      {/* Energy display */}
+                      <div className="flex items-center gap-0.5 shrink-0" title={`ไฟ ${friend.energy}/5`}>
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span key={i} className={`text-xs ${i < friend.energy ? "opacity-100" : "opacity-20"}`}>
+                            ⚡
+                          </span>
+                        ))}
+                      </div>
                     </div>
+
+                    {/* Action buttons */}
+                    <div className="flex gap-1.5">
+                      <Button
+                        variant={canSendEnergy ? "default" : "outline"}
+                        size="sm"
+                        className={`h-8 px-3 text-xs flex-1 ${
+                          canSendEnergy
+                            ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+                            : "opacity-50"
+                        }`}
+                        disabled={!canSendEnergy || isSendingEnergy}
+                        onClick={async () => {
+                          setSendingEnergyTo(friend.user_id);
+                          await sendEnergy(friend.user_id);
+                          setSendingEnergyTo(null);
+                        }}
+                      >
+                        {isSendingEnergy ? "กำลังเติม..." : "🔥 เติมไฟ"}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 text-xs"
+                        onClick={() =>
+                          setGiftTarget({
+                            id: friend.user_id,
+                            name: friend.display_name,
+                          })
+                        }
+                      >
+                        🎁
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 text-xs"
+                        onClick={() =>
+                          setChallengeTarget({
+                            id: friend.user_id,
+                            name: friend.display_name,
+                          })
+                        }
+                      >
+                        ⚔️
+                      </Button>
+                    </div>
+
+                    {/* Hint if friend hasn't completed any lesson */}
+                    {!canSendEnergy && (
+                      <p className="text-[10px] text-muted-foreground text-center font-thai">
+                        เพื่อนต้องเรียนจบอย่างน้อย 1 บท ถึงจะเติมไฟได้
+                      </p>
+                    )}
                   </div>
-                  <div className="flex gap-1 shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 px-2 text-xs"
-                      onClick={() =>
-                        setGiftTarget({
-                          id: friend.user_id,
-                          name: friend.display_name,
-                        })
-                      }
-                    >
-                      🎁 ส่งของขวัญ
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 px-2 text-xs"
-                      onClick={() =>
-                        setChallengeTarget({
-                          id: friend.user_id,
-                          name: friend.display_name,
-                        })
-                      }
-                    >
-                      ⚔️ ท้าทาย
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

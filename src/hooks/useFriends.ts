@@ -11,6 +11,8 @@ export interface FriendData {
   current_streak: number;
   equipped: any;
   evolution_stage: number;
+  lessons_completed: number;
+  energy: number;
   status: string;
   is_requester: boolean;
 }
@@ -60,7 +62,7 @@ export function useFriends() {
     // Load friend profiles
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("user_id, display_name, total_exp, current_streak, equipped, evolution_stage")
+      .select("user_id, display_name, total_exp, current_streak, equipped, evolution_stage, lessons_completed, energy")
       .in("user_id", friendUserIds);
 
     const profileMap = new Map<string, any>();
@@ -82,6 +84,8 @@ export function useFriends() {
         current_streak: profile.current_streak || 0,
         equipped: profile.equipped,
         evolution_stage: profile.evolution_stage || 1,
+        lessons_completed: profile.lessons_completed || 0,
+        energy: profile.energy ?? 5,
         status: f.status,
         is_requester: f.requester_id === user.id,
       };
@@ -213,6 +217,57 @@ export function useFriends() {
     [user]
   );
 
+  const sendEnergy = useCallback(
+    async (friendId: string): Promise<boolean> => {
+      if (!user) return false;
+
+      // Check if friend completed at least 1 lesson
+      const friend = friends.find((f) => f.user_id === friendId);
+      if (!friend || friend.lessons_completed < 1) {
+        toast.error("เพื่อนต้องเรียนจบอย่างน้อย 1 บทก่อน ถึงจะเติมไฟได้");
+        return false;
+      }
+
+      // Check if already sent energy to this friend today
+      const now = new Date();
+      const thaiOffset = 7 * 60 * 60 * 1000;
+      const thaiNow = new Date(now.getTime() + thaiOffset);
+      const today = thaiNow.toISOString().split("T")[0];
+
+      const { data: existingGift } = await supabase
+        .from("gift_transactions")
+        .select("id")
+        .eq("sender_id", user.id)
+        .eq("receiver_id", friendId)
+        .eq("item_id", "energy")
+        .gte("created_at", today + "T00:00:00+07:00")
+        .limit(1);
+
+      if (existingGift && (existingGift as any[]).length > 0) {
+        toast.error("วันนี้เติมไฟให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
+        return false;
+      }
+
+      // Send energy gift
+      const { error } = await supabase.from("gift_transactions").insert({
+        sender_id: user.id,
+        receiver_id: friendId,
+        item_id: "energy",
+        coins: 0,
+        message: "เติมไฟให้~ สู้ๆ นะ! 🔥",
+      } as any);
+
+      if (error) {
+        toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
+        return false;
+      }
+
+      toast.success("เติมไฟให้เพื่อนแล้ว! 🔥⚡");
+      return true;
+    },
+    [user, friends]
+  );
+
   const claimGift = useCallback(
     async (giftId: string) => {
       if (!user) return;
@@ -223,7 +278,7 @@ export function useFriends() {
       // Apply gift rewards
       const { data: profile } = await supabase
         .from("profiles")
-        .select("coins, inventory")
+        .select("coins, inventory, energy")
         .eq("user_id", user.id)
         .single();
 
@@ -231,7 +286,10 @@ export function useFriends() {
         const p = profile as any;
         const updates: any = {};
         if (gift.coins > 0) updates.coins = (p.coins || 0) + gift.coins;
-        if (gift.item_id) {
+        if (gift.item_id === "energy") {
+          // Energy gift: add 1 energy, max 5
+          updates.energy = Math.min(5, (p.energy ?? 5) + 1);
+        } else if (gift.item_id) {
           const inv = Array.isArray(p.inventory) ? p.inventory : [];
           updates.inventory = [...inv, gift.item_id];
         }
@@ -263,6 +321,7 @@ export function useFriends() {
     acceptRequest,
     declineRequest,
     sendGift,
+    sendEnergy,
     claimGift,
     refreshFriends: loadFriends,
   };
