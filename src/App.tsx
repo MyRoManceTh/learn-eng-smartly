@@ -30,6 +30,10 @@ import AdminPage from "@/pages/AdminPage";
 import PlacementTestPage from "./pages/PlacementTestPage";
 import LineCallbackPage from "./pages/LineCallbackPage";
 import FriendLeaderboardPage from "./pages/FriendLeaderboardPage";
+import LeaguePage from "./pages/LeaguePage";
+import FlashcardPage from "./pages/FlashcardPage";
+import SpeakingPracticePage from "./pages/SpeakingPracticePage";
+import DailyChallengePage from "./pages/DailyChallengePage";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +68,10 @@ const App = () => (
               <Route path="/parent-report" element={<ParentReport />} />
               <Route path="/placement" element={<PlacementTestPage />} />
               <Route path="/friend-ranking" element={<FriendLeaderboardPage />} />
+              <Route path="/league" element={<LeaguePage />} />
+              <Route path="/flashcards" element={<FlashcardPage />} />
+              <Route path="/speaking" element={<SpeakingPracticePage />} />
+              <Route path="/daily-challenge" element={<DailyChallengePage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -76,4 +84,3 @@ const App = () => (
 );
 
 export default App;
-
