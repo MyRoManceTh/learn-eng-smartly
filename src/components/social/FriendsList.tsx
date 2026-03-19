@@ -66,7 +66,19 @@ export default function FriendsList() {
     <>
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">👥 เพื่อน</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">👥 เพื่อน</CardTitle>
+            {friends.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                onClick={() => navigate("/friend-ranking")}
+              >
+                🏆 อันดับวันนี้
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* My friend code */}
