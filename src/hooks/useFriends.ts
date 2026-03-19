@@ -224,7 +224,7 @@ export function useFriends() {
       // Check if friend completed at least 1 lesson
       const friend = friends.find((f) => f.user_id === friendId);
       if (!friend || friend.lessons_completed < 1) {
-        toast.error("เพื่อนต้องเรียนจบอย่างน้อย 1 บทก่อน ถึงจะเติมไฟได้");
+        toast.error("เพื่อนต้องเรียนจบอย่างน้อย 1 บทก่อน ถึงจะเติมหัวใจได้");
         return false;
       }
 
@@ -244,7 +244,7 @@ export function useFriends() {
         .limit(1);
 
       if (existingGift && (existingGift as any[]).length > 0) {
-        toast.error("วันนี้เติมไฟให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
+        toast.error("วันนี้เติมหัวใจให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
         return false;
       }
 
@@ -254,7 +254,7 @@ export function useFriends() {
         receiver_id: friendId,
         item_id: "energy",
         coins: 0,
-        message: "เติมไฟให้~ สู้ๆ นะ! 🔥",
+        message: "เติมหัวใจให้~ สู้ๆ นะ! ❤️",
       } as any);
 
       if (error) {
@@ -262,7 +262,7 @@ export function useFriends() {
         return false;
       }
 
-      toast.success("เติมไฟให้เพื่อนแล้ว! 🔥⚡");
+      toast.success("เติมหัวใจให้เพื่อนแล้ว! ❤️");
       return true;
     },
     [user, friends]

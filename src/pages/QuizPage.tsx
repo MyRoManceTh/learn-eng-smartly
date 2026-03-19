@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, ArrowRight, Trophy, Zap, Coins } from "lucide-react";
+import FillBlankExercise from "@/components/quiz/FillBlankExercise";
+import SentenceOrderExercise from "@/components/quiz/SentenceOrderExercise";
+import MatchPairsExercise from "@/components/quiz/MatchPairsExercise";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { supabase } from "@/integrations/supabase/client";
@@ -326,43 +329,110 @@ const QuizPage = () => {
             shaking ? "animate-[shake_0.5s_ease-in-out]" : ""
           }`}
         >
-          <p className="text-lg font-thai mb-6 leading-relaxed">{question.question}</p>
+          {/* Type dispatcher for different exercise types */}
+          {(() => {
+            const qType = (question as any).questionType;
 
-          <div className="space-y-3 mb-6">
-            {question.options.map((opt, idx) => {
-              let variant: "outline" | "default" | "destructive" = "outline";
-              let icon = null;
-
-              if (showResult) {
-                if (idx === question.correctIndex) {
-                  variant = "default";
-                  icon = <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />;
-                } else if (idx === selected) {
-                  variant = "destructive";
-                  icon = <XCircle className="w-5 h-5 mr-3 flex-shrink-0" />;
-                }
-              }
-
+            if (qType === "fill_blank") {
               return (
-                <Button
-                  key={idx}
-                  variant={variant}
-                  className="w-full justify-start text-left font-thai h-auto py-4 px-4 text-base"
-                  onClick={() => handleSelect(idx)}
-                  disabled={showResult}
-                >
-                  {icon}
-                  {opt}
-                </Button>
+                <>
+                  <FillBlankExercise
+                    question={question as any}
+                    onAnswer={(ok) => {
+                      if (ok) { playCorrect(); setScore((s) => s + 1); }
+                      else { playWrong(); setShaking(true); setTimeout(() => setShaking(false), 500); }
+                      setShowResult(true);
+                    }}
+                  />
+                  {showResult && (
+                    <Button onClick={handleNext} className="w-full mt-4 font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
+                      {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
+                    </Button>
+                  )}
+                </>
               );
-            })}
-          </div>
+            }
 
-          {showResult && (
-            <Button onClick={handleNext} className="w-full font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
-              {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
-            </Button>
-          )}
+            if (qType === "sentence_order") {
+              return (
+                <>
+                  <SentenceOrderExercise
+                    question={question as any}
+                    onAnswer={(ok) => {
+                      if (ok) { playCorrect(); setScore((s) => s + 1); }
+                      else { playWrong(); setShaking(true); setTimeout(() => setShaking(false), 500); }
+                      setShowResult(true);
+                    }}
+                  />
+                  {showResult && (
+                    <Button onClick={handleNext} className="w-full mt-4 font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
+                      {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
+                    </Button>
+                  )}
+                </>
+              );
+            }
+
+            if (qType === "match_pairs") {
+              return (
+                <>
+                  <MatchPairsExercise
+                    question={question as any}
+                    onAnswer={(ok) => {
+                      if (ok) { playCorrect(); setScore((s) => s + 1); }
+                      setShowResult(true);
+                    }}
+                  />
+                  {showResult && (
+                    <Button onClick={handleNext} className="w-full mt-4 font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
+                      {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
+                    </Button>
+                  )}
+                </>
+              );
+            }
+
+            // Default: Multiple choice (backwards compatible)
+            return (
+              <>
+                <p className="text-lg font-thai mb-6 leading-relaxed">{question.question}</p>
+                <div className="space-y-3 mb-6">
+                  {question.options.map((opt: string, idx: number) => {
+                    let variant: "outline" | "default" | "destructive" = "outline";
+                    let icon = null;
+
+                    if (showResult) {
+                      if (idx === question.correctIndex) {
+                        variant = "default";
+                        icon = <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />;
+                      } else if (idx === selected) {
+                        variant = "destructive";
+                        icon = <XCircle className="w-5 h-5 mr-3 flex-shrink-0" />;
+                      }
+                    }
+
+                    return (
+                      <Button
+                        key={idx}
+                        variant={variant}
+                        className="w-full justify-start text-left font-thai h-auto py-4 px-4 text-base"
+                        onClick={() => handleSelect(idx)}
+                        disabled={showResult}
+                      >
+                        {icon}
+                        {opt}
+                      </Button>
+                    );
+                  })}
+                </div>
+                {showResult && (
+                  <Button onClick={handleNext} className="w-full font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
+                    {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
+                  </Button>
+                )}
+              </>
+            );
+          })()}
         </div>
       </main>
     </div>

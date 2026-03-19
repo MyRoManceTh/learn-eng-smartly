@@ -30,6 +30,7 @@ import AdminPage from "@/pages/AdminPage";
 import PlacementTestPage from "./pages/PlacementTestPage";
 import LineCallbackPage from "./pages/LineCallbackPage";
 import FriendLeaderboardPage from "./pages/FriendLeaderboardPage";
+import LeaguePage from "./pages/LeaguePage";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/parent-report" element={<ParentReport />} />
               <Route path="/placement" element={<PlacementTestPage />} />
               <Route path="/friend-ranking" element={<FriendLeaderboardPage />} />
+              <Route path="/league" element={<LeaguePage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

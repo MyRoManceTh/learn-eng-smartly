@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import SocialHomeSection from "@/components/social/SocialHomeSection";
 import GachaSpinner from "@/components/gacha/GachaSpinner";
 import NotificationBell from "@/components/NotificationBell";
+import WeeklyXPChart from "@/components/stats/WeeklyXPChart";
+import { getLeagueByExp } from "@/data/leagueData";
 import type { DailyMission, MissionType } from "@/types/dopamine";
 
 const missionIcons: Record<MissionType, string> = {
@@ -365,6 +367,34 @@ const Index = () => {
             onPullComplete={refreshProfile}
           />
         )}
+
+        {/* === Weekly XP Chart === */}
+        {user && <WeeklyXPChart />}
+
+        {/* === League Card === */}
+        {user && profile && (() => {
+          const league = getLeagueByExp(profile.total_exp || 0);
+          return (
+            <button
+              onClick={() => navigate("/league")}
+              className={cn(
+                "w-full text-left rounded-2xl p-4 shadow-md hover:shadow-lg transition-all active:scale-[0.99] text-white bg-gradient-to-r",
+                league.bgGradient
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">{league.emoji}</span>
+                  <div>
+                    <p className="font-bold font-thai">{league.nameThai} League</p>
+                    <p className="text-xs text-white/70 font-thai">แข่งขันกับผู้เรียนคนอื่น</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-white/60" />
+              </div>
+            </button>
+          );
+        })()}
 
         {/* === Placement Test Banner === */}
         {user && profile && !(profile as any).placement_completed && (
