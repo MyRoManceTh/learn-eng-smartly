@@ -124,6 +124,48 @@ export const gachaExclusiveItems: AvatarItem[] = [
     icon: "🌌",
     svgProps: { color: "#00E676" },
   },
+
+  // ═══ HATS ═══
+  {
+    id: "gacha_hat_angel",
+    name: "Angel Wing Band",
+    nameThai: "คาดผมปีกเทวดา",
+    category: "hat",
+    price: 0,
+    rarity: "legendary",
+    icon: "😇",
+    svgProps: { color: "#E1F5FE" },
+  },
+  {
+    id: "gacha_hat_devil",
+    name: "Cute Devil Horns",
+    nameThai: "เขาปีศาจน่ารัก",
+    category: "hat",
+    price: 0,
+    rarity: "epic",
+    icon: "😈",
+    svgProps: { color: "#EF5350" },
+  },
+  {
+    id: "gacha_hat_astronaut",
+    name: "Space Helmet",
+    nameThai: "หมวกอวกาศ",
+    category: "hat",
+    price: 0,
+    rarity: "legendary",
+    icon: "👨‍🚀",
+    svgProps: { color: "#CFD8DC" },
+  },
+  {
+    id: "gacha_hat_unicorn",
+    name: "Unicorn Horn",
+    nameThai: "เขายูนิคอร์น",
+    category: "hat",
+    price: 0,
+    rarity: "epic",
+    icon: "🦄",
+    svgProps: { color: "#F8BBD0" },
+  },
 ];
 
 export const GACHA_RATES = {
