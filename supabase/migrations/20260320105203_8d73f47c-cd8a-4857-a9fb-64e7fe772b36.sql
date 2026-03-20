@@ -1,0 +1,1 @@
+UPDATE public.profiles SET equipped = jsonb_set(equipped, '{hat}', 'null');
