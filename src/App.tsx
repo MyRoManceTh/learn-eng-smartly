@@ -69,6 +69,11 @@ const App = () => (
               <Route path="/parent-report" element={<ParentReport />} />
               <Route path="/placement" element={<PlacementTestPage />} />
               <Route path="/friend-ranking" element={<FriendLeaderboardPage />} />
+              <Route path="/flashcards" element={<FlashcardPage />} />
+              <Route path="/speaking" element={<SpeakingPracticePage />} />
+              <Route path="/daily-challenge" element={<DailyChallengePage />} />
+              <Route path="/achievements" element={<AchievementsPage />} />
+              <Route path="/rewards-shop" element={<RewardsShopPage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
