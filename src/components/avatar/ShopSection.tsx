@@ -16,7 +16,6 @@ const categoryColors: Record<string, string> = {
   skin: "from-orange-400 to-amber-500",
   hair: "from-pink-400 to-rose-500",
   hairColor: "from-violet-400 to-purple-500",
-  hat: "from-blue-400 to-cyan-500",
   shirt: "from-green-400 to-emerald-500",
   pants: "from-indigo-400 to-blue-500",
   shoes: "from-teal-400 to-cyan-500",
@@ -24,7 +23,7 @@ const categoryColors: Record<string, string> = {
 };
 
 const ShopSection = ({ coins, inventory, equipped, onBuy, onEquip, onUnequip }: ShopSectionProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>("hat");
+  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>("skin");
 
   const items = getItemsByCategory(selectedCategory);
   const ownedSet = new Set(inventory);

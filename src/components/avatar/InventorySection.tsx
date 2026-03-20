@@ -14,7 +14,6 @@ const categoryConfig: Record<string, { label: string; icon: string; color: strin
   skin: { label: "สีผิว", icon: "👤", color: "from-orange-400 to-amber-500" },
   hair: { label: "ทรงผม", icon: "💇", color: "from-pink-400 to-rose-500" },
   hairColor: { label: "สีผม", icon: "🎨", color: "from-violet-400 to-purple-500" },
-  hat: { label: "หมวก", icon: "🧢", color: "from-blue-400 to-cyan-500" },
   shirt: { label: "เสื้อ", icon: "👕", color: "from-green-400 to-emerald-500" },
   pants: { label: "กางเกง", icon: "👖", color: "from-indigo-400 to-blue-500" },
   shoes: { label: "รองเท้า", icon: "👟", color: "from-teal-400 to-cyan-500" },

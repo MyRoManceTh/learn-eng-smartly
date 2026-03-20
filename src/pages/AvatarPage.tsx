@@ -48,7 +48,9 @@ const AvatarPage = () => {
         setInventory(Array.isArray(inv) ? inv : []);
         const eq = (data as any).equipped;
         if (eq && typeof eq === "object" && !Array.isArray(eq)) {
-          setEquipped({ ...DEFAULT_EQUIPPED, ...eq });
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { hat: _hat, ...eqWithoutHat } = eq as any;
+          setEquipped({ ...DEFAULT_EQUIPPED, ...eqWithoutHat });
         }
       }
       setLoading(false);
@@ -120,7 +122,6 @@ const AvatarPage = () => {
       skin: "skin_default",
       hair: "hair_default",
       hairColor: "haircolor_midnight",
-      hat: null,
       shirt: "shirt_default",
       pants: "pants_default",
       shoes: "shoes_default",

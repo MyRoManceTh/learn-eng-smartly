@@ -6,7 +6,6 @@ import Hair3D from "./parts/Hair3D";
 import Torso3D from "./parts/Torso3D";
 import Arm3D from "./parts/Arm3D";
 import Leg3D from "./parts/Leg3D";
-import Hat3D from "./parts/Hat3D";
 import Accessory3D from "./parts/Accessory3D";
 
 interface RobloxAvatar3DProps {
@@ -34,7 +33,6 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
   const skinItem = getItemById(equipped.skin);
   const hairItem = getItemById(equipped.hair);
   const hairColorItem = getItemById(equipped.hairColor);
-  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
   const shirtItem = getItemById(equipped.shirt);
   const pantsItem = getItemById(equipped.pants);
   const shoesItem = getItemById(equipped.shoes);
@@ -43,7 +41,6 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
   const skinColor = skinItem?.svgProps?.color ?? "#F5D5C0";
   const hairColor = hairColorItem?.svgProps?.color ?? "#2C2C2C";
   const hairStyle = hairItem?.svgProps?.path ?? "short";
-  const hatColor = hatItem?.svgProps?.color ?? "#E53935";
   const shirtColor = shirtItem?.svgProps?.color ?? "#4DB6AC";
   const pantsColor = pantsItem?.svgProps?.color ?? "#4A90E2";
   const shoesColor = shoesItem?.svgProps?.color ?? "#F0F0F0";
@@ -157,9 +154,6 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
 
         {/* Hair */}
         <Hair3D hairStyle={hairStyle} hairColor={hairColor} headY={headY} />
-
-        {/* Hat (on top of hair) */}
-        <Hat3D hatId={equipped.hat} hatColor={hatColor} headY={headY} />
 
         {/* Torso + Shirt */}
         <Torso3D
