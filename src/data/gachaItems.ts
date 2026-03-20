@@ -5,48 +5,6 @@ import { AvatarItem } from "@/types/avatar";
  * ✨ ออกแบบใหม่ทั้งหมด — สไตล์ Fantasy Kawaii
  */
 export const gachaExclusiveItems: AvatarItem[] = [
-  // ═══ HATS — ตำนานบนศีรษะ ═══
-  {
-    id: "gacha_hat_angel",
-    name: "Angel Wing Band",
-    nameThai: "คาดผมปีกเทวดา",
-    category: "hat",
-    price: 0,
-    rarity: "epic",
-    icon: "😇",
-    svgProps: { color: "#FFF8E1" },
-  },
-  {
-    id: "gacha_hat_devil",
-    name: "Cute Devil Horns",
-    nameThai: "เขาปีศาจน่ารัก",
-    category: "hat",
-    price: 0,
-    rarity: "epic",
-    icon: "😈",
-    svgProps: { color: "#FF5252" },
-  },
-  {
-    id: "gacha_hat_astronaut",
-    name: "Space Helmet",
-    nameThai: "หมวกอวกาศ",
-    category: "hat",
-    price: 0,
-    rarity: "legendary",
-    icon: "🧑‍🚀",
-    svgProps: { color: "#E8EAF6" },
-  },
-  {
-    id: "gacha_hat_unicorn",
-    name: "Unicorn Horn",
-    nameThai: "เขายูนิคอร์น",
-    category: "hat",
-    price: 0,
-    rarity: "legendary",
-    icon: "🦄",
-    svgProps: { color: "#F8BBD0" },
-  },
-
   // ═══ SHIRTS — ชุดหายาก ═══
   {
     id: "gacha_shirt_dragon",

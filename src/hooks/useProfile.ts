@@ -2,7 +2,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ExtendedProfile } from "@/types/dopamine";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
+
+function generateFriendCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
 
 export function useProfile() {
   const { user } = useAuth();
@@ -42,6 +49,23 @@ export function useProfile() {
     enabled: !!user,
     staleTime: 30_000, // 30 seconds
   });
+
+  // Auto-generate friend_code if missing
+  const friendCodeChecked = useRef(false);
+  useEffect(() => {
+    if (!user || !profile || friendCodeChecked.current) return;
+    if (!(profile as any).friend_code) {
+      friendCodeChecked.current = true;
+      const code = generateFriendCode();
+      supabase
+        .from("profiles")
+        .update({ friend_code: code } as any)
+        .eq("user_id", user.id)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+        });
+    }
+  }, [user, profile, queryClient]);
 
   const refreshProfile = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
