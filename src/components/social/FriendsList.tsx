@@ -57,6 +57,7 @@ export default function FriendsList() {
   } | null>(null);
   const [sendingEnergyTo, setSendingEnergyTo] = useState<string | null>(null);
   const [sentEnergyLocal, setSentEnergyLocal] = useState<Set<string>>(new Set());
+  const [showNameModal, setShowNameModal] = useState(false);
 
   const getEvolutionIcon = (stage: number) => {
     const evo = evolutionStages.find((s) => s.stage === stage);
