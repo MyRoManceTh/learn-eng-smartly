@@ -30,6 +30,11 @@ import AdminPage from "@/pages/AdminPage";
 import PlacementTestPage from "./pages/PlacementTestPage";
 import LineCallbackPage from "./pages/LineCallbackPage";
 import FriendLeaderboardPage from "./pages/FriendLeaderboardPage";
+import FlashcardPage from "./pages/FlashcardPage";
+import SpeakingPracticePage from "./pages/SpeakingPracticePage";
+import DailyChallengePage from "./pages/DailyChallengePage";
+import AchievementsPage from "./pages/AchievementsPage";
+import RewardsShopPage from "./pages/RewardsShopPage";
 
 const queryClient = new QueryClient();
 
