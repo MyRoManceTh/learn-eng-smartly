@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { evolutionStages } from "@/data/evolutionStages";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
 import ChallengeModal from "./ChallengeModal";
+import DisplayNameModal from "@/components/DisplayNameModal";
 
 function parseEquipped(raw: any): EquippedItems {
   if (!raw || typeof raw !== "object") return DEFAULT_EQUIPPED;
@@ -56,6 +57,7 @@ export default function FriendsList() {
   } | null>(null);
   const [sendingEnergyTo, setSendingEnergyTo] = useState<string | null>(null);
   const [sentEnergyLocal, setSentEnergyLocal] = useState<Set<string>>(new Set());
+  const [showNameModal, setShowNameModal] = useState(false);
 
   const getEvolutionIcon = (stage: number) => {
     const evo = evolutionStages.find((s) => s.stage === stage);
@@ -99,23 +101,38 @@ export default function FriendsList() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* My friend code */}
+          {/* My info & friend code */}
           {profile?.friend_code && (
-            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
-              <span className="text-sm text-muted-foreground">
-                รหัสเพื่อน:
-              </span>
-              <code className="rounded bg-background px-2 py-0.5 text-sm font-bold tracking-wider">
-                {profile.friend_code}
-              </code>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyCode}
-                className="ml-auto h-7 px-2 text-xs"
-              >
-                📋 คัดลอก
-              </Button>
+            <div className="rounded-xl bg-muted/50 p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold font-thai truncate flex-1">
+                  {profile.display_name || "ไม่ระบุชื่อ"}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowNameModal(true)}
+                  className="h-7 px-2 text-xs gap-1"
+                >
+                  <Pencil className="w-3 h-3" /> แก้ไขชื่อ
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  รหัสเพื่อน:
+                </span>
+                <code className="rounded bg-background px-2 py-0.5 text-sm font-bold tracking-wider">
+                  {profile.friend_code}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopyCode}
+                  className="ml-auto h-7 px-2 text-xs"
+                >
+                  📋 คัดลอก
+                </Button>
+              </div>
             </div>
           )}
 
@@ -346,6 +363,12 @@ export default function FriendsList() {
           }}
         />
       )}
+      <DisplayNameModal
+        open={showNameModal}
+        onOpenChange={setShowNameModal}
+        currentName={profile?.display_name || null}
+        onSaved={() => window.location.reload()}
+      />
     </>
   );
 }
