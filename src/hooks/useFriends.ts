@@ -146,7 +146,7 @@ export function useFriends() {
         .from("profiles")
         .select("user_id")
         .eq("friend_code", friendCode.toUpperCase())
-        .single();
+        .maybeSingle();
 
       if (!friendProfile) {
         toast.error("ไม่พบรหัสเพื่อนนี้");
