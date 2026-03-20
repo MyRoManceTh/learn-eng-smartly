@@ -27,7 +27,6 @@ const PixelCharacter = ({
     const shirtItem = getItemById(equipped.shirt);
     const pantsItem = getItemById(equipped.pants);
     const shoesItem = getItemById(equipped.shoes);
-    const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
 
     const skin = skinItem?.svgProps?.color || "#F5D5C0";
     const skinShadow = darken(skin, 20);
@@ -39,7 +38,7 @@ const PixelCharacter = ({
     const pantsShadow = darken(pants, 15);
     const shoes = shoesItem?.svgProps?.color || "#F0F0F0";
     const shoesShadow = darken(shoes, 20);
-    const hat = hatItem?.svgProps?.color || null;
+    const hat = null;
     const outline = "#1a1a2e";
     const eye = "#1a1a2e";
     const white = "#FFFFFF";
@@ -53,7 +52,7 @@ const PixelCharacter = ({
     return hairItem?.svgProps?.path || "short";
   }, [equipped.hair]);
 
-  const hasHat = !!equipped.hat;
+  const hasHat = false;
   const hasAccessory = !!equipped.accessory;
   const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
   const accColor = accItem?.svgProps?.color || "#80DEEA";
