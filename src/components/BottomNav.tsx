@@ -1,13 +1,14 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, GraduationCap, Gamepad2, User } from "lucide-react";
+import { Home, GraduationCap, Gamepad2, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useFriends } from "@/hooks/useFriends";
 import { useChallenges } from "@/hooks/useChallenges";
 
 const tabs = [
   { path: "/", icon: Home, label: "หน้าหลัก" },
   { path: "/learn", icon: GraduationCap, label: "เรียนรู้" },
+  { path: "/friends", icon: Users, label: "เพื่อน" },
   { path: "/games", icon: Gamepad2, label: "เกม" },
   { path: "/my", icon: User, label: "ฉัน" },
 ];
@@ -50,9 +51,11 @@ const BottomNav = () => {
         <div className="flex items-center justify-around h-[68px] px-1 max-w-md mx-auto">
           {tabs.map((tab) => {
             const learnSubPaths = ["/learn", "/practice", "/path", "/reading", "/news", "/pronunciation", "/library", "/flashcards", "/speaking", "/daily-challenge"];
+            const friendSubPaths = ["/friends", "/friend-ranking"];
             const isActive =
               location.pathname === tab.path ||
               (tab.path === "/learn" && learnSubPaths.includes(location.pathname)) ||
+              (tab.path === "/friends" && friendSubPaths.includes(location.pathname)) ||
               (tab.path === "/my" && ["/profile", "/avatar", "/my"].includes(location.pathname));
             const Icon = tab.icon;
             return (
@@ -79,8 +82,8 @@ const BottomNav = () => {
                     )}
                   />
                 </div>
-                {tab.path === "/my" && totalNotifications > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
+                {tab.path === "/friends" && totalNotifications > 0 && (
+                  <div className="absolute top-0.5 right-2 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
                     <span className="text-[8px] text-white font-bold">{totalNotifications > 9 ? '9+' : totalNotifications}</span>
                   </div>
                 )}

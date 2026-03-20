@@ -30,6 +30,7 @@ import AdminPage from "@/pages/AdminPage";
 import PlacementTestPage from "./pages/PlacementTestPage";
 import LineCallbackPage from "./pages/LineCallbackPage";
 import FriendLeaderboardPage from "./pages/FriendLeaderboardPage";
+import FriendsPage from "./pages/FriendsPage";
 import FlashcardPage from "./pages/FlashcardPage";
 import SpeakingPracticePage from "./pages/SpeakingPracticePage";
 import DailyChallengePage from "./pages/DailyChallengePage";
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/parent-report" element={<ParentReport />} />
               <Route path="/placement" element={<PlacementTestPage />} />
               <Route path="/friend-ranking" element={<FriendLeaderboardPage />} />
+              <Route path="/friends" element={<FriendsPage />} />
               <Route path="/flashcards" element={<FlashcardPage />} />
               <Route path="/speaking" element={<SpeakingPracticePage />} />
               <Route path="/daily-challenge" element={<DailyChallengePage />} />
