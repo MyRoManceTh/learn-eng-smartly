@@ -32,6 +32,7 @@ export function useFriends() {
   const [pendingRequests, setPendingRequests] = useState<FriendData[]>([]);
   const [pendingGifts, setPendingGifts] = useState<PendingGift[]>([]);
   const [loading, setLoading] = useState(true);
+  const [energySentToday, setEnergySentToday] = useState<Set<string>>(new Set());
 
   const loadFriends = useCallback(async () => {
     if (!user) return;
@@ -99,6 +100,26 @@ export function useFriends() {
 
     setFriends(allFriends);
     setPendingRequests(pending);
+
+    // Load energy sent today
+    const now = new Date();
+    const thaiOffset = 7 * 60 * 60 * 1000;
+    const thaiNow = new Date(now.getTime() + thaiOffset);
+    const today = thaiNow.toISOString().split("T")[0];
+
+    const { data: energyGifts } = await supabase
+      .from("gift_transactions")
+      .select("receiver_id")
+      .eq("sender_id", user.id)
+      .eq("item_id", "energy")
+      .gte("created_at", today + "T00:00:00+07:00");
+
+    if (energyGifts && (energyGifts as any[]).length > 0) {
+      const sentSet = new Set<string>((energyGifts as any[]).map((g: any) => g.receiver_id));
+      setEnergySentToday(sentSet);
+    } else {
+      setEnergySentToday(new Set());
+    }
 
     // Load pending gifts
     const { data: gifts } = await supabase
@@ -229,21 +250,7 @@ export function useFriends() {
       }
 
       // Check if already sent energy to this friend today
-      const now = new Date();
-      const thaiOffset = 7 * 60 * 60 * 1000;
-      const thaiNow = new Date(now.getTime() + thaiOffset);
-      const today = thaiNow.toISOString().split("T")[0];
-
-      const { data: existingGift } = await supabase
-        .from("gift_transactions")
-        .select("id")
-        .eq("sender_id", user.id)
-        .eq("receiver_id", friendId)
-        .eq("item_id", "energy")
-        .gte("created_at", today + "T00:00:00+07:00")
-        .limit(1);
-
-      if (existingGift && (existingGift as any[]).length > 0) {
+      if (energySentToday.has(friendId)) {
         toast.error("วันนี้เติมไฟให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
         return false;
       }
@@ -262,10 +269,12 @@ export function useFriends() {
         return false;
       }
 
+      // Update local state
+      setEnergySentToday(prev => new Set(prev).add(friendId));
       toast.success("เติมไฟให้เพื่อนแล้ว! 🔥⚡");
       return true;
     },
-    [user, friends]
+    [user, friends, energySentToday]
   );
 
   const claimGift = useCallback(
@@ -317,6 +326,7 @@ export function useFriends() {
     pendingGifts,
     loading,
     notificationCount,
+    energySentToday,
     addFriendByCode,
     acceptRequest,
     declineRequest,
