@@ -34,16 +34,21 @@ const missionIcons: Record<MissionType, string> = {
 };
 
 const quickActions = [
-  { path: "/reading", icon: BookOpen, label: "ฝึกอ่าน", color: "from-blue-400 to-indigo-500", emoji: "📖" },
-  { path: "/conversation", icon: MessageSquare, label: "สนทนา", color: "from-pink-400 to-rose-500", emoji: "💬" },
+  { path: "/flashcards", icon: BookOpen, label: "Flashcard", color: "from-violet-400 to-purple-500", emoji: "🃏" },
+  { path: "/daily-challenge", icon: Gamepad2, label: "โจทย์วันนี้", color: "from-amber-400 to-orange-500", emoji: "🎯" },
+  { path: "/speaking", icon: Volume2, label: "พูด", color: "from-rose-400 to-pink-500", emoji: "🎙️" },
   { path: "/games", icon: Gamepad2, label: "เกม", color: "from-emerald-400 to-green-500", emoji: "🎮" },
-  { path: "/pronunciation", icon: Volume2, label: "ออกเสียง", color: "from-orange-400 to-amber-500", emoji: "🗣️" },
 ];
 
 const activities = [
   { path: "/reading", icon: "📖", title: "ฝึกอ่าน", subtitle: "เรื่องสนุกๆ + บทเรียนแยก Level", color: "from-blue-400 to-indigo-500" },
   { path: "/conversation", icon: "💬", title: "ฝึกบทสนทนา", subtitle: "จำลองสถานการณ์จริง", color: "from-pink-400 to-rose-500" },
   { path: "/pronunciation", icon: "🗣️", title: "ฝึกออกเสียง", subtitle: "เน้นเสียงที่คนไทยออกยาก", color: "from-orange-400 to-amber-500" },
+  { path: "/flashcards", icon: "🃏", title: "Flashcard SRS", subtitle: "ทบทวนคำศัพท์ด้วยระบบ SM-2", color: "from-violet-400 to-purple-500" },
+  { path: "/daily-challenge", icon: "🎯", title: "โจทย์ประจำวัน", subtitle: "แข่งคะแนนกับเพื่อน — เปลี่ยนทุกวัน!", color: "from-amber-400 to-orange-500" },
+  { path: "/speaking", icon: "🎙️", title: "ฝึกพูด", subtitle: "พูดแล้ว AI ตรวจให้เลย", color: "from-rose-400 to-pink-500" },
+  { path: "/achievements", icon: "🏅", title: "ความสำเร็จ", subtitle: "ดูแบดจ์และรางวัลที่ได้รับ", color: "from-yellow-400 to-amber-500" },
+  { path: "/rewards-shop", icon: "🛒", title: "ร้านพาวเวอร์อัพ", subtitle: "แลกพลังพิเศษด้วยเหรียญ", color: "from-green-400 to-emerald-500" },
   { path: "/news", icon: "📰", title: "ข่าวง่ายรายวัน", subtitle: "อ่านข่าวจริง เขียนใหม่ให้เข้าใจง่าย", color: "from-purple-400 to-violet-500" },
   { path: "/library", icon: "📚", title: "คลังนิทาน", subtitle: "นิทานอีสปสนุกๆ พร้อม Quiz", color: "from-teal-400 to-cyan-500" },
 ];
