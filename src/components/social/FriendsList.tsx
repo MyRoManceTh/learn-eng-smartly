@@ -363,6 +363,12 @@ export default function FriendsList() {
           }}
         />
       )}
+      <DisplayNameModal
+        open={showNameModal}
+        onOpenChange={setShowNameModal}
+        currentName={profile?.display_name || null}
+        onSaved={() => window.location.reload()}
+      />
     </>
   );
 }
