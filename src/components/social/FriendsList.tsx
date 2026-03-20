@@ -101,23 +101,38 @@ export default function FriendsList() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* My friend code */}
+          {/* My info & friend code */}
           {profile?.friend_code && (
-            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
-              <span className="text-sm text-muted-foreground">
-                รหัสเพื่อน:
-              </span>
-              <code className="rounded bg-background px-2 py-0.5 text-sm font-bold tracking-wider">
-                {profile.friend_code}
-              </code>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyCode}
-                className="ml-auto h-7 px-2 text-xs"
-              >
-                📋 คัดลอก
-              </Button>
+            <div className="rounded-xl bg-muted/50 p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold font-thai truncate flex-1">
+                  {profile.display_name || "ไม่ระบุชื่อ"}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowNameModal(true)}
+                  className="h-7 px-2 text-xs gap-1"
+                >
+                  <Pencil className="w-3 h-3" /> แก้ไขชื่อ
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  รหัสเพื่อน:
+                </span>
+                <code className="rounded bg-background px-2 py-0.5 text-sm font-bold tracking-wider">
+                  {profile.friend_code}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopyCode}
+                  className="ml-auto h-7 px-2 text-xs"
+                >
+                  📋 คัดลอก
+                </Button>
+              </div>
             </div>
           )}
 
