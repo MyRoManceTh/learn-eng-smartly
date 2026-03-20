@@ -97,7 +97,6 @@ export function drawLineStickerCharacter(
   container.addChild(g);
 
   const hairStyle = getItemById(equipped.hair)?.svgProps?.path || "short";
-  const hasHat = !!equipped.hat;
   const lOff = walkFrame === 1 ? -3 : walkFrame === 2 ? 3 : 0;
   const rOff = walkFrame === 1 ? 3 : walkFrame === 2 ? -3 : 0;
 
@@ -125,8 +124,7 @@ export function drawLineStickerCharacter(
 
   drawNeck(g, c);
   drawHead(g, c);
-  if (!hasHat) drawHair(g, hairStyle, c);
-  if (hasHat) drawHat(g, equipped.hat!, c);
+  drawHair(g, hairStyle, c);
   drawFace(g, c, emotion, blinkFrame, equipped.accessory);
   drawAccessoryFront(g, equipped.accessory, c);
 

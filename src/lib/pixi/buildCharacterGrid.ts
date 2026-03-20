@@ -7,7 +7,6 @@ import { drawTorso } from "./parts/drawTorso";
 import { drawArms } from "./parts/drawArms";
 import { drawLegs } from "./parts/drawLegs";
 import { drawShoes } from "./parts/drawShoes";
-import { drawHat } from "./parts/drawHat";
 import { drawAccessoryBack, drawAccessoryFront } from "./parts/drawAccessory";
 
 export const GRID_SIZE = 32;
@@ -37,14 +36,13 @@ export function resolveColors(equipped: EquippedItems): CharacterColors {
   const shirtItem = getItemById(equipped.shirt);
   const pantsItem = getItemById(equipped.pants);
   const shoesItem = getItemById(equipped.shoes);
-  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
 
   const skin = parseColor(skinItem?.svgProps?.color || "#F5D5C0");
   const hair = parseColor(hairColorItem?.svgProps?.color || "#2C2C2C");
   const shirt = parseColor(shirtItem?.svgProps?.color || "#4DB6AC");
   const pants = parseColor(pantsItem?.svgProps?.color || "#4A90E2");
   const shoes = parseColor(shoesItem?.svgProps?.color || "#F0F0F0");
-  const hat = hatItem ? parseColor(hatItem.svgProps?.color || "#E53935") : null;
+  const hat = null;
 
   return {
     skin,
@@ -75,7 +73,7 @@ export function buildCharacterGrid(equipped: EquippedItems): (number | null)[][]
 
   const hairItem = getItemById(equipped.hair);
   const hairStyle = hairItem?.svgProps?.path || "short";
-  const hasHat = !!equipped.hat;
+  const hasHat = false;
 
   const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
   const accColor = accItem ? parseColor(accItem.svgProps?.color || "#80DEEA") : 0;
@@ -100,16 +98,13 @@ export function buildCharacterGrid(equipped: EquippedItems): (number | null)[][]
   // 6. Hair (behind hat check)
   drawHair(grid, hairStyle, colors, hasHat);
 
-  // 7. Hat (over hair)
-  drawHat(grid, equipped.hat, colors);
-
-  // 8. Accessory front layer (glasses, sword, pets)
+  // 7. Accessory front layer (glasses, sword, pets)
   drawAccessoryFront(grid, equipped.accessory, accColor);
 
-  // 9. Ground shadow
+  // 8. Ground shadow
   drawGroundShadow(grid);
 
-  // 10. Auto-outline pass
+  // 9. Auto-outline pass
   addOutline(grid, colors.outline);
 
   return grid;

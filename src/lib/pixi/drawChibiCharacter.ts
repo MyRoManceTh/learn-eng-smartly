@@ -59,7 +59,6 @@ function resolveColors(equipped: EquippedItems): Colors {
   const shirtItem = getItemById(equipped.shirt);
   const pantsItem = getItemById(equipped.pants);
   const shoesItem = getItemById(equipped.shoes);
-  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
   const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
 
   const skin = parseColor(skinItem?.svgProps?.color || "#F5D5C0");
@@ -67,7 +66,7 @@ function resolveColors(equipped: EquippedItems): Colors {
   const shirt = parseColor(shirtItem?.svgProps?.color || "#4DB6AC");
   const pants = parseColor(pantsItem?.svgProps?.color || "#4A90E2");
   const shoes = parseColor(shoesItem?.svgProps?.color || "#F0F0F0");
-  const hat = hatItem ? parseColor(hatItem.svgProps?.color || "#E53935") : null;
+  const hat = null;
   const iris = 0x4a7dbd;
 
   return {
@@ -123,7 +122,6 @@ export function drawChibiCharacter(
 
   const hairItem = getItemById(equipped.hair);
   const hairStyle = hairItem?.svgProps?.path || "short";
-  const hasHat = !!equipped.hat;
 
   drawAccessoryBack(grid, equipped.accessory, c);
   drawBody(grid, equipped.shirt, c);
@@ -131,8 +129,7 @@ export function drawChibiCharacter(
   drawLegs(grid, equipped.pants, c, walkFrame);
   drawShoes(grid, equipped.shoes, c, walkFrame);
   drawHead(grid, c);
-  if (!hasHat) drawHair(grid, hairStyle, c);
-  if (hasHat) drawHatPixels(grid, equipped.hat!, c);
+  drawHair(grid, hairStyle, c);
   drawFace(grid, c, equipped.accessory);
   drawAccessoryFront(grid, equipped.accessory, c);
   addHDOutline(grid, c.outline, c.outlineSoft);

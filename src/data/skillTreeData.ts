@@ -227,7 +227,7 @@ export const skillTreeModules: SkillTreeModule[] = [
     order: 8,
     prerequisites: ['core-a1-shopping'],
     lessonCount: 6,
-    reward: { type: 'avatar_item', value: 'hat_explorer', label: 'หมวกนักสำรวจ' },
+    reward: { type: 'avatar_item', value: 'acc_bow', label: 'โบว์ผ้าไหม' },
   },
 
   // ──────────────────────────────────────────
