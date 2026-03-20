@@ -64,6 +64,42 @@
     --gradient-mid: 250 80% 85%;
     --gradient-end: 330 80% 88%;
   }
+
+  .dark {
+    --background: 240 10% 8%;
+    --foreground: 0 0% 93%;
+
+    --card: 240 10% 12%;
+    --card-foreground: 0 0% 93%;
+
+    --popover: 240 10% 12%;
+    --popover-foreground: 0 0% 93%;
+
+    --primary: 262 83% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 250 20% 18%;
+    --secondary-foreground: 250 30% 80%;
+
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 10% 55%;
+
+    --accent: 330 70% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 10% 20%;
+    --input: 240 10% 22%;
+    --ring: 262 83% 65%;
+
+    --vocab-bg: 262 20% 15%;
+    --vocab-highlight: 262 83% 65%;
+    --reading-bg: 210 20% 12%;
+    --english-text: 0 0% 90%;
+    --thai-phonetic: 330 50% 65%;
+  }
 }
 
 @layer base {

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LearnerLevel } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, ChevronRight, BookOpen, MessageSquare, Gamepad2, Volume2 } from "lucide-react";
+import { LogOut, LogIn, ChevronRight, BookOpen, MessageSquare, Gamepad2, Volume2, Moon, Sun } from "lucide-react";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyReward } from "@/hooks/useDailyReward";
@@ -59,6 +60,7 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isDark, toggle: toggleDark } = useDarkMode();
   const { profile, refreshProfile } = useProfile();
   const { missions, loading: missionsLoading, completedCount, totalCount, allCompleted } = useDailyMissions();
   const dailyReward = useDailyReward(
@@ -185,6 +187,9 @@ const Index = () => {
                 <EnergyDisplay energy={energy} />
               </>
             )}
+            <Button variant="ghost" size="icon" onClick={toggleDark} className="h-8 w-8">
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
             {user ? (
               <Button variant="ghost" size="icon" onClick={signOut} className="h-8 w-8">
                 <LogOut className="w-4 h-4" />
