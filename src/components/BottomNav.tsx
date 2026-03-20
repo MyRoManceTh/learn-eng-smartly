@@ -1,9 +1,9 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, GraduationCap, Gamepad2, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCallback } from "react";
-import { useFriends } from "@/hooks/useFriends";
-import { useChallenges } from "@/hooks/useChallenges";
+import { useCallback, useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const tabs = [
   { path: "/", icon: Home, label: "หน้าหลัก" },
@@ -16,9 +16,34 @@ const tabs = [
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { notificationCount } = useFriends();
-  const { challengeNotificationCount } = useChallenges();
-  const totalNotifications = notificationCount + challengeNotificationCount;
+  const { user } = useAuth();
+  const [totalNotifications, setTotalNotifications] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchCounts = async () => {
+      const { count: pendingFriends } = await supabase
+        .from("friendships")
+        .select("*", { count: "exact", head: true })
+        .eq("addressee_id", user.id)
+        .eq("status", "pending");
+
+      const { count: pendingGifts } = await supabase
+        .from("gift_transactions")
+        .select("*", { count: "exact", head: true })
+        .eq("receiver_id", user.id)
+        .eq("claimed", false);
+
+      const { count: pendingChallenges } = await supabase
+        .from("quiz_challenges")
+        .select("*", { count: "exact", head: true })
+        .eq("opponent_id", user.id)
+        .eq("status", "pending");
+
+      setTotalNotifications((pendingFriends || 0) + (pendingGifts || 0) + (pendingChallenges || 0));
+    };
+    fetchCounts();
+  }, [user, location.pathname]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>, path: string) => {
