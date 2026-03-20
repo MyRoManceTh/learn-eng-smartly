@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { evolutionStages } from "@/data/evolutionStages";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
 import ChallengeModal from "./ChallengeModal";
+import DisplayNameModal from "@/components/DisplayNameModal";
 
 function parseEquipped(raw: any): EquippedItems {
   if (!raw || typeof raw !== "object") return DEFAULT_EQUIPPED;
