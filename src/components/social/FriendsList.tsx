@@ -4,13 +4,29 @@ import { useFriends } from "@/hooks/useFriends";
 import { useChallenges } from "@/hooks/useChallenges";
 import { useProfile } from "@/hooks/useProfile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { evolutionStages } from "@/data/evolutionStages";
 import { toast } from "sonner";
+import { Check } from "lucide-react";
+import PixelAvatar from "@/components/avatar/PixelAvatar";
+import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
 import ChallengeModal from "./ChallengeModal";
+
+function parseEquipped(raw: any): EquippedItems {
+  if (!raw || typeof raw !== "object") return DEFAULT_EQUIPPED;
+  return {
+    skin: raw.skin || DEFAULT_EQUIPPED.skin,
+    hair: raw.hair || DEFAULT_EQUIPPED.hair,
+    hairColor: raw.hairColor || DEFAULT_EQUIPPED.hairColor,
+    hat: raw.hat || null,
+    shirt: raw.shirt || DEFAULT_EQUIPPED.shirt,
+    pants: raw.pants || DEFAULT_EQUIPPED.pants,
+    shoes: raw.shoes || DEFAULT_EQUIPPED.shoes,
+    accessory: raw.accessory || null,
+  };
+}
 
 export default function FriendsList() {
   const navigate = useNavigate();
@@ -23,6 +39,7 @@ export default function FriendsList() {
     declineRequest,
     sendGift,
     sendEnergy,
+    energySentToday,
   } = useFriends();
   const { sendChallenge } = useChallenges();
   const { profile } = useProfile();
@@ -38,6 +55,7 @@ export default function FriendsList() {
     name: string;
   } | null>(null);
   const [sendingEnergyTo, setSendingEnergyTo] = useState<string | null>(null);
+  const [sentEnergyLocal, setSentEnergyLocal] = useState<Set<string>>(new Set());
 
   const getEvolutionIcon = (stage: number) => {
     const evo = evolutionStages.find((s) => s.stage === stage);
@@ -133,9 +151,9 @@ export default function FriendsList() {
                   key={req.friendship_id}
                   className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50/50 p-2 dark:border-orange-900 dark:bg-orange-950/20"
                 >
-                  <span className="text-sm">
-                    {getEvolutionIcon(req.evolution_stage)}
-                  </span>
+                  <div className="shrink-0">
+                    <PixelAvatar equipped={parseEquipped(req.equipped)} size="sm" animated={false} />
+                  </div>
                   <span className="flex-1 text-sm font-medium truncate">
                     {req.display_name}
                   </span>
@@ -185,6 +203,7 @@ export default function FriendsList() {
               {friends.map((friend) => {
                 const canSendEnergy = friend.lessons_completed >= 1;
                 const isSendingEnergy = sendingEnergyTo === friend.user_id;
+                const alreadySent = energySentToday.has(friend.user_id) || sentEnergyLocal.has(friend.user_id);
 
                 return (
                   <div
@@ -192,10 +211,15 @@ export default function FriendsList() {
                     className="rounded-xl border p-3 transition-colors hover:bg-muted/30 space-y-2"
                   >
                     {/* Top row: avatar + info */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">
-                        {getEvolutionIcon(friend.evolution_stage)}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="shrink-0 rounded-lg overflow-hidden bg-gradient-to-b from-purple-50 to-pink-50 p-1">
+                        <PixelAvatar
+                          equipped={parseEquipped(friend.equipped)}
+                          size="sm"
+                          animated={false}
+                          evolutionStage={friend.evolution_stage}
+                        />
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
                           {friend.display_name}
@@ -218,23 +242,38 @@ export default function FriendsList() {
 
                     {/* Action buttons */}
                     <div className="flex gap-1.5">
-                      <Button
-                        variant={canSendEnergy ? "default" : "outline"}
-                        size="sm"
-                        className={`h-8 px-3 text-xs flex-1 ${
-                          canSendEnergy
-                            ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
-                            : "opacity-50"
-                        }`}
-                        disabled={!canSendEnergy || isSendingEnergy}
-                        onClick={async () => {
-                          setSendingEnergyTo(friend.user_id);
-                          await sendEnergy(friend.user_id);
-                          setSendingEnergyTo(null);
-                        }}
-                      >
-                        {isSendingEnergy ? "กำลังเติม..." : "🔥 เติมไฟ"}
-                      </Button>
+                      {alreadySent ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-3 text-xs flex-1 bg-green-50 border-green-200 text-green-600 cursor-default"
+                          disabled
+                        >
+                          <Check className="w-3.5 h-3.5 mr-1" />
+                          เติมไฟแล้ว
+                        </Button>
+                      ) : (
+                        <Button
+                          variant={canSendEnergy ? "default" : "outline"}
+                          size="sm"
+                          className={`h-8 px-3 text-xs flex-1 ${
+                            canSendEnergy
+                              ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+                              : "opacity-50"
+                          }`}
+                          disabled={!canSendEnergy || isSendingEnergy}
+                          onClick={async () => {
+                            setSendingEnergyTo(friend.user_id);
+                            const success = await sendEnergy(friend.user_id);
+                            if (success) {
+                              setSentEnergyLocal(prev => new Set(prev).add(friend.user_id));
+                            }
+                            setSendingEnergyTo(null);
+                          }}
+                        >
+                          {isSendingEnergy ? "กำลังเติม..." : "🔥 เติมไฟ"}
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
@@ -264,7 +303,7 @@ export default function FriendsList() {
                     </div>
 
                     {/* Hint if friend hasn't completed any lesson */}
-                    {!canSendEnergy && (
+                    {!canSendEnergy && !alreadySent && (
                       <p className="text-[10px] text-muted-foreground text-center font-thai">
                         เพื่อนต้องเรียนจบอย่างน้อย 1 บท ถึงจะเติมไฟได้
                       </p>
@@ -288,7 +327,7 @@ export default function FriendsList() {
             await sendGift(friendId, itemId, coins, message);
             setGiftTarget(null);
           }}
-          inventory={profile?.inventory || []}
+          inventory={Array.isArray(profile?.inventory) ? (profile.inventory as string[]) : []}
           coins={profile?.coins || 0}
         />
       )}
