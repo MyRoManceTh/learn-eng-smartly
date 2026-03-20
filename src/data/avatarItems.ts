@@ -43,6 +43,20 @@ export const avatarItems: AvatarItem[] = [
   { id: "haircolor_rainbow", name: "Holographic", nameThai: "โฮโลแกรม", category: "hairColor", price: 350, rarity: "legendary", icon: "🌈", svgProps: { color: "rainbow" } },
 
   // ═══════════════════════════════════════════
+  // 🎩 HATS (10) — Headwear & Crowns
+  // ═══════════════════════════════════════════
+  { id: "hat_beret", name: "Cute Beret", nameThai: "หมวกเบเรต์", category: "hat", price: 80, rarity: "common", icon: "🎩", svgProps: { color: "#E57373" } },
+  { id: "hat_bucket", name: "Bucket Hat", nameThai: "หมวกบักเก็ต", category: "hat", price: 100, rarity: "common", icon: "🪣", svgProps: { color: "#90A4AE" } },
+  { id: "hat_beanie", name: "Cozy Beanie", nameThai: "หมวกบีนนี่", category: "hat", price: 120, rarity: "rare", icon: "🧶", svgProps: { color: "#9575CD" } },
+  { id: "hat_catears", name: "Cat Ears", nameThai: "หูแมว", category: "hat", price: 140, rarity: "rare", icon: "🐱", svgProps: { color: "#616161" } },
+  { id: "hat_bunnyears", name: "Bunny Ears", nameThai: "หูกระต่าย", category: "hat", price: 160, rarity: "rare", icon: "🐰", svgProps: { color: "#F8BBD0" } },
+  { id: "hat_flowerband", name: "Flower Crown", nameThai: "มงกุฎดอกไม้", category: "hat", price: 220, rarity: "epic", icon: "🌸", svgProps: { color: "#AED581" } },
+  { id: "hat_headphones", name: "Neon Headphones", nameThai: "หูฟังนีออน", category: "hat", price: 250, rarity: "epic", icon: "🎧", svgProps: { color: "#26C6DA" } },
+  { id: "hat_witch", name: "Star Witch Hat", nameThai: "หมวกแม่มด", category: "hat", price: 320, rarity: "epic", icon: "🧙", svgProps: { color: "#7E57C2" } },
+  { id: "hat_tiara", name: "Crystal Tiara", nameThai: "เทียร่า", category: "hat", price: 380, rarity: "legendary", icon: "👑", svgProps: { color: "#B39DDB" } },
+  { id: "hat_crown", name: "Royal Crown", nameThai: "มงกุฎราชา", category: "hat", price: 450, rarity: "legendary", icon: "👑", svgProps: { color: "#FFD54F" } },
+
+  // ═══════════════════════════════════════════
   // 👕 SHIRTS (8) — Fashion Forward
   // ═══════════════════════════════════════════
   { id: "shirt_default", name: "Comfy Tee", nameThai: "เสื้อยืดสบายๆ", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#A8D8EA", pattern: "vneck" } },
@@ -117,6 +131,7 @@ export const categoryLabels: { key: ItemCategory; label: string; icon: string }[
   { key: "skin", label: "สีผิว", icon: "🍑" },
   { key: "hair", label: "ทรงผม", icon: "💇" },
   { key: "hairColor", label: "สีผม", icon: "🎨" },
+  { key: "hat", label: "หมวก", icon: "🎩" },
   { key: "shirt", label: "เสื้อ", icon: "👕" },
   { key: "pants", label: "กางเกง", icon: "👖" },
   { key: "shoes", label: "รองเท้า", icon: "👟" },
