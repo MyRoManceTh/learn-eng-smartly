@@ -2120,9 +2120,20 @@ export function getPathById(pathId: string): SkillTreePath | undefined {
 
 // Level labels
 export const levelLabels: Record<number, { name: string; cefr: string; icon: string }> = {
+  0: { name: 'เตรียมตัว', cefr: 'Pre-A1', icon: '🌱' },
   1: { name: 'เริ่มต้น', cefr: 'A1', icon: '🥚' },
   2: { name: 'พื้นฐาน', cefr: 'A2', icon: '🐣' },
   3: { name: 'ปานกลาง', cefr: 'B1', icon: '🐥' },
   4: { name: 'ก้าวหน้า', cefr: 'B2', icon: '🦅' },
   5: { name: 'เชี่ยวชาญ', cefr: 'C1', icon: '🐉' },
+};
+
+// Level info for progress dashboard
+export const levelInfo: Record<number, { name: string; cefr: string; icon: string; description: string; vocabTarget: number }> = {
+  0: { name: 'เตรียมตัว', cefr: 'Pre-A1', icon: '🌱', description: 'เรียนรู้ตัวอักษร สี ตัวเลข และคำศัพท์แรก', vocabTarget: 100 },
+  1: { name: 'เริ่มต้น', cefr: 'A1', icon: '🥚', description: 'สื่อสารเบื้องต้นในชีวิตประจำวัน', vocabTarget: 500 },
+  2: { name: 'พื้นฐาน', cefr: 'A2', icon: '🐣', description: 'เข้าใจประโยคที่ใช้บ่อยในสถานการณ์ทั่วไป', vocabTarget: 1000 },
+  3: { name: 'ปานกลาง', cefr: 'B1', icon: '🐥', description: 'สื่อสารเรื่องคุ้นเคยได้อย่างคล่องแคล่ว', vocabTarget: 2000 },
+  4: { name: 'ก้าวหน้า', cefr: 'B2', icon: '🦅', description: 'เข้าใจเนื้อหาซับซ้อนและแสดงความเห็นได้', vocabTarget: 4000 },
+  5: { name: 'เชี่ยวชาญ', cefr: 'C1', icon: '🐉', description: 'ใช้ภาษาได้อย่างยืดหยุ่นและมีประสิทธิภาพ', vocabTarget: 6000 },
 };
