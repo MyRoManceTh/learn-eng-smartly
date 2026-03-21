@@ -91,8 +91,17 @@ export default function SpeakingPracticePage() {
     const r = scoreAccuracy(currentWord.english, transcript);
     setTotalScore((s) => s + r.score);
     setTotalAttempts((a) => a + 1);
-    if (r.score >= 70) playCorrect();
-    else playWrong();
+    if (r.score >= 70) {
+      playCorrect();
+      // Count speaking sessions: every 5 words = 1 session
+      const newAttempts = totalAttempts + 1;
+      if (newAttempts % 5 === 0) {
+        const sessions = parseInt(localStorage.getItem("speaking_sessions") || "0", 10);
+        localStorage.setItem("speaking_sessions", String(sessions + 1));
+      }
+    } else {
+      playWrong();
+    }
   }
 
   const handleNext = () => {
