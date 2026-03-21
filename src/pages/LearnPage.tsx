@@ -442,7 +442,14 @@ const LearnPage = () => {
       <main className="max-w-3xl mx-auto px-4 py-6 relative">
         <SkillTreeMap
           modules={pathModules}
-          isModuleUnlocked={(m) => isModuleUnlocked(m, placementLevel)}
+          isModuleUnlocked={(m) => {
+            // Speaking gate: level 4+ modules require 3 speaking sessions
+            if (m.level >= 4 && activePath === "core") {
+              const sessions = parseInt(localStorage.getItem("speaking_sessions") || "0", 10);
+              if (sessions < 3) return false;
+            }
+            return isModuleUnlocked(m, placementLevel);
+          }}
           isModuleCompleted={isModuleCompleted}
           getModuleProgress={getModuleProgress}
           onModuleClick={handleModuleClick}
@@ -451,6 +458,8 @@ const LearnPage = () => {
           onBranchPointClick={() => setShowPathSelection(true)}
           isCoreLevel1Done={coreLevel1Done}
           selectedSpecialty={selectedSpecialty}
+          speakingGatePassed={parseInt(localStorage.getItem("speaking_sessions") || "0", 10) >= 3}
+          speakingSessions={parseInt(localStorage.getItem("speaking_sessions") || "0", 10)}
         />
       </main>
     </div>
