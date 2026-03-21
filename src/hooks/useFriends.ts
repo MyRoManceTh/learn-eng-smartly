@@ -223,9 +223,58 @@ export function useFriends() {
     [loadFriends]
   );
 
+  const removeFriend = useCallback(
+    async (friendshipId: string) => {
+      if (!user) return;
+      await supabase.from("friendships").delete().eq("id", friendshipId);
+      toast.success("ลบเพื่อนแล้ว");
+      loadFriends();
+    },
+    [user, loadFriends]
+  );
+
   const sendGift = useCallback(
     async (friendId: string, itemId?: string, coins?: number, message?: string) => {
       if (!user) return;
+
+      // Deduct coins/items from sender BEFORE inserting transaction
+      const { data: senderProfile } = await supabase
+        .from("profiles")
+        .select("coins, inventory")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!senderProfile) {
+        toast.error("เกิดข้อผิดพลาด");
+        return;
+      }
+
+      const sp = senderProfile as any;
+      const updates: any = {};
+
+      if (coins && coins > 0) {
+        if ((sp.coins || 0) < coins) {
+          toast.error("เหรียญไม่พอ!");
+          return;
+        }
+        updates.coins = (sp.coins || 0) - coins;
+      }
+
+      if (itemId && itemId !== "energy") {
+        const inv = Array.isArray(sp.inventory) ? [...sp.inventory] : [];
+        const idx = inv.indexOf(itemId);
+        if (idx === -1) {
+          toast.error("ไม่มีไอเทมนี้ในคลัง!");
+          return;
+        }
+        inv.splice(idx, 1);
+        updates.inventory = inv;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await supabase.from("profiles").update(updates).eq("user_id", user.id);
+      }
+
       await supabase.from("gift_transactions").insert({
         sender_id: user.id,
         receiver_id: friendId,
