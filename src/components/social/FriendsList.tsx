@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { evolutionStages } from "@/data/evolutionStages";
+import { getItemById } from "@/data/avatarItems";
 import { toast } from "sonner";
-import { Check, Pencil } from "lucide-react";
+import { Check, Pencil, UserMinus, ArrowUpDown } from "lucide-react";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
@@ -29,21 +30,26 @@ function parseEquipped(raw: any): EquippedItems {
   };
 }
 
+type SortMode = "exp" | "streak" | "name";
+
 export default function FriendsList() {
   const navigate = useNavigate();
   const {
     friends,
     pendingRequests,
+    pendingGifts,
     loading,
     addFriendByCode,
     acceptRequest,
     declineRequest,
+    removeFriend,
     sendGift,
     sendEnergy,
+    claimGift,
     energySentToday,
   } = useFriends();
   const { sendChallenge } = useChallenges();
-  const { profile } = useProfile();
+  const { profile, refreshProfile } = useProfile();
 
   const [friendCode, setFriendCode] = useState("");
   const [adding, setAdding] = useState(false);
@@ -58,6 +64,8 @@ export default function FriendsList() {
   const [sendingEnergyTo, setSendingEnergyTo] = useState<string | null>(null);
   const [sentEnergyLocal, setSentEnergyLocal] = useState<Set<string>>(new Set());
   const [showNameModal, setShowNameModal] = useState(false);
+  const [sortMode, setSortMode] = useState<SortMode>("exp");
+  const [removingFriend, setRemovingFriend] = useState<string | null>(null);
 
   const getEvolutionIcon = (stage: number) => {
     const evo = evolutionStages.find((s) => s.stage === stage);
@@ -81,6 +89,22 @@ export default function FriendsList() {
       toast.success("คัดลอกรหัสเพื่อนแล้ว!");
     }
   };
+
+  const cycleSortMode = () => {
+    setSortMode((prev) => {
+      if (prev === "exp") return "streak";
+      if (prev === "streak") return "name";
+      return "exp";
+    });
+  };
+
+  const sortedFriends = [...friends].sort((a, b) => {
+    if (sortMode === "exp") return b.total_exp - a.total_exp;
+    if (sortMode === "streak") return b.current_streak - a.current_streak;
+    return a.display_name.localeCompare(b.display_name);
+  });
+
+  const sortLabel = sortMode === "exp" ? "EXP" : sortMode === "streak" ? "🔥 Streak" : "ชื่อ";
 
   return (
     <>
@@ -157,6 +181,49 @@ export default function FriendsList() {
             </Button>
           </div>
 
+          {/* Pending gifts (received) */}
+          {pendingGifts.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-pink-500">
+                🎁 ของขวัญรอรับ ({pendingGifts.length})
+              </h4>
+              {pendingGifts.map((gift) => {
+                const item = gift.item_id ? getItemById(gift.item_id) : null;
+                return (
+                  <div
+                    key={gift.id}
+                    className="flex items-center gap-2 rounded-lg border border-pink-200 bg-pink-50/50 p-2 dark:border-pink-900 dark:bg-pink-950/20"
+                  >
+                    <span className="text-lg">
+                      {gift.item_id === "energy" ? "⚡" : item?.icon || "🪙"}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">
+                        จาก {gift.sender_name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground truncate">
+                        {gift.item_id === "energy"
+                          ? "เติมไฟให้~ 🔥"
+                          : gift.coins > 0
+                          ? `🪙 ${gift.coins} เหรียญ`
+                          : item?.nameThai || "ไอเทม"}
+                        {gift.message && ` — "${gift.message}"`}
+                      </p>
+                    </div>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="h-7 px-3 text-xs"
+                      onClick={() => claimGift(gift.id)}
+                    >
+                      รับ
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {/* Pending requests */}
           {pendingRequests.length > 0 && (
             <div className="space-y-2">
@@ -214,13 +281,25 @@ export default function FriendsList() {
             </div>
           ) : (
             <div className="space-y-2">
-              <h4 className="text-sm font-semibold">
-                เพื่อนของคุณ ({friends.length})
-              </h4>
-              {friends.map((friend) => {
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold">
+                  เพื่อนของคุณ ({friends.length})
+                </h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs gap-1"
+                  onClick={cycleSortMode}
+                >
+                  <ArrowUpDown className="w-3 h-3" />
+                  {sortLabel}
+                </Button>
+              </div>
+              {sortedFriends.map((friend) => {
                 const canSendEnergy = friend.lessons_completed >= 1;
                 const isSendingEnergy = sendingEnergyTo === friend.user_id;
                 const alreadySent = energySentToday.has(friend.user_id) || sentEnergyLocal.has(friend.user_id);
+                const isConfirmingRemove = removingFriend === friend.friendship_id;
 
                 return (
                   <div
@@ -302,7 +381,7 @@ export default function FriendsList() {
                           })
                         }
                       >
-                        🎁
+                        🎁 ของขวัญ
                       </Button>
                       <Button
                         variant="ghost"
@@ -315,8 +394,41 @@ export default function FriendsList() {
                           })
                         }
                       >
-                        ⚔️
+                        ⚔️ ท้าดวล
                       </Button>
+                      {/* Remove friend */}
+                      {isConfirmingRemove ? (
+                        <div className="flex gap-1">
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={async () => {
+                              await removeFriend(friend.friendship_id);
+                              setRemovingFriend(null);
+                            }}
+                          >
+                            ยืนยัน
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={() => setRemovingFriend(null)}
+                          >
+                            ยกเลิก
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+                          onClick={() => setRemovingFriend(friend.friendship_id)}
+                        >
+                          <UserMinus className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
                     </div>
 
                     {/* Hint if friend hasn't completed any lesson */}
@@ -367,7 +479,7 @@ export default function FriendsList() {
         open={showNameModal}
         onOpenChange={setShowNameModal}
         currentName={profile?.display_name || null}
-        onSaved={() => window.location.reload()}
+        onSaved={() => refreshProfile()}
       />
     </>
   );
