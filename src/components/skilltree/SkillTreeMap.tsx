@@ -234,11 +234,14 @@ const SkillTreeMap = ({
   onBranchPointClick,
   isCoreLevel1Done,
   selectedSpecialty,
+  speakingGatePassed,
+  speakingSessions = 0,
 }: SkillTreeMapProps) => {
-  const levels = [...new Set(modules.map((m) => m.level))].sort();
+  const levels = [...new Set(modules.map((m) => m.level))].sort((a, b) => a - b);
   const currentNodeRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to current node on mount
+  const SPEAKING_GATE_REQUIRED = 3;
+
   useEffect(() => {
     if (currentNodeRef.current) {
       setTimeout(() => {
