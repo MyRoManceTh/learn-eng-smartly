@@ -379,6 +379,7 @@ export function useFriends() {
     addFriendByCode,
     acceptRequest,
     declineRequest,
+    removeFriend,
     sendGift,
     sendEnergy,
     claimGift,
