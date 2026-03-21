@@ -6,13 +6,23 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { levelInfo } from "@/data/skillTreeData";
+import { levelLabels } from "@/data/skillTreeData";
 import { placementQuestions } from "@/data/placementTestQuestions";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
 
 const TOTAL_QUESTIONS = 20;
 const PASS_THRESHOLD = 0.7;
+
+// Level info with vocab targets
+const skipLevelInfo: Record<number, { cefr: string; icon: string }> = {
+  0: { cefr: "Pre-A1", icon: "🌱" },
+  1: { cefr: "A1", icon: "🥚" },
+  2: { cefr: "A2", icon: "🐣" },
+  3: { cefr: "B1", icon: "🐥" },
+  4: { cefr: "B2", icon: "🦅" },
+  5: { cefr: "C1", icon: "🐉" },
+};
 
 export default function SkipLevelTestPage() {
   const navigate = useNavigate();
@@ -22,11 +32,9 @@ export default function SkipLevelTestPage() {
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [showResult, setShowResult] = useState(false);
+  const [selected, setSelected] = useState<number | null>(null);
   const [finished, setFinished] = useState(false);
 
-  // Pick questions at the target difficulty level
   const questions = useMemo(() => {
     const pool = placementQuestions.filter((q) => q.difficulty === targetLevel);
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
@@ -34,13 +42,13 @@ export default function SkipLevelTestPage() {
   }, [targetLevel]);
 
   const currentQ = questions[currentIdx];
-  const progress = ((currentIdx + (finished ? 1 : 0)) / questions.length) * 100;
-  const info = levelInfo[targetLevel] || levelInfo[2];
+  const progress = ((currentIdx + (finished ? 1 : 0)) / Math.max(questions.length, 1)) * 100;
+  const info = skipLevelInfo[targetLevel] || skipLevelInfo[2];
 
-  const handleSelect = useCallback((optionId: string) => {
-    if (selected || !currentQ) return;
-    setSelected(optionId);
-    const isCorrect = optionId === currentQ.correctAnswer;
+  const handleSelect = useCallback((optIdx: number) => {
+    if (selected !== null || !currentQ) return;
+    setSelected(optIdx);
+    const isCorrect = optIdx === currentQ.correctIndex;
     if (isCorrect) setScore((s) => s + 1);
 
     setTimeout(() => {
@@ -50,7 +58,6 @@ export default function SkipLevelTestPage() {
         setFinished(true);
 
         if (passed && user) {
-          // Update profile level
           supabase
             .from("profiles")
             .update({ current_level: targetLevel } as any)
@@ -71,7 +78,7 @@ export default function SkipLevelTestPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 to-white p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 to-background p-4">
         <div className="text-center space-y-4">
           <span className="text-5xl">📝</span>
           <p className="font-thai text-muted-foreground">ไม่มีข้อสอบสำหรับระดับนี้</p>
@@ -82,9 +89,8 @@ export default function SkipLevelTestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-blue-50 to-white pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b shadow-sm">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-blue-50 to-background pb-24">
+      <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b shadow-sm">
         <div className="max-w-md mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
             <ChevronLeft className="w-5 h-5" />
@@ -102,31 +108,29 @@ export default function SkipLevelTestPage() {
       <div className="max-w-md mx-auto px-4 py-6">
         {!finished && currentQ ? (
           <div className="space-y-6 animate-fade-in">
-            {/* Question */}
-            <div className="rounded-2xl bg-white border p-6 shadow-sm">
+            <div className="rounded-2xl bg-card border p-6 shadow-sm">
               <p className="text-xs text-muted-foreground font-thai mb-2">
                 {currentQ.stage === "grammar" ? "ไวยากรณ์" :
                  currentQ.stage === "vocabulary" ? "คำศัพท์" :
                  currentQ.stage === "reading" ? "การอ่าน" : "การฟัง"}
               </p>
-              <p className="text-base font-medium">{currentQ.question}</p>
+              <p className="text-base font-medium text-foreground">{currentQ.question}</p>
             </div>
 
-            {/* Options */}
             <div className="space-y-3">
-              {currentQ.options.map((opt) => {
-                const isSelected = selected === opt.id;
-                const isCorrect = opt.id === currentQ.correctAnswer;
+              {currentQ.options.map((opt, idx) => {
+                const isSelected = selected === idx;
+                const isCorrect = idx === currentQ.correctIndex;
                 const showFeedback = selected !== null;
 
                 return (
                   <button
-                    key={opt.id}
-                    onClick={() => handleSelect(opt.id)}
-                    disabled={!!selected}
+                    key={idx}
+                    onClick={() => handleSelect(idx)}
+                    disabled={selected !== null}
                     className={cn(
-                      "w-full text-left px-4 py-3 rounded-xl border-2 transition-all",
-                      !showFeedback && "hover:border-primary/50 hover:bg-primary/5",
+                      "w-full text-left px-4 py-3 rounded-xl border-2 transition-all text-foreground",
+                      !showFeedback && "hover:border-primary/50 hover:bg-primary/5 border-muted",
                       showFeedback && isCorrect && "border-green-500 bg-green-50",
                       showFeedback && isSelected && !isCorrect && "border-red-500 bg-red-50",
                       !showFeedback && "border-muted"
@@ -135,7 +139,7 @@ export default function SkipLevelTestPage() {
                     <div className="flex items-center gap-2">
                       {showFeedback && isCorrect && <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />}
                       {showFeedback && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />}
-                      <span className="text-sm">{opt.text}</span>
+                      <span className="text-sm">{opt}</span>
                     </div>
                   </button>
                 );
@@ -145,7 +149,7 @@ export default function SkipLevelTestPage() {
         ) : finished ? (
           <div className="space-y-6 text-center animate-fade-in">
             <span className="text-6xl block">{passed ? "🎉" : "😢"}</span>
-            <h2 className="text-xl font-bold font-thai">
+            <h2 className="text-xl font-bold font-thai text-foreground">
               {passed ? `ยินดีด้วย! คุณผ่านไป ${info.cefr}!` : "ยังไม่ผ่าน ลองอีกครั้ง!"}
             </h2>
             <p className="text-muted-foreground font-thai">
