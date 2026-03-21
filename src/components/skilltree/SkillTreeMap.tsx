@@ -432,8 +432,48 @@ const SkillTreeMap = ({
               </div>
             )}
 
-            {/* Level transition decoration (non-core or non-level-1) */}
-            {levelIdx < levels.length - 1 && !(level === 1 && activePath === "core" && onBranchPointClick) && (
+            {/* Speaking Gate: between level 3 and level 4 */}
+            {level === 3 && activePath === "core" && levelIdx < levels.length - 1 && (
+              <div className="flex flex-col items-center gap-3 py-8">
+                <div className="w-0.5 h-6 bg-gradient-to-b from-emerald-500/40 to-transparent rounded-full" />
+                <div className={cn(
+                  "relative flex flex-col items-center gap-2 px-6 py-4 rounded-3xl border-2 transition-all duration-300",
+                  speakingGatePassed
+                    ? "bg-gradient-to-b from-emerald-500/20 to-green-500/5 border-emerald-400/40 shadow-[0_0_30px_rgba(52,211,153,0.2)]"
+                    : "bg-white/[0.03] border-white/10 opacity-70"
+                )}>
+                  <div className={cn(
+                    "w-16 h-16 rounded-full flex items-center justify-center text-3xl border-[3px]",
+                    speakingGatePassed
+                      ? "bg-gradient-to-br from-emerald-400 to-green-500 border-emerald-300 shadow-[0_6px_0_0_rgb(22,101,52)]"
+                      : "bg-slate-700 border-slate-600"
+                  )}>
+                    {speakingGatePassed ? "🎙️" : "🔒"}
+                  </div>
+                  <p className={cn(
+                    "text-sm font-bold font-thai",
+                    speakingGatePassed ? "text-emerald-300" : "text-white/30"
+                  )}>
+                    {speakingGatePassed ? "ด่านพูดผ่านแล้ว!" : "ด่านฝึกพูด"}
+                  </p>
+                  <p className={cn(
+                    "text-[10px] font-thai",
+                    speakingGatePassed ? "text-emerald-400/60" : "text-white/20"
+                  )}>
+                    {speakingGatePassed
+                      ? "✅ ปลดล็อค Level 4+ แล้ว"
+                      : `ฝึกพูด ${speakingSessions}/${SPEAKING_GATE_REQUIRED} ครั้ง`}
+                  </p>
+                  {speakingGatePassed && (
+                    <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">✨</span>
+                  )}
+                </div>
+                <div className="w-0.5 h-6 bg-gradient-to-b from-transparent to-white/10 rounded-full" />
+              </div>
+            )}
+
+            {/* Level transition decoration */}
+            {levelIdx < levels.length - 1 && !(level === 1 && activePath === "core" && onBranchPointClick) && !(level === 3 && activePath === "core") && (
               <div className="flex items-center justify-center gap-2 py-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/10" />
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
