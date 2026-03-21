@@ -1,82 +1,77 @@
 import { useMemo } from "react";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { countLearnedWords } from "@/data/flashcardSRS";
+import { loadCards } from "@/data/flashcardSRS";
+import { levelInfo } from "@/data/skillTreeData";
+import { useProfile } from "@/hooks/useProfile";
+import { Progress } from "@/components/ui/progress";
 
-/** Target vocabulary count per CEFR level */
-export const VOCAB_MILESTONES: Record<number, number> = {
-  0: 100,
-  1: 500,
-  2: 1200,
-  3: 2500,
-  4: 4000,
-  5: 6000,
-};
-
-const LEVEL_NAMES: Record<number, string> = {
-  0: "Pre-A1",
-  1: "A1",
-  2: "A2",
-  3: "B1",
-  4: "B2",
-  5: "C1",
-};
-
-interface VocabMilestoneCounterProps {
-  currentLevel: number;
-}
-
-export default function VocabMilestoneCounter({ currentLevel }: VocabMilestoneCounterProps) {
+export default function VocabMilestoneCounter() {
   const { user } = useAuth();
+  const { profile } = useProfile();
+  const currentLevel = profile?.current_level ?? 1;
 
-  const learnedCount = useMemo(
-    () => (user ? countLearnedWords(user.id) : 0),
-    [user]
-  );
+  const learnedCount = useMemo(() => {
+    if (!user) return 0;
+    const cards = loadCards(user.id);
+    // Count cards with at least 1 successful review (interval > 0)
+    return cards.filter((c) => c.interval > 0).length;
+  }, [user]);
 
-  const target = VOCAB_MILESTONES[currentLevel] ?? VOCAB_MILESTONES[5];
-  const percent = Math.min(Math.round((learnedCount / target) * 100), 100);
-  const levelLabel = LEVEL_NAMES[currentLevel] ?? "C1";
+  const info = levelInfo[currentLevel] || levelInfo[1];
+  const target = info.vocabTarget;
+  const progress = Math.min(100, Math.round((learnedCount / target) * 100));
+
+  // Milestones
+  const milestones = [
+    { count: 100, label: "Pre-A1", icon: "🌱" },
+    { count: 500, label: "A1", icon: "🥚" },
+    { count: 1000, label: "A2", icon: "🐣" },
+    { count: 2000, label: "B1", icon: "🐥" },
+    { count: 4000, label: "B2", icon: "🦅" },
+    { count: 6000, label: "C1", icon: "🐉" },
+  ];
+
+  const currentMilestone = milestones.filter((m) => learnedCount >= m.count).pop();
+  const nextMilestone = milestones.find((m) => learnedCount < m.count);
 
   return (
-    <div className="rounded-2xl border border-purple-200/50 bg-gradient-to-br from-purple-50 to-indigo-50 p-4 space-y-2 shadow-sm">
+    <div className="rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 p-4 shadow-sm space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl">📖</span>
-          <p className="text-sm font-bold font-thai text-foreground">คลังคำศัพท์</p>
+          <span className="text-xl">📚</span>
+          <span className="text-sm font-bold font-thai">คำศัพท์ที่เรียนรู้</span>
         </div>
-        <span className="text-xs bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full font-thai">
-          เป้าหมาย {levelLabel}: {target.toLocaleString()} คำ
-        </span>
+        <span className="text-lg font-bold text-primary">{learnedCount}</span>
       </div>
 
-      <div className="flex items-end gap-2">
-        <p className="text-3xl font-bold text-purple-700">{learnedCount.toLocaleString()}</p>
-        <p className="text-sm text-muted-foreground font-thai mb-1">คำ</p>
-      </div>
-
-      {/* Progress bar */}
       <div className="space-y-1">
-        <div className="w-full h-2.5 bg-purple-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-700 ease-out"
-            style={{ width: `${Math.max(percent, 2)}%` }}
-          />
+        <div className="flex justify-between text-xs text-muted-foreground font-thai">
+          <span>เป้าหมาย Level {currentLevel}: {target} คำ</span>
+          <span>{progress}%</span>
         </div>
-        <div className="flex justify-between">
-          <p className="text-[10px] text-muted-foreground font-thai">
-            {learnedCount < target
-              ? `เหลืออีก ${(target - learnedCount).toLocaleString()} คำ`
-              : "✅ ถึงเป้าหมายแล้ว!"}
-          </p>
-          <p className="text-[10px] font-bold text-purple-600">{percent}%</p>
-        </div>
+        <Progress value={progress} className="h-2" />
       </div>
 
-      {/* Milestone hint */}
-      {learnedCount === 0 && (
-        <p className="text-[10px] text-muted-foreground font-thai bg-white/60 rounded-lg px-3 py-2">
-          💡 ทำ Flashcard ทุกวันเพื่อสะสมคำศัพท์ — คำที่ review แล้วจะนับ
+      {/* Milestone badges */}
+      <div className="flex gap-1.5 overflow-x-auto pb-1">
+        {milestones.map((m) => (
+          <div
+            key={m.count}
+            className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold ${
+              learnedCount >= m.count
+                ? "bg-primary/10 text-primary"
+                : "bg-muted/50 text-muted-foreground opacity-50"
+            }`}
+          >
+            <span>{m.icon}</span>
+            <span>{m.count}</span>
+          </div>
+        ))}
+      </div>
+
+      {nextMilestone && (
+        <p className="text-[11px] text-muted-foreground font-thai text-center">
+          อีก {nextMilestone.count - learnedCount} คำ ถึง {nextMilestone.label} {nextMilestone.icon}
         </p>
       )}
     </div>

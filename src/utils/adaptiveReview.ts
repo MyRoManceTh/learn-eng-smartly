@@ -1,48 +1,51 @@
-import { loadCards, saveCards, SRSCard, createCard } from "@/data/flashcardSRS";
-
-export interface WeakVocabItem {
-  word: string;
-  phonetic: string;
-  meaning: string;
-  partOfSpeech: string;
-}
+import { loadCards, saveCards, createCard, SRSCard } from "@/data/flashcardSRS";
+import { toast } from "sonner";
 
 /**
- * Push weak vocabulary items into the SRS deck with reset intervals.
- * Call this when a quiz score is below the threshold (60%).
- * Words already in the deck get their interval reset to 0 (review tomorrow).
- * New words are created fresh.
+ * Push weak items back to SRS review queue.
+ * Called after a quiz with score < 60%.
+ * Resets the interval so they appear sooner for review.
  */
 export function pushWeakItemsToSRS(
   userId: string,
-  items: WeakVocabItem[],
+  vocabItems: Array<{ word: string; phonetic: string; meaning: string; partOfSpeech?: string }>,
   moduleId: string
-): void {
-  if (!items.length) return;
+) {
+  if (!userId || !vocabItems.length) return;
 
   const cards = loadCards(userId);
-  const cardMap = new Map<string, SRSCard>(cards.map((c) => [c.wordId, c]));
+  let updatedCount = 0;
 
-  const today = new Date();
-
-  for (const item of items) {
+  for (const item of vocabItems) {
     const wordId = `${moduleId}_${item.word}`;
-    const existing = cardMap.get(wordId);
+    const existingIdx = cards.findIndex((c) => c.wordId === wordId);
 
-    if (existing) {
-      // Reset the card so it appears for review tomorrow
-      cardMap.set(wordId, {
-        ...existing,
-        interval: 1,
-        repetitions: 0,
-        easeFactor: Math.max(1.3, existing.easeFactor - 0.2),
-        nextReview: today.toISOString().split("T")[0],
-      });
+    if (existingIdx >= 0) {
+      // Reset existing card's interval to force re-review
+      cards[existingIdx].interval = 0;
+      cards[existingIdx].repetitions = 0;
+      cards[existingIdx].easeFactor = Math.max(1.3, cards[existingIdx].easeFactor - 0.3);
+      const now = new Date();
+      cards[existingIdx].nextReview = now.toISOString().split("T")[0];
+      updatedCount++;
     } else {
-      // Create a brand-new card flagged for immediate review
-      cardMap.set(wordId, createCard(item.word, item.phonetic, item.meaning, item.partOfSpeech, moduleId));
+      // Create new card
+      cards.push(createCard(item.word, item.phonetic, item.meaning, item.partOfSpeech || "n.", moduleId));
+      updatedCount++;
     }
   }
 
-  saveCards(userId, Array.from(cardMap.values()));
+  saveCards(userId, cards);
+
+  if (updatedCount > 0) {
+    toast("📝 เพิ่มคำศัพท์ที่ต้องทบทวนแล้ว", {
+      description: `${updatedCount} คำ ถูกเพิ่มเข้า Flashcard เพื่อทบทวน`,
+      action: {
+        label: "ไปทบทวน",
+        onClick: () => {
+          window.location.href = "/flashcards";
+        },
+      },
+    });
+  }
 }

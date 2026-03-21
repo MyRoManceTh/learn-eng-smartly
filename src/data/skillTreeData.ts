@@ -131,55 +131,55 @@ export const skillTreePaths: SkillTreePath[] = [
 
 export const skillTreeModules: SkillTreeModule[] = [
   // ──────────────────────────────────────────
-  // CORE PRE-A1 (Level 0) - 4 modules (Starter)
+  // CORE Pre-A1 (Level 0) - 4 modules (Starter)
   // ──────────────────────────────────────────
   {
-    id: 'core-pre-alphabet',
+    id: 'core-a0-alphabet',
     pathId: 'core',
-    name: 'Alphabet A-Z',
+    name: 'Alphabet',
     nameThai: 'ตัวอักษร A-Z',
     icon: '🔤',
     level: 0,
     order: 1,
     prerequisites: [],
-    lessonCount: 5,
-    reward: { type: 'coins', value: 20, label: '20 เหรียญ' },
+    lessonCount: 4,
+    reward: { type: 'coins', value: 30, label: '30 เหรียญ' },
   },
   {
-    id: 'core-pre-numbers',
+    id: 'core-a0-numbers',
     pathId: 'core',
-    name: 'Numbers 1-10',
-    nameThai: 'ตัวเลข 1-10',
+    name: 'Numbers 1-20',
+    nameThai: 'ตัวเลข 1-20',
     icon: '🔢',
     level: 0,
     order: 2,
-    prerequisites: ['core-pre-alphabet'],
-    lessonCount: 4,
-    reward: { type: 'coins', value: 20, label: '20 เหรียญ' },
+    prerequisites: ['core-a0-alphabet'],
+    lessonCount: 3,
+    reward: { type: 'coins', value: 30, label: '30 เหรียญ' },
   },
   {
-    id: 'core-pre-colors',
+    id: 'core-a0-colors',
     pathId: 'core',
-    name: 'Basic Colors',
-    nameThai: 'สีพื้นฐาน',
+    name: 'Colors',
+    nameThai: 'สี',
     icon: '🎨',
     level: 0,
     order: 3,
-    prerequisites: ['core-pre-alphabet'],
-    lessonCount: 4,
-    reward: { type: 'coins', value: 20, label: '20 เหรียญ' },
+    prerequisites: ['core-a0-alphabet'],
+    lessonCount: 3,
+    reward: { type: 'coins', value: 30, label: '30 เหรียญ' },
   },
   {
-    id: 'core-pre-greetings',
+    id: 'core-a0-firstwords',
     pathId: 'core',
     name: 'First Words',
-    nameThai: 'คำแรก Hi & Bye',
-    icon: '🌱',
+    nameThai: 'คำศัพท์แรก',
+    icon: '💡',
     level: 0,
     order: 4,
-    prerequisites: ['core-pre-numbers', 'core-pre-colors'],
-    lessonCount: 5,
-    reward: { type: 'avatar_item', value: 'acc_sprout', label: 'เครื่องรางต้นกล้า' },
+    prerequisites: ['core-a0-numbers', 'core-a0-colors'],
+    lessonCount: 4,
+    reward: { type: 'exp', value: 50, label: '50 EXP' },
   },
 
   // ──────────────────────────────────────────
@@ -193,7 +193,7 @@ export const skillTreeModules: SkillTreeModule[] = [
     icon: '👋',
     level: 1,
     order: 1,
-    prerequisites: ['core-pre-greetings'],
+    prerequisites: ['core-a0-firstwords'],
     lessonCount: 6,
     reward: { type: 'coins', value: 50, label: '50 เหรียญ' },
   },
@@ -1393,6 +1393,30 @@ export const skillTreeModules: SkillTreeModule[] = [
 
 // Lesson topic templates for each module
 const lessonTopics: Record<string, { topic: string; topicThai: string }[]> = {
+  // Pre-A1 (Level 0)
+  'core-a0-alphabet': [
+    { topic: 'Letters A-G', topicThai: 'ตัวอักษร A-G' },
+    { topic: 'Letters H-N', topicThai: 'ตัวอักษร H-N' },
+    { topic: 'Letters O-U', topicThai: 'ตัวอักษร O-U' },
+    { topic: 'Letters V-Z', topicThai: 'ตัวอักษร V-Z' },
+  ],
+  'core-a0-numbers': [
+    { topic: 'Numbers 1-10', topicThai: 'ตัวเลข 1-10' },
+    { topic: 'Numbers 11-20', topicThai: 'ตัวเลข 11-20' },
+    { topic: 'Counting things', topicThai: 'นับสิ่งของ' },
+  ],
+  'core-a0-colors': [
+    { topic: 'Basic colors', topicThai: 'สีพื้นฐาน' },
+    { topic: 'Colors around us', topicThai: 'สีรอบตัวเรา' },
+    { topic: 'My favorite color', topicThai: 'สีที่ฉันชอบ' },
+  ],
+  'core-a0-firstwords': [
+    { topic: 'Animals', topicThai: 'สัตว์' },
+    { topic: 'Body parts', topicThai: 'ส่วนต่างๆ ของร่างกาย' },
+    { topic: 'Common objects', topicThai: 'สิ่งของทั่วไป' },
+    { topic: 'Yes, No, Please, Thank you', topicThai: 'ได้ ไม่ กรุณา ขอบคุณ' },
+  ],
+  // A1 (Level 1)
   'core-a1-greetings': [
     { topic: 'Hello and Goodbye', topicThai: 'สวัสดีและลาก่อน' },
     { topic: 'What is your name?', topicThai: 'คุณชื่ออะไร?' },
@@ -2120,10 +2144,20 @@ export function getPathById(pathId: string): SkillTreePath | undefined {
 
 // Level labels
 export const levelLabels: Record<number, { name: string; cefr: string; icon: string }> = {
-  0: { name: 'ก้าวแรก', cefr: 'Pre-A1', icon: '🌱' },
+  0: { name: 'เตรียมตัว', cefr: 'Pre-A1', icon: '🌱' },
   1: { name: 'เริ่มต้น', cefr: 'A1', icon: '🥚' },
   2: { name: 'พื้นฐาน', cefr: 'A2', icon: '🐣' },
   3: { name: 'ปานกลาง', cefr: 'B1', icon: '🐥' },
   4: { name: 'ก้าวหน้า', cefr: 'B2', icon: '🦅' },
   5: { name: 'เชี่ยวชาญ', cefr: 'C1', icon: '🐉' },
+};
+
+// Level info for progress dashboard
+export const levelInfo: Record<number, { name: string; cefr: string; icon: string; description: string; vocabTarget: number }> = {
+  0: { name: 'เตรียมตัว', cefr: 'Pre-A1', icon: '🌱', description: 'เรียนรู้ตัวอักษร สี ตัวเลข และคำศัพท์แรก', vocabTarget: 100 },
+  1: { name: 'เริ่มต้น', cefr: 'A1', icon: '🥚', description: 'สื่อสารเบื้องต้นในชีวิตประจำวัน', vocabTarget: 500 },
+  2: { name: 'พื้นฐาน', cefr: 'A2', icon: '🐣', description: 'เข้าใจประโยคที่ใช้บ่อยในสถานการณ์ทั่วไป', vocabTarget: 1000 },
+  3: { name: 'ปานกลาง', cefr: 'B1', icon: '🐥', description: 'สื่อสารเรื่องคุ้นเคยได้อย่างคล่องแคล่ว', vocabTarget: 2000 },
+  4: { name: 'ก้าวหน้า', cefr: 'B2', icon: '🦅', description: 'เข้าใจเนื้อหาซับซ้อนและแสดงความเห็นได้', vocabTarget: 4000 },
+  5: { name: 'เชี่ยวชาญ', cefr: 'C1', icon: '🐉', description: 'ใช้ภาษาได้อย่างยืดหยุ่นและมีประสิทธิภาพ', vocabTarget: 6000 },
 };

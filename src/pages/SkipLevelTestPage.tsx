@@ -1,310 +1,183 @@
-import { useState, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
-import { placementQuestions, levelInfo } from "@/data/placementTestQuestions";
-import { levelLabels } from "@/data/skillTreeData";
-import { toast } from "sonner";
+import { useState, useMemo, useCallback } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChevronLeft, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { levelLabels } from "@/data/skillTreeData";
+import { placementQuestions } from "@/data/placementTestQuestions";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, CheckCircle, XCircle, Zap } from "lucide-react";
+import confetti from "canvas-confetti";
 
-const QUESTION_COUNT = 20;
-const PASS_THRESHOLD = 0.7; // 70% to advance
+const TOTAL_QUESTIONS = 20;
+const PASS_THRESHOLD = 0.7;
 
-function getSkipQuestions(targetLevel: number) {
-  const capped = Math.max(1, Math.min(5, targetLevel));
-  const pool = placementQuestions.filter((q) => q.difficulty === capped);
-  return [...pool].sort(() => Math.random() - 0.5).slice(0, QUESTION_COUNT);
-}
+// Level info with vocab targets
+const skipLevelInfo: Record<number, { cefr: string; icon: string }> = {
+  0: { cefr: "Pre-A1", icon: "🌱" },
+  1: { cefr: "A1", icon: "🥚" },
+  2: { cefr: "A2", icon: "🐣" },
+  3: { cefr: "B1", icon: "🐥" },
+  4: { cefr: "B2", icon: "🦅" },
+  5: { cefr: "C1", icon: "🐉" },
+};
 
-type Phase = "intro" | "quiz" | "result";
-
-const SkipLevelTestPage = () => {
-  const { user } = useAuth();
-  const { profile, updateProfile } = useProfile();
+export default function SkipLevelTestPage() {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const targetLevel = parseInt(searchParams.get("level") || "2", 10);
 
-  const currentLevel: number = (location.state as any)?.fromLevel ?? (profile as any)?.placement_level ?? 1;
-  const targetLevel = Math.min(currentLevel + 1, 5);
-
-  const [phase, setPhase] = useState<Phase>("intro");
-  const [questions] = useState(() => getSkipQuestions(targetLevel));
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [answered, setAnswered] = useState(false);
-  const [passed, setPassed] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [finished, setFinished] = useState(false);
 
-  const currentQuestion = questions[currentIdx];
-  const totalQuestions = questions.length;
+  const questions = useMemo(() => {
+    const pool = placementQuestions.filter((q) => q.difficulty === targetLevel);
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, TOTAL_QUESTIONS);
+  }, [targetLevel]);
 
-  const handleAnswer = useCallback(
-    async (optionIndex: number) => {
-      if (answered) return;
-      setSelectedOption(optionIndex);
-      setAnswered(true);
+  const currentQ = questions[currentIdx];
+  const progress = ((currentIdx + (finished ? 1 : 0)) / Math.max(questions.length, 1)) * 100;
+  const info = skipLevelInfo[targetLevel] || skipLevelInfo[2];
 
-      const isCorrect = optionIndex === currentQuestion.correctIndex;
-      const newCorrect = correctCount + (isCorrect ? 1 : 0);
+  const handleSelect = useCallback((optIdx: number) => {
+    if (selected !== null || !currentQ) return;
+    setSelected(optIdx);
+    const isCorrect = optIdx === currentQ.correctIndex;
+    if (isCorrect) setScore((s) => s + 1);
 
-      if (currentIdx + 1 >= totalQuestions) {
-        // Test complete
-        const ratio = newCorrect / totalQuestions;
-        const didPass = ratio >= PASS_THRESHOLD;
-        setPassed(didPass);
-        setCorrectCount(newCorrect);
+    setTimeout(() => {
+      if (currentIdx + 1 >= questions.length) {
+        const finalScore = score + (isCorrect ? 1 : 0);
+        const passed = finalScore / questions.length >= PASS_THRESHOLD;
+        setFinished(true);
 
-        if (didPass && user) {
-          setSaving(true);
-          try {
-            await supabase
-              .from("profiles")
-              .update({
-                placement_level: targetLevel,
-                current_level: targetLevel,
-              } as any)
-              .eq("user_id", user.id);
-            await updateProfile({ placement_level: targetLevel, current_level: targetLevel } as any);
-            toast.success(`🎉 ยินดีด้วย! ขึ้น ${levelLabels[targetLevel]?.cefr} แล้ว!`);
-          } catch {
-            toast.error("บันทึกไม่สำเร็จ กรุณาลองใหม่");
-          } finally {
-            setSaving(false);
-          }
+        if (passed && user) {
+          supabase
+            .from("profiles")
+            .update({ current_level: targetLevel } as any)
+            .eq("user_id", user.id)
+            .then(() => {
+              confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+            });
         }
-
-        setTimeout(() => setPhase("result"), 800);
       } else {
-        setCorrectCount(newCorrect);
-        setTimeout(() => {
-          setCurrentIdx((i) => i + 1);
-          setSelectedOption(null);
-          setAnswered(false);
-        }, 600);
+        setCurrentIdx((i) => i + 1);
+        setSelected(null);
       }
-    },
-    [answered, currentIdx, currentQuestion, correctCount, totalQuestions, targetLevel, user, updateProfile]
-  );
+    }, 1200);
+  }, [selected, currentQ, currentIdx, questions.length, score, targetLevel, user]);
 
-  const currentLevelInfo = levelLabels[currentLevel];
-  const targetLevelInfo = levelLabels[targetLevel];
-  const targetLevelMeta = (levelInfo as any)[targetLevel];
+  const finalScore = finished ? score : 0;
+  const passed = finished && finalScore / questions.length >= PASS_THRESHOLD;
 
-  // ─── Intro screen ────────────────────────────────────
-  if (phase === "intro") {
+  if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-cyan-950 to-slate-900 flex flex-col items-center justify-center p-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        <div className="max-w-sm w-full space-y-6 text-center">
-          <div className="flex items-center justify-center gap-4 text-5xl">
-            <span>{currentLevelInfo?.icon}</span>
-            <span className="text-white/30 text-2xl">→</span>
-            <span className="animate-float-gentle" style={{ display: "inline-block" }}>
-              {targetLevelInfo?.icon}
-            </span>
-          </div>
-
-          <div>
-            <h1 className="text-2xl font-bold text-white font-thai">ทดสอบข้ามระดับ</h1>
-            <p className="text-sm text-white/50 font-thai mt-1">
-              {currentLevelInfo?.cefr} → {targetLevelInfo?.cefr}
-            </p>
-          </div>
-
-          <div className="bg-white/5 rounded-2xl border border-white/10 p-4 space-y-2 text-left">
-            <p className="text-xs text-cyan-300 font-bold font-thai">กฎของแบบทดสอบ:</p>
-            <ul className="space-y-1 text-xs text-white/60 font-thai">
-              <li>🎯 {totalQuestions} ข้อ จากเนื้อหาระดับ {targetLevelInfo?.cefr}</li>
-              <li>✅ ต้องตอบถูก 70%+ ({Math.ceil(totalQuestions * PASS_THRESHOLD)} ข้อ)</li>
-              <li>🚀 ถ้าผ่าน — ข้ามขึ้นระดับ {targetLevelInfo?.cefr} เลย</li>
-              <li>😊 ถ้าไม่ผ่าน — เรียนต่อที่ระดับเดิม ไม่มีผลเสีย</li>
-            </ul>
-          </div>
-
-          <Button
-            onClick={() => setPhase("quiz")}
-            className="w-full font-thai bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold rounded-2xl h-12 text-base shadow-lg shadow-cyan-500/20"
-          >
-            <Zap className="w-5 h-5 mr-2" /> เริ่มทดสอบเลย!
-          </Button>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 to-background p-4">
+        <div className="text-center space-y-4">
+          <span className="text-5xl">📝</span>
+          <p className="font-thai text-muted-foreground">ไม่มีข้อสอบสำหรับระดับนี้</p>
+          <Button onClick={() => navigate(-1)}>กลับ</Button>
         </div>
       </div>
     );
   }
-
-  // ─── Result screen ────────────────────────────────────
-  if (phase === "result") {
-    const scorePercent = Math.round((correctCount / totalQuestions) * 100);
-
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-purple-950 flex flex-col items-center justify-center p-6">
-        <div className="max-w-sm w-full space-y-6 text-center">
-          <div className="text-6xl animate-float-gentle" style={{ display: "inline-block" }}>
-            {passed ? "🎉" : "💪"}
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-bold text-white font-thai">
-              {passed ? "ผ่านแล้ว!" : "ยังไม่ผ่านครั้งนี้"}
-            </h2>
-            <p className="text-sm text-white/50 font-thai mt-1">
-              {passed
-                ? `คุณขึ้นระดับ ${targetLevelInfo?.cefr} ได้แล้ว!`
-                : `ทำได้ ${scorePercent}% ต้องการ ${Math.round(PASS_THRESHOLD * 100)}%`}
-            </p>
-          </div>
-
-          {/* Score circle */}
-          <div className={cn(
-            "w-32 h-32 rounded-full flex flex-col items-center justify-center mx-auto border-4",
-            passed ? "bg-green-500/20 border-green-400" : "bg-amber-500/20 border-amber-400"
-          )}>
-            <p className={cn("text-4xl font-bold", passed ? "text-green-300" : "text-amber-300")}>
-              {scorePercent}%
-            </p>
-            <p className="text-xs text-white/50 font-thai">{correctCount}/{totalQuestions} ข้อ</p>
-          </div>
-
-          {passed && targetLevelMeta && (
-            <div className="bg-white/5 rounded-2xl border border-green-500/30 p-4 space-y-1">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-3xl">{targetLevelInfo?.icon}</span>
-                <div className="text-left">
-                  <p className="text-sm font-bold text-green-300 font-thai">{targetLevelInfo?.name}</p>
-                  <p className="text-[10px] text-white/40 font-thai">{targetLevelMeta?.description}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!passed && (
-            <div className="bg-white/5 rounded-2xl border border-white/10 p-4">
-              <p className="text-xs text-white/50 font-thai leading-relaxed">
-                ไม่เป็นไร! เรียนต่อที่ระดับ {currentLevelInfo?.cefr} ให้ครบก่อน
-                แล้วกลับมาทดสอบอีกครั้งได้เลย 😊
-              </p>
-            </div>
-          )}
-
-          <Button
-            onClick={() => navigate("/learn")}
-            disabled={saving}
-            className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white font-bold rounded-2xl h-12"
-          >
-            {saving ? "กำลังบันทึก..." : "กลับไปเรียน →"}
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  // ─── Quiz phase ────────────────────────────────────
-  const progress = Math.round(((currentIdx + (answered ? 1 : 0)) / totalQuestions) * 100);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-cyan-950 to-slate-900 pb-8">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/5 backdrop-blur-xl border-b border-white/10">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-blue-50 to-background pb-24">
+      <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b shadow-sm">
         <div className="max-w-md mx-auto px-4 py-3 flex items-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all"
-          >
-            <ArrowLeft className="w-4 h-4" />
+          <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">
-            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+            <p className="text-sm font-bold font-thai">ข้ามระดับไป {info.cefr} {info.icon}</p>
+            <Progress value={progress} className="h-1.5 mt-1" />
           </div>
-          <span className="text-xs text-white/50 font-thai min-w-[3rem] text-right">
-            {currentIdx + 1}/{totalQuestions}
+          <span className="text-xs font-bold text-muted-foreground">
+            {currentIdx + 1}/{questions.length}
           </span>
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-4 py-8 space-y-6">
-        {/* Level badge */}
-        <div className="flex justify-center">
-          <span className="text-xs font-bold font-thai px-3 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
-            🚀 ทดสอบข้ามระดับ → {targetLevelInfo?.cefr}
-          </span>
-        </div>
-
-        {/* Question */}
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-2">
-          {currentQuestion.context && (
-            <div className="bg-white/5 rounded-xl p-3 mb-3">
-              <p className="text-xs text-white/60 leading-relaxed font-reading italic">
-                {currentQuestion.context}
+      <div className="max-w-md mx-auto px-4 py-6">
+        {!finished && currentQ ? (
+          <div className="space-y-6 animate-fade-in">
+            <div className="rounded-2xl bg-card border p-6 shadow-sm">
+              <p className="text-xs text-muted-foreground font-thai mb-2">
+                {currentQ.stage === "grammar" ? "ไวยากรณ์" :
+                 currentQ.stage === "vocabulary" ? "คำศัพท์" :
+                 currentQ.stage === "reading" ? "การอ่าน" : "การฟัง"}
               </p>
+              <p className="text-base font-medium text-foreground">{currentQ.question}</p>
             </div>
-          )}
-          <p className="text-lg font-bold text-white font-reading leading-snug">
-            {currentQuestion.question}
-          </p>
-          {currentQuestion.questionThai && (
-            <p className="text-sm text-white/40 font-thai">{currentQuestion.questionThai}</p>
-          )}
-        </div>
 
-        {/* Options */}
-        <div className="space-y-3">
-          {currentQuestion.options.map((option, i) => {
-            const isSelected = selectedOption === i;
-            const isCorrect = i === currentQuestion.correctIndex;
-            const showFeedback = answered;
+            <div className="space-y-3">
+              {currentQ.options.map((opt, idx) => {
+                const isSelected = selected === idx;
+                const isCorrect = idx === currentQ.correctIndex;
+                const showFeedback = selected !== null;
 
-            return (
-              <button
-                key={i}
-                onClick={() => handleAnswer(i)}
-                disabled={answered}
-                className={cn(
-                  "w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 font-reading",
-                  !showFeedback && "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white",
-                  showFeedback && isCorrect && "border-green-400 bg-green-500/20 text-green-300",
-                  showFeedback && isSelected && !isCorrect && "border-red-400 bg-red-500/20 text-red-300",
-                  showFeedback && !isSelected && !isCorrect && "border-white/5 bg-white/[0.03] text-white/30",
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0",
-                    !showFeedback && "bg-white/10 text-white/60",
-                    showFeedback && isCorrect && "bg-green-500 text-white",
-                    showFeedback && isSelected && !isCorrect && "bg-red-500 text-white",
-                    showFeedback && !isSelected && !isCorrect && "bg-white/5 text-white/20",
-                  )}>
-                    {showFeedback && isCorrect
-                      ? <CheckCircle className="w-4 h-4" />
-                      : showFeedback && isSelected && !isCorrect
-                        ? <XCircle className="w-4 h-4" />
-                        : String.fromCharCode(65 + i)
-                    }
-                  </span>
-                  <span className="text-sm">{option}</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </main>
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleSelect(idx)}
+                    disabled={selected !== null}
+                    className={cn(
+                      "w-full text-left px-4 py-3 rounded-xl border-2 transition-all text-foreground",
+                      !showFeedback && "hover:border-primary/50 hover:bg-primary/5 border-muted",
+                      showFeedback && isCorrect && "border-green-500 bg-green-50",
+                      showFeedback && isSelected && !isCorrect && "border-red-500 bg-red-50",
+                      !showFeedback && "border-muted"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      {showFeedback && isCorrect && <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />}
+                      {showFeedback && isSelected && !isCorrect && <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />}
+                      <span className="text-sm">{opt}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : finished ? (
+          <div className="space-y-6 text-center animate-fade-in">
+            <span className="text-6xl block">{passed ? "🎉" : "😢"}</span>
+            <h2 className="text-xl font-bold font-thai text-foreground">
+              {passed ? `ยินดีด้วย! คุณผ่านไป ${info.cefr}!` : "ยังไม่ผ่าน ลองอีกครั้ง!"}
+            </h2>
+            <p className="text-muted-foreground font-thai">
+              คะแนน: {finalScore}/{questions.length} ({Math.round((finalScore / questions.length) * 100)}%)
+              <br />
+              ต้องได้ 70% ขึ้นไป
+            </p>
+
+            <div className={cn(
+              "inline-flex items-center gap-2 px-6 py-3 rounded-full text-lg font-bold",
+              passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+            )}>
+              {passed ? `✅ ข้ามไป ${info.cefr} แล้ว!` : `❌ ต้องการ ${Math.ceil(questions.length * PASS_THRESHOLD)} ข้อ`}
+            </div>
+
+            <div className="flex gap-3 justify-center">
+              <Button variant="outline" onClick={() => navigate("/learn")} className="font-thai">
+                กลับหน้าเรียน
+              </Button>
+              {!passed && (
+                <Button onClick={() => window.location.reload()} className="font-thai">
+                  ลองอีกครั้ง
+                </Button>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
-};
-
-export default SkipLevelTestPage;
+}

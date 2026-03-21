@@ -67,8 +67,7 @@ export function useSkillTreeProgress() {
   const isModuleUnlocked = useCallback(
     (module: SkillTreeModule, placementLevel?: number | null) => {
       // If placement test placed user at higher level, unlock all modules at lower levels
-      // Note: use explicit null check so placementLevel=0 (Pre-A1) works correctly
-      if (placementLevel != null && module.level < placementLevel) {
+      if (placementLevel != null && placementLevel > 0 && module.level < placementLevel) {
         return true;
       }
 

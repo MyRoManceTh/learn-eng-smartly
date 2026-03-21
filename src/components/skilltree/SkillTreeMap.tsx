@@ -11,14 +11,11 @@ interface SkillTreeMapProps {
   onModuleClick: (module: SkillTreeModule) => void;
   nextModuleId: string | null;
   activePath?: string;
-  // Branch point (RPG class selection)
   onBranchPointClick?: () => void;
   isCoreLevel1Done?: boolean;
   selectedSpecialty?: string | null;
-  // Speaking gate (L3 → L4)
-  speakingSessionCount?: number;
-  speakingGateRequired?: number;
-  speakingGateUnlocked?: boolean;
+  speakingGatePassed?: boolean;
+  speakingSessions?: number;
 }
 
 // ─── Wave position calculation ──────────────────
@@ -46,7 +43,7 @@ const zoneThemes: Record<number, {
     labelBorder: "border-lime-500/30",
     pathColor: "rgba(132, 204, 22, 0.2)",
     pathColorCompleted: "rgba(132, 204, 22, 0.6)",
-    decoEmojis: ["🌱", "🐛", "🌼", "🐝"],
+    decoEmojis: ["🌱", "🌼", "🐛", "☘️"],
   },
   1: {
     bg: "from-green-950/40 via-emerald-950/20 to-transparent",
@@ -237,14 +234,14 @@ const SkillTreeMap = ({
   onBranchPointClick,
   isCoreLevel1Done,
   selectedSpecialty,
-  speakingSessionCount = 0,
-  speakingGateRequired = 3,
-  speakingGateUnlocked = false,
+  speakingGatePassed,
+  speakingSessions = 0,
 }: SkillTreeMapProps) => {
-  const levels = [...new Set(modules.map((m) => m.level))].sort();
+  const levels = [...new Set(modules.map((m) => m.level))].sort((a, b) => a - b);
   const currentNodeRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to current node on mount
+  const SPEAKING_GATE_REQUIRED = 3;
+
   useEffect(() => {
     if (currentNodeRef.current) {
       setTimeout(() => {
@@ -435,34 +432,39 @@ const SkillTreeMap = ({
               </div>
             )}
 
-            {/* Speaking Gate: after level 3 on core path (guards entry to L4) */}
-            {level === 3 && activePath === "core" && (
+            {/* Speaking Gate: between level 3 and level 4 */}
+            {level === 3 && activePath === "core" && levelIdx < levels.length - 1 && (
               <div className="flex flex-col items-center gap-3 py-8">
                 <div className="w-0.5 h-6 bg-gradient-to-b from-emerald-500/40 to-transparent rounded-full" />
                 <div className={cn(
-                  "flex flex-col items-center gap-2 px-6 py-4 rounded-3xl border-2 transition-all duration-300",
-                  speakingGateUnlocked
-                    ? "bg-gradient-to-b from-cyan-500/20 via-blue-500/10 to-cyan-600/5 border-cyan-400/40 shadow-[0_0_24px_rgba(6,182,212,0.15)] animate-float-gentle"
-                    : "bg-white/[0.03] border-white/10 opacity-60"
+                  "relative flex flex-col items-center gap-2 px-6 py-4 rounded-3xl border-2 transition-all duration-300",
+                  speakingGatePassed
+                    ? "bg-gradient-to-b from-emerald-500/20 to-green-500/5 border-emerald-400/40 shadow-[0_0_30px_rgba(52,211,153,0.2)]"
+                    : "bg-white/[0.03] border-white/10 opacity-70"
                 )}>
                   <div className={cn(
                     "w-16 h-16 rounded-full flex items-center justify-center text-3xl border-[3px]",
-                    speakingGateUnlocked
-                      ? "bg-gradient-to-br from-cyan-400 to-blue-500 border-cyan-300 shadow-[0_6px_0_0_rgb(3,105,161)]"
+                    speakingGatePassed
+                      ? "bg-gradient-to-br from-emerald-400 to-green-500 border-emerald-300 shadow-[0_6px_0_0_rgb(22,101,52)]"
                       : "bg-slate-700 border-slate-600"
                   )}>
-                    {speakingGateUnlocked ? "🎤" : "🔒"}
+                    {speakingGatePassed ? "🎙️" : "🔒"}
                   </div>
                   <p className={cn(
                     "text-sm font-bold font-thai",
-                    speakingGateUnlocked ? "text-cyan-300" : "text-white/30"
+                    speakingGatePassed ? "text-emerald-300" : "text-white/30"
                   )}>
-                    {speakingGateUnlocked ? "ผ่านด่านพูดแล้ว! 🎉" : "ด่านฝึกพูด — จำเป็นก่อน B2"}
+                    {speakingGatePassed ? "ด่านพูดผ่านแล้ว!" : "ด่านฝึกพูด"}
                   </p>
-                  <p className={cn("text-[10px] font-thai", speakingGateUnlocked ? "text-cyan-400/60" : "text-white/20")}>
-                    🎤 ฝึกพูด {speakingSessionCount}/{speakingGateRequired} ครั้ง
+                  <p className={cn(
+                    "text-[10px] font-thai",
+                    speakingGatePassed ? "text-emerald-400/60" : "text-white/20"
+                  )}>
+                    {speakingGatePassed
+                      ? "✅ ปลดล็อค Level 4+ แล้ว"
+                      : `ฝึกพูด ${speakingSessions}/${SPEAKING_GATE_REQUIRED} ครั้ง`}
                   </p>
-                  {speakingGateUnlocked && (
+                  {speakingGatePassed && (
                     <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">✨</span>
                   )}
                 </div>
@@ -470,7 +472,7 @@ const SkillTreeMap = ({
               </div>
             )}
 
-            {/* Level transition decoration (non-core or non-level-1) */}
+            {/* Level transition decoration */}
             {levelIdx < levels.length - 1 && !(level === 1 && activePath === "core" && onBranchPointClick) && !(level === 3 && activePath === "core") && (
               <div className="flex items-center justify-center gap-2 py-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/10" />

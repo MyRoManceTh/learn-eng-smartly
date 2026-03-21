@@ -56,7 +56,6 @@ function AppContent() {
           <Route path="/profile" element={<MyPage />} />
           <Route path="/learn" element={<LearnPage />} />
           <Route path="/path" element={<LearnPage />} />
-          <Route path="/skip-level" element={<SkipLevelTestPage />} />
           <Route path="/practice" element={<ReadingPage />} />
           <Route path="/reading" element={<ReadingPage />} />
           <Route path="/conversation" element={<ConversationPage />} />
@@ -77,6 +76,7 @@ function AppContent() {
           <Route path="/daily-challenge" element={<DailyChallengePage />} />
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/rewards-shop" element={<RewardsShopPage />} />
+          <Route path="/skip-level" element={<SkipLevelTestPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
