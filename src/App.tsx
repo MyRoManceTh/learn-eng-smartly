@@ -37,6 +37,7 @@ import SpeakingPracticePage from "./pages/SpeakingPracticePage";
 import DailyChallengePage from "./pages/DailyChallengePage";
 import AchievementsPage from "./pages/AchievementsPage";
 import RewardsShopPage from "./pages/RewardsShopPage";
+import SkipLevelTestPage from "./pages/SkipLevelTestPage";
 
 const queryClient = new QueryClient();
 
