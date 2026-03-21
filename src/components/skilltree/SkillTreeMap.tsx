@@ -11,10 +11,11 @@ interface SkillTreeMapProps {
   onModuleClick: (module: SkillTreeModule) => void;
   nextModuleId: string | null;
   activePath?: string;
-  // Branch point (RPG class selection)
   onBranchPointClick?: () => void;
   isCoreLevel1Done?: boolean;
   selectedSpecialty?: string | null;
+  speakingGatePassed?: boolean;
+  speakingSessions?: number;
 }
 
 // ─── Wave position calculation ──────────────────
