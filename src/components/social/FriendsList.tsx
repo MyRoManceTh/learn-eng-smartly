@@ -30,6 +30,8 @@ function parseEquipped(raw: any): EquippedItems {
   };
 }
 
+type SortMode = "exp" | "streak" | "name";
+
 export default function FriendsList() {
   const navigate = useNavigate();
   const {
@@ -40,10 +42,10 @@ export default function FriendsList() {
     addFriendByCode,
     acceptRequest,
     declineRequest,
+    removeFriend,
     sendGift,
     sendEnergy,
     claimGift,
-    removeFriend,
     energySentToday,
   } = useFriends();
   const { sendChallenge } = useChallenges();
@@ -62,32 +64,12 @@ export default function FriendsList() {
   const [sendingEnergyTo, setSendingEnergyTo] = useState<string | null>(null);
   const [sentEnergyLocal, setSentEnergyLocal] = useState<Set<string>>(new Set());
   const [showNameModal, setShowNameModal] = useState(false);
-  const [claimingGiftId, setClaimingGiftId] = useState<string | null>(null);
-  const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
-  type SortKey = "streak" | "exp" | "name";
-  const [sortKey, setSortKey] = useState<SortKey>("streak");
+  const [sortMode, setSortMode] = useState<SortMode>("exp");
+  const [removingFriend, setRemovingFriend] = useState<string | null>(null);
 
   const getEvolutionIcon = (stage: number) => {
     const evo = evolutionStages.find((s) => s.stage === stage);
     return evo?.icon || "🥚";
-  };
-
-  const sortedFriends = [...friends].sort((a, b) => {
-    if (sortKey === "streak") return b.current_streak - a.current_streak;
-    if (sortKey === "exp") return b.total_exp - a.total_exp;
-    return a.display_name.localeCompare(b.display_name, "th");
-  });
-
-  const sortLabels: Record<SortKey, string> = {
-    streak: "🔥 Streak",
-    exp: "⚡ EXP",
-    name: "🔤 ชื่อ",
-  };
-
-  const nextSort = (): SortKey => {
-    if (sortKey === "streak") return "exp";
-    if (sortKey === "exp") return "name";
-    return "streak";
   };
 
   const handleAddFriend = async () => {
@@ -107,6 +89,22 @@ export default function FriendsList() {
       toast.success("คัดลอกรหัสเพื่อนแล้ว!");
     }
   };
+
+  const cycleSortMode = () => {
+    setSortMode((prev) => {
+      if (prev === "exp") return "streak";
+      if (prev === "streak") return "name";
+      return "exp";
+    });
+  };
+
+  const sortedFriends = [...friends].sort((a, b) => {
+    if (sortMode === "exp") return b.total_exp - a.total_exp;
+    if (sortMode === "streak") return b.current_streak - a.current_streak;
+    return a.display_name.localeCompare(b.display_name);
+  });
+
+  const sortLabel = sortMode === "exp" ? "EXP" : sortMode === "streak" ? "🔥 Streak" : "ชื่อ";
 
   return (
     <>
@@ -183,6 +181,49 @@ export default function FriendsList() {
             </Button>
           </div>
 
+          {/* Pending gifts (received) */}
+          {pendingGifts.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-pink-500">
+                🎁 ของขวัญรอรับ ({pendingGifts.length})
+              </h4>
+              {pendingGifts.map((gift) => {
+                const item = gift.item_id ? getItemById(gift.item_id) : null;
+                return (
+                  <div
+                    key={gift.id}
+                    className="flex items-center gap-2 rounded-lg border border-pink-200 bg-pink-50/50 p-2 dark:border-pink-900 dark:bg-pink-950/20"
+                  >
+                    <span className="text-lg">
+                      {gift.item_id === "energy" ? "⚡" : item?.icon || "🪙"}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">
+                        จาก {gift.sender_name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground truncate">
+                        {gift.item_id === "energy"
+                          ? "เติมไฟให้~ 🔥"
+                          : gift.coins > 0
+                          ? `🪙 ${gift.coins} เหรียญ`
+                          : item?.nameThai || "ไอเทม"}
+                        {gift.message && ` — "${gift.message}"`}
+                      </p>
+                    </div>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="h-7 px-3 text-xs"
+                      onClick={() => claimGift(gift.id)}
+                    >
+                      รับ
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {/* Pending requests */}
           {pendingRequests.length > 0 && (
             <div className="space-y-2">
@@ -221,58 +262,6 @@ export default function FriendsList() {
             </div>
           )}
 
-          {/* Pending gifts (received) */}
-          {pendingGifts.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-pink-500">
-                🎁 ของขวัญรอรับ ({pendingGifts.length})
-              </h4>
-              {pendingGifts.map((gift) => {
-                const itemData = gift.item_id && gift.item_id !== "energy"
-                  ? getItemById(gift.item_id)
-                  : null;
-                return (
-                  <div
-                    key={gift.id}
-                    className="flex items-center gap-2 rounded-lg border border-pink-200 bg-pink-50/50 p-2.5 dark:border-pink-900 dark:bg-pink-950/20"
-                  >
-                    <div className="shrink-0 text-xl">
-                      {gift.item_id === "energy" ? "🔥" : itemData ? itemData.icon : "🪙"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium">
-                        {gift.item_id === "energy"
-                          ? "ไฟ +1 จาก"
-                          : itemData
-                          ? `${itemData.nameThai} จาก`
-                          : `🪙 ${gift.coins} เหรียญ จาก`}{" "}
-                        <span className="font-semibold">{gift.sender_name}</span>
-                      </p>
-                      {gift.message && (
-                        <p className="text-[10px] text-muted-foreground italic truncate">
-                          "{gift.message}"
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      size="sm"
-                      className="h-7 px-3 text-xs shrink-0"
-                      disabled={claimingGiftId === gift.id}
-                      onClick={async () => {
-                        setClaimingGiftId(gift.id);
-                        await claimGift(gift.id);
-                        refreshProfile();
-                        setClaimingGiftId(null);
-                      }}
-                    >
-                      {claimingGiftId === gift.id ? "กำลังรับ..." : "รับ"}
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
           {/* Friends list */}
           {loading ? (
             <div className="space-y-2">
@@ -299,18 +288,18 @@ export default function FriendsList() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2 text-xs gap-1 text-muted-foreground"
-                  onClick={() => setSortKey(nextSort())}
+                  className="h-7 px-2 text-xs gap-1"
+                  onClick={cycleSortMode}
                 >
                   <ArrowUpDown className="w-3 h-3" />
-                  {sortLabels[sortKey]}
+                  {sortLabel}
                 </Button>
               </div>
               {sortedFriends.map((friend) => {
                 const canSendEnergy = friend.lessons_completed >= 1;
                 const isSendingEnergy = sendingEnergyTo === friend.user_id;
                 const alreadySent = energySentToday.has(friend.user_id) || sentEnergyLocal.has(friend.user_id);
-                const isConfirmingRemove = confirmRemove === friend.friendship_id;
+                const isConfirmingRemove = removingFriend === friend.friendship_id;
 
                 return (
                   <div
@@ -384,7 +373,7 @@ export default function FriendsList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 px-2 text-xs gap-1"
+                        className="h-8 px-2 text-xs"
                         onClick={() =>
                           setGiftTarget({
                             id: friend.user_id,
@@ -392,12 +381,12 @@ export default function FriendsList() {
                           })
                         }
                       >
-                        🎁 <span className="hidden sm:inline">ของขวัญ</span>
+                        🎁 ของขวัญ
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 px-2 text-xs gap-1"
+                        className="h-8 px-2 text-xs"
                         onClick={() =>
                           setChallengeTarget({
                             id: friend.user_id,
@@ -405,8 +394,9 @@ export default function FriendsList() {
                           })
                         }
                       >
-                        ⚔️ <span className="hidden sm:inline">ดวล</span>
+                        ⚔️ ท้าดวล
                       </Button>
+                      {/* Remove friend */}
                       {isConfirmingRemove ? (
                         <div className="flex gap-1">
                           <Button
@@ -415,16 +405,16 @@ export default function FriendsList() {
                             className="h-8 px-2 text-xs"
                             onClick={async () => {
                               await removeFriend(friend.friendship_id);
-                              setConfirmRemove(null);
+                              setRemovingFriend(null);
                             }}
                           >
-                            ลบ
+                            ยืนยัน
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             className="h-8 px-2 text-xs"
-                            onClick={() => setConfirmRemove(null)}
+                            onClick={() => setRemovingFriend(null)}
                           >
                             ยกเลิก
                           </Button>
@@ -433,9 +423,8 @@ export default function FriendsList() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                          onClick={() => setConfirmRemove(friend.friendship_id)}
-                          title="ลบเพื่อน"
+                          className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+                          onClick={() => setRemovingFriend(friend.friendship_id)}
                         >
                           <UserMinus className="w-3.5 h-3.5" />
                         </Button>
