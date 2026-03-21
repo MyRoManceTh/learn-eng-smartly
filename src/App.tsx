@@ -76,6 +76,7 @@ function AppContent() {
           <Route path="/daily-challenge" element={<DailyChallengePage />} />
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/rewards-shop" element={<RewardsShopPage />} />
+          <Route path="/skip-level" element={<SkipLevelTestPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

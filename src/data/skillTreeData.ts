@@ -1393,6 +1393,30 @@ export const skillTreeModules: SkillTreeModule[] = [
 
 // Lesson topic templates for each module
 const lessonTopics: Record<string, { topic: string; topicThai: string }[]> = {
+  // Pre-A1 (Level 0)
+  'core-a0-alphabet': [
+    { topic: 'Letters A-G', topicThai: 'ตัวอักษร A-G' },
+    { topic: 'Letters H-N', topicThai: 'ตัวอักษร H-N' },
+    { topic: 'Letters O-U', topicThai: 'ตัวอักษร O-U' },
+    { topic: 'Letters V-Z', topicThai: 'ตัวอักษร V-Z' },
+  ],
+  'core-a0-numbers': [
+    { topic: 'Numbers 1-10', topicThai: 'ตัวเลข 1-10' },
+    { topic: 'Numbers 11-20', topicThai: 'ตัวเลข 11-20' },
+    { topic: 'Counting things', topicThai: 'นับสิ่งของ' },
+  ],
+  'core-a0-colors': [
+    { topic: 'Basic colors', topicThai: 'สีพื้นฐาน' },
+    { topic: 'Colors around us', topicThai: 'สีรอบตัวเรา' },
+    { topic: 'My favorite color', topicThai: 'สีที่ฉันชอบ' },
+  ],
+  'core-a0-firstwords': [
+    { topic: 'Animals', topicThai: 'สัตว์' },
+    { topic: 'Body parts', topicThai: 'ส่วนต่างๆ ของร่างกาย' },
+    { topic: 'Common objects', topicThai: 'สิ่งของทั่วไป' },
+    { topic: 'Yes, No, Please, Thank you', topicThai: 'ได้ ไม่ กรุณา ขอบคุณ' },
+  ],
+  // A1 (Level 1)
   'core-a1-greetings': [
     { topic: 'Hello and Goodbye', topicThai: 'สวัสดีและลาก่อน' },
     { topic: 'What is your name?', topicThai: 'คุณชื่ออะไร?' },
