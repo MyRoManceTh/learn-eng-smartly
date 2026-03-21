@@ -226,6 +226,31 @@ export function useFriends() {
   const sendGift = useCallback(
     async (friendId: string, itemId?: string, coins?: number, message?: string) => {
       if (!user) return;
+
+      // Deduct coins / item from sender first
+      const { data: senderProfile } = await supabase
+        .from("profiles")
+        .select("coins, inventory")
+        .eq("user_id", user.id)
+        .single();
+
+      if (senderProfile) {
+        const p = senderProfile as any;
+        const updates: any = {};
+        if (coins && coins > 0) {
+          updates.coins = Math.max(0, (p.coins || 0) - coins);
+        }
+        if (itemId && itemId !== "energy") {
+          const inv: string[] = Array.isArray(p.inventory) ? [...p.inventory] : [];
+          const idx = inv.indexOf(itemId);
+          if (idx !== -1) inv.splice(idx, 1);
+          updates.inventory = inv;
+        }
+        if (Object.keys(updates).length > 0) {
+          await supabase.from("profiles").update(updates).eq("user_id", user.id);
+        }
+      }
+
       await supabase.from("gift_transactions").insert({
         sender_id: user.id,
         receiver_id: friendId,
@@ -275,6 +300,15 @@ export function useFriends() {
       return true;
     },
     [user, friends, energySentToday]
+  );
+
+  const removeFriend = useCallback(
+    async (friendshipId: string) => {
+      await supabase.from("friendships").delete().eq("id", friendshipId);
+      toast("ลบเพื่อนแล้ว");
+      loadFriends();
+    },
+    [loadFriends]
   );
 
   const claimGift = useCallback(
@@ -333,6 +367,7 @@ export function useFriends() {
     sendGift,
     sendEnergy,
     claimGift,
+    removeFriend,
     refreshFriends: loadFriends,
   };
 }
