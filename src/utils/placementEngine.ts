@@ -100,7 +100,8 @@ export function calculateOverallLevel(stages: Record<PlacementStage, StageResult
     weightedSum += result.avgDifficulty * (weights[stage as PlacementStage] || 0.25);
   }
 
-  return Math.max(1, Math.min(5, Math.round(weightedSum)));
+  const raw = Math.round(weightedSum);
+  return Math.max(0, Math.min(5, raw));
 }
 
 /**

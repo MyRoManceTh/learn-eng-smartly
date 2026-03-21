@@ -35,6 +35,15 @@ const zoneThemes: Record<number, {
   pathColorCompleted: string;
   decoEmojis: string[];
 }> = {
+  0: {
+    bg: "from-lime-950/40 via-green-950/20 to-transparent",
+    label: "text-lime-300",
+    labelBg: "bg-lime-500/20",
+    labelBorder: "border-lime-500/30",
+    pathColor: "rgba(132, 204, 22, 0.2)",
+    pathColorCompleted: "rgba(132, 204, 22, 0.6)",
+    decoEmojis: ["🌱", "🌼", "🐛", "☘️"],
+  },
   1: {
     bg: "from-green-950/40 via-emerald-950/20 to-transparent",
     label: "text-violet-300",
