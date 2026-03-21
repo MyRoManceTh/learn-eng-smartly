@@ -80,7 +80,7 @@ export function calculateStageLevel(answers: { difficulty: number; correct: bool
   });
 
   const avg = weightTotal > 0 ? weightedSum / weightTotal : 1;
-  return Math.max(1, Math.min(5, Math.round(avg)));
+  return Math.max(0, Math.min(5, Math.round(avg)));
 }
 
 /**
