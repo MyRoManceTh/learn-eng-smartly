@@ -131,6 +131,58 @@ export const skillTreePaths: SkillTreePath[] = [
 
 export const skillTreeModules: SkillTreeModule[] = [
   // ──────────────────────────────────────────
+  // CORE Pre-A1 (Level 0) - 4 modules (Starter)
+  // ──────────────────────────────────────────
+  {
+    id: 'core-a0-alphabet',
+    pathId: 'core',
+    name: 'Alphabet',
+    nameThai: 'ตัวอักษร A-Z',
+    icon: '🔤',
+    level: 0,
+    order: 1,
+    prerequisites: [],
+    lessonCount: 4,
+    reward: { type: 'coins', value: 30, label: '30 เหรียญ' },
+  },
+  {
+    id: 'core-a0-numbers',
+    pathId: 'core',
+    name: 'Numbers 1-20',
+    nameThai: 'ตัวเลข 1-20',
+    icon: '🔢',
+    level: 0,
+    order: 2,
+    prerequisites: ['core-a0-alphabet'],
+    lessonCount: 3,
+    reward: { type: 'coins', value: 30, label: '30 เหรียญ' },
+  },
+  {
+    id: 'core-a0-colors',
+    pathId: 'core',
+    name: 'Colors',
+    nameThai: 'สี',
+    icon: '🎨',
+    level: 0,
+    order: 3,
+    prerequisites: ['core-a0-alphabet'],
+    lessonCount: 3,
+    reward: { type: 'coins', value: 30, label: '30 เหรียญ' },
+  },
+  {
+    id: 'core-a0-firstwords',
+    pathId: 'core',
+    name: 'First Words',
+    nameThai: 'คำศัพท์แรก',
+    icon: '💡',
+    level: 0,
+    order: 4,
+    prerequisites: ['core-a0-numbers', 'core-a0-colors'],
+    lessonCount: 4,
+    reward: { type: 'exp', value: 50, label: '50 EXP' },
+  },
+
+  // ──────────────────────────────────────────
   // CORE A1 (Level 1) - 8 modules
   // ──────────────────────────────────────────
   {
@@ -141,7 +193,7 @@ export const skillTreeModules: SkillTreeModule[] = [
     icon: '👋',
     level: 1,
     order: 1,
-    prerequisites: [],
+    prerequisites: ['core-a0-firstwords'],
     lessonCount: 6,
     reward: { type: 'coins', value: 50, label: '50 เหรียญ' },
   },
