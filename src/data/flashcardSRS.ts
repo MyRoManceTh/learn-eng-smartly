@@ -80,3 +80,12 @@ export function loadCards(userId: string): SRSCard[] {
 export function saveCards(userId: string, cards: SRSCard[]): void {
   localStorage.setItem(`srs_cards_${userId}`, JSON.stringify(cards));
 }
+
+/**
+ * Count total unique words that have been reviewed at least once (learned).
+ * Used for vocabulary milestone tracking.
+ */
+export function countLearnedWords(userId: string): number {
+  const cards = loadCards(userId);
+  return cards.filter((c) => c.repetitions > 0).length;
+}

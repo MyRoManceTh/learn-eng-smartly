@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { playCorrect, playWrong } from "@/utils/sounds";
 import { allLessons } from "@/data/lessons";
+import { useAuth } from "@/contexts/AuthContext";
+import { incrementSpeakingSession, SPEAKING_GATE_REQUIRED, getSpeakingSessionCount } from "@/utils/speakingProgress";
 
 interface PracticeWord {
   english: string;
@@ -38,12 +40,16 @@ function scoreAccuracy(expected: string, actual: string): { score: number; match
 
 export default function SpeakingPracticePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { isSupported, isListening, transcript, error, startListening, stopListening, reset } = useSpeechRecognition();
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
+  const [sessionCounted, setSessionCounted] = useState(false);
+
+  const sessionCount = user ? getSpeakingSessionCount(user.id) : 0;
 
   // Build word pool from lessons
   const words: PracticeWord[] = useMemo(() => {
@@ -96,6 +102,12 @@ export default function SpeakingPracticePage() {
   }
 
   const handleNext = () => {
+    const nextAttempts = totalAttempts; // already incremented before handleNext
+    // Count a "session" after 5 successful attempts (first time only per mount)
+    if (!sessionCounted && nextAttempts >= 5 && user) {
+      incrementSpeakingSession(user.id);
+      setSessionCounted(true);
+    }
     setCurrentIdx((i) => i + 1);
     setShowResult(false);
     reset();
@@ -130,9 +142,19 @@ export default function SpeakingPracticePage() {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <h1 className="text-sm font-bold font-thai">🎙️ ฝึกพูด</h1>
-          <span className="text-xs text-muted-foreground font-thai">
-            เฉลี่ย {avgScore}%
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground font-thai">เฉลี่ย {avgScore}%</span>
+            {user && (
+              <span className={cn(
+                "text-[10px] font-bold px-2 py-0.5 rounded-full font-thai",
+                sessionCount >= SPEAKING_GATE_REQUIRED
+                  ? "bg-cyan-100 text-cyan-700"
+                  : "bg-muted text-muted-foreground"
+              )}>
+                🎤 {sessionCount}/{SPEAKING_GATE_REQUIRED}
+              </span>
+            )}
+          </div>
         </div>
       </header>
 

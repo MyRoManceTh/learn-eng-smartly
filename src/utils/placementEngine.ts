@@ -79,8 +79,10 @@ export function calculateStageLevel(answers: { difficulty: number; correct: bool
     }
   });
 
-  const avg = weightTotal > 0 ? weightedSum / weightTotal : 1;
-  return Math.max(1, Math.min(5, Math.round(avg)));
+  const avg = weightTotal > 0 ? weightedSum / weightTotal : 0;
+  // Return 0 (Pre-A1) if average is very low
+  if (avg < 0.8) return 0;
+  return Math.max(0, Math.min(5, Math.round(avg)));
 }
 
 /**
@@ -100,7 +102,17 @@ export function calculateOverallLevel(stages: Record<PlacementStage, StageResult
     weightedSum += result.avgDifficulty * (weights[stage as PlacementStage] || 0.25);
   }
 
-  return Math.max(1, Math.min(5, Math.round(weightedSum)));
+  // Return 0 (Pre-A1) if weighted sum is very low
+  if (weightedSum < 0.8) return 0;
+  return Math.max(0, Math.min(5, Math.round(weightedSum)));
+}
+
+/**
+ * Get questions for a skip-level test (20 questions targeting the next level).
+ */
+export function getSkipLevelQuestions(targetLevel: number, count: number = 20): PlacementQuestion[] {
+  const candidates = placementQuestions.filter((q) => q.difficulty === targetLevel);
+  return candidates.sort(() => Math.random() - 0.5).slice(0, count);
 }
 
 /**

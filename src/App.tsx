@@ -37,6 +37,7 @@ import SpeakingPracticePage from "./pages/SpeakingPracticePage";
 import DailyChallengePage from "./pages/DailyChallengePage";
 import AchievementsPage from "./pages/AchievementsPage";
 import RewardsShopPage from "./pages/RewardsShopPage";
+import SkipLevelTestPage from "./pages/SkipLevelTestPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ function AppContent() {
           <Route path="/profile" element={<MyPage />} />
           <Route path="/learn" element={<LearnPage />} />
           <Route path="/path" element={<LearnPage />} />
+          <Route path="/skip-level" element={<SkipLevelTestPage />} />
           <Route path="/practice" element={<ReadingPage />} />
           <Route path="/reading" element={<ReadingPage />} />
           <Route path="/conversation" element={<ConversationPage />} />

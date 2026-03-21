@@ -15,6 +15,7 @@ import { roomItems, getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/r
 import { getItemById } from "@/data/avatarItems";
 
 // Components
+import VocabMilestoneCounter from "@/components/profile/VocabMilestoneCounter";
 import PixelClassroom from "@/components/classroom/PixelClassroom";
 import PetShop from "@/components/room/PetShop";
 import SpriteAvatar from "@/components/avatar/SpriteAvatar";
@@ -438,6 +439,9 @@ const MyPage = () => {
                   <p className="text-xs text-muted-foreground font-thai">คะแนนเฉลี่ย</p>
                 </div>
               </div>
+
+              {/* Vocabulary Milestone Counter */}
+              <VocabMilestoneCounter currentLevel={profileData?.current_level ?? 1} />
 
               {/* Progress chart */}
               <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg">

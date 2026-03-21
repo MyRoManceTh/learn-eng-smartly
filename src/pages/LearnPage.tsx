@@ -19,11 +19,14 @@ import QuizSection from "@/components/QuizSection";
 import SkillTreeMap from "@/components/skilltree/SkillTreeMap";
 import ModuleDetail from "@/components/skilltree/ModuleDetail";
 import PathSelectionScreen from "@/components/skilltree/PathSelectionScreen";
+import LevelProgressDashboard from "@/components/skilltree/LevelProgressDashboard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trophy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { cn } from "@/lib/utils";
+import { pushWeakItemsToSRS } from "@/utils/adaptiveReview";
+import { getSpeakingSessionCount, isSpeakingGateUnlocked, SPEAKING_GATE_REQUIRED } from "@/utils/speakingProgress";
 
 const LearnPage = () => {
   const { user } = useAuth();
@@ -54,7 +57,11 @@ const LearnPage = () => {
   const [loadingLessonId, setLoadingLessonId] = useState<string | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
 
-  const placementLevel = (profile as any)?.placement_level || null;
+  const placementLevel = (profile as any)?.placement_level ?? null;
+
+  // Speaking gate state
+  const speakingSessionCount = user ? getSpeakingSessionCount(user.id) : 0;
+  const speakingUnlocked = user ? isSpeakingGateUnlocked(user.id) : false;
 
   // Core A1 completion check
   const coreLevel1Modules = getModulesByPath("core").filter((m) => m.level === 1);
@@ -88,6 +95,12 @@ const LearnPage = () => {
     if (!user) {
       toast.error("กรุณาเข้าสู่ระบบก่อนเริ่มเรียน");
       navigate("/auth");
+      return;
+    }
+    // Speaking gate: level 4+ requires 3 speaking sessions on core path
+    if (module.level >= 4 && module.pathId === "core" && !speakingUnlocked) {
+      toast.warning(`🎤 ฝึกพูด ${SPEAKING_GATE_REQUIRED} ครั้งก่อนเพื่อปลดล็อค B2! (${speakingSessionCount}/${SPEAKING_GATE_REQUIRED})`);
+      navigate("/speaking");
       return;
     }
     if (!isModuleUnlocked(module, placementLevel)) return;
@@ -151,6 +164,16 @@ const LearnPage = () => {
     incrementMission("complete_lesson", 1);
     incrementMission("answer_quiz", quiz.length);
     incrementMission("path_node", 1);
+
+    // Adaptive review: if score < 60%, push lesson vocabulary to SRS for urgent review
+    const scoreRatio = quiz.length > 0 ? score / quiz.length : 1;
+    if (scoreRatio < 0.6 && lesson?.vocabulary?.length) {
+      pushWeakItemsToSRS(user.id, lesson.vocabulary, selectedModule.id);
+      toast.warning(`⚠️ เพิ่ม ${lesson.vocabulary.length} คำเข้า Flashcard เพื่อทบทวนด่วน!`, {
+        description: "คะแนนต่ำกว่า 60% — ไปทำ Flashcard เพื่อช่วยจำ",
+        duration: 4000,
+      });
+    }
   };
 
   // Navigate to next lesson in current module or next module
@@ -435,6 +458,32 @@ const LearnPage = () => {
               <span className="text-amber-400 text-sm font-bold animate-hop">ทำเลย →</span>
             </button>
           )}
+
+          {/* Level Progress Dashboard */}
+          {profile && (profile as any).placement_completed && placementLevel != null && activePath === "core" && (
+            <div className="mt-3">
+              <LevelProgressDashboard
+                currentLevel={placementLevel}
+                pathModules={getModulesByPath("core")}
+                isModuleCompleted={isModuleCompleted}
+              />
+            </div>
+          )}
+
+          {/* Skip-level test button */}
+          {profile && (profile as any).placement_completed && placementLevel != null && placementLevel < 5 && (
+            <button
+              onClick={() => navigate("/skip-level", { state: { fromLevel: placementLevel } })}
+              className="mt-2 w-full flex items-center gap-3 rounded-2xl border-2 border-cyan-500/30 bg-cyan-500/10 p-3 text-left hover:bg-cyan-500/15 hover:scale-[1.01] active:scale-[0.99] transition-all"
+            >
+              <span className="text-2xl animate-float-gentle">🚀</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-cyan-300 font-thai">รู้สึกง่ายเกินไป? ทดสอบข้ามระดับ</p>
+                <p className="text-xs text-cyan-400/60 font-thai">ทำ 20 ข้อ ผ่าน 70%+ ขึ้นระดับถัดไปเลย</p>
+              </div>
+              <span className="text-cyan-400 text-sm font-bold animate-hop">ลอง →</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -451,6 +500,9 @@ const LearnPage = () => {
           onBranchPointClick={() => setShowPathSelection(true)}
           isCoreLevel1Done={coreLevel1Done}
           selectedSpecialty={selectedSpecialty}
+          speakingSessionCount={speakingSessionCount}
+          speakingGateRequired={SPEAKING_GATE_REQUIRED}
+          speakingGateUnlocked={speakingUnlocked}
         />
       </main>
     </div>

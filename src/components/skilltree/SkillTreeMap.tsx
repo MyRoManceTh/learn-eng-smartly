@@ -15,6 +15,10 @@ interface SkillTreeMapProps {
   onBranchPointClick?: () => void;
   isCoreLevel1Done?: boolean;
   selectedSpecialty?: string | null;
+  // Speaking gate (L3 → L4)
+  speakingSessionCount?: number;
+  speakingGateRequired?: number;
+  speakingGateUnlocked?: boolean;
 }
 
 // ─── Wave position calculation ──────────────────
@@ -35,6 +39,15 @@ const zoneThemes: Record<number, {
   pathColorCompleted: string;
   decoEmojis: string[];
 }> = {
+  0: {
+    bg: "from-lime-950/40 via-green-950/20 to-transparent",
+    label: "text-lime-300",
+    labelBg: "bg-lime-500/20",
+    labelBorder: "border-lime-500/30",
+    pathColor: "rgba(132, 204, 22, 0.2)",
+    pathColorCompleted: "rgba(132, 204, 22, 0.6)",
+    decoEmojis: ["🌱", "🐛", "🌼", "🐝"],
+  },
   1: {
     bg: "from-green-950/40 via-emerald-950/20 to-transparent",
     label: "text-violet-300",
@@ -224,6 +237,9 @@ const SkillTreeMap = ({
   onBranchPointClick,
   isCoreLevel1Done,
   selectedSpecialty,
+  speakingSessionCount = 0,
+  speakingGateRequired = 3,
+  speakingGateUnlocked = false,
 }: SkillTreeMapProps) => {
   const levels = [...new Set(modules.map((m) => m.level))].sort();
   const currentNodeRef = useRef<HTMLDivElement>(null);
@@ -419,8 +435,43 @@ const SkillTreeMap = ({
               </div>
             )}
 
+            {/* Speaking Gate: after level 3 on core path (guards entry to L4) */}
+            {level === 3 && activePath === "core" && (
+              <div className="flex flex-col items-center gap-3 py-8">
+                <div className="w-0.5 h-6 bg-gradient-to-b from-emerald-500/40 to-transparent rounded-full" />
+                <div className={cn(
+                  "flex flex-col items-center gap-2 px-6 py-4 rounded-3xl border-2 transition-all duration-300",
+                  speakingGateUnlocked
+                    ? "bg-gradient-to-b from-cyan-500/20 via-blue-500/10 to-cyan-600/5 border-cyan-400/40 shadow-[0_0_24px_rgba(6,182,212,0.15)] animate-float-gentle"
+                    : "bg-white/[0.03] border-white/10 opacity-60"
+                )}>
+                  <div className={cn(
+                    "w-16 h-16 rounded-full flex items-center justify-center text-3xl border-[3px]",
+                    speakingGateUnlocked
+                      ? "bg-gradient-to-br from-cyan-400 to-blue-500 border-cyan-300 shadow-[0_6px_0_0_rgb(3,105,161)]"
+                      : "bg-slate-700 border-slate-600"
+                  )}>
+                    {speakingGateUnlocked ? "🎤" : "🔒"}
+                  </div>
+                  <p className={cn(
+                    "text-sm font-bold font-thai",
+                    speakingGateUnlocked ? "text-cyan-300" : "text-white/30"
+                  )}>
+                    {speakingGateUnlocked ? "ผ่านด่านพูดแล้ว! 🎉" : "ด่านฝึกพูด — จำเป็นก่อน B2"}
+                  </p>
+                  <p className={cn("text-[10px] font-thai", speakingGateUnlocked ? "text-cyan-400/60" : "text-white/20")}>
+                    🎤 ฝึกพูด {speakingSessionCount}/{speakingGateRequired} ครั้ง
+                  </p>
+                  {speakingGateUnlocked && (
+                    <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">✨</span>
+                  )}
+                </div>
+                <div className="w-0.5 h-6 bg-gradient-to-b from-transparent to-white/10 rounded-full" />
+              </div>
+            )}
+
             {/* Level transition decoration (non-core or non-level-1) */}
-            {levelIdx < levels.length - 1 && !(level === 1 && activePath === "core" && onBranchPointClick) && (
+            {levelIdx < levels.length - 1 && !(level === 1 && activePath === "core" && onBranchPointClick) && !(level === 3 && activePath === "core") && (
               <div className="flex items-center justify-center gap-2 py-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/10" />
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">

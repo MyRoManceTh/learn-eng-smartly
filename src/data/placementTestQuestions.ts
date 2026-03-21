@@ -534,6 +534,7 @@ export type PlacementStage = keyof typeof stageInfo;
 
 // Level result metadata
 export const levelInfo = {
+  0: { name: 'Seed', nameThai: 'เมล็ดพันธุ์', icon: '🌱', cefr: 'Pre-A1', description: 'เพิ่งเริ่มต้น ยังไม่คุ้นเคยกับภาษาอังกฤษ เริ่มจากก้าวแรกเลย!' },
   1: { name: 'Egg', nameThai: 'ไข่', icon: '🥚', cefr: 'A1', description: 'เริ่มต้นการผจญภัย! เรียนรู้พื้นฐานภาษาอังกฤษ' },
   2: { name: 'Hatchling', nameThai: 'ลูกนก', icon: '🐣', cefr: 'A2', description: 'พร้อมสำหรับบทสนทนาง่ายๆ ในชีวิตประจำวัน' },
   3: { name: 'Adventurer', nameThai: 'นักผจญภัย', icon: '🐥', cefr: 'B1', description: 'สื่อสารได้ค่อนข้างคล่อง แสดงความเห็นได้' },

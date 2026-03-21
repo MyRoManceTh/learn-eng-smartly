@@ -131,6 +131,58 @@ export const skillTreePaths: SkillTreePath[] = [
 
 export const skillTreeModules: SkillTreeModule[] = [
   // ──────────────────────────────────────────
+  // CORE PRE-A1 (Level 0) - 4 modules (Starter)
+  // ──────────────────────────────────────────
+  {
+    id: 'core-pre-alphabet',
+    pathId: 'core',
+    name: 'Alphabet A-Z',
+    nameThai: 'ตัวอักษร A-Z',
+    icon: '🔤',
+    level: 0,
+    order: 1,
+    prerequisites: [],
+    lessonCount: 5,
+    reward: { type: 'coins', value: 20, label: '20 เหรียญ' },
+  },
+  {
+    id: 'core-pre-numbers',
+    pathId: 'core',
+    name: 'Numbers 1-10',
+    nameThai: 'ตัวเลข 1-10',
+    icon: '🔢',
+    level: 0,
+    order: 2,
+    prerequisites: ['core-pre-alphabet'],
+    lessonCount: 4,
+    reward: { type: 'coins', value: 20, label: '20 เหรียญ' },
+  },
+  {
+    id: 'core-pre-colors',
+    pathId: 'core',
+    name: 'Basic Colors',
+    nameThai: 'สีพื้นฐาน',
+    icon: '🎨',
+    level: 0,
+    order: 3,
+    prerequisites: ['core-pre-alphabet'],
+    lessonCount: 4,
+    reward: { type: 'coins', value: 20, label: '20 เหรียญ' },
+  },
+  {
+    id: 'core-pre-greetings',
+    pathId: 'core',
+    name: 'First Words',
+    nameThai: 'คำแรก Hi & Bye',
+    icon: '🌱',
+    level: 0,
+    order: 4,
+    prerequisites: ['core-pre-numbers', 'core-pre-colors'],
+    lessonCount: 5,
+    reward: { type: 'avatar_item', value: 'acc_sprout', label: 'เครื่องรางต้นกล้า' },
+  },
+
+  // ──────────────────────────────────────────
   // CORE A1 (Level 1) - 8 modules
   // ──────────────────────────────────────────
   {
@@ -141,7 +193,7 @@ export const skillTreeModules: SkillTreeModule[] = [
     icon: '👋',
     level: 1,
     order: 1,
-    prerequisites: [],
+    prerequisites: ['core-pre-greetings'],
     lessonCount: 6,
     reward: { type: 'coins', value: 50, label: '50 เหรียญ' },
   },
@@ -2068,6 +2120,7 @@ export function getPathById(pathId: string): SkillTreePath | undefined {
 
 // Level labels
 export const levelLabels: Record<number, { name: string; cefr: string; icon: string }> = {
+  0: { name: 'ก้าวแรก', cefr: 'Pre-A1', icon: '🌱' },
   1: { name: 'เริ่มต้น', cefr: 'A1', icon: '🥚' },
   2: { name: 'พื้นฐาน', cefr: 'A2', icon: '🐣' },
   3: { name: 'ปานกลาง', cefr: 'B1', icon: '🐥' },
