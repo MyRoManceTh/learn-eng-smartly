@@ -25,7 +25,8 @@ export interface QuizQuestion {
   question: string;
   options: string[];
   correctIndex: number;
-  type: 'vocab' | 'comprehension';
+  type?: 'vocab' | 'comprehension';
+  explanation?: string;
 }
 
 export type LearnerLevel = 1 | 2 | 3 | 4 | 5;
