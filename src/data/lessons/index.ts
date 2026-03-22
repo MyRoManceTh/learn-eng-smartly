@@ -185,6 +185,14 @@ import { toeicB2StrategiesLessons } from './toeic-b2-strategies';
 
 // ─── Combined Arrays ───────────────────────────────────
 
+// All Core Pre-A1 lessons combined
+export const allCorePreA1Lessons: LessonSeedData[] = [
+  ...corePreAlphabetLessons,
+  ...corePreNumbersLessons,
+  ...corePreColorsLessons,
+  ...corePreGreetingsLessons,
+];
+
 // All Core A1 lessons combined
 export const allCoreA1Lessons: LessonSeedData[] = [
   ...coreA1GreetingsLessons,
