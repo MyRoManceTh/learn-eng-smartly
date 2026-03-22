@@ -1,3 +1,9 @@
+// Core Pre-A1 Lesson Data - 4 Modules (21 lessons total)
+export { corePreAlphabetLessons } from './core-pre0-alphabet';
+export { corePreNumbersLessons } from './core-pre0-numbers';
+export { corePreColorsLessons } from './core-pre0-colors';
+export { corePreGreetingsLessons } from './core-pre0-greetings';
+
 // Core A1 Lesson Data - All 8 Modules (43 lessons total)
 export type { LessonSeedData } from './core-a1-greetings';
 export { coreA1GreetingsLessons } from './core-a1-greetings';
