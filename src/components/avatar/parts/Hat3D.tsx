@@ -11,265 +11,243 @@ interface Hat3DProps {
 const Hat3D: React.FC<Hat3DProps> = ({ hatId, hatColor, headY }) => {
   if (!hatId) return null;
 
-  const headTop = headY - 25;
+  // headY = center of head (head height = 50px)
+  // top edge of head = headY - 25
+  // hats sit ON TOP of head: hat bottom aligns with headY - 25
+  // CSSBox3D y = center of box, so for hat height H: y = (headY - 25) - H/2
+  const ht = headY - 25; // shorthand: top edge of head
   const c = hatColor;
   const cDark = shade(c, -12);
   const cLight = shade(c, 15);
 
   switch (hatId) {
-    // ── Cute Beret — เบเรต์กลมน่ารัก ──
+    // ── Cute Beret ──
     case "hat_beret":
       return (
         <>
-          {/* Flat round beret body */}
-          <CSSBox3D width={50} height={10} depth={50} color={c} x={0} y={headTop - 6} z={2} />
-          {/* Puffed top */}
-          <CSSBox3D width={40} height={8} depth={40} color={cLight} x={-4} y={headTop - 12} z={2} />
-          {/* Tiny stem on top */}
-          <CSSBox3D width={6} height={6} depth={6} color={cDark} x={-4} y={headTop - 18} z={2} />
+          {/* Beret body sits on head, bottom at ht, height=10 → center at ht-5 */}
+          <CSSBox3D width={50} height={10} depth={50} color={c} x={0} y={ht - 5} z={2} />
+          {/* Puffed dome on top */}
+          <CSSBox3D width={40} height={10} depth={40} color={cLight} x={-3} y={ht - 18} z={2} />
+          {/* Tiny stem */}
+          <CSSBox3D width={6} height={6} depth={6} color={cDark} x={-3} y={ht - 26} z={2} />
         </>
       );
 
-    // ── Bucket Hat — หมวกบักเก็ตเท่ ──
+    // ── Bucket Hat ──
     case "hat_bucket":
       return (
         <>
-          {/* Crown */}
-          <CSSBox3D width={50} height={20} depth={50} color={c} x={0} y={headTop - 12} z={0} />
-          {/* Wide brim all around */}
-          <CSSBox3D width={60} height={4} depth={60} color={cDark} x={0} y={headTop} z={0} />
+          {/* Brim sits at top of head */}
+          <CSSBox3D width={62} height={5} depth={62} color={cDark} x={0} y={ht - 2} z={0} />
+          {/* Crown above brim, height=22 → center at ht-5-11=ht-16 */}
+          <CSSBox3D width={50} height={22} depth={50} color={c} x={0} y={ht - 16} z={0} />
           {/* Band detail */}
-          <CSSBox3D width={52} height={4} depth={52} color={shade(c, -20)} x={0} y={headTop - 4} z={0} />
+          <CSSBox3D width={52} height={4} depth={52} color={shade(c, -20)} x={0} y={ht - 6} z={0} />
         </>
       );
 
-    // ── Cozy Beanie — บีนนี่อุ่นๆ ──
+    // ── Cozy Beanie ──
     case "hat_beanie":
       return (
         <>
-          {/* Main beanie */}
-          <CSSBox3D width={52} height={20} depth={52} color={c} x={0} y={headTop - 12} z={0} />
-          {/* Folded cuff */}
-          <CSSBox3D width={54} height={8} depth={54} color={cDark} x={0} y={headTop} z={0} />
-          {/* Ribbing texture line */}
-          <CSSBox3D width={54} height={2} depth={54} color={shade(c, -8)} x={0} y={headTop - 2} z={0} />
-          {/* Fluffy pom pom */}
-          <CSSBox3D width={12} height={12} depth={12} color={cLight} x={0} y={headTop - 22} z={0} />
-          <CSSBox3D width={8} height={8} depth={8} color={shade(c, 25)} x={2} y={headTop - 24} z={2} />
+          {/* Cuff sits at top of head, height=8 → center at ht-4 */}
+          <CSSBox3D width={54} height={8} depth={54} color={cDark} x={0} y={ht - 4} z={0} />
+          {/* Main beanie above cuff, height=22 → center at ht-8-11=ht-19 */}
+          <CSSBox3D width={52} height={22} depth={52} color={c} x={0} y={ht - 19} z={0} />
+          {/* Pom pom on top */}
+          <CSSBox3D width={14} height={14} depth={14} color={cLight} x={0} y={ht - 36} z={0} />
+          <CSSBox3D width={9} height={9} depth={9} color={shade(c, 25)} x={2} y={ht - 38} z={2} />
         </>
       );
 
-    // ── Cat Ears — หูแมวคาวาอิ ──
+    // ── Cat Ears ──
     case "hat_catears":
       return (
         <>
-          {/* Headband */}
-          <CSSBox3D width={52} height={4} depth={6} color={shade(c, -30)} x={0} y={headTop - 2} z={0} />
-          {/* Left ear outer */}
-          <CSSBox3D width={14} height={18} depth={6} color={c} x={-18} y={headTop - 16} z={4} rotateZ={-10} />
-          {/* Left ear inner (pink) */}
-          <CSSBox3D width={8} height={12} depth={3} color="#FFB6C1" x={-18} y={headTop - 14} z={6} rotateZ={-10} />
+          {/* Headband sits on top of head */}
+          <CSSBox3D width={52} height={5} depth={8} color={shade(c, -30)} x={0} y={ht - 2} z={0} />
+          {/* Left ear outer, bottom at ht-5, height=18 → center at ht-5-9=ht-14 */}
+          <CSSBox3D width={14} height={18} depth={6} color={c} x={-18} y={ht - 14} z={4} rotateZ={-8} />
+          <CSSBox3D width={8} height={12} depth={3} color="#FFB6C1" x={-18} y={ht - 13} z={6} rotateZ={-8} />
           {/* Right ear outer */}
-          <CSSBox3D width={14} height={18} depth={6} color={c} x={18} y={headTop - 16} z={4} rotateZ={10} />
-          {/* Right ear inner (pink) */}
-          <CSSBox3D width={8} height={12} depth={3} color="#FFB6C1" x={18} y={headTop - 14} z={6} rotateZ={10} />
+          <CSSBox3D width={14} height={18} depth={6} color={c} x={18} y={ht - 14} z={4} rotateZ={8} />
+          <CSSBox3D width={8} height={12} depth={3} color="#FFB6C1" x={18} y={ht - 13} z={6} rotateZ={8} />
         </>
       );
 
-    // ── Bunny Ears — หูกระต่ายยาว ──
+    // ── Bunny Ears ──
     case "hat_bunnyears":
       return (
         <>
           {/* Headband */}
-          <CSSBox3D width={52} height={4} depth={6} color="#FFD1DC" x={0} y={headTop - 2} z={0} />
-          {/* Left ear */}
-          <CSSBox3D width={10} height={34} depth={6} color={c} x={-14} y={headTop - 28} z={4} rotateZ={-8} />
-          <CSSBox3D width={6} height={26} depth={3} color="#FFB6C1" x={-14} y={headTop - 24} z={6} rotateZ={-8} />
-          {/* Right ear (floppy) */}
-          <CSSBox3D width={10} height={28} depth={6} color={c} x={14} y={headTop - 24} z={4} rotateZ={8} />
-          <CSSBox3D width={10} height={16} depth={6} color={c} x={22} y={headTop - 10} z={4} rotateZ={40} />
-          <CSSBox3D width={6} height={22} depth={3} color="#FFB6C1" x={14} y={headTop - 22} z={6} rotateZ={8} />
+          <CSSBox3D width={52} height={5} depth={8} color="#FFD1DC" x={0} y={ht - 2} z={0} />
+          {/* Left ear straight up, height=36 → center at ht-5-18=ht-23 */}
+          <CSSBox3D width={10} height={36} depth={6} color={c} x={-14} y={ht - 23} z={4} rotateZ={-6} />
+          <CSSBox3D width={6} height={28} depth={3} color="#FFB6C1" x={-14} y={ht - 21} z={6} rotateZ={-6} />
+          {/* Right ear (slightly floppy) */}
+          <CSSBox3D width={10} height={30} depth={6} color={c} x={14} y={ht - 20} z={4} rotateZ={6} />
+          <CSSBox3D width={10} height={14} depth={6} color={c} x={22} y={ht - 8} z={4} rotateZ={38} />
+          <CSSBox3D width={6} height={24} depth={3} color="#FFB6C1" x={14} y={ht - 19} z={6} rotateZ={6} />
         </>
       );
 
-    // ── Flower Crown — มงกุฎดอกไม้ ──
+    // ── Flower Crown ──
     case "hat_flowerband":
       return (
         <>
-          {/* Green vine band */}
-          <CSSBox3D width={54} height={6} depth={54} color="#81C784" x={0} y={headTop - 4} z={0} />
-          {/* Flowers around */}
-          <CSSBox3D width={8} height={8} depth={6} color="#FF69B4" x={0} y={headTop - 10} z={26} />
-          <CSSBox3D width={7} height={7} depth={6} color="#FFD54F" x={-20} y={headTop - 10} z={18} />
-          <CSSBox3D width={8} height={8} depth={6} color="#E1BEE7" x={20} y={headTop - 10} z={18} />
-          <CSSBox3D width={7} height={7} depth={6} color="#FF8A65" x={-16} y={headTop - 10} z={-16} />
-          <CSSBox3D width={6} height={6} depth={6} color="#81D4FA" x={16} y={headTop - 10} z={-16} />
-          {/* Center dots (pistils) */}
-          <CSSBox3D width={3} height={3} depth={2} color="#FFF9C4" x={0} y={headTop - 10} z={28} />
-          <CSSBox3D width={3} height={3} depth={2} color="#FFF9C4" x={-20} y={headTop - 10} z={20} />
+          {/* Vine band */}
+          <CSSBox3D width={54} height={6} depth={54} color="#81C784" x={0} y={ht - 3} z={0} />
+          {/* Flowers */}
+          <CSSBox3D width={9} height={9} depth={6} color="#FF69B4" x={0} y={ht - 10} z={27} />
+          <CSSBox3D width={8} height={8} depth={6} color="#FFD54F" x={-20} y={ht - 10} z={18} />
+          <CSSBox3D width={9} height={9} depth={6} color="#E1BEE7" x={20} y={ht - 10} z={18} />
+          <CSSBox3D width={8} height={8} depth={6} color="#FF8A65" x={-16} y={ht - 10} z={-16} />
+          <CSSBox3D width={7} height={7} depth={6} color="#81D4FA" x={16} y={ht - 10} z={-16} />
+          {/* Pistils */}
+          <CSSBox3D width={3} height={3} depth={2} color="#FFF9C4" x={0} y={ht - 10} z={29} />
+          <CSSBox3D width={3} height={3} depth={2} color="#FFF9C4" x={-20} y={ht - 10} z={20} />
         </>
       );
 
-    // ── Neon Headphones — หูฟังเรืองแสง ──
+    // ── Neon Headphones ──
     case "hat_headphones":
       return (
         <>
-          {/* Headband */}
-          <CSSBox3D width={54} height={6} depth={8} color="#263238" x={0} y={headTop - 8} z={0} />
-          {/* Left ear cup */}
-          <CSSBox3D width={8} height={18} depth={18} color="#37474F" x={-30} y={headTop + 6} z={0} />
-          <CSSBox3D width={4} height={12} depth={12} color={c} x={-33} y={headTop + 6} z={0} />
-          {/* Left neon glow ring */}
-          <CSSBox3D width={2} height={14} depth={14} color={shade(c, 30)} x={-34} y={headTop + 6} z={0}
-            faceOverrides={{ left: `0 0 8px ${c}, 0 0 16px ${c}` }}
-          />
+          {/* Headband arc over head */}
+          <CSSBox3D width={54} height={6} depth={8} color="#263238" x={0} y={ht - 10} z={0} />
+          {/* Left ear cup, center at head mid-height */}
+          <CSSBox3D width={8} height={20} depth={20} color="#37474F" x={-30} y={ht + 10} z={0} />
+          <CSSBox3D width={5} height={14} depth={14} color={c} x={-33} y={ht + 10} z={0} />
           {/* Right ear cup */}
-          <CSSBox3D width={8} height={18} depth={18} color="#37474F" x={30} y={headTop + 6} z={0} />
-          <CSSBox3D width={4} height={12} depth={12} color={c} x={33} y={headTop + 6} z={0} />
-          <CSSBox3D width={2} height={14} depth={14} color={shade(c, 30)} x={34} y={headTop + 6} z={0} />
+          <CSSBox3D width={8} height={20} depth={20} color="#37474F" x={30} y={ht + 10} z={0} />
+          <CSSBox3D width={5} height={14} depth={14} color={c} x={33} y={ht + 10} z={0} />
           {/* Cushion pads */}
-          <CSSBox3D width={4} height={14} depth={14} color="#546E7A" x={-27} y={headTop + 6} z={0} />
-          <CSSBox3D width={4} height={14} depth={14} color="#546E7A" x={27} y={headTop + 6} z={0} />
+          <CSSBox3D width={4} height={16} depth={16} color="#546E7A" x={-27} y={ht + 10} z={0} />
+          <CSSBox3D width={4} height={16} depth={16} color="#546E7A" x={27} y={ht + 10} z={0} />
         </>
       );
 
-    // ── Star Witch Hat — หมวกแม่มดดาว ──
+    // ── Star Witch Hat ──
     case "hat_witch":
       return (
         <>
-          {/* Wide brim */}
-          <CSSBox3D width={62} height={4} depth={62} color={c} x={0} y={headTop - 2} z={0} />
-          {/* Brim edge glow */}
-          <CSSBox3D width={64} height={2} depth={64} color={shade(c, 15)} x={0} y={headTop} z={0} />
-          {/* Cone layers */}
-          <CSSBox3D width={40} height={16} depth={40} color={c} x={0} y={headTop - 16} z={0} />
-          <CSSBox3D width={28} height={14} depth={28} color={shade(c, 5)} x={0} y={headTop - 28} z={0} />
-          <CSSBox3D width={16} height={12} depth={16} color={shade(c, 10)} x={0} y={headTop - 38} z={0} />
-          {/* Tip bends */}
-          <CSSBox3D width={10} height={10} depth={10} color={shade(c, 15)} x={6} y={headTop - 46} z={4} rotateZ={15} />
-          {/* Star decoration */}
-          <CSSBox3D width={8} height={8} depth={2} color="#FFD700" x={0} y={headTop - 10} z={21} />
-          {/* Moon accent */}
-          <CSSBox3D width={5} height={5} depth={2} color="#FFF59D" x={12} y={headTop - 18} z={20} />
+          {/* Wide brim at top of head */}
+          <CSSBox3D width={64} height={5} depth={64} color={c} x={0} y={ht - 2} z={0} />
+          <CSSBox3D width={66} height={2} depth={66} color={shade(c, 15)} x={0} y={ht + 1} z={0} />
           {/* Band ribbon */}
-          <CSSBox3D width={42} height={4} depth={42} color="#FFD700" x={0} y={headTop - 4} z={0} />
+          <CSSBox3D width={44} height={5} depth={44} color="#FFD700" x={0} y={ht - 7} z={0} />
+          {/* Cone layers stacking up */}
+          <CSSBox3D width={42} height={16} depth={42} color={c} x={0} y={ht - 17} z={0} />
+          <CSSBox3D width={30} height={14} depth={30} color={shade(c, 5)} x={0} y={ht - 31} z={0} />
+          <CSSBox3D width={18} height={12} depth={18} color={shade(c, 10)} x={0} y={ht - 43} z={0} />
+          <CSSBox3D width={10} height={10} depth={10} color={shade(c, 15)} x={5} y={ht - 53} z={4} rotateZ={12} />
+          {/* Star decoration */}
+          <CSSBox3D width={8} height={8} depth={2} color="#FFD700" x={0} y={ht - 12} z={22} />
+          <CSSBox3D width={5} height={5} depth={2} color="#FFF59D" x={12} y={ht - 20} z={21} />
         </>
       );
 
-    // ── Crystal Tiara — มงกุฎคริสตัลวิบวับ ──
+    // ── Crystal Tiara ──
     case "hat_tiara":
       return (
         <>
-          {/* Base band */}
-          <CSSBox3D width={50} height={4} depth={6} color={c} x={0} y={headTop - 2} z={22} />
-          {/* Center crystal (tall) */}
-          <CSSBox3D width={6} height={16} depth={4} color="#E1F5FE" x={0} y={headTop - 14} z={24} />
+          {/* Base band on forehead */}
+          <CSSBox3D width={52} height={5} depth={7} color={c} x={0} y={ht - 2} z={23} />
+          {/* Center crystal */}
+          <CSSBox3D width={7} height={18} depth={5} color="#E1F5FE" x={0} y={ht - 14} z={25} />
           {/* Side crystals */}
-          <CSSBox3D width={5} height={12} depth={4} color="#F3E5F5" x={-10} y={headTop - 10} z={24} />
-          <CSSBox3D width={5} height={12} depth={4} color="#F3E5F5" x={10} y={headTop - 10} z={24} />
-          {/* Outer small gems */}
-          <CSSBox3D width={4} height={8} depth={3} color="#FCE4EC" x={-18} y={headTop - 8} z={24} />
-          <CSSBox3D width={4} height={8} depth={3} color="#FCE4EC" x={18} y={headTop - 8} z={24} />
-          {/* Gold filigree connecting */}
-          <CSSBox3D width={38} height={2} depth={2} color="#FFD700" x={0} y={headTop - 4} z={23} />
+          <CSSBox3D width={6} height={14} depth={5} color="#F3E5F5" x={-11} y={ht - 11} z={25} />
+          <CSSBox3D width={6} height={14} depth={5} color="#F3E5F5" x={11} y={ht - 11} z={25} />
+          {/* Outer gems */}
+          <CSSBox3D width={5} height={9} depth={4} color="#FCE4EC" x={-20} y={ht - 8} z={25} />
+          <CSSBox3D width={5} height={9} depth={4} color="#FCE4EC" x={20} y={ht - 8} z={25} />
+          {/* Gold filigree */}
+          <CSSBox3D width={40} height={2} depth={2} color="#FFD700" x={0} y={ht - 4} z={24} />
         </>
       );
 
-    // ── Royal Crown — มงกุฎราชาสุดหรู ──
+    // ── Royal Crown ──
     case "hat_crown":
       return (
         <>
-          {/* Crown base */}
-          <CSSBox3D width={50} height={10} depth={50} color={c} x={0} y={headTop - 8} z={0} />
+          {/* Crown base ring */}
+          <CSSBox3D width={52} height={10} depth={52} color={c} x={0} y={ht - 5} z={0} />
           {/* Red velvet inner */}
-          <CSSBox3D width={44} height={6} depth={44} color="#C62828" x={0} y={headTop - 6} z={0} />
+          <CSSBox3D width={46} height={7} depth={46} color="#C62828" x={0} y={ht - 4} z={0} />
           {/* Crown points */}
-          <CSSBox3D width={8} height={16} depth={8} color={c} x={-18} y={headTop - 22} z={0} />
-          <CSSBox3D width={10} height={20} depth={10} color={c} x={0} y={headTop - 24} z={0} />
-          <CSSBox3D width={8} height={16} depth={8} color={c} x={18} y={headTop - 22} z={0} />
-          <CSSBox3D width={7} height={14} depth={8} color={c} x={0} y={headTop - 20} z={18} />
-          <CSSBox3D width={7} height={14} depth={8} color={c} x={0} y={headTop - 20} z={-18} />
-          {/* Jewels */}
-          <CSSBox3D width={5} height={5} depth={2} color="#E53935" x={0} y={headTop - 6} z={26} />
-          <CSSBox3D width={4} height={4} depth={2} color="#2196F3" x={-14} y={headTop - 6} z={26} />
-          <CSSBox3D width={4} height={4} depth={2} color="#4CAF50" x={14} y={headTop - 6} z={26} />
+          <CSSBox3D width={9} height={18} depth={9} color={c} x={-18} y={ht - 19} z={0} />
+          <CSSBox3D width={11} height={22} depth={11} color={c} x={0} y={ht - 21} z={0} />
+          <CSSBox3D width={9} height={18} depth={9} color={c} x={18} y={ht - 19} z={0} />
+          <CSSBox3D width={8} height={16} depth={9} color={c} x={0} y={ht - 18} z={20} />
+          <CSSBox3D width={8} height={16} depth={9} color={c} x={0} y={ht - 18} z={-20} />
+          {/* Jewels on base */}
+          <CSSBox3D width={5} height={5} depth={2} color="#E53935" x={0} y={ht - 4} z={27} />
+          <CSSBox3D width={4} height={4} depth={2} color="#2196F3" x={-14} y={ht - 4} z={27} />
+          <CSSBox3D width={4} height={4} depth={2} color="#4CAF50" x={14} y={ht - 4} z={27} />
           {/* Pearl tips */}
-          <CSSBox3D width={4} height={4} depth={4} color="#FFF8E1" x={-18} y={headTop - 30} z={0} />
-          <CSSBox3D width={5} height={5} depth={5} color="#FFF8E1" x={0} y={headTop - 34} z={0} />
-          <CSSBox3D width={4} height={4} depth={4} color="#FFF8E1" x={18} y={headTop - 30} z={0} />
+          <CSSBox3D width={5} height={5} depth={5} color="#FFF8E1" x={-18} y={ht - 29} z={0} />
+          <CSSBox3D width={6} height={6} depth={6} color="#FFF8E1" x={0} y={ht - 33} z={0} />
+          <CSSBox3D width={5} height={5} depth={5} color="#FFF8E1" x={18} y={ht - 29} z={0} />
         </>
       );
 
     // ═══ GACHA HATS ═══
 
-    // ── Angel Wing Band — คาดผมปีกเทวดา ──
     case "gacha_hat_angel":
       return (
         <>
-          {/* Golden headband */}
-          <CSSBox3D width={52} height={4} depth={6} color="#FFD700" x={0} y={headTop - 2} z={0} />
-          {/* Left mini wing */}
-          <CSSBox3D width={14} height={16} depth={4} color={c} x={-22} y={headTop - 14} z={0} rotateZ={-15} />
-          <CSSBox3D width={8} height={10} depth={3} color={shade(c, 10)} x={-30} y={headTop - 10} z={0} rotateZ={-25} />
-          {/* Right mini wing */}
-          <CSSBox3D width={14} height={16} depth={4} color={c} x={22} y={headTop - 14} z={0} rotateZ={15} />
-          <CSSBox3D width={8} height={10} depth={3} color={shade(c, 10)} x={30} y={headTop - 10} z={0} rotateZ={25} />
-          {/* Tiny halo floating above */}
-          <CSSBox3D width={28} height={3} depth={28} color="#FFD700" x={0} y={headTop - 22} z={0} />
+          <CSSBox3D width={52} height={5} depth={7} color="#FFD700" x={0} y={ht - 2} z={0} />
+          <CSSBox3D width={14} height={16} depth={4} color={c} x={-22} y={ht - 13} z={0} rotateZ={-15} />
+          <CSSBox3D width={8} height={10} depth={3} color={shade(c, 10)} x={-30} y={ht - 9} z={0} rotateZ={-25} />
+          <CSSBox3D width={14} height={16} depth={4} color={c} x={22} y={ht - 13} z={0} rotateZ={15} />
+          <CSSBox3D width={8} height={10} depth={3} color={shade(c, 10)} x={30} y={ht - 9} z={0} rotateZ={25} />
+          <CSSBox3D width={28} height={3} depth={28} color="#FFD700" x={0} y={ht - 22} z={0} />
         </>
       );
 
-    // ── Cute Devil Horns — เขาปีศาจน่ารัก ──
     case "gacha_hat_devil":
       return (
         <>
-          {/* Headband */}
-          <CSSBox3D width={52} height={4} depth={6} color="#424242" x={0} y={headTop - 2} z={0} />
-          {/* Left horn (cute rounded) */}
-          <CSSBox3D width={10} height={16} depth={10} color={c} x={-18} y={headTop - 16} z={4} rotateZ={-10} />
-          <CSSBox3D width={6} height={10} depth={6} color={shade(c, -15)} x={-20} y={headTop - 26} z={4} rotateZ={-10} />
-          {/* Right horn */}
-          <CSSBox3D width={10} height={16} depth={10} color={c} x={18} y={headTop - 16} z={4} rotateZ={10} />
-          <CSSBox3D width={6} height={10} depth={6} color={shade(c, -15)} x={20} y={headTop - 26} z={4} rotateZ={10} />
-          {/* Heart accent between horns */}
-          <CSSBox3D width={6} height={6} depth={3} color="#FF1744" x={0} y={headTop - 8} z={24} />
+          <CSSBox3D width={52} height={5} depth={7} color="#424242" x={0} y={ht - 2} z={0} />
+          <CSSBox3D width={10} height={18} depth={10} color={c} x={-18} y={ht - 14} z={4} rotateZ={-10} />
+          <CSSBox3D width={6} height={10} depth={6} color={shade(c, -15)} x={-20} y={ht - 27} z={4} rotateZ={-10} />
+          <CSSBox3D width={10} height={18} depth={10} color={c} x={18} y={ht - 14} z={4} rotateZ={10} />
+          <CSSBox3D width={6} height={10} depth={6} color={shade(c, -15)} x={20} y={ht - 27} z={4} rotateZ={10} />
+          <CSSBox3D width={6} height={6} depth={3} color="#FF1744" x={0} y={ht - 6} z={25} />
         </>
       );
 
-    // ── Space Helmet — หมวกอวกาศ ──
     case "gacha_hat_astronaut":
       return (
         <>
-          {/* Helmet dome */}
-          <CSSBox3D width={60} height={58} depth={58} color={c} x={0} y={headY - 2} z={0} />
-          {/* Visor (dark reflective front) */}
-          <CSSBox3D width={46} height={34} depth={4} color="#1A237E" x={0} y={headY} z={30}
+          {/* Helmet dome covers whole head */}
+          <CSSBox3D width={62} height={60} depth={60} color={c} x={0} y={headY} z={0} />
+          {/* Visor */}
+          <CSSBox3D width={48} height={36} depth={4} color="#1A237E" x={0} y={headY + 2} z={32}
             faceOverrides={{
               front: "linear-gradient(135deg, #455A64 0%, #1A237E 40%, #311B92 70%, #263238 100%)",
             }}
           />
-          {/* Side antenna nub */}
-          <CSSBox3D width={6} height={10} depth={6} color="#B0BEC5" x={28} y={headY - 28} z={0} />
-          <CSSBox3D width={4} height={4} depth={4} color="#FF5252" x={28} y={headY - 34} z={0} />
+          {/* Antenna */}
+          <CSSBox3D width={6} height={10} depth={6} color="#B0BEC5" x={28} y={ht - 10} z={0} />
+          <CSSBox3D width={4} height={4} depth={4} color="#FF5252" x={28} y={ht - 17} z={0} />
         </>
       );
 
-    // ── Unicorn Horn — เขายูนิคอร์น ──
     case "gacha_hat_unicorn":
       return (
         <>
-          {/* Headband with flower */}
-          <CSSBox3D width={52} height={4} depth={6} color={c} x={0} y={headTop - 2} z={0} />
-          {/* Horn (spiraling layers) */}
-          <CSSBox3D width={10} height={14} depth={10} color="#FFD700" x={0} y={headTop - 14} z={10} />
-          <CSSBox3D width={8} height={12} depth={8} color="#FFF176" x={0} y={headTop - 24} z={10} />
-          <CSSBox3D width={5} height={10} depth={5} color="#FFEE58" x={0} y={headTop - 34} z={10} />
-          <CSSBox3D width={3} height={6} depth={3} color="#FFF9C4" x={0} y={headTop - 40} z={10} />
-          {/* Left ear flower */}
-          <CSSBox3D width={10} height={10} depth={4} color="#F48FB1" x={-22} y={headTop - 10} z={12} />
-          <CSSBox3D width={6} height={6} depth={2} color="#FF80AB" x={-22} y={headTop - 10} z={14} />
-          {/* Right ear flower */}
-          <CSSBox3D width={8} height={8} depth={4} color="#CE93D8" x={22} y={headTop - 8} z={12} />
+          <CSSBox3D width={52} height={5} depth={7} color={c} x={0} y={ht - 2} z={0} />
+          {/* Horn stacking up from top of head */}
+          <CSSBox3D width={11} height={14} depth={11} color="#FFD700" x={0} y={ht - 12} z={10} />
+          <CSSBox3D width={8} height={12} depth={8} color="#FFF176" x={0} y={ht - 24} z={10} />
+          <CSSBox3D width={5} height={10} depth={5} color="#FFEE58" x={0} y={ht - 34} z={10} />
+          <CSSBox3D width={3} height={6} depth={3} color="#FFF9C4" x={0} y={ht - 42} z={10} />
+          {/* Ear flowers */}
+          <CSSBox3D width={10} height={10} depth={4} color="#F48FB1" x={-22} y={ht - 8} z={12} />
+          <CSSBox3D width={6} height={6} depth={2} color="#FF80AB" x={-22} y={ht - 8} z={14} />
+          <CSSBox3D width={8} height={8} depth={4} color="#CE93D8" x={22} y={ht - 7} z={12} />
         </>
       );
 

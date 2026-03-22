@@ -6,7 +6,10 @@ import Hair3D from "./parts/Hair3D";
 import Torso3D from "./parts/Torso3D";
 import Arm3D from "./parts/Arm3D";
 import Leg3D from "./parts/Leg3D";
-import Accessory3D from "./parts/Accessory3D";
+import Hat3D from "./parts/Hat3D";
+import Necklace3D from "./parts/Necklace3D";
+import HandItem3D from "./parts/HandItem3D";
+import Aura3D from "./parts/Aura3D";
 
 interface RobloxAvatar3DProps {
   equipped: EquippedItems;
@@ -36,15 +39,21 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
   const shirtItem = getItemById(equipped.shirt);
   const pantsItem = getItemById(equipped.pants);
   const shoesItem = getItemById(equipped.shoes);
-  const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
+  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
+  const necklaceItem = equipped.necklace ? getItemById(equipped.necklace) : null;
+  const leftHandItem = equipped.leftHand ? getItemById(equipped.leftHand) : null;
+  const rightHandItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
 
   const skinColor = skinItem?.svgProps?.color ?? "#F5D5C0";
   const hairColor = hairColorItem?.svgProps?.color ?? "#2C2C2C";
-  const hairStyle = hairItem?.svgProps?.path ?? "short";
-  const shirtColor = shirtItem?.svgProps?.color ?? "#4DB6AC";
-  const pantsColor = pantsItem?.svgProps?.color ?? "#4A90E2";
-  const shoesColor = shoesItem?.svgProps?.color ?? "#F0F0F0";
-  const accColor = accItem?.svgProps?.color ?? "#212121";
+  const hairStyle = hairItem?.svgProps?.path ?? "softbob";
+  const shirtColor = shirtItem?.svgProps?.color ?? "#A8D8EA";
+  const pantsColor = pantsItem?.svgProps?.color ?? "#B0C4DE";
+  const shoesColor = shoesItem?.svgProps?.color ?? "#FFE4F0";
+  const hatColor = hatItem?.svgProps?.color ?? "#FF8A80";
+  const necklaceColor = necklaceItem?.svgProps?.color ?? "#FFD700";
+  const leftHandColor = leftHandItem?.svgProps?.color ?? "#78909C";
+  const rightHandColor = rightHandItem?.svgProps?.color ?? "#CE93D8";
 
   // Y positions (centered around 0)
   const headY = -50;
@@ -53,16 +62,11 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
   // Evolution effects
   const evolutionGlow = (): React.CSSProperties => {
     switch (evolutionStage) {
-      case 2:
-        return { filter: "drop-shadow(0 0 6px rgba(76,175,80,0.3))" };
-      case 3:
-        return { filter: "drop-shadow(0 0 10px rgba(33,150,243,0.4))" };
-      case 4:
-        return { filter: "drop-shadow(0 0 12px rgba(156,39,176,0.5))" };
-      case 5:
-        return { filter: "drop-shadow(0 0 16px rgba(255,215,0,0.6))" };
-      default:
-        return {};
+      case 2: return { filter: "drop-shadow(0 0 6px rgba(76,175,80,0.3))" };
+      case 3: return { filter: "drop-shadow(0 0 10px rgba(33,150,243,0.4))" };
+      case 4: return { filter: "drop-shadow(0 0 12px rgba(156,39,176,0.5))" };
+      case 5: return { filter: "drop-shadow(0 0 16px rgba(255,215,0,0.6))" };
+      default: return {};
     }
   };
 
@@ -77,6 +81,9 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
       }}
       className={animated ? "animate-avatar-idle" : undefined}
     >
+      {/* Aura effect (rendered behind avatar) */}
+      <Aura3D auraId={equipped.aura} containerSize={container} />
+
       {/* Evolution aura (stage 4+) */}
       {evolutionStage >= 4 && (
         <div
@@ -149,6 +156,9 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
           ...evolutionGlow(),
         }}
       >
+        {/* Hat (rendered before head so it sits on top) */}
+        <Hat3D hatId={equipped.hat} hatColor={hatColor} headY={headY} />
+
         {/* Head */}
         <Head3D skinColor={skinColor} y={headY} />
 
@@ -163,9 +173,30 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
           y={torsoY}
         />
 
+        {/* Necklace */}
+        <Necklace3D
+          necklaceId={equipped.necklace}
+          necklaceColor={necklaceColor}
+          torsoY={torsoY}
+        />
+
         {/* Arms */}
         <Arm3D side="left" skinColor={skinColor} shirtColor={shirtColor} torsoY={torsoY} animated={animated} />
         <Arm3D side="right" skinColor={skinColor} shirtColor={shirtColor} torsoY={torsoY} animated={animated} />
+
+        {/* Hand items */}
+        <HandItem3D
+          itemId={equipped.leftHand}
+          itemColor={leftHandColor}
+          side="left"
+          torsoY={torsoY}
+        />
+        <HandItem3D
+          itemId={equipped.rightHand}
+          itemColor={rightHandColor}
+          side="right"
+          torsoY={torsoY}
+        />
 
         {/* Legs + Pants + Shoes */}
         <Leg3D
@@ -174,14 +205,6 @@ const RobloxAvatar3D: React.FC<RobloxAvatar3DProps> = ({
           pantsId={equipped.pants}
           shoesColor={shoesColor}
           shoesId={equipped.shoes}
-          torsoY={torsoY}
-        />
-
-        {/* Accessories */}
-        <Accessory3D
-          accId={equipped.accessory}
-          accColor={accColor}
-          headY={headY}
           torsoY={torsoY}
         />
       </div>

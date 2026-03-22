@@ -202,7 +202,7 @@ const MyPage = () => {
     const defaults: Record<string, string | null> = {
       skin: "skin_default", hair: "hair_default", hairColor: "haircolor_midnight",
       hat: null, shirt: "shirt_default", pants: "pants_default",
-      shoes: "shoes_default", accessory: null,
+      shoes: "shoes_default", necklace: null, leftHand: null, rightHand: null, aura: null,
     };
     const newEquipped = { ...equipped, [item.category]: defaults[item.category] };
     const { error } = await supabase

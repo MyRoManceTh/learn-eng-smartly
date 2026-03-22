@@ -75,12 +75,12 @@ export function buildCharacterGrid(equipped: EquippedItems): (number | null)[][]
   const hairStyle = hairItem?.svgProps?.path || "short";
   const hasHat = false;
 
-  const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
+  const accItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
   const accColor = accItem ? parseColor(accItem.svgProps?.color || "#80DEEA") : 0;
 
   // Draw in order (back to front):
   // 1. Accessory back layer (cape, wings, backpack, shield)
-  drawAccessoryBack(grid, equipped.accessory, accColor);
+  drawAccessoryBack(grid, equipped.rightHand, accColor);
 
   // 2. Legs + Shoes (drawn first so torso overlaps properly)
   drawLegs(grid, equipped.pants, colors);
@@ -99,7 +99,7 @@ export function buildCharacterGrid(equipped: EquippedItems): (number | null)[][]
   drawHair(grid, hairStyle, colors, hasHat);
 
   // 7. Accessory front layer (glasses, sword, pets)
-  drawAccessoryFront(grid, equipped.accessory, accColor);
+  drawAccessoryFront(grid, equipped.rightHand, accColor);
 
   // 8. Ground shadow
   drawGroundShadow(grid);

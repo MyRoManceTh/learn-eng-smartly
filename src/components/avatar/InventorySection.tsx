@@ -14,10 +14,14 @@ const categoryConfig: Record<string, { label: string; icon: string; color: strin
   skin: { label: "สีผิว", icon: "👤", color: "from-orange-400 to-amber-500" },
   hair: { label: "ทรงผม", icon: "💇", color: "from-pink-400 to-rose-500" },
   hairColor: { label: "สีผม", icon: "🎨", color: "from-violet-400 to-purple-500" },
+  hat: { label: "หมวก", icon: "🎩", color: "from-yellow-400 to-orange-400" },
   shirt: { label: "เสื้อ", icon: "👕", color: "from-green-400 to-emerald-500" },
   pants: { label: "กางเกง", icon: "👖", color: "from-indigo-400 to-blue-500" },
   shoes: { label: "รองเท้า", icon: "👟", color: "from-teal-400 to-cyan-500" },
-  accessory: { label: "เครื่องประดับ", icon: "🎒", color: "from-fuchsia-400 to-pink-500" },
+  necklace: { label: "สร้อยคอ", icon: "📿", color: "from-pink-300 to-rose-400" },
+  leftHand: { label: "มือซ้าย", icon: "🫲", color: "from-blue-400 to-indigo-500" },
+  rightHand: { label: "มือขวา", icon: "🫱", color: "from-purple-400 to-violet-500" },
+  aura: { label: "ออร่า", icon: "✨", color: "from-yellow-300 to-amber-400" },
 };
 
 const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: InventorySectionProps) => {

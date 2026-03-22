@@ -26,7 +26,10 @@ function parseEquipped(raw: any): EquippedItems {
     shirt: raw.shirt || DEFAULT_EQUIPPED.shirt,
     pants: raw.pants || DEFAULT_EQUIPPED.pants,
     shoes: raw.shoes || DEFAULT_EQUIPPED.shoes,
-    accessory: raw.accessory || null,
+    necklace: raw.necklace || null,
+    leftHand: raw.leftHand || null,
+    rightHand: raw.rightHand || null,
+    aura: raw.aura || null,
   };
 }
 
