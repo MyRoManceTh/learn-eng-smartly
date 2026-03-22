@@ -3,7 +3,7 @@ import { gachaExclusiveItems } from "@/data/gachaItems";
 
 export const avatarItems: AvatarItem[] = [
   // ═══════════════════════════════════════════
-  // 🎨 SKIN (8) — โทนสี Diverse & Fantasy
+  // 🎨 SKIN (8)
   // ═══════════════════════════════════════════
   { id: "skin_default", name: "Peach", nameThai: "ผิวพีช", category: "skin", price: 0, rarity: "common", icon: "🍑", svgProps: { color: "#FDDCB5" } },
   { id: "skin_warm", name: "Honey", nameThai: "ผิวน้ำผึ้ง", category: "skin", price: 50, rarity: "common", icon: "🍯", svgProps: { color: "#E8C49B" } },
@@ -15,7 +15,7 @@ export const avatarItems: AvatarItem[] = [
   { id: "skin_mint", name: "Mint Fresh", nameThai: "ผิวมินต์", category: "skin", price: 200, rarity: "epic", icon: "🌿", svgProps: { color: "#B8F0D8" } },
 
   // ═══════════════════════════════════════════
-  // 💇 HAIR STYLES (10) — Kawaii & Trendy
+  // 💇 HAIR STYLES (10)
   // ═══════════════════════════════════════════
   { id: "hair_default", name: "Soft Bob", nameThai: "บ๊อบนุ่มนิ่ม", category: "hair", price: 0, rarity: "common", icon: "💇", svgProps: { path: "softbob" } },
   { id: "hair_long", name: "Silky Long", nameThai: "ผมยาวเรียบ", category: "hair", price: 80, rarity: "common", icon: "👱", svgProps: { path: "silkylong" } },
@@ -29,7 +29,7 @@ export const avatarItems: AvatarItem[] = [
   { id: "hair_mohawk", name: "Electric Hawk", nameThai: "ม็อกฮอว์คเท่", category: "hair", price: 400, rarity: "legendary", icon: "⚡", svgProps: { path: "electrichawk" } },
 
   // ═══════════════════════════════════════════
-  // 🎨 HAIR COLORS (10) — Vibrant Palette
+  // 🎨 HAIR COLORS (10)
   // ═══════════════════════════════════════════
   { id: "haircolor_midnight", name: "Midnight", nameThai: "มิดไนท์", category: "hairColor", price: 0, rarity: "common", icon: "🌙", svgProps: { color: "#1A1A2E" } },
   { id: "haircolor_chestnut", name: "Chestnut", nameThai: "เกาลัด", category: "hairColor", price: 50, rarity: "common", icon: "🌰", svgProps: { color: "#7B4B2A" } },
@@ -43,19 +43,34 @@ export const avatarItems: AvatarItem[] = [
   { id: "haircolor_rainbow", name: "Holographic", nameThai: "โฮโลแกรม", category: "hairColor", price: 350, rarity: "legendary", icon: "🌈", svgProps: { color: "rainbow" } },
 
   // ═══════════════════════════════════════════
-  // 👕 SHIRTS (8) — Fashion Forward
+  // 🎩 HATS (10) — ไม่มีเนคไท
   // ═══════════════════════════════════════════
-  { id: "shirt_default", name: "Comfy Tee", nameThai: "เสื้อยืดสบายๆ", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#A8D8EA", pattern: "vneck" } },
-  { id: "shirt_sailor", name: "Sailor Top", nameThai: "เสื้อนักเรียน", category: "shirt", price: 80, rarity: "common", icon: "⚓", svgProps: { color: "#FFFFFF", pattern: "sailor" } },
-  { id: "shirt_overalls", name: "Cute Overalls", nameThai: "เอี๊ยมน่ารัก", category: "shirt", price: 150, rarity: "rare", icon: "👗", svgProps: { color: "#82B1FF", pattern: "overalls" } },
+  { id: "hat_beret", name: "Cute Beret", nameThai: "เบเรต์น่ารัก", category: "hat", price: 80, rarity: "common", icon: "🎩", svgProps: { color: "#FF8A80" } },
+  { id: "hat_bucket", name: "Bucket Hat", nameThai: "หมวกบักเก็ต", category: "hat", price: 80, rarity: "common", icon: "🪣", svgProps: { color: "#80CBC4" } },
+  { id: "hat_beanie", name: "Cozy Beanie", nameThai: "บีนนี่อุ่นๆ", category: "hat", price: 100, rarity: "common", icon: "🧢", svgProps: { color: "#CE93D8" } },
+  { id: "hat_catears", name: "Cat Ears", nameThai: "หูแมวคาวาอิ", category: "hat", price: 120, rarity: "rare", icon: "🐱", svgProps: { color: "#F8BBD0" } },
+  { id: "hat_bunnyears", name: "Bunny Ears", nameThai: "หูกระต่าย", category: "hat", price: 120, rarity: "rare", icon: "🐰", svgProps: { color: "#FFFFFF" } },
+  { id: "hat_flowerband", name: "Flower Crown", nameThai: "มงกุฎดอกไม้", category: "hat", price: 150, rarity: "rare", icon: "🌸", svgProps: { color: "#FF69B4" } },
+  { id: "hat_headphones", name: "Neon Headphones", nameThai: "หูฟังเรืองแสง", category: "hat", price: 200, rarity: "rare", icon: "🎧", svgProps: { color: "#00E5FF" } },
+  { id: "hat_witch", name: "Star Witch Hat", nameThai: "หมวกแม่มดดาว", category: "hat", price: 280, rarity: "epic", icon: "🧙", svgProps: { color: "#4A148C" } },
+  { id: "hat_tiara", name: "Crystal Tiara", nameThai: "มงกุฎคริสตัล", category: "hat", price: 350, rarity: "epic", icon: "👑", svgProps: { color: "#B39DDB" } },
+  { id: "hat_crown", name: "Royal Crown", nameThai: "มงกุฎราชา", category: "hat", price: 500, rarity: "legendary", icon: "👑", svgProps: { color: "#FFD700" } },
+
+  // ═══════════════════════════════════════════
+  // 👕 SHIRTS (8) — ออกแบบใหม่ ไม่มีเนคไท
+  // ═══════════════════════════════════════════
+  // ชุดเริ่มต้น: เสื้อยืดธรรมดา ไม่มีลวดลาย
+  { id: "shirt_default", name: "Plain Tee", nameThai: "เสื้อยืดธรรมดา", category: "shirt", price: 0, rarity: "common", icon: "👕", svgProps: { color: "#A8D8EA", pattern: "plain" } },
+  { id: "shirt_stripe", name: "Stripe Tee", nameThai: "เสื้อลายทาง", category: "shirt", price: 60, rarity: "common", icon: "👕", svgProps: { color: "#FFFFFF", pattern: "stripe" } },
   { id: "shirt_hoodie", name: "Bear Hoodie", nameThai: "ฮู้ดหมีน้อย", category: "shirt", price: 180, rarity: "rare", icon: "🧸", svgProps: { color: "#D7BDE2", pattern: "bearhoodie" } },
+  { id: "shirt_overalls", name: "Cute Overalls", nameThai: "เอี๊ยมน่ารัก", category: "shirt", price: 150, rarity: "rare", icon: "👗", svgProps: { color: "#82B1FF", pattern: "overalls" } },
   { id: "shirt_cardigan", name: "Pastel Cardigan", nameThai: "คาร์ดิแกนพาสเทล", category: "shirt", price: 160, rarity: "rare", icon: "🧥", svgProps: { color: "#FADBD8", pattern: "cardigan" } },
   { id: "shirt_magical", name: "Magical Dress", nameThai: "ชุดเมจิคอล", category: "shirt", price: 300, rarity: "epic", icon: "💫", svgProps: { color: "#FF69B4", pattern: "magical" } },
   { id: "shirt_kimono", name: "Sakura Kimono", nameThai: "กิโมโนซากุระ", category: "shirt", price: 350, rarity: "epic", icon: "🌸", svgProps: { color: "#FFE4E1", pattern: "kimono" } },
   { id: "shirt_celestial", name: "Celestial Robe", nameThai: "ชุดดวงดาว", category: "shirt", price: 500, rarity: "legendary", icon: "🌟", svgProps: { color: "#1A1A4E", pattern: "celestial" } },
 
   // ═══════════════════════════════════════════
-  // 👖 PANTS (6) — Cute Bottoms
+  // 👖 PANTS (6)
   // ═══════════════════════════════════════════
   { id: "pants_default", name: "Soft Joggers", nameThai: "กางเกงขายาวนุ่ม", category: "pants", price: 0, rarity: "common", icon: "👖", svgProps: { color: "#B0C4DE" } },
   { id: "pants_shorts", name: "Puffy Shorts", nameThai: "กางเกงสั้นพอง", category: "pants", price: 60, rarity: "common", icon: "🩳", svgProps: { color: "#F8C8DC" } },
@@ -65,7 +80,7 @@ export const avatarItems: AvatarItem[] = [
   { id: "pants_starry", name: "Galaxy Pants", nameThai: "กางเกงกาแล็กซี่", category: "pants", price: 300, rarity: "epic", icon: "🌌", svgProps: { color: "#1A1A3E" } },
 
   // ═══════════════════════════════════════════
-  // 👟 SHOES (6) — Trendy Kicks
+  // 👟 SHOES (6)
   // ═══════════════════════════════════════════
   { id: "shoes_default", name: "Pastel Sneakers", nameThai: "ผ้าใบพาสเทล", category: "shoes", price: 0, rarity: "common", icon: "👟", svgProps: { color: "#FFE4F0" } },
   { id: "shoes_sandals", name: "Flower Sandals", nameThai: "แตะดอกไม้", category: "shoes", price: 60, rarity: "common", icon: "🌼", svgProps: { color: "#FFE0B2" } },
@@ -75,16 +90,43 @@ export const avatarItems: AvatarItem[] = [
   { id: "shoes_roller", name: "Roller Skates", nameThai: "โรลเลอร์สเก็ต", category: "shoes", price: 300, rarity: "epic", icon: "🛼", svgProps: { color: "#00BCD4" } },
 
   // ═══════════════════════════════════════════
-  // 🎒 ACCESSORIES (8) — Fun & Sparkly
+  // 📿 NECKLACE (6) — สร้อยคอ slot ใหม่
   // ═══════════════════════════════════════════
-  { id: "acc_bow", name: "Silk Bow", nameThai: "โบว์ผ้าไหม", category: "accessory", price: 60, rarity: "common", icon: "🎀", svgProps: { color: "#FF4081" } },
-  { id: "acc_necklace", name: "Heart Pendant", nameThai: "จี้หัวใจ", category: "accessory", price: 80, rarity: "common", icon: "💗", svgProps: { color: "#FFD700" } },
-  { id: "acc_teddy", name: "Tiny Teddy", nameThai: "ตุ๊กตาหมีจิ๋ว", category: "accessory", price: 120, rarity: "rare", icon: "🧸", svgProps: { color: "#D2B48C" } },
-  { id: "acc_scarf", name: "Fluffy Scarf", nameThai: "ผ้าพันคอฟู", category: "accessory", price: 140, rarity: "rare", icon: "🧣", svgProps: { color: "#FFEFD5" } },
-  { id: "acc_bag", name: "Star Bag", nameThai: "กระเป๋าดาว", category: "accessory", price: 150, rarity: "rare", icon: "👜", svgProps: { color: "#E1BEE7" } },
-  { id: "acc_fairy_wings", name: "Fairy Wings", nameThai: "ปีกนางฟ้า", category: "accessory", price: 350, rarity: "epic", icon: "🧚", svgProps: { color: "#B2EBF2" } },
-  { id: "acc_wand", name: "Magic Wand", nameThai: "ไม้กายสิทธิ์", category: "accessory", price: 300, rarity: "epic", icon: "🪄", svgProps: { color: "#FFD700" } },
-  { id: "acc_halo_stars", name: "Star Halo", nameThai: "วงแหวนดาว", category: "accessory", price: 500, rarity: "legendary", icon: "🌟", svgProps: { color: "#FFD700" } },
+  { id: "neck_heart", name: "Heart Pendant", nameThai: "จี้หัวใจ", category: "necklace", price: 80, rarity: "common", icon: "💗", svgProps: { color: "#FF4081" } },
+  { id: "neck_star", name: "Star Pendant", nameThai: "จี้ดาว", category: "necklace", price: 80, rarity: "common", icon: "⭐", svgProps: { color: "#FFD700" } },
+  { id: "neck_pearl", name: "Pearl Necklace", nameThai: "สร้อยไข่มุก", category: "necklace", price: 150, rarity: "rare", icon: "🦪", svgProps: { color: "#FFFFFF" } },
+  { id: "neck_crystal", name: "Crystal Drop", nameThai: "จี้คริสตัล", category: "necklace", price: 200, rarity: "rare", icon: "💎", svgProps: { color: "#B3E5FC" } },
+  { id: "neck_moon", name: "Moon Crescent", nameThai: "จี้พระจันทร์", category: "necklace", price: 280, rarity: "epic", icon: "🌙", svgProps: { color: "#FFF9C4" } },
+  { id: "neck_dragon", name: "Dragon Fang", nameThai: "เขี้ยวมังกร", category: "necklace", price: 400, rarity: "legendary", icon: "🐉", svgProps: { color: "#FF6F00" } },
+
+  // ═══════════════════════════════════════════
+  // 🫲 LEFT HAND (6) — ของถือมือซ้าย
+  // ═══════════════════════════════════════════
+  { id: "left_shield", name: "Round Shield", nameThai: "โล่กลม", category: "leftHand", price: 120, rarity: "common", icon: "🛡️", svgProps: { color: "#78909C" } },
+  { id: "left_lantern", name: "Magic Lantern", nameThai: "โคมไฟเวทย์", category: "leftHand", price: 150, rarity: "rare", icon: "🏮", svgProps: { color: "#FF8F00" } },
+  { id: "left_book", name: "Spell Book", nameThai: "หนังสือเวทย์", category: "leftHand", price: 180, rarity: "rare", icon: "📖", svgProps: { color: "#4A148C" } },
+  { id: "left_flower", name: "Bouquet", nameThai: "ช่อดอกไม้", category: "leftHand", price: 100, rarity: "common", icon: "💐", svgProps: { color: "#FF80AB" } },
+  { id: "left_crystal_shield", name: "Crystal Shield", nameThai: "โล่คริสตัล", category: "leftHand", price: 350, rarity: "epic", icon: "💠", svgProps: { color: "#B3E5FC" } },
+  { id: "left_star_shield", name: "Starlight Shield", nameThai: "โล่แสงดาว", category: "leftHand", price: 500, rarity: "legendary", icon: "🌟", svgProps: { color: "#FFD700" } },
+
+  // ═══════════════════════════════════════════
+  // 🫱 RIGHT HAND (6) — ของถือมือขวา
+  // ═══════════════════════════════════════════
+  { id: "right_wand", name: "Magic Wand", nameThai: "ไม้กายสิทธิ์", category: "rightHand", price: 120, rarity: "common", icon: "🪄", svgProps: { color: "#CE93D8" } },
+  { id: "right_sword", name: "Short Sword", nameThai: "ดาบสั้น", category: "rightHand", price: 150, rarity: "rare", icon: "⚔️", svgProps: { color: "#90A4AE" } },
+  { id: "right_staff", name: "Magic Staff", nameThai: "ไม้เท้าเวทย์", category: "rightHand", price: 200, rarity: "rare", icon: "🔮", svgProps: { color: "#7E57C2" } },
+  { id: "right_torch", name: "Flame Torch", nameThai: "คบเพลิง", category: "rightHand", price: 180, rarity: "rare", icon: "🔥", svgProps: { color: "#FF6D00" } },
+  { id: "right_crystal_blade", name: "Crystal Blade", nameThai: "ดาบคริสตัล", category: "rightHand", price: 400, rarity: "epic", icon: "💎", svgProps: { color: "#B3E5FC" } },
+  { id: "right_lightning_sword", name: "Thunder Blade", nameThai: "ดาบสายฟ้า", category: "rightHand", price: 500, rarity: "legendary", icon: "⚡", svgProps: { color: "#FFD600" } },
+
+  // ═══════════════════════════════════════════
+  // ✨ AURA (5) — ออร่าพลัง
+  // ═══════════════════════════════════════════
+  { id: "aura_fire", name: "Fire Aura", nameThai: "ออร่าไฟ", category: "aura", price: 200, rarity: "rare", icon: "🔥", svgProps: { color: "#FF6D00" } },
+  { id: "aura_ice", name: "Ice Aura", nameThai: "ออร่าน้ำแข็ง", category: "aura", price: 200, rarity: "rare", icon: "❄️", svgProps: { color: "#B3E5FC" } },
+  { id: "aura_lightning", name: "Lightning Aura", nameThai: "ออร่าสายฟ้า", category: "aura", price: 300, rarity: "epic", icon: "⚡", svgProps: { color: "#FFD600" } },
+  { id: "aura_dark", name: "Dark Aura", nameThai: "ออร่ามืด", category: "aura", price: 300, rarity: "epic", icon: "🌑", svgProps: { color: "#4A148C" } },
+  { id: "aura_supersaiyan", name: "Super Saiyan", nameThai: "ออร่าซุปเปอร์ไซย่า", category: "aura", price: 600, rarity: "legendary", icon: "💥", svgProps: { color: "#FFD600" } },
 ];
 
 export const getItemsByCategory = (category: ItemCategory): AvatarItem[] =>
@@ -117,8 +159,12 @@ export const categoryLabels: { key: ItemCategory; label: string; icon: string }[
   { key: "skin", label: "สีผิว", icon: "🍑" },
   { key: "hair", label: "ทรงผม", icon: "💇" },
   { key: "hairColor", label: "สีผม", icon: "🎨" },
+  { key: "hat", label: "หมวก", icon: "🎩" },
   { key: "shirt", label: "เสื้อ", icon: "👕" },
   { key: "pants", label: "กางเกง", icon: "👖" },
   { key: "shoes", label: "รองเท้า", icon: "👟" },
-  { key: "accessory", label: "เครื่องประดับ", icon: "✨" },
+  { key: "necklace", label: "สร้อยคอ", icon: "📿" },
+  { key: "leftHand", label: "มือซ้าย", icon: "🫲" },
+  { key: "rightHand", label: "มือขวา", icon: "🫱" },
+  { key: "aura", label: "ออร่า", icon: "✨" },
 ];

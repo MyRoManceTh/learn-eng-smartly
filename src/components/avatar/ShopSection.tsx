@@ -16,10 +16,14 @@ const categoryColors: Record<string, string> = {
   skin: "from-orange-400 to-amber-500",
   hair: "from-pink-400 to-rose-500",
   hairColor: "from-violet-400 to-purple-500",
+  hat: "from-yellow-400 to-orange-400",
   shirt: "from-green-400 to-emerald-500",
   pants: "from-indigo-400 to-blue-500",
   shoes: "from-teal-400 to-cyan-500",
-  accessory: "from-fuchsia-400 to-pink-500",
+  necklace: "from-pink-300 to-rose-400",
+  leftHand: "from-blue-400 to-indigo-500",
+  rightHand: "from-purple-400 to-violet-500",
+  aura: "from-yellow-300 to-amber-400",
 };
 
 const ShopSection = ({ coins, inventory, equipped, onBuy, onEquip, onUnequip }: ShopSectionProps) => {

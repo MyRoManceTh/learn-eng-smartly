@@ -1,4 +1,16 @@
-export type ItemCategory = 'skin' | 'hair' | 'hairColor' | 'hat' | 'shirt' | 'pants' | 'shoes' | 'accessory';
+export type ItemCategory =
+  | 'skin'
+  | 'hair'
+  | 'hairColor'
+  | 'hat'
+  | 'shirt'
+  | 'pants'
+  | 'shoes'
+  | 'necklace'
+  | 'leftHand'
+  | 'rightHand'
+  | 'aura';
+
 export type ItemRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
 export interface AvatarItem {
@@ -24,7 +36,10 @@ export interface EquippedItems {
   shirt: string;
   pants: string;
   shoes: string;
-  accessory: string | null;
+  necklace: string | null;
+  leftHand: string | null;
+  rightHand: string | null;
+  aura: string | null;
 }
 
 export const DEFAULT_EQUIPPED: EquippedItems = {
@@ -35,5 +50,8 @@ export const DEFAULT_EQUIPPED: EquippedItems = {
   shirt: "shirt_default",
   pants: "pants_default",
   shoes: "shoes_default",
-  accessory: null,
+  necklace: null,
+  leftHand: null,
+  rightHand: null,
+  aura: null,
 };

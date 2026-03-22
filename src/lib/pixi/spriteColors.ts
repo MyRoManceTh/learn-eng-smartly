@@ -111,7 +111,7 @@ export function resolveHatId(equipped: EquippedItems): string | null {
 
 /** Get accessory ID if equipped */
 export function resolveAccessoryId(equipped: EquippedItems): string | null {
-  return equipped.accessory || null;
+  return equipped.rightHand || null;
 }
 
 /** Get hat color as CSS hex string */
@@ -121,7 +121,7 @@ export function resolveHatColor(equipped: EquippedItems): string {
 
 /** Get accessory color as CSS hex string */
 export function resolveAccessoryColor(equipped: EquippedItems): string {
-  const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
+  const accItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
   if (!accItem) return "#80deea";
   return numToHex(parseColor(accItem.svgProps?.color || "#80DEEA"));
 }

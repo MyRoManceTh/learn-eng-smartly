@@ -53,8 +53,8 @@ const PixelCharacter = ({
   }, [equipped.hair]);
 
   const hasHat = false;
-  const hasAccessory = !!equipped.accessory;
-  const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
+  const hasAccessory = !!equipped.rightHand;
+  const accItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
   const accColor = accItem?.svgProps?.color || "#80DEEA";
 
   // _ = transparent, O = outline, S = skin, s = skinShadow, H = hair, h = hairHighlight
@@ -141,7 +141,7 @@ const PixelCharacter = ({
     }
 
     // === ROW 4: EYES ===
-    if (hasAccessory && equipped.accessory === "acc_glasses") {
+    if (hasAccessory && equipped.rightHand === "acc_glasses") {
       rows.push(["_","_","O","S","E","A","A","E","S","O","_","_"]);
     } else {
       rows.push(["_","_","O","S","E","W","W","E","S","O","_","_"]);
@@ -187,7 +187,7 @@ const PixelCharacter = ({
     }
 
     // Cape accessory
-    if (hasAccessory && equipped.accessory === "acc_cape") {
+    if (hasAccessory && equipped.rightHand === "acc_cape") {
       rows[7][1] = "A";
       rows[8][0] = "A";
       rows[8][1] = "A";
@@ -199,7 +199,7 @@ const PixelCharacter = ({
     }
 
     // Wings accessory
-    if (hasAccessory && equipped.accessory === "acc_wings") {
+    if (hasAccessory && equipped.rightHand === "acc_wings") {
       rows[7][0] = "A"; rows[7][1] = "A";
       rows[7][10] = "A"; rows[7][11] = "A";
       rows[8][0] = "A";

@@ -125,7 +125,11 @@ const AvatarPage = () => {
       shirt: "shirt_default",
       pants: "pants_default",
       shoes: "shoes_default",
-      accessory: null,
+      hat: null,
+      necklace: null,
+      leftHand: null,
+      rightHand: null,
+      aura: null,
     };
 
     const newEquipped = { ...equipped, [item.category]: defaults[item.category] };

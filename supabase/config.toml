@@ -3,6 +3,9 @@ project_id = "wyzfsfywpyjdsnxumowi"
 [functions.generate-lesson]
 verify_jwt = false
 
+[functions.seed-lessons]
+verify_jwt = false
+
 [functions.admin-manage-content]
 verify_jwt = true
 

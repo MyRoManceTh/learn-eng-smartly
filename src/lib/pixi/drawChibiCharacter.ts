@@ -59,7 +59,7 @@ function resolveColors(equipped: EquippedItems): Colors {
   const shirtItem = getItemById(equipped.shirt);
   const pantsItem = getItemById(equipped.pants);
   const shoesItem = getItemById(equipped.shoes);
-  const accItem = equipped.accessory ? getItemById(equipped.accessory) : null;
+  const accItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
 
   const skin = parseColor(skinItem?.svgProps?.color || "#F5D5C0");
   const hair = parseColor(hairColorItem?.svgProps?.color || "#2C2C2C");
@@ -123,15 +123,15 @@ export function drawChibiCharacter(
   const hairItem = getItemById(equipped.hair);
   const hairStyle = hairItem?.svgProps?.path || "short";
 
-  drawAccessoryBack(grid, equipped.accessory, c);
+  drawAccessoryBack(grid, equipped.rightHand, c);
   drawBody(grid, equipped.shirt, c);
   drawArms(grid, c);
   drawLegs(grid, equipped.pants, c, walkFrame);
   drawShoes(grid, equipped.shoes, c, walkFrame);
   drawHead(grid, c);
   drawHair(grid, hairStyle, c);
-  drawFace(grid, c, equipped.accessory);
-  drawAccessoryFront(grid, equipped.accessory, c);
+  drawFace(grid, c, equipped.rightHand);
+  drawAccessoryFront(grid, equipped.rightHand, c);
   addHDOutline(grid, c.outline, c.outlineSoft);
   drawShadow(grid);
 

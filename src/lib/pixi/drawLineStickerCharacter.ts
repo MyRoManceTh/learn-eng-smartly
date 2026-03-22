@@ -102,7 +102,7 @@ export function drawLineStickerCharacter(
 
   // Draw order (back → front)
   drawShadow(g, pose);
-  drawAccessoryBack(g, equipped.accessory, c);
+  drawAccessoryBack(g, equipped.rightHand, c);
 
   if (pose === "sitting") {
     drawSittingLegs(g, c, equipped.pants);
@@ -125,8 +125,8 @@ export function drawLineStickerCharacter(
   drawNeck(g, c);
   drawHead(g, c);
   drawHair(g, hairStyle, c);
-  drawFace(g, c, emotion, blinkFrame, equipped.accessory);
-  drawAccessoryFront(g, equipped.accessory, c);
+  drawFace(g, c, emotion, blinkFrame, equipped.rightHand);
+  drawAccessoryFront(g, equipped.rightHand, c);
 
   if (pose === "reading") {
     drawBook(g);
