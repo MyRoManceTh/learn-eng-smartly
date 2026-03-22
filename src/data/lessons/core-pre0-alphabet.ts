@@ -19,7 +19,7 @@ export const corePreAlphabetLessons: LessonSeedData[] = [
   // Lesson 1: Letters A, B, C
   // ==========================================
   {
-    module_id: 'core-pre-alphabet',
+    module_id: 'core-a0-alphabet',
     lesson_order: 1,
     level: 0,
     topic: 'Letters A, B, C',
@@ -90,7 +90,7 @@ export const corePreAlphabetLessons: LessonSeedData[] = [
   // Lesson 2: Letters D, E, F
   // ==========================================
   {
-    module_id: 'core-pre-alphabet',
+    module_id: 'core-a0-alphabet',
     lesson_order: 2,
     level: 0,
     topic: 'Letters D, E, F',
@@ -162,7 +162,7 @@ export const corePreAlphabetLessons: LessonSeedData[] = [
   // Lesson 3: Letters G, H, I, J
   // ==========================================
   {
-    module_id: 'core-pre-alphabet',
+    module_id: 'core-a0-alphabet',
     lesson_order: 3,
     level: 0,
     topic: 'Letters G, H, I, J',
@@ -242,7 +242,7 @@ export const corePreAlphabetLessons: LessonSeedData[] = [
   // Lesson 4: Letters K, L, M, N
   // ==========================================
   {
-    module_id: 'core-pre-alphabet',
+    module_id: 'core-a0-alphabet',
     lesson_order: 4,
     level: 0,
     topic: 'Letters K, L, M, N',
@@ -321,7 +321,7 @@ export const corePreAlphabetLessons: LessonSeedData[] = [
   // Lesson 5: Letters O, P, Q, R, S
   // ==========================================
   {
-    module_id: 'core-pre-alphabet',
+    module_id: 'core-a0-alphabet',
     lesson_order: 5,
     level: 0,
     topic: 'Letters O, P, Q, R, S',
@@ -401,7 +401,7 @@ export const corePreAlphabetLessons: LessonSeedData[] = [
   // Lesson 6: Letters T, U, V, W, X, Y, Z
   // ==========================================
   {
-    module_id: 'core-pre-alphabet',
+    module_id: 'core-a0-alphabet',
     lesson_order: 6,
     level: 0,
     topic: 'Letters T, U, V, W, X, Y, Z',

@@ -5,7 +5,7 @@ export const corePreGreetingsLessons: LessonSeedData[] = [
   // Lesson 1: Hello and Goodbye
   // ==========================================
   {
-    module_id: 'core-pre-greetings',
+    module_id: 'core-a0-firstwords',
     lesson_order: 1,
     level: 0,
     topic: 'Hello and Goodbye',
@@ -80,7 +80,7 @@ export const corePreGreetingsLessons: LessonSeedData[] = [
   // Lesson 2: How Are You?
   // ==========================================
   {
-    module_id: 'core-pre-greetings',
+    module_id: 'core-a0-firstwords',
     lesson_order: 2,
     level: 0,
     topic: 'How Are You?',
@@ -154,7 +154,7 @@ export const corePreGreetingsLessons: LessonSeedData[] = [
   // Lesson 3: What Is Your Name?
   // ==========================================
   {
-    module_id: 'core-pre-greetings',
+    module_id: 'core-a0-firstwords',
     lesson_order: 3,
     level: 0,
     topic: 'What Is Your Name?',
@@ -229,7 +229,7 @@ export const corePreGreetingsLessons: LessonSeedData[] = [
   // Lesson 4: Please and Thank You
   // ==========================================
   {
-    module_id: 'core-pre-greetings',
+    module_id: 'core-a0-firstwords',
     lesson_order: 4,
     level: 0,
     topic: 'Please and Thank You',
@@ -306,7 +306,7 @@ export const corePreGreetingsLessons: LessonSeedData[] = [
   // Lesson 5: Yes and No
   // ==========================================
   {
-    module_id: 'core-pre-greetings',
+    module_id: 'core-a0-firstwords',
     lesson_order: 5,
     level: 0,
     topic: 'Yes and No',

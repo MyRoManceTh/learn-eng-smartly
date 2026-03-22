@@ -5,7 +5,7 @@ export const corePreNumbersLessons: LessonSeedData[] = [
   // Lesson 1: Numbers 1, 2, 3
   // ==========================================
   {
-    module_id: 'core-pre-numbers',
+    module_id: 'core-a0-numbers',
     lesson_order: 1,
     level: 0,
     topic: 'Numbers 1, 2, 3',
@@ -76,7 +76,7 @@ export const corePreNumbersLessons: LessonSeedData[] = [
   // Lesson 2: Numbers 4, 5, 6
   // ==========================================
   {
-    module_id: 'core-pre-numbers',
+    module_id: 'core-a0-numbers',
     lesson_order: 2,
     level: 0,
     topic: 'Numbers 4, 5, 6',
@@ -147,7 +147,7 @@ export const corePreNumbersLessons: LessonSeedData[] = [
   // Lesson 3: Numbers 7, 8, 9, 10
   // ==========================================
   {
-    module_id: 'core-pre-numbers',
+    module_id: 'core-a0-numbers',
     lesson_order: 3,
     level: 0,
     topic: 'Numbers 7, 8, 9, 10',
@@ -220,7 +220,7 @@ export const corePreNumbersLessons: LessonSeedData[] = [
   // Lesson 4: Zero and Counting
   // ==========================================
   {
-    module_id: 'core-pre-numbers',
+    module_id: 'core-a0-numbers',
     lesson_order: 4,
     level: 0,
     topic: 'Zero and Counting',
@@ -295,7 +295,7 @@ export const corePreNumbersLessons: LessonSeedData[] = [
   // Lesson 5: Numbers in Daily Life
   // ==========================================
   {
-    module_id: 'core-pre-numbers',
+    module_id: 'core-a0-numbers',
     lesson_order: 5,
     level: 0,
     topic: 'Numbers in Daily Life',

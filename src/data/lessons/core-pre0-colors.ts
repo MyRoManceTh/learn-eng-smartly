@@ -5,7 +5,7 @@ export const corePreColorsLessons: LessonSeedData[] = [
   // Lesson 1: Red, Blue, Yellow (Primary Colors)
   // ==========================================
   {
-    module_id: 'core-pre-colors',
+    module_id: 'core-a0-colors',
     lesson_order: 1,
     level: 0,
     topic: 'Primary Colors',
@@ -78,7 +78,7 @@ export const corePreColorsLessons: LessonSeedData[] = [
   // Lesson 2: Green, Orange, Purple (Secondary Colors)
   // ==========================================
   {
-    module_id: 'core-pre-colors',
+    module_id: 'core-a0-colors',
     lesson_order: 2,
     level: 0,
     topic: 'Secondary Colors',
@@ -148,7 +148,7 @@ export const corePreColorsLessons: LessonSeedData[] = [
   // Lesson 3: White, Black, Pink, Brown
   // ==========================================
   {
-    module_id: 'core-pre-colors',
+    module_id: 'core-a0-colors',
     lesson_order: 3,
     level: 0,
     topic: 'More Colors',
@@ -221,7 +221,7 @@ export const corePreColorsLessons: LessonSeedData[] = [
   // Lesson 4: Colors in Nature
   // ==========================================
   {
-    module_id: 'core-pre-colors',
+    module_id: 'core-a0-colors',
     lesson_order: 4,
     level: 0,
     topic: 'Colors in Nature',
@@ -294,7 +294,7 @@ export const corePreColorsLessons: LessonSeedData[] = [
   // Lesson 5: My Favorite Color
   // ==========================================
   {
-    module_id: 'core-pre-colors',
+    module_id: 'core-a0-colors',
     lesson_order: 5,
     level: 0,
     topic: 'My Favorite Color',

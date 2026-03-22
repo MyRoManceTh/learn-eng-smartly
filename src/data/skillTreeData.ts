@@ -623,6 +623,34 @@ export const skillTreeModules: SkillTreeModule[] = [
   },
 
   // ──────────────────────────────────────────
+  // BUSINESS B2 (Level 4) - 2 modules
+  // ──────────────────────────────────────────
+  {
+    id: 'biz-b2-negotiation',
+    pathId: 'business',
+    name: 'Negotiation Skills',
+    nameThai: 'ทักษะการเจรจาต่อรอง',
+    icon: '🤝',
+    level: 4,
+    order: 8,
+    prerequisites: ['biz-b1-presentation', 'biz-b1-phone'],
+    lessonCount: 4,
+    reward: { type: 'exp', value: 250, label: '250 EXP' },
+  },
+  {
+    id: 'biz-b2-report',
+    pathId: 'business',
+    name: 'Business Reports',
+    nameThai: 'การเขียนรายงานธุรกิจ',
+    icon: '📊',
+    level: 4,
+    order: 9,
+    prerequisites: ['biz-b2-negotiation'],
+    lessonCount: 4,
+    reward: { type: 'avatar_item', value: 'briefcase_exec', label: 'กระเป๋าผู้บริหาร' },
+  },
+
+  // ──────────────────────────────────────────
   // TRAVEL A2 (Level 2) - 3 modules
   // ──────────────────────────────────────────
   {
@@ -712,6 +740,34 @@ export const skillTreeModules: SkillTreeModule[] = [
     prerequisites: ['travel-b1-friends', 'travel-b1-emergency'],
     lessonCount: 4,
     reward: { type: 'avatar_item', value: 'backpack_traveler', label: 'เป้นักเดินทาง' },
+  },
+
+  // ──────────────────────────────────────────
+  // TRAVEL B2 (Level 4) - 2 modules
+  // ──────────────────────────────────────────
+  {
+    id: 'travel-b2-culture',
+    pathId: 'travel',
+    name: 'Culture & Heritage',
+    nameThai: 'วัฒนธรรมและมรดก',
+    icon: '🏛️',
+    level: 4,
+    order: 8,
+    prerequisites: ['travel-b1-review'],
+    lessonCount: 4,
+    reward: { type: 'exp', value: 250, label: '250 EXP' },
+  },
+  {
+    id: 'travel-b2-problem',
+    pathId: 'travel',
+    name: 'Solving Travel Problems',
+    nameThai: 'แก้ปัญหาระหว่างเดินทาง',
+    icon: '🛟',
+    level: 4,
+    order: 9,
+    prerequisites: ['travel-b2-culture'],
+    lessonCount: 4,
+    reward: { type: 'avatar_item', value: 'passport_gold', label: 'หนังสือเดินทางทอง' },
   },
 
   // ──────────────────────────────────────────

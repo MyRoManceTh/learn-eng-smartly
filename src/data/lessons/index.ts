@@ -3,6 +3,7 @@ export { corePreAlphabetLessons } from './core-pre0-alphabet';
 export { corePreNumbersLessons } from './core-pre0-numbers';
 export { corePreColorsLessons } from './core-pre0-colors';
 export { corePreGreetingsLessons } from './core-pre0-greetings';
+export { corePreFirstwordsLessons } from './core-pre0-firstwords';
 
 // Core A1 Lesson Data - All 8 Modules (43 lessons total)
 export type { LessonSeedData } from './core-a1-greetings';
@@ -57,6 +58,14 @@ export { travelB1EmergencyLessons } from './travel-b1-emergency';
 export { travelB1FriendsLessons } from './travel-b1-friends';
 export { travelB1ReviewLessons } from './travel-b1-review';
 
+// Business B2 Lesson Data - 2 Modules (8 lessons total)
+export { bizB2NegotiationLessons } from './biz-b2-negotiation';
+export { bizB2ReportLessons } from './biz-b2-report';
+
+// Travel B2 Lesson Data - 2 Modules (8 lessons total)
+export { travelB2CultureLessons } from './travel-b2-culture';
+export { travelB2ProblemLessons } from './travel-b2-problem';
+
 // ─── Imports ───────────────────────────────────────────
 
 import { LessonSeedData } from './core-a1-greetings';
@@ -66,6 +75,7 @@ import { corePreAlphabetLessons } from './core-pre0-alphabet';
 import { corePreNumbersLessons } from './core-pre0-numbers';
 import { corePreColorsLessons } from './core-pre0-colors';
 import { corePreGreetingsLessons } from './core-pre0-greetings';
+import { corePreFirstwordsLessons } from './core-pre0-firstwords';
 
 // Core A1
 import { coreA1GreetingsLessons } from './core-a1-greetings';
@@ -118,6 +128,14 @@ import { travelB1TourLessons } from './travel-b1-tour';
 import { travelB1EmergencyLessons } from './travel-b1-emergency';
 import { travelB1FriendsLessons } from './travel-b1-friends';
 import { travelB1ReviewLessons } from './travel-b1-review';
+
+// Business B2
+import { bizB2NegotiationLessons } from './biz-b2-negotiation';
+import { bizB2ReportLessons } from './biz-b2-report';
+
+// Travel B2
+import { travelB2CultureLessons } from './travel-b2-culture';
+import { travelB2ProblemLessons } from './travel-b2-problem';
 
 // Core B2
 import { coreB2MediaLessons } from './core-b2-media';
@@ -191,6 +209,7 @@ export const allCorePreA1Lessons: LessonSeedData[] = [
   ...corePreNumbersLessons,
   ...corePreColorsLessons,
   ...corePreGreetingsLessons,
+  ...corePreFirstwordsLessons,
 ];
 
 // All Core A1 lessons combined
@@ -242,6 +261,8 @@ export const allBusinessLessons: LessonSeedData[] = [
   ...bizB1PresentationLessons,
   ...bizB1CustomerLessons,
   ...bizB1PhoneLessons,
+  ...bizB2NegotiationLessons,
+  ...bizB2ReportLessons,
 ];
 
 // All Travel lessons combined
@@ -253,6 +274,8 @@ export const allTravelLessons: LessonSeedData[] = [
   ...travelB1EmergencyLessons,
   ...travelB1FriendsLessons,
   ...travelB1ReviewLessons,
+  ...travelB2CultureLessons,
+  ...travelB2ProblemLessons,
 ];
 
 // Core B2 Lesson Data - All 10 Modules (56 lessons total)
