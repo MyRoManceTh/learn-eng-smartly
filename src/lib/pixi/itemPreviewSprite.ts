@@ -545,7 +545,10 @@ export function generateItemPreview(item: AvatarItem): string {
     case "shoes":
       drawShoesPreview(ctx, color);
       break;
-    case "accessory":
+    case "necklace":
+    case "leftHand":
+    case "rightHand":
+    case "aura":
       drawAccessoryPreview(ctx, item.id, color);
       break;
   }
