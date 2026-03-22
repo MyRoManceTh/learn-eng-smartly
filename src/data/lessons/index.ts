@@ -397,6 +397,7 @@ export const allToeicLessons: LessonSeedData[] = [
 
 // All lessons combined
 export const allLessons: LessonSeedData[] = [
+  ...allCorePreA1Lessons,
   ...allCoreA1Lessons,
   ...allCoreA2Lessons,
   ...allCoreB1Lessons,
