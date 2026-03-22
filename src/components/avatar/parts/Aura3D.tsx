@@ -191,6 +191,46 @@ const Aura3D: React.FC<Aura3DProps> = ({ auraId, containerSize }) => {
         </>
       );
 
+    // ═══ GACHA AURA ═══
+
+    // ── Rainbow Aura (gacha) ──
+    case "gacha_aura_rainbow":
+      return (
+        <>
+          {/* Rainbow ring */}
+          <div style={{
+            position: "absolute",
+            inset: -14,
+            borderRadius: "50%",
+            background: "conic-gradient(from 0deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF, #9B59B6, #FF6B6B)",
+            opacity: 0.25,
+            animation: "aura-rainbow-spin 3s linear infinite",
+          }} />
+          {/* Inner glow */}
+          <div style={{
+            position: "absolute",
+            inset: -6,
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)",
+            animation: "aura-pulse 1.5s ease-in-out infinite",
+          }} />
+          {/* Rainbow sparkles */}
+          {["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#9B59B6"].map((color, i) => (
+            <div key={i} style={{
+              position: "absolute",
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              backgroundColor: color,
+              left: `${10 + i * 18}%`,
+              top: `${8 + (i % 2) * 75}%`,
+              opacity: 0.8,
+              animation: `aura-sparkle ${1.2 + i * 0.2}s ease-in-out infinite ${i * 0.3}s`,
+            }} />
+          ))}
+        </>
+      );
+
     default:
       return null;
   }

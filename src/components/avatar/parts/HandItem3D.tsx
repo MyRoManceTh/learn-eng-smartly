@@ -260,6 +260,60 @@ const HandItem3D: React.FC<HandItem3DProps> = ({ itemId, itemColor, side, torsoY
         </>
       );
 
+    // ═══ GACHA ITEMS ═══
+
+    // ── Spirit Shield (gacha left hand) ──
+    case "gacha_left_spirit_shield":
+      return (
+        <>
+          {/* Ethereal shield body */}
+          <CSSBox3D width={26} height={30} depth={5} color={c} x={hx} y={torsoY} z={8}
+            faceOverrides={{
+              front: `radial-gradient(circle at 50% 40%, rgba(206,147,216,0.9) 10%, ${c} 50%, rgba(74,20,140,0.6) 100%)`,
+            }}
+          />
+          {/* Ghost border */}
+          <CSSBox3D width={28} height={32} depth={4} color={shade(c, -30)} x={hx} y={torsoY} z={6} />
+          {/* Spirit eye center */}
+          <CSSBox3D width={10} height={10} depth={3} color="#E1F5FE" x={hx} y={torsoY - 4} z={13} />
+          <CSSBox3D width={6} height={6} depth={3} color="#7B1FA2" x={hx} y={torsoY - 4} z={15} />
+          <CSSBox3D width={3} height={3} depth={2} color="#FFFFFF" x={hx - 1} y={torsoY - 5} z={16} />
+          {/* Spirit wisps */}
+          <CSSBox3D width={3} height={8} depth={2} color={shade(c, 20)} x={hx - 10} y={torsoY - 14} z={10} />
+          <CSSBox3D width={3} height={8} depth={2} color={shade(c, 20)} x={hx + 10} y={torsoY - 14} z={10} />
+          <CSSBox3D width={2} height={6} depth={2} color={shade(c, 30)} x={hx} y={torsoY + 14} z={10} />
+        </>
+      );
+
+    // ── Spirit Blade (gacha right hand) ──
+    case "gacha_right_spirit_blade":
+      return (
+        <>
+          {/* Ethereal blade */}
+          <CSSBox3D width={5} height={42} depth={3} color={c} x={hx} y={torsoY - 14} z={10} rotateZ={sx * -6}
+            faceOverrides={{
+              front: `linear-gradient(180deg, rgba(255,255,255,0.9) 0%, ${c} 30%, rgba(179,229,252,0.7) 70%, rgba(255,255,255,0.5) 100%)`,
+              left: `linear-gradient(180deg, rgba(179,229,252,0.6), rgba(206,147,216,0.4))`,
+              right: `linear-gradient(180deg, rgba(179,229,252,0.6), rgba(206,147,216,0.4))`,
+            }}
+          />
+          {/* Blade tip */}
+          <CSSBox3D width={3} height={10} depth={2} color="#E1F5FE" x={hx} y={torsoY - 38} z={10} rotateZ={sx * -6} />
+          {/* Spirit guard (floating) */}
+          <CSSBox3D width={20} height={5} depth={8} color="#CE93D8" x={hx} y={torsoY + 8} z={10} />
+          <CSSBox3D width={14} height={3} depth={6} color="#AB47BC" x={hx} y={torsoY + 6} z={10} />
+          {/* Handle */}
+          <CSSBox3D width={5} height={12} depth={5} color="#7B1FA2" x={hx} y={torsoY + 18} z={10} />
+          {/* Pommel orb */}
+          <CSSBox3D width={8} height={8} depth={8} color="#E040FB" x={hx} y={torsoY + 28} z={10} />
+          <CSSBox3D width={4} height={4} depth={4} color="#FFFFFF" x={hx - 1} y={torsoY + 27} z={13} />
+          {/* Spirit particles */}
+          <CSSBox3D width={2} height={2} depth={2} color="#E1F5FE" x={hx + sx * 6} y={torsoY - 24} z={14} />
+          <CSSBox3D width={2} height={2} depth={2} color="#CE93D8" x={hx - sx * 5} y={torsoY - 14} z={14} />
+          <CSSBox3D width={2} height={2} depth={2} color="#FFFFFF" x={hx + sx * 3} y={torsoY - 4} z={14} />
+        </>
+      );
+
     default:
       return null;
   }

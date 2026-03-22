@@ -30,11 +30,11 @@ const ShirtPattern: React.FC<{ shirtId: string; shirtColor: string }> = ({ shirt
         </div>
       );
 
-    // ── Sailor Top — เสื้อนักเรียนญี่ปุ่น ──
+    // ── Sailor Top — เสื้อนักเรียนญี่ปุ่น (ไม่มีเนคไท/โบว์) ──
     case "shirt_sailor":
       return (
         <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-          {/* Sailor collar line */}
+          {/* Sailor collar V-shape */}
           <div style={{
             position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
             width: 0, height: 0,
@@ -44,25 +44,13 @@ const ShirtPattern: React.FC<{ shirtId: string; shirtColor: string }> = ({ shirt
           {/* White stripes on collar */}
           <div style={{ position: "absolute", top: 3, left: 4, right: 4, height: 2, backgroundColor: "rgba(255,255,255,0.6)" }} />
           <div style={{ position: "absolute", top: 7, left: 6, right: 6, height: 1.5, backgroundColor: "rgba(255,255,255,0.4)" }} />
-          {/* Sailor bow — left wing */}
+          {/* Anchor emblem (แทนโบว์) */}
           <div style={{
-            position: "absolute", top: 14, left: "calc(50% - 9px)",
-            width: 0, height: 0,
-            borderTop: "5px solid transparent", borderBottom: "5px solid transparent",
-            borderRight: "8px solid #E53935",
-          }} />
-          {/* Sailor bow — right wing */}
-          <div style={{
-            position: "absolute", top: 14, left: "calc(50% + 1px)",
-            width: 0, height: 0,
-            borderTop: "5px solid transparent", borderBottom: "5px solid transparent",
-            borderLeft: "8px solid #E53935",
-          }} />
-          {/* Sailor bow — center knot */}
-          <div style={{
-            position: "absolute", top: 15, left: "50%", transform: "translateX(-50%)",
-            width: 5, height: 8, backgroundColor: "#C62828", borderRadius: 2,
-          }} />
+            position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)",
+            fontSize: 8, lineHeight: "8px", opacity: 0.6,
+          }}>⚓</div>
+          {/* Bottom stripe */}
+          <div style={{ position: "absolute", bottom: 4, left: 4, right: 4, height: 2, backgroundColor: "#1565C0", opacity: 0.4 }} />
         </div>
       );
 
