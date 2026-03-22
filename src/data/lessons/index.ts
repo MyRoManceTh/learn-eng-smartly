@@ -1,3 +1,9 @@
+// Core Pre-A1 Lesson Data - 4 Modules (21 lessons total)
+export { corePreAlphabetLessons } from './core-pre0-alphabet';
+export { corePreNumbersLessons } from './core-pre0-numbers';
+export { corePreColorsLessons } from './core-pre0-colors';
+export { corePreGreetingsLessons } from './core-pre0-greetings';
+
 // Core A1 Lesson Data - All 8 Modules (43 lessons total)
 export type { LessonSeedData } from './core-a1-greetings';
 export { coreA1GreetingsLessons } from './core-a1-greetings';
@@ -54,6 +60,12 @@ export { travelB1ReviewLessons } from './travel-b1-review';
 // ─── Imports ───────────────────────────────────────────
 
 import { LessonSeedData } from './core-a1-greetings';
+
+// Core Pre-A1
+import { corePreAlphabetLessons } from './core-pre0-alphabet';
+import { corePreNumbersLessons } from './core-pre0-numbers';
+import { corePreColorsLessons } from './core-pre0-colors';
+import { corePreGreetingsLessons } from './core-pre0-greetings';
 
 // Core A1
 import { coreA1GreetingsLessons } from './core-a1-greetings';
@@ -172,6 +184,14 @@ import { toeicB2MultiLessons } from './toeic-b2-multi';
 import { toeicB2StrategiesLessons } from './toeic-b2-strategies';
 
 // ─── Combined Arrays ───────────────────────────────────
+
+// All Core Pre-A1 lessons combined
+export const allCorePreA1Lessons: LessonSeedData[] = [
+  ...corePreAlphabetLessons,
+  ...corePreNumbersLessons,
+  ...corePreColorsLessons,
+  ...corePreGreetingsLessons,
+];
 
 // All Core A1 lessons combined
 export const allCoreA1Lessons: LessonSeedData[] = [
@@ -377,6 +397,7 @@ export const allToeicLessons: LessonSeedData[] = [
 
 // All lessons combined
 export const allLessons: LessonSeedData[] = [
+  ...allCorePreA1Lessons,
   ...allCoreA1Lessons,
   ...allCoreA2Lessons,
   ...allCoreB1Lessons,
