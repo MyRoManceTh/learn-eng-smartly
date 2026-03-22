@@ -31,14 +31,24 @@ const ShirtPattern: React.FC<{ shirtId: string; shirtColor: string }> = ({ shirt
           {/* White stripes on collar */}
           <div style={{ position: "absolute", top: 3, left: 4, right: 4, height: 2, backgroundColor: "rgba(255,255,255,0.6)" }} />
           <div style={{ position: "absolute", top: 7, left: 6, right: 6, height: 1.5, backgroundColor: "rgba(255,255,255,0.4)" }} />
-          {/* Ribbon bow */}
+          {/* Sailor bow — left wing */}
           <div style={{
-            position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)",
-            width: 12, height: 5, backgroundColor: "#E53935", borderRadius: 2,
+            position: "absolute", top: 14, left: "calc(50% - 9px)",
+            width: 0, height: 0,
+            borderTop: "5px solid transparent", borderBottom: "5px solid transparent",
+            borderRight: "8px solid #E53935",
           }} />
+          {/* Sailor bow — right wing */}
+          <div style={{
+            position: "absolute", top: 14, left: "calc(50% + 1px)",
+            width: 0, height: 0,
+            borderTop: "5px solid transparent", borderBottom: "5px solid transparent",
+            borderLeft: "8px solid #E53935",
+          }} />
+          {/* Sailor bow — center knot */}
           <div style={{
             position: "absolute", top: 15, left: "50%", transform: "translateX(-50%)",
-            width: 4, height: 3, backgroundColor: "#C62828", borderRadius: 1,
+            width: 5, height: 8, backgroundColor: "#C62828", borderRadius: 2,
           }} />
         </div>
       );

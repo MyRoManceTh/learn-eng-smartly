@@ -25,9 +25,9 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       manifest: {
-        name: "อ่านเรียน English",
-        short_name: "อ่านเรียน",
-        description: "เรียนภาษาอังกฤษผ่านการอ่านเรื่องสั้นสองภาษา",
+        name: "English Experience Points",
+        short_name: "EngXP",
+        description: "เก็บ XP ภาษาอังกฤษทุกวัน ผ่านเรื่องสั้น คำศัพท์ และมินิเกมสนุกๆ",
         theme_color: "#c27a33",
         background_color: "#f5f0e8",
         display: "standalone",

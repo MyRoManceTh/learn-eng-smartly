@@ -214,7 +214,7 @@ const Index = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/my")}
-              className="shrink-0 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 p-1 shadow-inner hover:scale-105 transition-transform"
+              className="shrink-0 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 p-1 shadow-inner hover:scale-105 transition-transform overflow-hidden"
             >
               <SpriteAvatar equipped={equipped} size="sm" />
             </button>

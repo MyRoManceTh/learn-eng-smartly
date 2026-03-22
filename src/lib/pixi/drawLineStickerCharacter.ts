@@ -471,29 +471,136 @@ function drawBody(g: Graphics, c: Colors, shirtId: string) {
 
 function applyShirtPattern(g: Graphics, sid: string, c: Colors) {
   const t = BODY_TOP;
-  const l = BODY_CX - BODY_W / 2 + 2;
-  const r = BODY_CX + BODY_W / 2 - 2;
+  const cx = BODY_CX;
+  const hw = BODY_W / 2; // half-width = 12
 
-  if (sid.includes("striped")) {
-    g.moveTo(l, t + 5).lineTo(r, t + 5).stroke({ color: c.shirtShade, width: 1.5 });
-    g.moveTo(l, t + 9).lineTo(r, t + 9).stroke({ color: c.shirtShade, width: 1.5 });
-  } else if (sid.includes("superhero")) {
-    drawStar(g, BODY_CX, t + 7, 4, 0xffd700);
-  } else if (sid.includes("hoodie")) {
-    g.arc(BODY_CX, t + 1, 6, 0.3, Math.PI - 0.3, false)
-      .stroke({ color: c.shirtShade, width: 1.5 });
-    g.roundRect(BODY_CX - 6, t + 8, 12, 4, 2).stroke({ color: c.shirtShade, width: 1 });
-  } else if (sid.includes("tuxedo")) {
-    g.roundRect(BODY_CX - 3, t + 1, 6, BODY_H - 2, 2).fill(0xf0f0f0);
-    g.moveTo(BODY_CX, t + 1).lineTo(BODY_CX - 2, t + 5)
-      .lineTo(BODY_CX, t + 9).lineTo(BODY_CX + 2, t + 5)
-      .closePath().fill(0xd32f2f);
-  } else if (sid.includes("dragon")) {
-    g.circle(BODY_CX, t + 7, 3).fill({ color: 0xffd700, alpha: 0.5 });
-  } else if (sid.includes("galaxy")) {
-    g.circle(BODY_CX - 4, t + 4, 1).fill(0xffffff);
-    g.circle(BODY_CX + 4, t + 8, 0.8).fill(0xffffff);
-    g.circle(BODY_CX + 2, t + 3, 0.6).fill(0x7c4dff);
+  switch (sid) {
+    case "shirt_default":
+      // V-neck
+      g.moveTo(cx - 3, t).lineTo(cx, t + 5).lineTo(cx + 3, t)
+        .stroke({ color: c.shirtShade, width: 1.5 });
+      break;
+
+    case "shirt_sailor":
+      // Navy collar triangle
+      g.poly([cx - 7, t, cx + 7, t, cx, t + 7]).fill(0x1565C0);
+      g.moveTo(cx - 5, t + 2).lineTo(cx + 5, t + 2).stroke({ color: 0xffffff, width: 1 });
+      // Sailor bow (two wings + knot)
+      g.poly([cx - 6, t + 8, cx - 1, t + 11, cx - 6, t + 14]).fill(0xE53935);
+      g.poly([cx + 6, t + 8, cx + 1, t + 11, cx + 6, t + 14]).fill(0xE53935);
+      g.circle(cx, t + 11, 2).fill(0xC62828);
+      break;
+
+    case "shirt_overalls":
+      // Bib front
+      g.roundRect(cx - 5, t + 3, 10, 9, 2).fill({ color: c.shirtShade, alpha: 0.35 });
+      // Straps
+      g.roundRect(cx - 6, t, 3, 7, 1).fill({ color: c.shirtShade, alpha: 0.5 });
+      g.roundRect(cx + 3, t, 3, 7, 1).fill({ color: c.shirtShade, alpha: 0.5 });
+      // Buttons
+      g.circle(cx - 4, t + 5, 1.2).fill(0xFFD700);
+      g.circle(cx + 4, t + 5, 1.2).fill(0xFFD700);
+      // Heart pocket
+      g.circle(cx - 1.2, t + 8, 1.8).fill(0xFF80AB);
+      g.circle(cx + 1.2, t + 8, 1.8).fill(0xFF80AB);
+      g.poly([cx - 3, t + 9.5, cx, t + 12.5, cx + 3, t + 9.5]).fill(0xFF80AB);
+      break;
+
+    case "shirt_hoodie":
+      // Hood arc
+      g.arc(cx, t + 1, 6, 0.3, Math.PI - 0.3, false).stroke({ color: c.shirtShade, width: 1.5 });
+      // Zipper
+      g.moveTo(cx, t + 2).lineTo(cx, t + 12).stroke({ color: c.shirtShade, width: 1 });
+      // Bear face on belly
+      g.circle(cx, t + 7, 4).fill({ color: lightenColor(c.shirt, 0.25), alpha: 0.85 });
+      g.circle(cx - 1.5, t + 6, 0.9).fill(0x1A1A1A);
+      g.circle(cx + 1.5, t + 6, 0.9).fill(0x1A1A1A);
+      g.circle(cx, t + 8, 0.9).fill(0x5D4037);
+      // Pocket
+      g.roundRect(cx - 5, t + 10, 10, 4, 2).stroke({ color: c.shirtShade, width: 1 });
+      break;
+
+    case "shirt_cardigan":
+      // Center opening + lapels
+      g.moveTo(cx, t).lineTo(cx, t + BODY_H).stroke({ color: c.shirtShade, width: 1.5 });
+      g.moveTo(cx - 2, t).lineTo(cx - 6, t + 6).stroke({ color: c.shirtShade, width: 1.5 });
+      g.moveTo(cx + 2, t).lineTo(cx + 6, t + 6).stroke({ color: c.shirtShade, width: 1.5 });
+      // Inner shirt peek
+      g.roundRect(cx - 3, t, 6, 6, 1).fill({ color: 0xFFFFFF, alpha: 0.5 });
+      // Buttons
+      [t + 5, t + 9, t + 12].forEach(by => {
+        g.circle(cx, by, 1.2).fill(0xFFF8E1);
+        g.circle(cx, by, 1.2).stroke({ color: c.shirtShade, width: 0.5 });
+      });
+      break;
+
+    case "shirt_magical":
+      // Chest ribbon bow (two wings)
+      g.poly([cx - 7, t + 3, cx - 1, t + 7, cx - 7, t + 11]).fill(0xFFD700);
+      g.poly([cx + 7, t + 3, cx + 1, t + 7, cx + 7, t + 11]).fill(0xFFD700);
+      // Center gem
+      g.circle(cx, t + 7, 2.2).fill(0xE040FB);
+      g.circle(cx - 0.7, t + 6.3, 0.8).fill({ color: 0xffffff, alpha: 0.7 });
+      // Frilly edge dots
+      [-4, -2, 0, 2, 4].forEach(dx => g.circle(cx + dx, t + BODY_H - 1, 0.9).fill(lightenColor(c.shirt, 0.3)));
+      // Star accents
+      drawStar(g, cx - 6, t + 11, 1.5, 0xFFF176);
+      drawStar(g, cx + 7, t + 4, 1.5, 0xFFF176);
+      break;
+
+    case "shirt_kimono":
+      // Left-over-right overlap
+      g.moveTo(cx - 2, t).lineTo(cx + 5, t + BODY_H * 0.7).stroke({ color: c.shirtShade, width: 2 });
+      // Obi belt
+      g.roundRect(cx - hw + 2, t + BODY_H - 5, BODY_W - 4, 4, 1).fill(0xE91E63);
+      // Obi knot
+      g.roundRect(cx - 2, t + BODY_H - 7, 5, 6, 1).fill(0xAD1457);
+      // Sakura petals
+      [[cx - 5, t + 4], [cx + 5, t + 8], [cx - 2, t + 10]].forEach(([px, py]) =>
+        g.ellipse(px, py, 2, 2).fill({ color: 0xF8BBD0, alpha: 0.75 })
+      );
+      break;
+
+    case "shirt_celestial":
+      // Gold V collar
+      g.moveTo(cx - 3, t).lineTo(cx, t + 5).lineTo(cx + 3, t).stroke({ color: 0xFFD700, width: 1.8 });
+      // Moon crescent
+      g.circle(cx + 6, t + 4, 3).fill(0xFFF176);
+      g.circle(cx + 7.5, t + 3, 2.8).fill(c.shirt);
+      // Stars
+      [[cx - 5, t + 4], [cx - 3, t + 10], [cx + 3, t + 11], [cx + 5, t + 7]].forEach(([sx, sy]) =>
+        g.circle(sx, sy, 0.9).fill(0xFFF9C4)
+      );
+      break;
+
+    case "gacha_shirt_dragon": {
+      // Scale pattern
+      const scale = lightenColor(c.shirt, 0.2);
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 4; col++) {
+          const sx = (cx - 9) + col * 5 + (row % 2 === 0 ? 0 : 2.5);
+          const sy = t + 2 + row * 4;
+          g.ellipse(sx, sy, 2.2, 1.5).fill({ color: scale, alpha: 0.6 });
+        }
+      }
+      g.circle(cx, t + 8, 3).fill({ color: 0xffd700, alpha: 0.6 });
+      break;
+    }
+
+    case "gacha_shirt_galaxy":
+      g.circle(cx - 4, t + 4, 1).fill(0xffffff);
+      g.circle(cx + 4, t + 8, 0.9).fill(0xffffff);
+      g.circle(cx + 2, t + 3, 0.7).fill(0x7c4dff);
+      g.circle(cx - 3, t + 10, 0.8).fill(0x448aff);
+      g.circle(cx + 6, t + 6, 0.5).fill(0xffffff);
+      break;
+
+    case "gacha_shirt_rainbow":
+      [0xFF0000, 0xFF7700, 0xFFFF00, 0x00CC00, 0x0000FF, 0x8B00FF].forEach((col, i) => {
+        g.moveTo(cx - hw + 3, t + 2 + i * 2).lineTo(cx + hw - 3, t + 2 + i * 2)
+          .stroke({ color: col, width: 1.5 });
+      });
+      break;
   }
 }
 

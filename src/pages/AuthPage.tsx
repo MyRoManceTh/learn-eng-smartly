@@ -93,11 +93,14 @@ const AuthPage = () => {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 mx-auto mb-3">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground font-thai">
-            อ่านเรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">English</span>
+          <h1 className="text-2xl font-bold text-foreground">
+            Eng<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">XP</span>
           </h1>
+          <p className="text-white/90 text-xs font-semibold tracking-widest uppercase mt-0.5">
+            English Experience Points
+          </p>
           <p className="text-white/70 font-thai text-sm mt-1">
-            เรียนภาษาอังกฤษผ่านการอ่านเรื่องสั้นสองภาษา
+            เก็บ XP ภาษาอังกฤษทุกวัน
           </p>
         </div>
 
