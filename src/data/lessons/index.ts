@@ -61,6 +61,12 @@ export { travelB1ReviewLessons } from './travel-b1-review';
 
 import { LessonSeedData } from './core-a1-greetings';
 
+// Core Pre-A1
+import { corePreAlphabetLessons } from './core-pre0-alphabet';
+import { corePreNumbersLessons } from './core-pre0-numbers';
+import { corePreColorsLessons } from './core-pre0-colors';
+import { corePreGreetingsLessons } from './core-pre0-greetings';
+
 // Core A1
 import { coreA1GreetingsLessons } from './core-a1-greetings';
 import { coreA1NumbersLessons } from './core-a1-numbers';
