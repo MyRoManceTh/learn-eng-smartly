@@ -1,0 +1,1 @@
+DELETE FROM lessons WHERE module_id LIKE 'core-a2-%' OR module_id LIKE 'biz-a2-%' OR module_id LIKE 'travel-a2-%' OR module_id LIKE 'ent-a2-%' OR module_id LIKE 'tech-a2-%';
