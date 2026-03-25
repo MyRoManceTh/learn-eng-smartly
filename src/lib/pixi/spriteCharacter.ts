@@ -26,6 +26,8 @@ import {
   resolveAccessoryId,
   resolveAccessoryColor,
 } from "./spriteColors";
+import { getItemById } from "@/data/avatarItems";
+import { numToHex, parseColor } from "./colorUtils";
 
 /** Maps CharacterPose → sprite sheet animation name */
 const POSE_ANIM_MAP: Record<CharacterPose, string> = {
