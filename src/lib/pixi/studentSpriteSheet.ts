@@ -932,6 +932,124 @@ export interface EquipmentOverlay {
   rightHandColor: string;
 }
 
+function drawHandItems(
+  ctx: CanvasRenderingContext2D,
+  ox: number, oy: number,
+  equip: EquipmentOverlay | null,
+) {
+  if (!equip) return;
+
+  // Left hand position: x=7..9, hand at y=25..26
+  if (equip.leftHandId) {
+    const c = equip.leftHandColor;
+    const lx = ox + 4; // slightly left of left arm
+    const ly = oy + 16;
+    switch (equip.leftHandId) {
+      case "left_shield":
+      case "left_crystal_shield":
+      case "left_star_shield":
+      case "gacha_left_spirit_shield":
+        // Shield on left side
+        px(ctx, lx, ly, 5, 7, c);
+        px(ctx, lx+1, ly+1, 3, 5, darken(c, 0.15));
+        px(ctx, lx+2, ly+2, 1, 3, "#FFD700"); // boss
+        break;
+      case "left_lantern":
+        px(ctx, lx+1, ly, 3, 2, "#5D4037"); // handle
+        px(ctx, lx, ly+2, 5, 5, c);
+        px(ctx, lx+1, ly+3, 3, 3, "#FF8F00"); // flame
+        px(ctx, lx+2, ly+3, 1, 2, "#FFD600");
+        break;
+      case "left_book":
+        px(ctx, lx, ly+1, 5, 6, c);
+        px(ctx, lx, ly+1, 1, 6, darken(c, 0.25)); // spine
+        px(ctx, lx+3, ly+3, 1, 1, "#FFD700"); // clasp
+        break;
+      case "left_flower":
+        px(ctx, lx+1, ly+2, 1, 5, "#4CAF50"); // stem
+        px(ctx, lx, ly, 3, 3, c); // flowers
+        px(ctx, lx+2, ly+1, 2, 2, "#FFD700");
+        break;
+      default:
+        // Generic left hand item
+        px(ctx, lx, ly, 5, 7, c);
+        break;
+    }
+  }
+
+  // Right hand position: x=22..24, hand at y=25..26
+  if (equip.rightHandId) {
+    const c = equip.rightHandColor;
+    const rx = ox + 24; // right of right arm
+    const ry = oy + 10;
+    switch (equip.rightHandId) {
+      case "right_sword":
+      case "right_crystal_blade":
+      case "right_lightning_sword":
+      case "gacha_right_spirit_blade":
+        // Sword blade going up from hand
+        px(ctx, rx, ry, 2, 16, "#C0C0C0"); // blade
+        px(ctx, rx, ry, 2, 3, "#E8E8E8"); // tip highlight
+        px(ctx, rx-1, ry+12, 4, 2, c); // guard
+        px(ctx, rx, ry+14, 2, 4, "#5D4037"); // handle
+        // Color tint on blade
+        if (equip.rightHandId === "right_crystal_blade") {
+          px(ctx, rx, ry+2, 2, 8, "#B3E5FC");
+          px(ctx, rx, ry, 2, 2, "#E1F5FE");
+        } else if (equip.rightHandId === "right_lightning_sword") {
+          px(ctx, rx, ry+2, 2, 8, "#FFD600");
+          px(ctx, rx, ry, 2, 2, "#FFFFFF");
+        } else if (equip.rightHandId === "gacha_right_spirit_blade") {
+          px(ctx, rx, ry+2, 2, 8, "#CE93D8");
+          px(ctx, rx, ry, 2, 2, "#E1F5FE");
+        }
+        break;
+      case "right_wand":
+        // Wand
+        px(ctx, rx, ry+4, 2, 14, "#F8BBD0"); // shaft
+        px(ctx, rx-1, ry, 4, 4, c); // star top
+        px(ctx, rx, ry+1, 2, 2, "#FFF9C4"); // star center
+        px(ctx, rx+2, ry-1, 1, 1, "#FFF176"); // sparkle
+        break;
+      case "right_staff":
+        // Staff
+        px(ctx, rx, ry+2, 2, 18, darken(c, 0.2)); // pole
+        px(ctx, rx-1, ry-2, 4, 4, c); // orb
+        px(ctx, rx, ry-1, 2, 2, lighten(c, 0.3)); // orb shine
+        break;
+      case "right_torch":
+        // Torch
+        px(ctx, rx, ry+8, 2, 12, "#5D4037"); // handle
+        px(ctx, rx-1, ry+4, 4, 4, "#795548"); // head
+        px(ctx, rx-1, ry, 4, 5, "#FF6D00"); // flame
+        px(ctx, rx, ry, 2, 3, "#FFD600"); // inner flame
+        px(ctx, rx, ry-1, 2, 2, "#FFFFFF"); // hot center
+        break;
+      default:
+        // Generic right hand item
+        px(ctx, rx, ry+4, 2, 14, c);
+        break;
+    }
+  }
+}
+
+/** Darken a CSS hex color */
+function darken(hex: string, amount: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const f = 1 - amount;
+  return `#${Math.round(r * f).toString(16).padStart(2, '0')}${Math.round(g * f).toString(16).padStart(2, '0')}${Math.round(b * f).toString(16).padStart(2, '0')}`;
+}
+
+/** Lighten a CSS hex color */
+function lighten(hex: string, amount: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `#${Math.min(255, Math.round(r + (255 - r) * amount)).toString(16).padStart(2, '0')}${Math.min(255, Math.round(g + (255 - g) * amount)).toString(16).padStart(2, '0')}${Math.min(255, Math.round(b + (255 - b) * amount)).toString(16).padStart(2, '0')}`;
+}
+
 function drawEquipOverlays(
   ctx: CanvasRenderingContext2D,
   ox: number, oy: number,
@@ -954,6 +1072,9 @@ function drawEquipOverlays(
   if (equip.accessoryId) {
     drawEquipAccessory(ctx, ox, oy, equip.accessoryId, equip.accessoryColor);
   }
+
+  // Hand items
+  drawHandItems(ctx, ox, oy, equip);
 }
 
 /** Decide whether to draw full hair or partial hair under hat */
