@@ -64,9 +64,6 @@ function getEquipKey(equipped?: EquippedItems): string {
 function resolveEquipOverlay(equipped?: EquippedItems): EquipmentOverlay | null {
   if (!equipped) return null;
 
-  const { getItemById } = require("@/data/avatarItems");
-  const { numToHex, parseColor } = require("./colorUtils");
-
   const leftItem = equipped.leftHand ? getItemById(equipped.leftHand) : null;
   const rightItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
 
