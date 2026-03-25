@@ -10,7 +10,7 @@ import { evolutionStages } from "@/data/evolutionStages";
 import { getItemById } from "@/data/avatarItems";
 import { toast } from "sonner";
 import { Check, Pencil, UserMinus, ArrowUpDown } from "lucide-react";
-import PixelAvatar from "@/components/avatar/PixelAvatar";
+import SpriteAvatar from "@/components/avatar/SpriteAvatar";
 import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
 import ChallengeModal from "./ChallengeModal";
@@ -19,17 +19,17 @@ import DisplayNameModal from "@/components/DisplayNameModal";
 function parseEquipped(raw: any): EquippedItems {
   if (!raw || typeof raw !== "object") return DEFAULT_EQUIPPED;
   return {
-    skin: raw.skin || DEFAULT_EQUIPPED.skin,
-    hair: raw.hair || DEFAULT_EQUIPPED.hair,
-    hairColor: raw.hairColor || DEFAULT_EQUIPPED.hairColor,
-    hat: raw.hat || null,
-    shirt: raw.shirt || DEFAULT_EQUIPPED.shirt,
-    pants: raw.pants || DEFAULT_EQUIPPED.pants,
-    shoes: raw.shoes || DEFAULT_EQUIPPED.shoes,
-    necklace: raw.necklace || null,
-    leftHand: raw.leftHand || null,
-    rightHand: raw.rightHand || null,
-    aura: raw.aura || null,
+    skin: (raw.skin && getItemById(raw.skin)) ? raw.skin : DEFAULT_EQUIPPED.skin,
+    hair: (raw.hair && getItemById(raw.hair)) ? raw.hair : DEFAULT_EQUIPPED.hair,
+    hairColor: (raw.hairColor && getItemById(raw.hairColor)) ? raw.hairColor : DEFAULT_EQUIPPED.hairColor,
+    hat: null,
+    shirt: (raw.shirt && getItemById(raw.shirt)) ? raw.shirt : DEFAULT_EQUIPPED.shirt,
+    pants: (raw.pants && getItemById(raw.pants)) ? raw.pants : DEFAULT_EQUIPPED.pants,
+    shoes: (raw.shoes && getItemById(raw.shoes)) ? raw.shoes : DEFAULT_EQUIPPED.shoes,
+    necklace: (raw.necklace && getItemById(raw.necklace)) ? raw.necklace : null,
+    leftHand: (raw.leftHand && getItemById(raw.leftHand)) ? raw.leftHand : null,
+    rightHand: (raw.rightHand && getItemById(raw.rightHand)) ? raw.rightHand : null,
+    aura: (raw.aura && getItemById(raw.aura)) ? raw.aura : null,
   };
 }
 
