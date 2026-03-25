@@ -86,9 +86,8 @@ function drawShirt(ctx: CanvasRenderingContext2D, ox: number, oy: number, P: Spr
   px(ctx, ox+11, oy+16, 10, 1, P.collar);
   px(ctx, ox+10, oy+17, 1, 5, P.shirtShade);
   px(ctx, ox+21, oy+17, 1, 5, P.shirtShade);
-  px(ctx, ox+15, oy+17, 2, 1, P.tie);
-  px(ctx, ox+15, oy+18, 2, 6, P.tie);
-  px(ctx, ox+14, oy+24, 4, 1, P.tieDk);
+  // V-neck line instead of tie
+  px(ctx, ox+15, oy+17, 2, 1, P.shirtShade);
 }
 
 function drawArmsIdle(ctx: CanvasRenderingContext2D, ox: number, oy: number, P: SpritePalette) {

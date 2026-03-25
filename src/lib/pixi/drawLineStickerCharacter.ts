@@ -102,7 +102,14 @@ export function drawLineStickerCharacter(
 
   // Draw order (back → front)
   drawShadow(g, pose);
+
+  // Aura (behind everything)
+  if (equipped.aura) drawAura(g, equipped.aura);
+
   drawAccessoryBack(g, equipped.rightHand, c);
+
+  // Left hand item (behind body)
+  if (equipped.leftHand) drawLeftHand(g, equipped.leftHand, c);
 
   if (pose === "sitting") {
     drawSittingLegs(g, c, equipped.pants);
@@ -123,10 +130,17 @@ export function drawLineStickerCharacter(
   }
 
   drawNeck(g, c);
+
+  // Necklace (on neck, before head)
+  if (equipped.necklace) drawNecklace(g, equipped.necklace, c);
+
   drawHead(g, c);
   drawHair(g, hairStyle, c);
   drawFace(g, c, emotion, blinkFrame, equipped.rightHand);
   drawAccessoryFront(g, equipped.rightHand, c);
+
+  // Right hand item (in front)
+  if (equipped.rightHand) drawRightHandItem(g, equipped.rightHand, c);
 
   if (pose === "reading") {
     drawBook(g);
