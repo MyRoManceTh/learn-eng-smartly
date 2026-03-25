@@ -232,25 +232,43 @@ const ConversationPage = () => {
       <main className="px-4 py-5 max-w-3xl mx-auto">
         <p className="text-sm text-muted-foreground font-thai mb-4">ฝึกสนทนาภาษาอังกฤษในสถานการณ์จริง เลือกตอบแล้วดูผลทันที</p>
         <div className="space-y-3">
-          {conversationScenarios.map((sc) => (
+          {conversationScenarios.map((sc) => {
+            const isDone = completedIds.has(sc.id);
+            return (
             <button
               key={sc.id}
               onClick={() => startScenario(sc)}
-              className="group w-full text-left rounded-2xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-4 shadow-md hover:shadow-lg transition-all active:scale-[0.98] overflow-hidden relative"
+              className={cn(
+                "group w-full text-left rounded-2xl border-2 p-4 shadow-md hover:shadow-lg transition-all active:scale-[0.98] overflow-hidden relative",
+                isDone
+                  ? "border-green-300 bg-green-50/80"
+                  : "border-white/60 bg-white/80 backdrop-blur-sm"
+              )}
             >
-              <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b", sc.color)} />
+              <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b", isDone ? "from-green-400 to-emerald-500" : sc.color)} />
               <div className="flex items-center gap-4 pl-3">
-                <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br", sc.color)}>
+                <div className={cn(
+                  "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br relative",
+                  isDone ? "from-green-400 to-emerald-500" : sc.color
+                )}>
                   {sc.icon}
+                  {isDone && (
+                    <div className="absolute -right-1 -top-1 w-6 h-6 rounded-full bg-green-500 border-2 border-white flex items-center justify-center shadow-md">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold font-thai text-foreground">{sc.titleThai}</h3>
+                    <h3 className={cn("font-bold font-thai", isDone ? "text-green-700" : "text-foreground")}>{sc.titleThai}</h3>
                     <div className="flex gap-0.5">
                       {[1, 2, 3].map(s => (
                         <Star key={s} className={cn("w-3 h-3", s <= sc.level ? "text-amber-400 fill-amber-400" : "text-gray-200")} />
                       ))}
                     </div>
+                    {isDone && (
+                      <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-thai">เรียนแล้ว ✓</span>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">{sc.description}</p>
                   <p className="text-[10px] text-purple-500 font-thai mt-1">กับ {sc.npcName} ({sc.npcRole})</p>
@@ -258,7 +276,8 @@ const ConversationPage = () => {
                 <svg className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </div>
             </button>
-          ))}
+            );
+          })}
         </div>
       </main>
     </div>
