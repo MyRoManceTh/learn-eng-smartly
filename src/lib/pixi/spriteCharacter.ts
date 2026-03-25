@@ -26,6 +26,8 @@ import {
   resolveAccessoryId,
   resolveAccessoryColor,
 } from "./spriteColors";
+import { getItemById } from "@/data/avatarItems";
+import { numToHex, parseColor } from "./colorUtils";
 
 /** Maps CharacterPose → sprite sheet animation name */
 const POSE_ANIM_MAP: Record<CharacterPose, string> = {
@@ -61,12 +63,20 @@ function getEquipKey(equipped?: EquippedItems): string {
 
 function resolveEquipOverlay(equipped?: EquippedItems): EquipmentOverlay | null {
   if (!equipped) return null;
+
+  const leftItem = equipped.leftHand ? getItemById(equipped.leftHand) : null;
+  const rightItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
+
   return {
     hairStyle: resolveHairStyle(equipped),
     hatId: resolveHatId(equipped),
     hatColor: resolveHatColor(equipped),
     accessoryId: resolveAccessoryId(equipped),
     accessoryColor: resolveAccessoryColor(equipped),
+    leftHandId: equipped.leftHand || null,
+    leftHandColor: leftItem ? numToHex(parseColor(leftItem.svgProps?.color || "#80DEEA")) : "#80DEEA",
+    rightHandId: equipped.rightHand || null,
+    rightHandColor: rightItem ? numToHex(parseColor(rightItem.svgProps?.color || "#90A4AE")) : "#90A4AE",
   };
 }
 
