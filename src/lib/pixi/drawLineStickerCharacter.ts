@@ -102,7 +102,14 @@ export function drawLineStickerCharacter(
 
   // Draw order (back → front)
   drawShadow(g, pose);
+
+  // Aura (behind everything)
+  if (equipped.aura) drawAura(g, equipped.aura);
+
   drawAccessoryBack(g, equipped.rightHand, c);
+
+  // Left hand item (behind body)
+  if (equipped.leftHand) drawLeftHand(g, equipped.leftHand, c);
 
   if (pose === "sitting") {
     drawSittingLegs(g, c, equipped.pants);
@@ -123,10 +130,17 @@ export function drawLineStickerCharacter(
   }
 
   drawNeck(g, c);
+
+  // Necklace (on neck, before head)
+  if (equipped.necklace) drawNecklace(g, equipped.necklace, c);
+
   drawHead(g, c);
   drawHair(g, hairStyle, c);
   drawFace(g, c, emotion, blinkFrame, equipped.rightHand);
   drawAccessoryFront(g, equipped.rightHand, c);
+
+  // Right hand item (in front)
+  if (equipped.rightHand) drawRightHandItem(g, equipped.rightHand, c);
 
   if (pose === "reading") {
     drawBook(g);
@@ -952,5 +966,192 @@ function drawAccessoryFront(g: Graphics, accId: string | null, c: Colors) {
     g.circle(px - 1.5, py - 5, 0.8).fill(c.outline);
     g.circle(px + 1.5, py - 5, 0.8).fill(c.outline);
     g.ellipse(px, py - 2, 1.2, 0.8).fill(0xff8a80);
+  }
+}
+
+// ═══════════════════════════════════════════
+// NECKLACE
+// ═══════════════════════════════════════════
+
+function drawNecklace(g: Graphics, neckId: string, c: Colors) {
+  const item = getItemById(neckId);
+  const color = item ? parseColor(item.svgProps?.color || "#FFD700") : 0xffd700;
+  const dk = darkenColor(color, 0.2);
+
+  // Chain arc around neck
+  g.arc(CX, HEAD_CY + HEAD_RY + 2, 10, 0.3, Math.PI - 0.3, false)
+    .stroke({ color: dk, width: 1.2 });
+
+  // Pendant
+  const py = HEAD_CY + HEAD_RY + 10;
+  if (neckId.includes("heart")) {
+    drawHeart(g, CX, py, 5, color);
+  } else if (neckId.includes("star")) {
+    drawStar(g, CX, py, 3.5, color);
+  } else if (neckId.includes("pearl")) {
+    // Pearl strand
+    for (let i = -3; i <= 3; i++) {
+      g.circle(CX + i * 3, HEAD_CY + HEAD_RY + 5 + Math.abs(i) * 0.8, 1.5)
+        .fill(color);
+    }
+  } else if (neckId.includes("crystal")) {
+    // Diamond shape
+    g.poly([CX, py - 3, CX + 3, py, CX, py + 3, CX - 3, py]).fill(color);
+    g.poly([CX, py - 3, CX + 3, py, CX, py + 3, CX - 3, py])
+      .stroke({ color: dk, width: 0.8 });
+    g.circle(CX - 0.5, py - 0.5, 1).fill({ color: 0xffffff, alpha: 0.6 });
+  } else if (neckId.includes("moon")) {
+    g.circle(CX, py, 3).fill(color);
+    g.circle(CX + 1.5, py - 1, 2.5).fill(c.shirt); // crescent cutout
+  } else if (neckId.includes("dragon")) {
+    // Fang shape
+    g.poly([CX - 2, py - 3, CX + 2, py - 3, CX, py + 4]).fill(color);
+    g.poly([CX - 2, py - 3, CX + 2, py - 3, CX, py + 4])
+      .stroke({ color: dk, width: 0.8 });
+  } else {
+    // Generic pendant
+    g.circle(CX, py, 2.5).fill(color);
+  }
+}
+
+// ═══════════════════════════════════════════
+// LEFT HAND ITEM
+// ═══════════════════════════════════════════
+
+function drawLeftHand(g: Graphics, leftId: string, c: Colors) {
+  const item = getItemById(leftId);
+  const color = item ? parseColor(item.svgProps?.color || "#78909C") : 0x78909c;
+  const dk = darkenColor(color, 0.2);
+  const lx = BODY_CX - BODY_W / 2 - 8;
+  const ly = BODY_TOP + 6;
+
+  if (leftId.includes("shield")) {
+    g.ellipse(lx, ly + 4, 7, 9).fill(color);
+    g.ellipse(lx, ly + 4, 7, 9).stroke({ color: dk, width: OL * 0.6 });
+    g.ellipse(lx, ly + 4, 3, 5).fill({ color: lightenColor(color, 0.3), alpha: 0.5 });
+  } else if (leftId.includes("lantern")) {
+    // Handle
+    g.arc(lx, ly, 3, Math.PI, 0, false).stroke({ color: dk, width: 1.5 });
+    // Body
+    g.roundRect(lx - 3, ly, 6, 8, 2).fill(color);
+    g.roundRect(lx - 3, ly, 6, 8, 2).stroke({ color: dk, width: 0.8 });
+    // Glow
+    g.circle(lx, ly + 4, 2).fill({ color: 0xffeb3b, alpha: 0.8 });
+  } else if (leftId.includes("book")) {
+    g.roundRect(lx - 4, ly, 8, 10, 1.5).fill(color);
+    g.roundRect(lx - 4, ly + 1, 6, 8, 1).fill(0xfafafa);
+    g.roundRect(lx - 4, ly, 8, 10, 1.5).stroke({ color: dk, width: 0.8 });
+  } else if (leftId.includes("flower")) {
+    // Stems
+    g.moveTo(lx, ly + 10).lineTo(lx, ly + 2).stroke({ color: 0x4caf50, width: 1.5 });
+    g.moveTo(lx - 2, ly + 8).lineTo(lx - 3, ly + 3).stroke({ color: 0x4caf50, width: 1 });
+    g.moveTo(lx + 2, ly + 8).lineTo(lx + 3, ly + 4).stroke({ color: 0x4caf50, width: 1 });
+    // Flowers
+    g.circle(lx, ly + 1, 2.5).fill(color);
+    g.circle(lx - 3, ly + 2, 2).fill(0xff80ab);
+    g.circle(lx + 3, ly + 3, 2).fill(0xce93d8);
+    // Centers
+    g.circle(lx, ly + 1, 0.8).fill(0xffeb3b);
+    g.circle(lx - 3, ly + 2, 0.6).fill(0xffeb3b);
+    g.circle(lx + 3, ly + 3, 0.6).fill(0xffeb3b);
+  }
+}
+
+// ═══════════════════════════════════════════
+// RIGHT HAND ITEM (extended beyond existing accessoryFront)
+// ═══════════════════════════════════════════
+
+function drawRightHandItem(g: Graphics, rightId: string, c: Colors) {
+  const item = getItemById(rightId);
+  const color = item ? parseColor(item.svgProps?.color || "#CE93D8") : 0xce93d8;
+  const dk = darkenColor(color, 0.2);
+  const rx = BODY_CX + BODY_W / 2 + 6;
+
+  if (rightId.includes("wand")) {
+    // Magic wand
+    g.roundRect(rx - 1, BODY_TOP - 4, 2, 20, 0.5).fill(color);
+    g.roundRect(rx - 1, BODY_TOP - 4, 2, 20, 0.5).stroke({ color: dk, width: 0.5 });
+    drawStar(g, rx, BODY_TOP - 6, 3, 0xffd700);
+    // Sparkles
+    g.circle(rx - 3, BODY_TOP - 2, 1).fill({ color: 0xffd700, alpha: 0.7 });
+    g.circle(rx + 3, BODY_TOP, 0.8).fill({ color: 0xffd700, alpha: 0.5 });
+  } else if (rightId.includes("staff")) {
+    // Magic staff
+    g.roundRect(rx - 1, HEAD_CY - 6, 2, 34, 0.5).fill(0x8d6e63);
+    g.roundRect(rx - 1, HEAD_CY - 6, 2, 34, 0.5).stroke({ color: 0x5d4037, width: 0.5 });
+    g.circle(rx, HEAD_CY - 8, 4).fill(color);
+    g.circle(rx, HEAD_CY - 8, 4).stroke({ color: dk, width: 1 });
+    g.circle(rx - 1, HEAD_CY - 9, 1.2).fill({ color: 0xffffff, alpha: 0.6 });
+  } else if (rightId.includes("torch")) {
+    // Flame torch
+    g.roundRect(rx - 1, BODY_TOP, 2, 18, 0.5).fill(0x8d6e63);
+    // Flame
+    g.ellipse(rx, BODY_TOP - 2, 3, 5).fill(color);
+    g.ellipse(rx, BODY_TOP - 3, 2, 3).fill(0xffeb3b);
+    g.ellipse(rx, BODY_TOP - 4, 1, 2).fill({ color: 0xffffff, alpha: 0.6 });
+  }
+  // sword, pet_cat, pet_dog already handled by drawAccessoryFront
+}
+
+// ═══════════════════════════════════════════
+// AURA EFFECT
+// ═══════════════════════════════════════════
+
+function drawAura(g: Graphics, auraId: string) {
+  const item = getItemById(auraId);
+  const color = item ? parseColor(item.svgProps?.color || "#FFD600") : 0xffd600;
+
+  if (auraId.includes("fire")) {
+    // Fire aura — flickering flames around body
+    const flames = [
+      { x: CX - 18, y: BODY_TOP + 10, rx: 5, ry: 12 },
+      { x: CX + 18, y: BODY_TOP + 10, rx: 5, ry: 12 },
+      { x: CX - 12, y: BODY_TOP - 2, rx: 4, ry: 8 },
+      { x: CX + 12, y: BODY_TOP - 2, rx: 4, ry: 8 },
+      { x: CX, y: BODY_TOP - 6, rx: 6, ry: 10 },
+    ];
+    for (const f of flames) {
+      g.ellipse(f.x, f.y, f.rx, f.ry).fill({ color, alpha: 0.2 });
+      g.ellipse(f.x, f.y, f.rx * 0.6, f.ry * 0.7).fill({ color: 0xffeb3b, alpha: 0.15 });
+    }
+  } else if (auraId.includes("ice")) {
+    // Ice aura — crystalline glow
+    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.1 });
+    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0xe3f2fd, alpha: 0.12 });
+    // Ice crystals
+    const crystals = [[-20, 10], [20, 10], [-14, -4], [14, -4], [0, -8]];
+    for (const [dx, dy] of crystals) {
+      g.poly([CX + dx, BODY_TOP + dy - 4, CX + dx + 2, BODY_TOP + dy, CX + dx - 2, BODY_TOP + dy])
+        .fill({ color, alpha: 0.3 });
+    }
+  } else if (auraId.includes("lightning")) {
+    // Lightning bolts around
+    g.ellipse(CX, BODY_TOP + 6, 26, 30).fill({ color, alpha: 0.1 });
+    // Bolts
+    const bolts = [[-18, 0], [18, 0], [-10, -10], [10, -10]];
+    for (const [dx, dy] of bolts) {
+      const bx = CX + dx, by = BODY_TOP + dy;
+      g.moveTo(bx, by).lineTo(bx + 2, by + 4).lineTo(bx - 1, by + 4)
+        .lineTo(bx + 1, by + 8).stroke({ color, width: 1.5 });
+    }
+  } else if (auraId.includes("dark")) {
+    // Dark aura — purple mist
+    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.15 });
+    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0x1a0033, alpha: 0.1 });
+    // Floating dark particles
+    const pts = [[-16, -6], [16, -4], [-12, 14], [12, 16], [0, -10]];
+    for (const [dx, dy] of pts) {
+      g.circle(CX + dx, BODY_TOP + dy, 1.5).fill({ color, alpha: 0.35 });
+    }
+  } else if (auraId.includes("supersaiyan")) {
+    // Super Saiyan — intense golden glow
+    g.ellipse(CX, BODY_TOP + 2, 30, 36).fill({ color, alpha: 0.12 });
+    g.ellipse(CX, BODY_TOP + 2, 24, 30).fill({ color: 0xfff9c4, alpha: 0.1 });
+    g.ellipse(CX, BODY_TOP + 2, 18, 24).fill({ color, alpha: 0.08 });
+    // Energy sparks
+    const sparks = [[-22, 4], [22, 4], [-16, -8], [16, -8], [0, -14], [-10, 16], [10, 16]];
+    for (const [dx, dy] of sparks) {
+      g.circle(CX + dx, BODY_TOP + dy, 1).fill({ color, alpha: 0.5 });
+    }
   }
 }
