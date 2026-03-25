@@ -1102,52 +1102,53 @@ function drawAura(g: Graphics, auraId: string) {
   const color = item ? parseColor(item.svgProps?.color || "#FFD600") : 0xffd600;
 
   if (auraId.includes("fire")) {
-    // Fire aura — flickering flames around body
+    // Fire aura — visible flames around body
+    g.ellipse(CX, BODY_TOP + 6, 26, 32).fill({ color, alpha: 0.35 });
+    g.ellipse(CX, BODY_TOP + 4, 20, 26).fill({ color: 0xffeb3b, alpha: 0.25 });
     const flames = [
-      { x: CX - 18, y: BODY_TOP + 10, rx: 5, ry: 12 },
-      { x: CX + 18, y: BODY_TOP + 10, rx: 5, ry: 12 },
-      { x: CX - 12, y: BODY_TOP - 2, rx: 4, ry: 8 },
-      { x: CX + 12, y: BODY_TOP - 2, rx: 4, ry: 8 },
-      { x: CX, y: BODY_TOP - 6, rx: 6, ry: 10 },
+      { x: CX - 16, y: BODY_TOP + 8, rx: 5, ry: 14 },
+      { x: CX + 16, y: BODY_TOP + 8, rx: 5, ry: 14 },
+      { x: CX - 10, y: BODY_TOP - 4, rx: 4, ry: 10 },
+      { x: CX + 10, y: BODY_TOP - 4, rx: 4, ry: 10 },
+      { x: CX, y: BODY_TOP - 8, rx: 6, ry: 12 },
     ];
     for (const f of flames) {
-      g.ellipse(f.x, f.y, f.rx, f.ry).fill({ color, alpha: 0.2 });
-      g.ellipse(f.x, f.y, f.rx * 0.6, f.ry * 0.7).fill({ color: 0xffeb3b, alpha: 0.15 });
+      g.ellipse(f.x, f.y, f.rx, f.ry).fill({ color, alpha: 0.45 });
+      g.ellipse(f.x, f.y, f.rx * 0.5, f.ry * 0.6).fill({ color: 0xffeb3b, alpha: 0.35 });
     }
   } else if (auraId.includes("ice")) {
     // Ice aura — crystalline glow
-    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.1 });
-    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0xe3f2fd, alpha: 0.12 });
-    // Ice crystals
+    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.3 });
+    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0xe3f2fd, alpha: 0.25 });
     const crystals = [[-20, 10], [20, 10], [-14, -4], [14, -4], [0, -8]];
     for (const [dx, dy] of crystals) {
-      g.poly([CX + dx, BODY_TOP + dy - 4, CX + dx + 2, BODY_TOP + dy, CX + dx - 2, BODY_TOP + dy])
-        .fill({ color, alpha: 0.3 });
+      g.poly([CX + dx, BODY_TOP + dy - 5, CX + dx + 3, BODY_TOP + dy, CX + dx, BODY_TOP + dy + 2, CX + dx - 3, BODY_TOP + dy])
+        .fill({ color, alpha: 0.5 });
     }
   } else if (auraId.includes("lightning")) {
-    // Lightning bolts around
-    g.ellipse(CX, BODY_TOP + 6, 26, 30).fill({ color, alpha: 0.1 });
-    // Bolts
+    // Lightning glow + bolts
+    g.ellipse(CX, BODY_TOP + 6, 26, 30).fill({ color, alpha: 0.3 });
     const bolts = [[-18, 0], [18, 0], [-10, -10], [10, -10]];
     for (const [dx, dy] of bolts) {
       const bx = CX + dx, by = BODY_TOP + dy;
-      g.moveTo(bx, by).lineTo(bx + 2, by + 4).lineTo(bx - 1, by + 4)
-        .lineTo(bx + 1, by + 8).stroke({ color, width: 1.5 });
+      g.moveTo(bx, by).lineTo(bx + 3, by + 5).lineTo(bx - 1, by + 5)
+        .lineTo(bx + 2, by + 10).stroke({ color, width: 2 });
+      g.moveTo(bx, by).lineTo(bx + 3, by + 5).lineTo(bx - 1, by + 5)
+        .lineTo(bx + 2, by + 10).stroke({ color: 0xffffff, width: 0.8 });
     }
   } else if (auraId.includes("dark")) {
     // Dark aura — purple mist
-    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.15 });
-    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0x1a0033, alpha: 0.1 });
-    // Floating dark particles
-    const pts = [[-16, -6], [16, -4], [-12, 14], [12, 16], [0, -10]];
+    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.35 });
+    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0x1a0033, alpha: 0.25 });
+    const pts = [[-16, -6], [16, -4], [-12, 14], [12, 16], [0, -10], [-8, 20], [8, -14]];
     for (const [dx, dy] of pts) {
-      g.circle(CX + dx, BODY_TOP + dy, 1.5).fill({ color, alpha: 0.35 });
+      g.circle(CX + dx, BODY_TOP + dy, 2).fill({ color, alpha: 0.5 });
     }
   } else if (auraId.includes("supersaiyan")) {
     // Super Saiyan — intense golden glow
-    g.ellipse(CX, BODY_TOP + 2, 30, 36).fill({ color, alpha: 0.12 });
-    g.ellipse(CX, BODY_TOP + 2, 24, 30).fill({ color: 0xfff9c4, alpha: 0.1 });
-    g.ellipse(CX, BODY_TOP + 2, 18, 24).fill({ color, alpha: 0.08 });
+    g.ellipse(CX, BODY_TOP + 2, 30, 36).fill({ color, alpha: 0.35 });
+    g.ellipse(CX, BODY_TOP + 2, 24, 30).fill({ color: 0xfff9c4, alpha: 0.25 });
+    g.ellipse(CX, BODY_TOP + 2, 18, 24).fill({ color, alpha: 0.2 });
     // Energy sparks
     const sparks = [[-22, 4], [22, 4], [-16, -8], [16, -8], [0, -14], [-10, 16], [10, 16]];
     for (const [dx, dy] of sparks) {
