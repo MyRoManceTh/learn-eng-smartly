@@ -10,6 +10,8 @@ import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 
+const COMPLETED_KEY = "completedConversations";
+
 const ConversationPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -22,6 +24,12 @@ const ConversationPage = () => {
   const [finished, setFinished] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(COMPLETED_KEY);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
