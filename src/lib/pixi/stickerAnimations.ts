@@ -556,13 +556,15 @@ function updateFireAura(
   g: Graphics, particles: AuraParticle[],
   time: number, cx: number, bodyTop: number, delta: number,
 ) {
-  // Pulsing glow
-  const glowAlpha = 0.08 + Math.sin(time * 3) * 0.04;
-  g.ellipse(cx, bodyTop + 4, 24 + Math.sin(time * 2) * 3, 30 + Math.sin(time * 2.5) * 2)
+  // Pulsing glow — more visible
+  const glowAlpha = 0.25 + Math.sin(time * 3) * 0.1;
+  g.ellipse(cx, bodyTop + 4, 24 + Math.sin(time * 2) * 4, 30 + Math.sin(time * 2.5) * 3)
     .fill({ color: 0xff6d00, alpha: glowAlpha });
+  g.ellipse(cx, bodyTop + 4, 18 + Math.sin(time * 2) * 2, 24 + Math.sin(time * 2.5) * 2)
+    .fill({ color: 0xffeb3b, alpha: glowAlpha * 0.6 });
 
   // Spawn flame particles
-  if (Math.random() < 0.15) {
+  if (Math.random() < 0.3) {
     const angle = Math.random() * Math.PI * 2;
     const dist = 10 + Math.random() * 12;
     particles.push({
@@ -602,10 +604,12 @@ function updateIceAura(
   g: Graphics, particles: AuraParticle[],
   time: number, cx: number, bodyTop: number, delta: number,
 ) {
-  // Rotating crystalline glow
-  const glowAlpha = 0.06 + Math.sin(time * 2) * 0.03;
-  g.ellipse(cx, bodyTop + 4, 22 + Math.sin(time * 1.5) * 2, 28)
+  // Rotating crystalline glow — more visible
+  const glowAlpha = 0.2 + Math.sin(time * 2) * 0.08;
+  g.ellipse(cx, bodyTop + 4, 24 + Math.sin(time * 1.5) * 3, 30)
     .fill({ color: 0xb3e5fc, alpha: glowAlpha });
+  g.ellipse(cx, bodyTop + 4, 18, 24)
+    .fill({ color: 0xe3f2fd, alpha: glowAlpha * 0.7 });
 
   // Spawn ice crystals
   if (Math.random() < 0.1) {
@@ -651,9 +655,10 @@ function updateLightningAura(
   g: Graphics, particles: AuraParticle[],
   time: number, cx: number, bodyTop: number, delta: number,
 ) {
-  // Electric pulse glow
-  const pulse = Math.random() < 0.1 ? 0.15 : 0.05 + Math.sin(time * 5) * 0.03;
-  g.ellipse(cx, bodyTop + 4, 24, 28).fill({ color: 0xffd600, alpha: pulse });
+  // Electric pulse glow — more visible
+  const pulse = Math.random() < 0.1 ? 0.35 : 0.18 + Math.sin(time * 5) * 0.08;
+  g.ellipse(cx, bodyTop + 4, 26, 30).fill({ color: 0xffd600, alpha: pulse });
+  g.ellipse(cx, bodyTop + 4, 20, 24).fill({ color: 0xffffff, alpha: pulse * 0.3 });
 
   // Random lightning bolts (flicker effect)
   if (Math.random() < 0.08) {
@@ -703,10 +708,12 @@ function updateDarkAura(
   g: Graphics, particles: AuraParticle[],
   time: number, cx: number, bodyTop: number, delta: number,
 ) {
-  // Pulsing dark shroud
-  const glowAlpha = 0.1 + Math.sin(time * 1.5) * 0.04;
-  g.ellipse(cx, bodyTop + 4, 26 + Math.sin(time) * 3, 32 + Math.cos(time * 0.7) * 2)
+  // Pulsing dark shroud — more visible
+  const glowAlpha = 0.25 + Math.sin(time * 1.5) * 0.08;
+  g.ellipse(cx, bodyTop + 4, 28 + Math.sin(time) * 4, 34 + Math.cos(time * 0.7) * 3)
     .fill({ color: 0x1a0033, alpha: glowAlpha });
+  g.ellipse(cx, bodyTop + 4, 22, 28)
+    .fill({ color: 0x7b1fa2, alpha: glowAlpha * 0.5 });
 
   // Spawn shadow wisps
   if (Math.random() < 0.1) {
@@ -746,13 +753,15 @@ function updateSuperSaiyanAura(
   g: Graphics, particles: AuraParticle[],
   time: number, cx: number, bodyTop: number, delta: number,
 ) {
-  // Multi-layer pulsing glow
-  const p1 = 0.1 + Math.sin(time * 4) * 0.04;
-  const p2 = 0.07 + Math.sin(time * 3 + 1) * 0.03;
-  g.ellipse(cx, bodyTop + 2, 28 + Math.sin(time * 2) * 4, 34 + Math.sin(time * 2.5) * 3)
+  // Multi-layer pulsing glow — more visible
+  const p1 = 0.3 + Math.sin(time * 4) * 0.1;
+  const p2 = 0.2 + Math.sin(time * 3 + 1) * 0.08;
+  g.ellipse(cx, bodyTop + 2, 30 + Math.sin(time * 2) * 5, 36 + Math.sin(time * 2.5) * 4)
     .fill({ color: 0xffd600, alpha: p1 });
-  g.ellipse(cx, bodyTop + 2, 22 + Math.sin(time * 3) * 2, 28 + Math.sin(time * 3) * 2)
+  g.ellipse(cx, bodyTop + 2, 24 + Math.sin(time * 3) * 3, 30 + Math.sin(time * 3) * 3)
     .fill({ color: 0xfff9c4, alpha: p2 });
+  g.ellipse(cx, bodyTop + 2, 16, 22)
+    .fill({ color: 0xffffff, alpha: p2 * 0.4 });
 
   // Rising energy particles
   if (Math.random() < 0.2) {
