@@ -20,6 +20,7 @@ import {
   playStickerEquipTransition,
   playStickerEmotionReaction,
   setupFloatingHearts,
+  setupAuraAnimation,
 } from "@/lib/pixi/stickerAnimations";
 
 interface PixelAvatarProps {
