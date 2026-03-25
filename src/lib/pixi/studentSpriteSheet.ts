@@ -926,6 +926,10 @@ export interface EquipmentOverlay {
   hatColor: string;
   accessoryId: string | null;
   accessoryColor: string;
+  leftHandId: string | null;
+  leftHandColor: string;
+  rightHandId: string | null;
+  rightHandColor: string;
 }
 
 function drawEquipOverlays(
