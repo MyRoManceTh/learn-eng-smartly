@@ -1193,4 +1193,3 @@ function drawAura(g: Graphics, auraId: string) {
     }
   }
 }
-}
