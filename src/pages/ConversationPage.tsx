@@ -91,6 +91,12 @@ const ConversationPage = () => {
   };
 
   const handleFinish = async () => {
+    if (selected) {
+      const newCompleted = new Set(completedIds);
+      newCompleted.add(selected.id);
+      setCompletedIds(newCompleted);
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify([...newCompleted]));
+    }
     if (user) {
       const exp = score * 10 + 5;
       const coins = score * 5;
