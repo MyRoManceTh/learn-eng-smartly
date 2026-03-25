@@ -10,7 +10,7 @@ import { evolutionStages } from "@/data/evolutionStages";
 import { getItemById } from "@/data/avatarItems";
 import { toast } from "sonner";
 import { Check, Pencil, UserMinus, ArrowUpDown } from "lucide-react";
-import PixelAvatar from "@/components/avatar/PixelAvatar";
+import SpriteAvatar from "@/components/avatar/SpriteAvatar";
 import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
 import ChallengeModal from "./ChallengeModal";
@@ -19,17 +19,17 @@ import DisplayNameModal from "@/components/DisplayNameModal";
 function parseEquipped(raw: any): EquippedItems {
   if (!raw || typeof raw !== "object") return DEFAULT_EQUIPPED;
   return {
-    skin: raw.skin || DEFAULT_EQUIPPED.skin,
-    hair: raw.hair || DEFAULT_EQUIPPED.hair,
-    hairColor: raw.hairColor || DEFAULT_EQUIPPED.hairColor,
-    hat: raw.hat || null,
-    shirt: raw.shirt || DEFAULT_EQUIPPED.shirt,
-    pants: raw.pants || DEFAULT_EQUIPPED.pants,
-    shoes: raw.shoes || DEFAULT_EQUIPPED.shoes,
-    necklace: raw.necklace || null,
-    leftHand: raw.leftHand || null,
-    rightHand: raw.rightHand || null,
-    aura: raw.aura || null,
+    skin: (raw.skin && getItemById(raw.skin)) ? raw.skin : DEFAULT_EQUIPPED.skin,
+    hair: (raw.hair && getItemById(raw.hair)) ? raw.hair : DEFAULT_EQUIPPED.hair,
+    hairColor: (raw.hairColor && getItemById(raw.hairColor)) ? raw.hairColor : DEFAULT_EQUIPPED.hairColor,
+    hat: null,
+    shirt: (raw.shirt && getItemById(raw.shirt)) ? raw.shirt : DEFAULT_EQUIPPED.shirt,
+    pants: (raw.pants && getItemById(raw.pants)) ? raw.pants : DEFAULT_EQUIPPED.pants,
+    shoes: (raw.shoes && getItemById(raw.shoes)) ? raw.shoes : DEFAULT_EQUIPPED.shoes,
+    necklace: (raw.necklace && getItemById(raw.necklace)) ? raw.necklace : null,
+    leftHand: (raw.leftHand && getItemById(raw.leftHand)) ? raw.leftHand : null,
+    rightHand: (raw.rightHand && getItemById(raw.rightHand)) ? raw.rightHand : null,
+    aura: (raw.aura && getItemById(raw.aura)) ? raw.aura : null,
   };
 }
 
@@ -238,8 +238,10 @@ export default function FriendsList() {
                   key={req.friendship_id}
                   className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50/50 p-2 dark:border-orange-900 dark:bg-orange-950/20"
                 >
-                  <div className="shrink-0">
-                    <PixelAvatar equipped={parseEquipped(req.equipped)} size="sm" animated={false} />
+                  <div className="shrink-0 w-12 h-14 flex items-center justify-center overflow-hidden">
+                    <div className="scale-[0.45] origin-center">
+                      <SpriteAvatar equipped={parseEquipped(req.equipped)} size="sm" />
+                    </div>
                   </div>
                   <span className="flex-1 text-sm font-medium truncate">
                     {req.display_name}
@@ -311,13 +313,13 @@ export default function FriendsList() {
                   >
                     {/* Top row: avatar + info */}
                     <div className="flex items-center gap-3">
-                      <div className="shrink-0 rounded-lg overflow-hidden bg-gradient-to-b from-purple-50 to-pink-50 p-1">
-                        <PixelAvatar
-                          equipped={parseEquipped(friend.equipped)}
-                          size="sm"
-                          animated={false}
-                          evolutionStage={friend.evolution_stage}
-                        />
+                      <div className="shrink-0 w-14 h-16 rounded-lg overflow-hidden bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center">
+                        <div className="scale-50 origin-center">
+                          <SpriteAvatar
+                            equipped={parseEquipped(friend.equipped)}
+                            size="sm"
+                          />
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
