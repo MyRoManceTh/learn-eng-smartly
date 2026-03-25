@@ -1098,61 +1098,99 @@ function drawRightHandItem(g: Graphics, rightId: string, c: Colors) {
 // ═══════════════════════════════════════════
 
 function drawAura(g: Graphics, auraId: string) {
-  const item = getItemById(auraId);
-  const color = item ? parseColor(item.svgProps?.color || "#FFD600") : 0xffd600;
+  // Static aura frame — spiky energy shapes matching the animated version
+  const bodyCenter = BODY_TOP + 10;
+  const bodyH = 35;
+  const bodyW = 24;
 
-  if (auraId.includes("fire")) {
-    // Fire aura — visible flames around body
-    g.ellipse(CX, BODY_TOP + 6, 26, 32).fill({ color, alpha: 0.35 });
-    g.ellipse(CX, BODY_TOP + 4, 20, 26).fill({ color: 0xffeb3b, alpha: 0.25 });
-    const flames = [
-      { x: CX - 16, y: BODY_TOP + 8, rx: 5, ry: 14 },
-      { x: CX + 16, y: BODY_TOP + 8, rx: 5, ry: 14 },
-      { x: CX - 10, y: BODY_TOP - 4, rx: 4, ry: 10 },
-      { x: CX + 10, y: BODY_TOP - 4, rx: 4, ry: 10 },
-      { x: CX, y: BODY_TOP - 8, rx: 6, ry: 12 },
-    ];
-    for (const f of flames) {
-      g.ellipse(f.x, f.y, f.rx, f.ry).fill({ color, alpha: 0.45 });
-      g.ellipse(f.x, f.y, f.rx * 0.5, f.ry * 0.6).fill({ color: 0xffeb3b, alpha: 0.35 });
+  if (auraId.includes("fire") || auraId.includes("supersaiyan")) {
+    const isSSJ = auraId.includes("supersaiyan");
+    const outerColor = isSSJ ? 0xffd600 : 0xff6d00;
+    const innerColor = isSSJ ? 0xfff9c4 : 0xffeb3b;
+    const coreColor = isSSJ ? 0xffffff : 0xffeb3b;
+
+    // Inner glow
+    g.ellipse(CX, bodyCenter, bodyW * 0.7, bodyH * 0.6).fill({ color: coreColor, alpha: 0.25 });
+    g.ellipse(CX, bodyCenter, bodyW * 0.85, bodyH * 0.7).fill({ color: innerColor, alpha: 0.2 });
+
+    // Spiky flame tongues
+    const spikeCount = isSSJ ? 14 : 10;
+    for (let i = 0; i < spikeCount; i++) {
+      const angle = (i / spikeCount) * Math.PI * 2 - Math.PI / 2;
+      const upFactor = Math.max(0, -Math.sin(angle));
+      const length = bodyH * (0.5 + upFactor * (isSSJ ? 0.7 : 0.5));
+      const spikeW = bodyW * 0.08;
+
+      // Outer spike
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      const tipX = CX + cos * length, tipY = bodyCenter + sin * length;
+      const perpX = -sin * spikeW, perpY = cos * spikeW;
+      g.poly([CX + perpX, bodyCenter + perpY, tipX, tipY, CX - perpX, bodyCenter - perpY])
+        .fill({ color: outerColor, alpha: 0.4 });
+      // Inner spike
+      const iLen = length * 0.6;
+      const iTipX = CX + cos * iLen, iTipY = bodyCenter + sin * iLen;
+      const iW = spikeW * 0.6;
+      g.poly([CX + -sin * iW, bodyCenter + cos * iW, iTipX, iTipY, CX - -sin * iW, bodyCenter - cos * iW])
+        .fill({ color: innerColor, alpha: 0.3 });
     }
   } else if (auraId.includes("ice")) {
-    // Ice aura — crystalline glow
-    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.3 });
-    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0xe3f2fd, alpha: 0.25 });
-    const crystals = [[-20, 10], [20, 10], [-14, -4], [14, -4], [0, -8]];
-    for (const [dx, dy] of crystals) {
-      g.poly([CX + dx, BODY_TOP + dy - 5, CX + dx + 3, BODY_TOP + dy, CX + dx, BODY_TOP + dy + 2, CX + dx - 3, BODY_TOP + dy])
-        .fill({ color, alpha: 0.5 });
+    // Ice aura — arc streaks
+    g.ellipse(CX, bodyCenter, bodyW * 0.8, bodyH * 0.65).fill({ color: 0xe3f2fd, alpha: 0.2 });
+    // Static arc suggestions
+    const arcs = [
+      { r: bodyW * 0.9, start: -0.5, sweep: 1.2 },
+      { r: bodyW * 1.1, start: 1.5, sweep: 0.9 },
+      { r: bodyW * 0.7, start: 3.0, sweep: 1.0 },
+      { r: bodyW * 1.3, start: 4.5, sweep: 0.8 },
+    ];
+    for (const arc of arcs) {
+      const steps = 6;
+      const step = arc.sweep / steps;
+      let first = true;
+      for (let i = 0; i <= steps; i++) {
+        const a = arc.start + step * i;
+        const x = CX + Math.cos(a) * arc.r;
+        const y = bodyCenter + Math.sin(a) * arc.r * 0.7;
+        if (first) { g.moveTo(x, y); first = false; }
+        else g.lineTo(x, y);
+      }
+      g.stroke({ color: 0x42a5f5, width: bodyW * 0.06, alpha: 0.35 });
+    }
+    // Crystal sparkles
+    const pts = [[-18, -6], [18, -4], [-12, 12], [12, 14], [0, -12]];
+    for (const [dx, dy] of pts) {
+      const s = 2;
+      g.poly([CX + dx, bodyCenter + dy - s, CX + dx + s * 0.5, bodyCenter + dy, CX + dx, bodyCenter + dy + s, CX + dx - s * 0.5, bodyCenter + dy])
+        .fill({ color: 0xbbdefb, alpha: 0.5 });
     }
   } else if (auraId.includes("lightning")) {
-    // Lightning glow + bolts
-    g.ellipse(CX, BODY_TOP + 6, 26, 30).fill({ color, alpha: 0.3 });
-    const bolts = [[-18, 0], [18, 0], [-10, -10], [10, -10]];
+    g.ellipse(CX, bodyCenter, bodyW * 0.85, bodyH * 0.7).fill({ color: 0xffd600, alpha: 0.2 });
+    g.ellipse(CX, bodyCenter, bodyW * 0.6, bodyH * 0.5).fill({ color: 0xffffff, alpha: 0.1 });
+    // Static bolt lines
+    const bolts = [[-18, -8], [18, -6], [-14, 8], [14, 10]];
     for (const [dx, dy] of bolts) {
-      const bx = CX + dx, by = BODY_TOP + dy;
-      g.moveTo(bx, by).lineTo(bx + 3, by + 5).lineTo(bx - 1, by + 5)
-        .lineTo(bx + 2, by + 10).stroke({ color, width: 2 });
-      g.moveTo(bx, by).lineTo(bx + 3, by + 5).lineTo(bx - 1, by + 5)
-        .lineTo(bx + 2, by + 10).stroke({ color: 0xffffff, width: 0.8 });
+      const bx = CX + dx, by = bodyCenter + dy;
+      g.moveTo(bx, by).lineTo(bx + 3, by + 4).lineTo(bx - 1, by + 5).lineTo(bx + 2, by + 9)
+        .stroke({ color: 0xffd600, width: 1.5 });
+      g.moveTo(bx, by).lineTo(bx + 3, by + 4).lineTo(bx - 1, by + 5).lineTo(bx + 2, by + 9)
+        .stroke({ color: 0xffffff, width: 0.6 });
     }
   } else if (auraId.includes("dark")) {
-    // Dark aura — purple mist
-    g.ellipse(CX, BODY_TOP + 6, 28, 32).fill({ color, alpha: 0.35 });
-    g.ellipse(CX, BODY_TOP + 6, 22, 26).fill({ color: 0x1a0033, alpha: 0.25 });
-    const pts = [[-16, -6], [16, -4], [-12, 14], [12, 16], [0, -10], [-8, 20], [8, -14]];
-    for (const [dx, dy] of pts) {
-      g.circle(CX + dx, BODY_TOP + dy, 2).fill({ color, alpha: 0.5 });
-    }
-  } else if (auraId.includes("supersaiyan")) {
-    // Super Saiyan — intense golden glow
-    g.ellipse(CX, BODY_TOP + 2, 30, 36).fill({ color, alpha: 0.35 });
-    g.ellipse(CX, BODY_TOP + 2, 24, 30).fill({ color: 0xfff9c4, alpha: 0.25 });
-    g.ellipse(CX, BODY_TOP + 2, 18, 24).fill({ color, alpha: 0.2 });
-    // Energy sparks
-    const sparks = [[-22, 4], [22, 4], [-16, -8], [16, -8], [0, -14], [-10, 16], [10, 16]];
-    for (const [dx, dy] of sparks) {
-      g.circle(CX + dx, BODY_TOP + dy, 1).fill({ color, alpha: 0.5 });
+    g.ellipse(CX, bodyCenter, bodyW + 2, bodyH * 0.8).fill({ color: 0x0d001a, alpha: 0.25 });
+    g.ellipse(CX, bodyCenter, bodyW * 0.75, bodyH * 0.6).fill({ color: 0x4a148c, alpha: 0.15 });
+    // Dark spikes
+    const spikeCount = 8;
+    for (let i = 0; i < spikeCount; i++) {
+      const angle = (i / spikeCount) * Math.PI * 2 - Math.PI / 2;
+      const upFactor = Math.max(0, -Math.sin(angle));
+      const length = bodyH * (0.35 + upFactor * 0.35);
+      const spikeW = bodyW * 0.06;
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      const tipX = CX + cos * length, tipY = bodyCenter + sin * length;
+      g.poly([CX + -sin * spikeW, bodyCenter + cos * spikeW, tipX, tipY, CX - -sin * spikeW, bodyCenter - cos * spikeW])
+        .fill({ color: 0x4a148c, alpha: 0.3 });
     }
   }
+}
 }
