@@ -357,8 +357,10 @@ const MyPage = () => {
       <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-14 rounded-xl bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden shadow-md border border-white/60">
-              <SpriteAvatar equipped={equipped} size="sm" />
+            <div className="w-12 h-14 rounded-xl bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden shadow-md border border-white/60 shrink-0">
+              <div className="scale-[0.45] origin-center">
+                <SpriteAvatar equipped={equipped} size="sm" />
+              </div>
             </div>
             <div>
               <h1 className="text-lg font-bold font-thai text-foreground">
