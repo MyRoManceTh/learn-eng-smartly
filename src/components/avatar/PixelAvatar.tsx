@@ -227,7 +227,13 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       const cleanHearts = setupFloatingHearts(app.stage, app.ticker, INTERNAL_H);
       cleanupFnsRef.current.push(cleanHearts);
     }
-  }, [evolutionStage, isRainbow, emotion, pose]);
+
+    // Aura animation
+    if (equipped.aura) {
+      const cleanAura = setupAuraAnimation(app.stage, app.ticker, equipped.aura, INTERNAL_H);
+      cleanupFnsRef.current.push(cleanAura);
+    }
+  }, [evolutionStage, isRainbow, emotion, pose, equipped.aura]);
 
   // Redraw when pose changes
   useEffect(() => {
