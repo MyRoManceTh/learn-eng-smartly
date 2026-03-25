@@ -147,6 +147,12 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
         cleanupFnsRef.current.push(cleanHearts);
       }
 
+      // Aura animation on mount
+      if (equippedRef.current.aura) {
+        const cleanAura = setupAuraAnimation(app.stage, app.ticker, equippedRef.current.aura, INTERNAL_H);
+        cleanupFnsRef.current.push(cleanAura);
+      }
+
       initDoneRef.current = true;
     };
 
