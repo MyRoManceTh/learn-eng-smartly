@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, RotateCcw, BookOpen } from "lucide-react";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 
@@ -66,28 +66,62 @@ const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: Q
   };
 
   if (finished) {
+    const isPerfect = score === questions.length;
+    const isGood = score >= questions.length / 2;
+
     return (
-      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 text-center shadow-xl shadow-purple-500/10">
-        <h3 className="text-xl font-semibold mb-2 font-thai">🎉 ทำแบบทดสอบเสร็จแล้ว!</h3>
-        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent mb-2">
+      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 text-center shadow-xl shadow-purple-500/10 space-y-4">
+        <div className="text-5xl mb-1">{isPerfect ? "🏆" : isGood ? "🎉" : "💪"}</div>
+        <h3 className="text-xl font-semibold font-thai">ทำแบบทดสอบเสร็จแล้ว!</h3>
+        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
           {score}/{questions.length}
         </p>
         <p className="text-muted-foreground font-thai text-sm">
-          {score === questions.length
+          {isPerfect
             ? "เยี่ยมมาก! คุณตอบถูกทุกข้อ"
-            : score >= questions.length / 2
+            : isGood
             ? "ดีมาก! ลองทบทวนคำที่ผิดอีกครั้ง"
             : "ลองทบทวนบทเรียนอีกครั้งนะ"}
         </p>
-        {onNextLesson && (
+
+        {/* Action buttons */}
+        <div className="space-y-2 pt-2">
+          {onNextLesson && (
+            <Button
+              onClick={onNextLesson}
+              className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25 h-12 text-base"
+            >
+              <ArrowRight className="w-5 h-5 mr-2" />
+              {nextLessonLabel || "บทเรียนถัดไป"}
+            </Button>
+          )}
+
+          {!isPerfect && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCurrentQ(0);
+                setSelected(null);
+                setShowResult(false);
+                setScore(0);
+                setFinished(false);
+              }}
+              className="w-full font-thai h-11"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              ลองทำใหม่อีกครั้ง
+            </Button>
+          )}
+
           <Button
-            onClick={onNextLesson}
-            className="mt-4 w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25"
+            variant="ghost"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="w-full font-thai text-muted-foreground h-10 text-sm"
           >
-            <ArrowRight className="w-4 h-4 mr-2" />
-            {nextLessonLabel || "บทเรียนถัดไป"}
+            <BookOpen className="w-4 h-4 mr-2" />
+            ทบทวนบทเรียน
           </Button>
-        )}
+        </div>
       </div>
     );
   }
