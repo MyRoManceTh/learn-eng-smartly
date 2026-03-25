@@ -238,8 +238,10 @@ export default function FriendsList() {
                   key={req.friendship_id}
                   className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50/50 p-2 dark:border-orange-900 dark:bg-orange-950/20"
                 >
-                  <div className="shrink-0">
-                    <PixelAvatar equipped={parseEquipped(req.equipped)} size="sm" animated={false} />
+                  <div className="shrink-0 w-12 h-14 flex items-center justify-center overflow-hidden">
+                    <div className="scale-[0.45] origin-center">
+                      <SpriteAvatar equipped={parseEquipped(req.equipped)} size="sm" />
+                    </div>
                   </div>
                   <span className="flex-1 text-sm font-medium truncate">
                     {req.display_name}
@@ -311,13 +313,13 @@ export default function FriendsList() {
                   >
                     {/* Top row: avatar + info */}
                     <div className="flex items-center gap-3">
-                      <div className="shrink-0 rounded-lg overflow-hidden bg-gradient-to-b from-purple-50 to-pink-50 p-1">
-                        <PixelAvatar
-                          equipped={parseEquipped(friend.equipped)}
-                          size="sm"
-                          animated={false}
-                          evolutionStage={friend.evolution_stage}
-                        />
+                      <div className="shrink-0 w-14 h-16 rounded-lg overflow-hidden bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center">
+                        <div className="scale-50 origin-center">
+                          <SpriteAvatar
+                            equipped={parseEquipped(friend.equipped)}
+                            size="sm"
+                          />
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
