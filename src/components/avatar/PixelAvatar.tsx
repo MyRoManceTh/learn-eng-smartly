@@ -20,6 +20,7 @@ import {
   playStickerEquipTransition,
   playStickerEmotionReaction,
   setupFloatingHearts,
+  setupAuraAnimation,
 } from "@/lib/pixi/stickerAnimations";
 
 interface PixelAvatarProps {
@@ -146,6 +147,12 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
         cleanupFnsRef.current.push(cleanHearts);
       }
 
+      // Aura animation on mount
+      if (equippedRef.current.aura) {
+        const cleanAura = setupAuraAnimation(app.stage, app.ticker, equippedRef.current.aura, INTERNAL_H);
+        cleanupFnsRef.current.push(cleanAura);
+      }
+
       initDoneRef.current = true;
     };
 
@@ -226,7 +233,13 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
       const cleanHearts = setupFloatingHearts(app.stage, app.ticker, INTERNAL_H);
       cleanupFnsRef.current.push(cleanHearts);
     }
-  }, [evolutionStage, isRainbow, emotion, pose]);
+
+    // Aura animation
+    if (equipped.aura) {
+      const cleanAura = setupAuraAnimation(app.stage, app.ticker, equipped.aura, INTERNAL_H);
+      cleanupFnsRef.current.push(cleanAura);
+    }
+  }, [evolutionStage, isRainbow, emotion, pose, equipped.aura]);
 
   // Redraw when pose changes
   useEffect(() => {
