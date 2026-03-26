@@ -140,11 +140,11 @@ const LearningPathPage = () => {
       quiz.length
     );
 
+    // Level is auto-synced from skill tree progress hook
     await supabase
       .from("profiles")
       .update({
         lessons_completed: totalCompleted + 1,
-        current_level: selectedModule.level,
       } as any)
       .eq("user_id", user.id);
 

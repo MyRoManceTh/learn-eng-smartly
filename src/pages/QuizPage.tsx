@@ -95,14 +95,13 @@ const QuizPage = () => {
         // Get current profile
         const { data: profile } = await supabase
           .from("profiles")
-          .select("total_exp, lessons_completed, current_level, current_streak, longest_streak, last_activity_date, coins")
+          .select("total_exp, lessons_completed, current_streak, longest_streak, last_activity_date, coins")
           .eq("user_id", user.id)
           .single();
 
         const profileData = profile as any;
         const newExp = (profileData?.total_exp || 0) + exp;
         const newCompleted = (profileData?.lessons_completed || 0) + 1;
-        let newLevel = profileData?.current_level || 1;
 
         // Streak calculation
         const today = new Date().toISOString().split("T")[0];
@@ -126,10 +125,7 @@ const QuizPage = () => {
 
         const newLongest = Math.max(profileData?.longest_streak || 0, newStreak);
 
-        // Level up every 3 lessons if score is good
-        if (score >= Math.ceil(questions.length / 2) && newCompleted % 3 === 0 && newLevel < 5) {
-          newLevel = Math.min(5, newLevel + 1);
-        }
+        // Level is now auto-synced from skill tree progress
 
         const saveOps = [
           supabase.from("learning_history").insert({
@@ -143,7 +139,6 @@ const QuizPage = () => {
             total_exp: newExp,
             coins: ((profileData as any)?.coins || 0) + coins,
             lessons_completed: newCompleted,
-            current_level: newLevel,
             current_streak: newStreak,
             longest_streak: newLongest,
             last_activity_date: today,
