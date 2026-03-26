@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   skillTreeModules,
   getLessonsByModule,
@@ -108,6 +108,56 @@ export function useSkillTreeProgress() {
     [user, refresh]
   );
 
+  // Compute the correct level from completed core modules
+  // Level = highest core level where ALL modules in that level are completed
+  const computedLevel = (() => {
+    const coreLevels = [...new Set(skillTreeModules.filter(m => m.pathId === 'core').map(m => m.level))].sort((a, b) => a - b);
+    let highest = 0; // Pre-A1 base
+    for (const lvl of coreLevels) {
+      const modulesAtLevel = skillTreeModules.filter(m => m.pathId === 'core' && m.level === lvl);
+      const allCompleted = modulesAtLevel.every(m => isModuleCompleted(m.id));
+      if (allCompleted && modulesAtLevel.length > 0) {
+        highest = lvl + 1; // completed this level, so user is at next level
+      } else {
+        // Also check if at least one module in this level is completed → user is AT this level
+        const anyCompleted = modulesAtLevel.some(m => isModuleCompleted(m.id));
+        if (anyCompleted) {
+          highest = Math.max(highest, lvl);
+        }
+        break;
+      }
+    }
+    return Math.min(highest, 5); // cap at 5
+  })();
+
+  // Auto-sync current_level to profile when it changes
+  const lastSyncedLevel = useRef<number | null>(null);
+  useEffect(() => {
+    if (!user || loading || completedNodes.length === 0) return;
+    if (lastSyncedLevel.current === computedLevel) return;
+    lastSyncedLevel.current = computedLevel;
+
+    // Only update if computed level differs from what might be stored
+    supabase
+      .from("profiles")
+      .select("current_level")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        const stored = (data as any)?.current_level ?? 1;
+        if (stored !== computedLevel) {
+          supabase
+            .from("profiles")
+            .update({ current_level: computedLevel } as any)
+            .eq("user_id", user.id)
+            .then(() => {
+              // Invalidate profile cache so UI updates everywhere
+              queryClient.invalidateQueries({ queryKey: ["profile"] });
+            });
+        }
+      });
+  }, [user, loading, computedLevel, queryClient, completedNodes.length]);
+
   // Get overall stats
   const totalCompleted = completedNodes.length;
   const totalModulesCompleted = skillTreeModules.filter((m) => isModuleCompleted(m.id)).length;
@@ -124,5 +174,6 @@ export function useSkillTreeProgress() {
     completeLesson,
     totalCompleted,
     totalModulesCompleted,
+    computedLevel,
   };
 }
