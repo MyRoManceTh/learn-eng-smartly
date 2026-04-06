@@ -252,7 +252,7 @@ const LessonManagement = () => {
               lessons.map((lesson: any) => (
                 <TableRow key={lesson.id}>
                   <TableCell>
-                    <Badge variant="outline">Lv.{lesson.level}</Badge>
+                    <Badge variant="outline">{["","Pre-A1","A1","A2","B1","B2"][lesson.level] || lesson.level}</Badge>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground font-mono max-w-[150px] truncate">
                     {lesson.module_id || "-"}

@@ -66,7 +66,7 @@ const ContentOverview = () => {
               {conversationScenarios?.map((s: any) => (
                 <div key={s.id} className="flex justify-between text-sm">
                   <span className="font-thai">{s.titleThai || s.title}</span>
-                  <Badge variant="secondary" className="text-xs">Lv.{s.level}</Badge>
+                  <Badge variant="secondary" className="text-xs">{["","Pre-A1","A1","A2","B1","B2"][s.level] || s.level}</Badge>
                 </div>
               ))}
             </div>
@@ -119,7 +119,7 @@ const ContentOverview = () => {
               {aesopFables?.slice(0, 5).map((f: any) => (
                 <div key={f.id} className="flex justify-between text-sm">
                   <span className="truncate max-w-[180px]">{f.title}</span>
-                  <Badge variant="secondary" className="text-xs">Lv.{f.level}</Badge>
+                  <Badge variant="secondary" className="text-xs">{["","Pre-A1","A1","A2","B1","B2"][f.level] || f.level}</Badge>
                 </div>
               ))}
               {fableCount > 5 && (

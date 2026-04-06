@@ -8,9 +8,9 @@ interface InventorySectionProps {
   coins: number;
   onEquip: (item: AvatarItem) => void;
   onUnequip: (item: AvatarItem) => void;
-  onPreview?: (item: AvatarItem) => void;
-  onPreviewClear?: () => void;
 }
+
+const hiddenCategories = new Set(["hat"]);
 
 const categoryConfig: Record<string, { label: string; icon: string; color: string }> = {
   skin: { label: "สีผิว", icon: "👤", color: "from-orange-400 to-amber-500" },
@@ -26,7 +26,7 @@ const categoryConfig: Record<string, { label: string; icon: string; color: strin
   aura: { label: "ออร่า", icon: "✨", color: "from-yellow-300 to-amber-400" },
 };
 
-const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip, onPreview, onPreviewClear }: InventorySectionProps) => {
+const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: InventorySectionProps) => {
   const defaultItems = avatarItems.filter((item) => item.price === 0);
   const purchasedItems = inventory
     .map((id) => getItemById(id))
@@ -35,6 +35,7 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip, onPr
   const allOwned = [...defaultItems, ...purchasedItems.filter((p) => p.price > 0)];
 
   const grouped = allOwned.reduce((acc, item) => {
+    if (hiddenCategories.has(item.category)) return acc;
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);
     return acc;
@@ -102,8 +103,6 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip, onPr
                   onBuy={() => {}}
                   onEquip={onEquip}
                   onUnequip={onUnequip}
-                  onPreview={onPreview}
-                  onPreviewClear={onPreviewClear}
                 />
               ))}
             </div>

@@ -159,7 +159,6 @@ export const categoryLabels: { key: ItemCategory; label: string; icon: string }[
   { key: "skin", label: "สีผิว", icon: "🍑" },
   { key: "hair", label: "ทรงผม", icon: "💇" },
   { key: "hairColor", label: "สีผม", icon: "🎨" },
-  { key: "hat", label: "หมวก", icon: "🎩" },
   { key: "shirt", label: "เสื้อ", icon: "👕" },
   { key: "pants", label: "กางเกง", icon: "👖" },
   { key: "shoes", label: "รองเท้า", icon: "👟" },

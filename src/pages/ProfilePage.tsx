@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { User, Save, ArrowLeft, History, Trophy, Star, TrendingUp, Flame, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { pathNodes, levelLabels } from "@/data/pathNodes";
+import { pathNodes } from "@/data/pathNodes";
+import { getCefrLabel } from "@/data/evolutionStages";
 import LeaderboardSection from "@/components/social/LeaderboardSection";
 import FriendsList from "@/components/social/FriendsList";
 import { trackEvent } from "@/utils/analytics";
@@ -102,8 +103,8 @@ const ProfilePage = () => {
       pathProgress.some((p) => p.node_index === n.index)
     ).length;
     return {
-      name: `Lv.${lvl}`,
-      label: levelLabels[lvl],
+      name: getCefrLabel(lvl),
+      label: getCefrLabel(lvl),
       completed,
       total: nodesInLevel.length,
       percent: Math.round((completed / nodesInLevel.length) * 100),

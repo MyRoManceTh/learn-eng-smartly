@@ -81,7 +81,7 @@ const UserManagement = () => {
                     {user.display_name || "ไม่ระบุชื่อ"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">Lv.{user.current_level || 1}</Badge>
+                    <Badge variant="outline">{["","Pre-A1","A1","A2","B1","B2"][user.current_level || 1] || user.current_level}</Badge>
                   </TableCell>
                   <TableCell>{(user.total_exp || 0).toLocaleString()}</TableCell>
                   <TableCell>{(user.coins || 0).toLocaleString()}</TableCell>

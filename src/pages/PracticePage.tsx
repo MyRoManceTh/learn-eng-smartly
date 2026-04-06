@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const activities = [
-  { path: "/path", icon: "🗺️", title: "เส้นทางการเรียน", subtitle: "เรียนตามลำดับ ปลดล็อคทีละด่าน", color: "from-emerald-400 to-green-500", badge: "Lv.1-5" },
+  { path: "/path", icon: "🗺️", title: "เส้นทางการเรียน", subtitle: "เรียนตามลำดับ ปลดล็อคทีละด่าน", color: "from-emerald-400 to-green-500", badge: "Pre-A1 – B2" },
   { path: "/reading", icon: "📖", title: "ฝึกอ่าน", subtitle: "เรื่องสนุกๆ แยกหมวด พร้อมรูปภาพ", color: "from-blue-400 to-indigo-500", badge: "ใหม่" },
   { path: "/conversation", icon: "💬", title: "ฝึกบทสนทนา", subtitle: "จำลองสถานการณ์จริง สั่งกาแฟ เช็คอิน", color: "from-pink-400 to-rose-500", badge: "ใหม่" },
   { path: "/pronunciation", icon: "🗣️", title: "ฝึกออกเสียง", subtitle: "เน้นเสียงที่คนไทยออกยาก R/L, TH, V/W", color: "from-orange-400 to-amber-500", badge: null },

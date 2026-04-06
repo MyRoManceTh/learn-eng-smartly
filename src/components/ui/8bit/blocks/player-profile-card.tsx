@@ -96,7 +96,7 @@ export default function PlayerProfileCard({
                 <h3 className="font-bold truncate md:text-lg">{playerName}</h3>
                 {showLevel && (
                   <span>
-                    <Badge className="text-xs">Lv.{level}</Badge>
+                    <Badge className="text-xs">{["","Pre-A1","A1","A2","B1","B2"][level] || `Lv.${level}`}</Badge>
                   </span>
                 )}
               </div>

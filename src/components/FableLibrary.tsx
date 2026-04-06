@@ -11,12 +11,12 @@ interface FableLibraryProps {
   onSelectFable: (entry: FableEntry) => void;
 }
 
-const levelLabels: Record<number, { en: string; th: string; color: string }> = {
-  1: { en: "Beginner", th: "เริ่มต้น", color: "bg-emerald-500/15 text-emerald-700 border-emerald-300" },
-  2: { en: "Elementary", th: "พื้นฐาน", color: "bg-sky-500/15 text-sky-700 border-sky-300" },
-  3: { en: "Intermediate", th: "กลาง", color: "bg-purple-500/15 text-purple-700 border-purple-300" },
-  4: { en: "Upper-Int", th: "กลาง-สูง", color: "bg-pink-500/15 text-pink-700 border-pink-300" },
-  5: { en: "Advanced", th: "สูง", color: "bg-orange-500/15 text-orange-700 border-orange-300" },
+const levelLabels: Record<number, { en: string; th: string; cefr: string; color: string }> = {
+  1: { en: "Beginner", th: "เริ่มต้น", cefr: "Pre-A1", color: "bg-emerald-500/15 text-emerald-700 border-emerald-300" },
+  2: { en: "Elementary", th: "พื้นฐาน", cefr: "A1", color: "bg-sky-500/15 text-sky-700 border-sky-300" },
+  3: { en: "Intermediate", th: "กลาง", cefr: "A2", color: "bg-purple-500/15 text-purple-700 border-purple-300" },
+  4: { en: "Upper-Int", th: "กลาง-สูง", cefr: "B1", color: "bg-pink-500/15 text-pink-700 border-pink-300" },
+  5: { en: "Advanced", th: "สูง", cefr: "B2", color: "bg-orange-500/15 text-orange-700 border-orange-300" },
 };
 
 const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
@@ -96,7 +96,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
             className="text-xs font-thai"
             onClick={() => setFilterLevel(lvl)}
           >
-            Lv.{lvl} {levelLabels[lvl].th}
+            {levelLabels[lvl].cefr} {levelLabels[lvl].th}
           </Button>
         ))}
       </div>
@@ -146,7 +146,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
                 )}
                 {/* Level badge overlay */}
                 <span className={`absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full border backdrop-blur-sm ${info.color}`}>
-                  Lv.{entry.lesson.level}
+                  {info.cefr}
                 </span>
               </div>
 

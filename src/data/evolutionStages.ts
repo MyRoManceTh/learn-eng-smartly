@@ -60,6 +60,23 @@ export function getEvolutionStage(totalExp: number): EvolutionStage {
   return evolutionStages[0];
 }
 
+/** CEFR level label for each stage (1-based index) */
+const cefrLabels: Record<number, string> = {
+  1: "Pre-A1",
+  2: "A1",
+  3: "A2",
+  4: "B1",
+  5: "B2",
+};
+
+/**
+ * แปลง stage number → CEFR label (เช่น 1 → "Pre-A1", 3 → "A2")
+ * ใช้สำหรับ level/Lv. display ทุกที่
+ */
+export function getCefrLabel(stageOrLevel: number): string {
+  return cefrLabels[stageOrLevel] || `Lv.${stageOrLevel}`;
+}
+
 /**
  * คำนวณ progress ถึงขั้นถัดไป (0-100)
  */

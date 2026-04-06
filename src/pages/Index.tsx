@@ -164,7 +164,7 @@ const Index = () => {
     }
   }, [location.state]);
 
-  const levelLabels = ["", "Starter", "Elementary", "Intermediate", "Upper", "Advanced"];
+  const cefrLabels = ["", "Pre-A1", "A1", "A2", "B1", "B2"];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-24">
@@ -227,7 +227,7 @@ const Index = () => {
               </h2>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs font-bold text-purple-600 bg-purple-100 rounded-full px-2 py-0.5">
-                  Lv.{level} {levelLabels[level]}
+                  {cefrLabels[level] || "Pre-A1"}
                 </span>
                 <CoinDisplay coins={coins} size="sm" />
               </div>

@@ -136,7 +136,6 @@ export function drawLineStickerCharacter(
 
   drawHead(g, c);
   drawHair(g, hairStyle, c);
-  if (equipped.hat && c.hat) drawHat(g, equipped.hat, c);
   drawFace(g, c, emotion, blinkFrame, equipped.rightHand);
   drawAccessoryFront(g, equipped.rightHand, c);
 

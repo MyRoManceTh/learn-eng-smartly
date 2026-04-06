@@ -12,11 +12,11 @@ import {
 } from "@/types/admin";
 
 const levelLabels: Record<number, string> = {
-  1: "Beginner",
-  2: "Elementary",
-  3: "Intermediate",
-  4: "Advanced",
-  5: "Expert",
+  1: "Pre-A1",
+  2: "A1",
+  3: "A2",
+  4: "B1",
+  5: "B2",
 };
 
 const missionLabels: Record<string, string> = {
@@ -126,7 +126,7 @@ export function useAdminAnalytics() {
       });
       const levelDistribution: LevelDistribution[] = Object.entries(levelCounts).map(([lv, count]) => ({
         level: Number(lv),
-        label: `Lv.${lv} ${levelLabels[Number(lv)] || ""}`,
+        label: levelLabels[Number(lv)] || `Lv.${lv}`,
         count,
       }));
 

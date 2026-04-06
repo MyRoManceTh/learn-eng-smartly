@@ -74,7 +74,7 @@ const PlacementResultComponent = ({ result, onStartLearning }: PlacementResultPr
                   </div>
                   <div className="w-8 text-center">
                     <span className="text-xs font-bold text-purple-200">
-                      Lv.{stageResult.avgDifficulty}
+                      {["","Pre-A1","A1","A2","B1","B2"][stageResult.avgDifficulty] || stageResult.avgDifficulty}
                     </span>
                   </div>
                 </div>

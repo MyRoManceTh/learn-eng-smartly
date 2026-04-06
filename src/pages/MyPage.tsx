@@ -10,7 +10,8 @@ import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { useProfile } from "@/hooks/useProfile";
 import { getEvolutionStage, getEvolutionProgress } from "@/data/evolutionStages";
 import { trackEvent } from "@/utils/analytics";
-import { pathNodes, levelLabels } from "@/data/pathNodes";
+import { pathNodes } from "@/data/pathNodes";
+import { getCefrLabel } from "@/data/evolutionStages";
 import { roomItems, getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/roomItems";
 import { getItemById } from "@/data/avatarItems";
 
@@ -108,13 +109,6 @@ const MyPage = () => {
   const [coins, setCoins] = useState(0);
   const [inventory, setInventory] = useState<string[]>([]);
   const [equipped, setEquipped] = useState<EquippedItems>(DEFAULT_EQUIPPED);
-  const [previewItem, setPreviewItem] = useState<string | null>(null);
-  const [previewCategory, setPreviewCategory] = useState<string | null>(null);
-
-  // Merge preview into equipped for avatar display
-  const displayEquipped: EquippedItems = previewItem && previewCategory
-    ? { ...equipped, [previewCategory]: previewItem }
-    : equipped;
 
   // Room state
   const [room, setRoom] = useState<RoomLayout>(DEFAULT_ROOM);
@@ -307,8 +301,8 @@ const MyPage = () => {
       pathProgress.some((p) => p.node_index === n.index)
     ).length;
     return {
-      name: `Lv.${lvl}`,
-      label: levelLabels[lvl],
+      name: getCefrLabel(lvl),
+      label: getCefrLabel(lvl),
       completed,
       total: nodesInLevel.length,
       percent: nodesInLevel.length > 0 ? Math.round((completed / nodesInLevel.length) * 100) : 0,
@@ -376,7 +370,7 @@ const MyPage = () => {
                   : user?.user_metadata?.display_name || user?.user_metadata?.full_name || "ห้องของฉัน"}
               </h1>
               <p className="text-xs text-muted-foreground font-thai">
-                {evolutionStage.nameThai} {evolutionStage.icon} · Lv.{profileData?.current_level || 1}
+                {evolutionStage.nameThai} {evolutionStage.icon} · {getCefrLabel(profileData?.current_level || 1)}
               </p>
             </div>
           </div>
@@ -590,16 +584,11 @@ const MyPage = () => {
           <TabsContent value="character">
             <div className="space-y-4">
               {/* Avatar preview - 8-bit pixel character */}
-              <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-8 shadow-lg flex justify-center items-center relative">
+              <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-8 shadow-lg flex justify-center items-center">
                 <SpriteAvatar
-                  equipped={displayEquipped}
+                  equipped={equipped}
                   size="lg"
                 />
-                {previewItem && (
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-amber-400/90 text-white text-[10px] font-thai font-black px-3 py-1 rounded-full shadow-lg animate-bounce-slow">
-                    กำลังดูตัวอย่าง
-                  </div>
-                )}
               </div>
 
               {/* Shop / Inventory / Gacha sub-tabs */}
@@ -628,14 +617,6 @@ const MyPage = () => {
                     coins={coins}
                     onEquip={handleEquip}
                     onUnequip={handleUnequip}
-                    onPreview={(item) => {
-                      setPreviewItem(item.id);
-                      setPreviewCategory(item.category);
-                    }}
-                    onPreviewClear={() => {
-                      setPreviewItem(null);
-                      setPreviewCategory(null);
-                    }}
                   />
                 </TabsContent>
 

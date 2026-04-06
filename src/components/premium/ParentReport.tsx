@@ -186,8 +186,8 @@ const ParentReport = () => {
           </div>
           <Progress value={levelProgress} className="h-2.5 [&>div]:bg-sky-500" />
           <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-1">
-            <span>Lv.{level}</span>
-            <span>Lv.{Math.min(level + 1, 5)}</span>
+            <span>{["","Pre-A1","A1","A2","B1","B2"][level] || level}</span>
+            <span>{["","Pre-A1","A1","A2","B1","B2"][Math.min(level + 1, 5)] || level + 1}</span>
           </div>
         </div>
 

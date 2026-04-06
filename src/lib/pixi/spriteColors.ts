@@ -106,7 +106,7 @@ export function resolveHairStyle(equipped: EquippedItems): string | null {
 
 /** Get hat ID if equipped */
 export function resolveHatId(equipped: EquippedItems): string | null {
-  return equipped.hat || null;
+  return null;
 }
 
 /** Get accessory ID if equipped */
@@ -116,9 +116,7 @@ export function resolveAccessoryId(equipped: EquippedItems): string | null {
 
 /** Get hat color as CSS hex string */
 export function resolveHatColor(equipped: EquippedItems): string {
-  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
-  if (!hatItem) return "#e53935";
-  return numToHex(parseColor(hatItem.svgProps?.color || "#E53935"));
+  return "#e53935";
 }
 
 /** Get accessory color as CSS hex string */

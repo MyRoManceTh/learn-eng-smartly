@@ -107,7 +107,7 @@ export default function ChallengeModal({ open, friendId, friendName, onClose, on
                 )}
               >
                 <span className="text-xs font-bold text-purple-600 bg-purple-100 rounded-full px-2 py-0.5 shrink-0">
-                  Lv.{lesson.level}
+                  {["","Pre-A1","A1","A2","B1","B2"][lesson.level] || lesson.level}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{lesson.title}</p>

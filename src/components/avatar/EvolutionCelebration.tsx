@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import { EvolutionStage } from "@/types/dopamine";
+import { getCefrLabel } from "@/data/evolutionStages";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -163,7 +164,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                 <span className="text-4xl grayscale-[40%] opacity-60">{previousStage.icon}</span>
               </div>
               <span className="text-[11px] text-white/40 font-thai font-bold">{previousStage.nameThai}</span>
-              <span className="text-[10px] text-white/25 font-bold">Lv.{previousStage.stage}</span>
+              <span className="text-[10px] text-white/25 font-bold">{getCefrLabel(previousStage.stage)}</span>
             </div>
 
             {/* Arrow with pulse */}
@@ -201,7 +202,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                 className="text-[10px] font-bold"
                 style={{ color: `${newStage.color}CC` }}
               >
-                Lv.{newStage.stage}
+                {getCefrLabel(newStage.stage)}
               </span>
             </div>
           </div>
