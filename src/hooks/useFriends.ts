@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getThaiMidnight } from "@/utils/timezone";
 
 export interface FriendData {
   friendship_id: string;
@@ -9,7 +10,7 @@ export interface FriendData {
   display_name: string;
   total_exp: number;
   current_streak: number;
-  equipped: any;
+  equipped: Record<string, unknown>;
   evolution_stage: number;
   lessons_completed: number;
   energy: number;
@@ -33,46 +34,48 @@ export function useFriends() {
   const [pendingGifts, setPendingGifts] = useState<PendingGift[]>([]);
   const [loading, setLoading] = useState(true);
   const [energySentToday, setEnergySentToday] = useState<Set<string>>(new Set());
+  const [claimingIds, setClaimingIds] = useState<Set<string>>(new Set());
 
   const loadFriends = useCallback(async () => {
     if (!user) return;
     setLoading(true);
 
-    // Load friendships
-    const { data: friendships } = await supabase
+    const { data: friendships, error: fErr } = await supabase
       .from("friendships")
       .select("*")
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
 
-    if (!friendships) {
+    if (fErr || !friendships) {
       setLoading(false);
       return;
     }
 
-    const friendUserIds = (friendships as any[]).map((f) =>
+    const friendUserIds = (friendships as Record<string, string>[]).map((f) =>
       f.requester_id === user.id ? f.addressee_id : f.requester_id
     );
 
     if (friendUserIds.length === 0) {
       setFriends([]);
       setPendingRequests([]);
+      setPendingGifts([]);
       setLoading(false);
       return;
     }
 
-    // Load friend profiles
     const { data: profiles } = await supabase
       .from("profiles")
       .select("user_id, display_name, total_exp, current_streak, equipped, evolution_stage, lessons_completed, energy")
       .in("user_id", friendUserIds);
 
-    const profileMap = new Map<string, any>();
-    ((profiles as any[]) || []).forEach((p) => profileMap.set(p.user_id, p));
+    const profileMap = new Map<string, Record<string, unknown>>();
+    ((profiles as Record<string, unknown>[]) || []).forEach((p) =>
+      profileMap.set(p.user_id as string, p)
+    );
 
     const allFriends: FriendData[] = [];
     const pending: FriendData[] = [];
 
-    (friendships as any[]).forEach((f) => {
+    (friendships as Record<string, string>[]).forEach((f) => {
       const friendId = f.requester_id === user.id ? f.addressee_id : f.requester_id;
       const profile = profileMap.get(friendId);
       if (!profile) return;
@@ -80,13 +83,13 @@ export function useFriends() {
       const data: FriendData = {
         friendship_id: f.id,
         user_id: friendId,
-        display_name: profile.display_name || "ไม่ระบุชื่อ",
-        total_exp: profile.total_exp || 0,
-        current_streak: profile.current_streak || 0,
-        equipped: profile.equipped,
-        evolution_stage: profile.evolution_stage || 1,
-        lessons_completed: profile.lessons_completed || 0,
-        energy: profile.energy ?? 5,
+        display_name: (profile.display_name as string) || "ไม่ระบุชื่อ",
+        total_exp: (profile.total_exp as number) || 0,
+        current_streak: (profile.current_streak as number) || 0,
+        equipped: (profile.equipped as Record<string, unknown>) || {},
+        evolution_stage: (profile.evolution_stage as number) || 1,
+        lessons_completed: (profile.lessons_completed as number) || 0,
+        energy: (profile.energy as number) ?? 5,
         status: f.status,
         is_requester: f.requester_id === user.id,
       };
@@ -102,24 +105,18 @@ export function useFriends() {
     setPendingRequests(pending);
 
     // Load energy sent today
-    const now = new Date();
-    const thaiOffset = 7 * 60 * 60 * 1000;
-    const thaiNow = new Date(now.getTime() + thaiOffset);
-    const today = thaiNow.toISOString().split("T")[0];
-
+    const thaiMidnight = getThaiMidnight();
     const { data: energyGifts } = await supabase
       .from("gift_transactions")
       .select("receiver_id")
       .eq("sender_id", user.id)
       .eq("item_id", "energy")
-      .gte("created_at", today + "T00:00:00+07:00");
+      .gte("created_at", thaiMidnight);
 
-    if (energyGifts && (energyGifts as any[]).length > 0) {
-      const sentSet = new Set<string>((energyGifts as any[]).map((g: any) => g.receiver_id));
-      setEnergySentToday(sentSet);
-    } else {
-      setEnergySentToday(new Set());
-    }
+    const sentSet = new Set<string>(
+      ((energyGifts as Record<string, string>[]) || []).map((g) => g.receiver_id)
+    );
+    setEnergySentToday(sentSet);
 
     // Load pending gifts
     const { data: gifts } = await supabase
@@ -128,30 +125,33 @@ export function useFriends() {
       .eq("receiver_id", user.id)
       .eq("claimed", false);
 
-    if (gifts && (gifts as any[]).length > 0) {
-      const senderIds = [...new Set((gifts as any[]).map((g: any) => g.sender_id))];
+    if (gifts && (gifts as Record<string, unknown>[]).length > 0) {
+      const senderIds = [...new Set((gifts as Record<string, string>[]).map((g) => g.sender_id))];
       const { data: senderProfiles } = await supabase
         .from("profiles")
         .select("user_id, display_name")
         .in("user_id", senderIds);
 
       const senderMap = new Map<string, string>();
-      ((senderProfiles as any[]) || []).forEach((p) =>
+      ((senderProfiles as Record<string, string>[]) || []).forEach((p) =>
         senderMap.set(p.user_id, p.display_name || "ไม่ระบุชื่อ")
       );
 
       setPendingGifts(
-        (gifts as any[]).map((g: any) => ({
-          id: g.id,
-          sender_id: g.sender_id,
-          sender_name: senderMap.get(g.sender_id) || "ไม่ระบุชื่อ",
-          item_id: g.item_id,
-          coins: g.coins,
-          message: g.message,
+        (gifts as Record<string, unknown>[]).map((g) => ({
+          id: g.id as string,
+          sender_id: g.sender_id as string,
+          sender_name: senderMap.get(g.sender_id as string) || "ไม่ระบุชื่อ",
+          item_id: g.item_id as string | undefined,
+          coins: (g.coins as number) || 0,
+          message: g.message as string | undefined,
         }))
       );
+    } else {
+      setPendingGifts([]);
     }
 
+    setClaimingIds(new Set());
     setLoading(false);
   }, [user]);
 
@@ -159,14 +159,22 @@ export function useFriends() {
     loadFriends();
   }, [loadFriends]);
 
+  // ── Add friend by code ──────────────────────────
   const addFriendByCode = useCallback(
     async (friendCode: string): Promise<boolean> => {
       if (!user) return false;
 
+      // Validate format
+      const code = friendCode.trim().toUpperCase();
+      if (!/^[A-Z2-9]{6}$/.test(code)) {
+        toast.error("รหัสเพื่อนต้องเป็นตัวอักษร 6 ตัว");
+        return false;
+      }
+
       const { data: friendProfile } = await supabase
         .from("profiles")
         .select("user_id")
-        .eq("friend_code", friendCode.toUpperCase())
+        .eq("friend_code", code)
         .maybeSingle();
 
       if (!friendProfile) {
@@ -174,9 +182,28 @@ export function useFriends() {
         return false;
       }
 
-      const fp = friendProfile as any;
+      const fp = friendProfile as Record<string, string>;
       if (fp.user_id === user.id) {
         toast.error("ไม่สามารถเพิ่มตัวเองเป็นเพื่อนได้");
+        return false;
+      }
+
+      // Check existing friendship (any status)
+      const { data: existing } = await supabase
+        .from("friendships")
+        .select("id, status")
+        .or(
+          `and(requester_id.eq.${user.id},addressee_id.eq.${fp.user_id}),and(requester_id.eq.${fp.user_id},addressee_id.eq.${user.id})`
+        )
+        .maybeSingle();
+
+      if (existing) {
+        const ex = existing as Record<string, string>;
+        if (ex.status === "accepted") {
+          toast.error("เป็นเพื่อนกันอยู่แล้ว");
+        } else {
+          toast.error("ส่งคำขอไปแล้ว รอเพื่อนตอบรับ");
+        }
         return false;
       }
 
@@ -184,14 +211,10 @@ export function useFriends() {
         requester_id: user.id,
         addressee_id: fp.user_id,
         status: "pending",
-      } as any);
+      } as Record<string, string>);
 
       if (error) {
-        if (error.code === "23505") {
-          toast.error("ส่งคำขอไปแล้ว หรือเป็นเพื่อนกันอยู่แล้ว");
-        } else {
-          toast.error("เกิดข้อผิดพลาด");
-        }
+        toast.error("เกิดข้อผิดพลาด");
         return false;
       }
 
@@ -202,12 +225,18 @@ export function useFriends() {
     [user, loadFriends]
   );
 
+  // ── Accept / Decline / Remove ───────────────────
   const acceptRequest = useCallback(
     async (friendshipId: string) => {
-      await supabase
+      const { error } = await supabase
         .from("friendships")
-        .update({ status: "accepted", updated_at: new Date().toISOString() } as any)
+        .update({ status: "accepted", updated_at: new Date().toISOString() } as Record<string, string>)
         .eq("id", friendshipId);
+
+      if (error) {
+        toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
+        return;
+      }
       toast.success("ยอมรับคำขอเป็นเพื่อนแล้ว!");
       loadFriends();
     },
@@ -216,7 +245,11 @@ export function useFriends() {
 
   const declineRequest = useCallback(
     async (friendshipId: string) => {
-      await supabase.from("friendships").delete().eq("id", friendshipId);
+      const { error } = await supabase.from("friendships").delete().eq("id", friendshipId);
+      if (error) {
+        toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
+        return;
+      }
       toast("ปฏิเสธคำขอแล้ว");
       loadFriends();
     },
@@ -226,18 +259,30 @@ export function useFriends() {
   const removeFriend = useCallback(
     async (friendshipId: string) => {
       if (!user) return;
-      await supabase.from("friendships").delete().eq("id", friendshipId);
+      const { error } = await supabase.from("friendships").delete().eq("id", friendshipId);
+      if (error) {
+        toast.error("เกิดข้อผิดพลาด");
+        return;
+      }
       toast.success("ลบเพื่อนแล้ว");
       loadFriends();
     },
     [user, loadFriends]
   );
 
+  // ── Send Gift (insert first, deduct after) ──────
   const sendGift = useCallback(
     async (friendId: string, itemId?: string, coins?: number, message?: string) => {
       if (!user) return;
 
-      // Deduct coins/items from sender BEFORE inserting transaction
+      // Validate friendship
+      const isFriend = friends.some((f) => f.user_id === friendId && f.status === "accepted");
+      if (!isFriend) {
+        toast.error("ต้องเป็นเพื่อนกันก่อนถึงจะส่งของขวัญได้");
+        return;
+      }
+
+      // Load sender profile
       const { data: senderProfile } = await supabase
         .from("profiles")
         .select("coins, inventory")
@@ -249,91 +294,151 @@ export function useFriends() {
         return;
       }
 
-      const sp = senderProfile as any;
-      const updates: any = {};
+      const sp = senderProfile as Record<string, unknown>;
+      const currentCoins = (sp.coins as number) || 0;
+      const currentInv = Array.isArray(sp.inventory) ? [...(sp.inventory as string[])] : [];
 
-      if (coins && coins > 0) {
-        if ((sp.coins || 0) < coins) {
-          toast.error("เหรียญไม่พอ!");
-          return;
-        }
-        updates.coins = (sp.coins || 0) - coins;
+      // Validate resources
+      if (coins && coins > 0 && currentCoins < coins) {
+        toast.error("เหรียญไม่พอ!");
+        return;
+      }
+      if (itemId && itemId !== "energy" && !currentInv.includes(itemId)) {
+        toast.error("ไม่มีไอเทมนี้ในคลัง!");
+        return;
       }
 
-      if (itemId && itemId !== "energy") {
-        const inv = Array.isArray(sp.inventory) ? [...sp.inventory] : [];
-        const idx = inv.indexOf(itemId);
-        if (idx === -1) {
-          toast.error("ไม่มีไอเทมนี้ในคลัง!");
-          return;
-        }
-        inv.splice(idx, 1);
-        updates.inventory = inv;
-      }
-
-      if (Object.keys(updates).length > 0) {
-        await supabase.from("profiles").update(updates).eq("user_id", user.id);
-      }
-
-      await supabase.from("gift_transactions").insert({
+      // Step 1: Insert gift transaction FIRST
+      const { error: insertErr } = await supabase.from("gift_transactions").insert({
         sender_id: user.id,
         receiver_id: friendId,
         item_id: itemId || null,
         coins: coins || 0,
         message: message || null,
-      } as any);
+      } as Record<string, unknown>);
+
+      if (insertErr) {
+        toast.error("ส่งของขวัญไม่สำเร็จ ลองอีกครั้ง");
+        return;
+      }
+
+      // Step 2: Deduct from sender (gift already saved, safe to deduct)
+      const updates: Record<string, unknown> = {};
+      if (coins && coins > 0) {
+        updates.coins = currentCoins - coins;
+      }
+      if (itemId && itemId !== "energy") {
+        const inv = [...currentInv];
+        inv.splice(inv.indexOf(itemId), 1);
+        updates.inventory = inv;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        const { error: updateErr } = await supabase
+          .from("profiles")
+          .update(updates)
+          .eq("user_id", user.id);
+
+        if (updateErr) {
+          toast.error("หักเหรียญไม่สำเร็จ แต่ของขวัญส่งแล้ว");
+        }
+      }
+
       toast.success("ส่งของขวัญแล้ว! 🎁");
     },
-    [user]
+    [user, friends]
   );
 
+  // ── Send Energy ─────────────────────────────────
   const sendEnergy = useCallback(
     async (friendId: string): Promise<boolean> => {
       if (!user) return false;
 
-      // Check if friend completed at least 1 lesson
       const friend = friends.find((f) => f.user_id === friendId);
       if (!friend || friend.lessons_completed < 1) {
         toast.error("เพื่อนต้องเรียนจบอย่างน้อย 1 บทก่อน ถึงจะเติมไฟได้");
         return false;
       }
 
-      // Check if already sent energy to this friend today
+      // Optimistic UI update first
       if (energySentToday.has(friendId)) {
         toast.error("วันนี้เติมไฟให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
         return false;
       }
+      setEnergySentToday((prev) => new Set(prev).add(friendId));
 
-      // Send energy gift
+      // Double-check DB to prevent duplicates
+      const thaiMidnight = getThaiMidnight();
+      const { data: existing } = await supabase
+        .from("gift_transactions")
+        .select("id")
+        .eq("sender_id", user.id)
+        .eq("receiver_id", friendId)
+        .eq("item_id", "energy")
+        .gte("created_at", thaiMidnight)
+        .limit(1);
+
+      if (existing && (existing as Record<string, string>[]).length > 0) {
+        toast.error("วันนี้เติมไฟให้เพื่อนคนนี้แล้ว พรุ่งนี้มาใหม่นะ~");
+        return false;
+      }
+
       const { error } = await supabase.from("gift_transactions").insert({
         sender_id: user.id,
         receiver_id: friendId,
         item_id: "energy",
         coins: 0,
         message: "เติมไฟให้~ สู้ๆ นะ! 🔥",
-      } as any);
+      } as Record<string, unknown>);
 
       if (error) {
+        // Rollback optimistic update
+        setEnergySentToday((prev) => {
+          const next = new Set(prev);
+          next.delete(friendId);
+          return next;
+        });
         toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
         return false;
       }
 
-      // Update local state
-      setEnergySentToday(prev => new Set(prev).add(friendId));
       toast.success("เติมไฟให้เพื่อนแล้ว! 🔥⚡");
       return true;
     },
     [user, friends, energySentToday]
   );
 
+  // ── Claim Gift (DB-level guard against double claim) ──
   const claimGift = useCallback(
     async (giftId: string) => {
       if (!user) return;
 
       const gift = pendingGifts.find((g) => g.id === giftId);
-      if (!gift) return;
+      if (!gift) {
+        toast.error("ไม่พบของขวัญนี้");
+        return;
+      }
 
-      // Apply gift rewards
+      // Guard: prevent double-click
+      if (claimingIds.has(giftId)) return;
+      setClaimingIds((prev) => new Set(prev).add(giftId));
+
+      // Step 1: Mark claimed at DB level first (with guard)
+      const { data: claimResult, error: claimErr } = await supabase
+        .from("gift_transactions")
+        .update({ claimed: true } as Record<string, boolean>)
+        .eq("id", giftId)
+        .eq("claimed", false) // DB-level guard: only update if still unclaimed
+        .select("id");
+
+      if (claimErr || !claimResult || (claimResult as Record<string, string>[]).length === 0) {
+        toast.error("ของขวัญนี้ถูกรับไปแล้ว");
+        setClaimingIds((prev) => { const n = new Set(prev); n.delete(giftId); return n; });
+        loadFriends();
+        return;
+      }
+
+      // Step 2: Apply rewards
       const { data: profile } = await supabase
         .from("profiles")
         .select("coins, inventory, energy")
@@ -341,14 +446,13 @@ export function useFriends() {
         .single();
 
       if (profile) {
-        const p = profile as any;
-        const updates: any = {};
-        if (gift.coins > 0) updates.coins = (p.coins || 0) + gift.coins;
+        const p = profile as Record<string, unknown>;
+        const updates: Record<string, unknown> = {};
+        if (gift.coins > 0) updates.coins = ((p.coins as number) || 0) + gift.coins;
         if (gift.item_id === "energy") {
-          // Energy gift: add 1 energy, max 5
-          updates.energy = Math.min(5, (p.energy ?? 5) + 1);
+          updates.energy = Math.min(5, ((p.energy as number) ?? 5) + 1);
         } else if (gift.item_id) {
-          const inv = Array.isArray(p.inventory) ? p.inventory : [];
+          const inv = Array.isArray(p.inventory) ? (p.inventory as string[]) : [];
           updates.inventory = [...inv, gift.item_id];
         }
         if (Object.keys(updates).length > 0) {
@@ -356,15 +460,10 @@ export function useFriends() {
         }
       }
 
-      await supabase
-        .from("gift_transactions")
-        .update({ claimed: true } as any)
-        .eq("id", giftId);
-
       toast.success("รับของขวัญแล้ว! 🎉");
       loadFriends();
     },
-    [user, pendingGifts, loadFriends]
+    [user, pendingGifts, claimingIds, loadFriends]
   );
 
   const notificationCount = pendingRequests.length + pendingGifts.length;
@@ -376,6 +475,7 @@ export function useFriends() {
     loading,
     notificationCount,
     energySentToday,
+    claimingIds,
     addFriendByCode,
     acceptRequest,
     declineRequest,

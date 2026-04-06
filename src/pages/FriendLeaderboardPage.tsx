@@ -43,8 +43,7 @@ export default function FriendLeaderboardPage() {
   // Get date range based on filter
   const getDateRange = useCallback((filter: TimeFilter) => {
     const now = new Date();
-    const thaiOffset = 7 * 60 * 60 * 1000;
-    const thaiNow = new Date(now.getTime() + thaiOffset);
+    const thaiNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
 
     if (filter === "today") {
       const start = thaiNow.toISOString().split("T")[0] + "T00:00:00+07:00";
@@ -85,7 +84,7 @@ export default function FriendLeaderboardPage() {
     ((lessonProgress as any[]) || []).forEach((p) => {
       const current = userScoreMap.get(p.user_id) || { lessons: 0, exp: 0 };
       current.lessons += 1;
-      current.exp += (p.quiz_score || 0) * 10; // 10 XP per quiz point
+      current.exp += (p.quiz_score || 0) * 10 + 5; // score*10 + 5 per lesson
       userScoreMap.set(p.user_id, current);
     });
 

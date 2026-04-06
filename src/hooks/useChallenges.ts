@@ -209,6 +209,18 @@ export function useChallenges() {
       if (!challenge) return;
 
       const c = challenge as any;
+
+      // Validate: user must be challenger or opponent
+      if (c.challenger_id !== user.id && c.opponent_id !== user.id) {
+        toast.error("คุณไม่ได้อยู่ในคำท้านี้");
+        return;
+      }
+      // Validate: challenge must be active
+      if (c.status !== "active") {
+        toast.error("คำท้านี้ยังไม่เริ่ม หรือจบไปแล้ว");
+        return;
+      }
+
       const isChallenger = c.challenger_id === user.id;
 
       const updates: any = {};

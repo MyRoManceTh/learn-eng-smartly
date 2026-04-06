@@ -77,7 +77,7 @@ function LeaderboardTab() {
     ((lessonProgress as any[]) || []).forEach((p) => {
       const cur = userScoreMap.get(p.user_id) ?? { lessons: 0, exp: 0 };
       cur.lessons += 1;
-      cur.exp += (p.quiz_score || 0) * 10;
+      cur.exp += (p.quiz_score || 0) * 10 + 5;
       userScoreMap.set(p.user_id, cur);
     });
 
