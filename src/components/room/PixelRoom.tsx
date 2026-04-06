@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { EquippedItems } from "@/types/avatar";
 import { RoomLayout } from "@/types/room";
 import { getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS, PET_IMAGES } from "@/data/roomItems";
+import { generateRoomItemSprite } from "@/lib/pixi/furnitureSprites";
 import PixelAvatar from "@/components/avatar/PixelAvatar";
 import RoomPet from "@/components/room/RoomPet";
 import "@/components/ui/8bit/styles/retro.css";
@@ -137,7 +138,8 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
         {nonPetItems.map((item) => {
           if (!item) return null;
           const slot = SLOT_POSITIONS[item.category];
-          if (!slot || parseFloat(slot.bottom) < 40) return null; // only wall items
+          if (!slot || parseFloat(slot.bottom) < 40) return null;
+          const sprite = generateRoomItemSprite(item.id);
           return (
             <div
               key={item.id}
@@ -150,15 +152,11 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
               }}
               title={item.nameThai}
             >
-              {/* Shadow/frame behind poster/window */}
-              <div className="relative">
-                {item.category === "poster" && (
-                  <div className="absolute inset-0 -m-1 bg-amber-900/30 rounded-sm" />
-                )}
-                <span className="text-3xl md:text-4xl drop-shadow-lg relative z-10 block">
-                  {item.pixel}
-                </span>
-              </div>
+              {sprite ? (
+                <img src={sprite} alt={item.nameThai} className="w-16 md:w-20 drop-shadow-lg" style={{ imageRendering: "pixelated" }} draggable={false} />
+              ) : (
+                <span className="text-3xl md:text-4xl drop-shadow-lg block">{item.pixel}</span>
+              )}
             </div>
           );
         })}
@@ -190,6 +188,7 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
           if (!item) return null;
           const slot = SLOT_POSITIONS[item.category];
           if (!slot || parseFloat(slot.bottom) >= 40) return null;
+          const sprite = generateRoomItemSprite(item.id);
           return (
             <div
               key={item.id}
@@ -203,7 +202,11 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
               }}
               title={item.nameThai}
             >
-              <span className="text-2xl md:text-3xl block">{item.pixel}</span>
+              {sprite ? (
+                <img src={sprite} alt={item.nameThai} className="w-14 md:w-16" style={{ imageRendering: "pixelated" }} draggable={false} />
+              ) : (
+                <span className="text-2xl md:text-3xl block">{item.pixel}</span>
+              )}
               <div className="w-5 h-1.5 mx-auto -mt-0.5 rounded-full bg-black/15 blur-[2px]" />
             </div>
           );
