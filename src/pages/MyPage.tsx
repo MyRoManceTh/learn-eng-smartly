@@ -16,6 +16,7 @@ import { roomItems, getRoomItem, WALLPAPER_COLORS, FLOOR_COLORS } from "@/data/r
 import { getItemById } from "@/data/avatarItems";
 
 // Components
+import PixelClassroom from "@/components/classroom/PixelClassroom";
 import PixelRoom from "@/components/room/PixelRoom";
 import PetShop from "@/components/room/PetShop";
 import SpriteAvatar from "@/components/avatar/SpriteAvatar";
@@ -369,7 +370,16 @@ const MyPage = () => {
         </div>
       </header>
 
-      {/* Room view is now inside the Room tab */}
+      {/* === CLASSROOM VIEW (pixel art room with fixed furniture) === */}
+      <div className="max-w-3xl mx-auto px-4 mt-4 mb-3">
+        <PixelClassroom
+          equipped={equipped}
+          room={room}
+          evolutionStage={evolutionStage.stage}
+          size="lg"
+          onZoneNavigate={(route) => navigate(route)}
+        />
+      </div>
 
       {/* === EVOLUTION PROGRESS === */}
       <div className="max-w-3xl mx-auto px-4 mb-4">
