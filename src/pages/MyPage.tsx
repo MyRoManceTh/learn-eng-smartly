@@ -378,15 +378,7 @@ const MyPage = () => {
         </div>
       </header>
 
-      {/* === ROOM VIEW (8-bit area) === */}
-      <div className="max-w-3xl mx-auto px-4 mt-4 mb-3">
-        <PixelRoom
-          equipped={equipped}
-          room={room}
-          evolutionStage={evolutionStage.stage}
-          size="lg"
-        />
-      </div>
+      {/* Room view is now inside the Room tab */}
 
       {/* === EVOLUTION PROGRESS === */}
       <div className="max-w-3xl mx-auto px-4 mb-4">
@@ -645,6 +637,14 @@ const MyPage = () => {
           {/* ============ TAB 3: ROOM ============ */}
           <TabsContent value="room">
             <div className="space-y-4">
+              {/* Room preview */}
+              <PixelRoom
+                equipped={equipped}
+                room={room}
+                evolutionStage={evolutionStage.stage}
+                size="lg"
+              />
+
               {/* Category selector */}
               <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 no-scrollbar">
                 {ROOM_CATEGORIES.map((cat) => (

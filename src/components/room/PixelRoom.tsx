@@ -279,9 +279,11 @@ const PixelRoom = ({ equipped, room, evolutionStage, size = "md" }: PixelRoomPro
         </div>
       )}
 
-      {/* ── Decorative corner icons ── */}
+      {/* ── Room item count indicator ── */}
       <div className="absolute bottom-2 right-3 z-20 pointer-events-none opacity-40">
-        <span className="text-[8px] retro" style={{ color: isDark ? "#fff" : "#000" }}>🎮 TAP TO WALK</span>
+        <span className="text-[8px] retro" style={{ color: isDark ? "#fff" : "#000" }}>
+          🎮 {placedItems.length > 0 ? `${placedItems.length} items` : "TAP TO WALK"}
+        </span>
       </div>
     </div>
   );
