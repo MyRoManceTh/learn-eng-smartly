@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { playCorrect, playWrong } from "@/utils/sounds";
-import { allLessons } from "@/data/lessons";
+import { useAllLessons } from "@/hooks/useAllLessons";
 
 interface PracticeWord {
   english: string;
@@ -39,6 +39,7 @@ function scoreAccuracy(expected: string, actual: string): { score: number; match
 export default function SpeakingPracticePage() {
   const navigate = useNavigate();
   const { isSupported, isListening, transcript, error, startListening, stopListening, reset } = useSpeechRecognition();
+  const { lessons: allLessons, loading: lessonsLoading } = useAllLessons();
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -61,7 +62,7 @@ export default function SpeakingPracticePage() {
     }
     // Shuffle deterministically
     return pool.sort(() => 0.5 - Math.random()).slice(0, 50);
-  }, []);
+  }, [allLessons]);
 
   const currentWord = words[currentIdx % words.length];
   const result = showResult && transcript ? scoreAccuracy(currentWord.english, transcript) : null;

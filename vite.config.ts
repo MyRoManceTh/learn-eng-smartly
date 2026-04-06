@@ -44,6 +44,23 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Vendor chunks
+          if (id.includes("node_modules/react-dom")) return "vendor-react";
+          if (id.includes("node_modules/react-router")) return "vendor-react";
+          if (id.includes("node_modules/react/")) return "vendor-react";
+          if (id.includes("node_modules/@tanstack/react-query")) return "vendor-query";
+          if (id.includes("node_modules/@radix-ui")) return "vendor-radix";
+          if (id.includes("node_modules/recharts") || id.includes("node_modules/d3-")) return "vendor-recharts";
+          if (id.includes("node_modules/@supabase")) return "vendor-supabase";
+          if (id.includes("node_modules/pixi")) return "vendor-pixi";
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ChevronLeft, Volume2, RotateCcw, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { allLessons } from "@/data/lessons";
+import { useAllLessons } from "@/hooks/useAllLessons";
 import { SRSCard, createCard, reviewCard, getDueCards, loadCards, saveCards } from "@/data/flashcardSRS";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
@@ -12,6 +12,7 @@ import confetti from "canvas-confetti";
 export default function FlashcardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { lessons: allLessons, loading: lessonsLoading } = useAllLessons();
   const [cards, setCards] = useState<SRSCard[]>([]);
   const [dueCards, setDueCards] = useState<SRSCard[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -23,7 +24,7 @@ export default function FlashcardPage() {
 
   // Initialize cards from lesson vocab
   useEffect(() => {
-    if (!user) return;
+    if (!user || lessonsLoading) return;
     let existing = loadCards(user.id);
 
     // Add vocab from lessons not yet in deck
@@ -49,7 +50,7 @@ export default function FlashcardPage() {
 
     setCards(existing);
     setDueCards(getDueCards(existing));
-  }, [user]);
+  }, [user, allLessons, lessonsLoading]);
 
   const currentCard = dueCards[currentIdx] || null;
 

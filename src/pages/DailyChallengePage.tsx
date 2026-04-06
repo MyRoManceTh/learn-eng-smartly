@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
-import { allLessons } from "@/data/lessons";
+import { useAllLessons } from "@/hooks/useAllLessons";
 import { ChevronLeft, Clock, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,7 @@ function getToday(): string {
 }
 
 // ── Generate daily challenge ────────────────────────────────────
-function generateChallenge(date: string) {
+function generateChallenge(date: string, allLessons: { vocabulary: unknown }[]) {
   const seed = dateToSeed(date);
   const rand = seededRandom(seed);
 
@@ -95,9 +95,10 @@ export default function DailyChallengePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile, addExp, addCoins } = useProfile();
+  const { lessons: allLessons, loading: lessonsLoading } = useAllLessons();
 
   const today = useMemo(() => getToday(), []);
-  const challenge = useMemo(() => generateChallenge(today), [today]);
+  const challenge = useMemo(() => generateChallenge(today, allLessons), [today, allLessons]);
 
   const [phase, setPhase] = useState<"lobby" | "playing" | "result">("lobby");
   const [currentQ, setCurrentQ] = useState(0);
@@ -237,6 +238,14 @@ export default function DailyChallengePage() {
   };
 
   const myEntry = leaderboard.find((e) => e.user_id === user?.id);
+
+  if (lessonsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   // ── Lobby ─────────────────────────────────────
   if (phase === "lobby") {

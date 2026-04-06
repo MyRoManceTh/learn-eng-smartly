@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,37 +8,41 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/BottomNav";
 import PageTransition from "@/components/PageTransition";
 import DisplayNameModal, { useDisplayNameCheck } from "@/components/DisplayNameModal";
+
+// Eagerly loaded (landing + auth — first paint)
 import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
-import ProfilePage from "./pages/ProfilePage";
-import MyPage from "./pages/MyPage";
-import LearningPathPage from "./pages/LearningPathPage";
-import LibraryPage from "./pages/LibraryPage";
-import QuizPage from "./pages/QuizPage";
-import AvatarPage from "./pages/AvatarPage";
-import NotFound from "./pages/NotFound";
-import PracticePage from "./pages/PracticePage";
-import LearnPage from "./pages/LearnPage";
-import ReadingPage from "./pages/ReadingPage";
-import ConversationPage from "./pages/ConversationPage";
-import WordGamesPage from "./pages/WordGamesPage";
-import DailyNewsPage from "./pages/DailyNewsPage";
-import PronunciationPage from "./pages/PronunciationPage";
-import ShopPage from "./pages/ShopPage";
-import SeasonPassPage from "@/components/events/SeasonPassPage";
-import PremiumPage from "@/components/premium/PremiumPage";
-import ParentReport from "@/components/premium/ParentReport";
-import AdminPage from "@/pages/AdminPage";
-import PlacementTestPage from "./pages/PlacementTestPage";
-import LineCallbackPage from "./pages/LineCallbackPage";
-import FriendLeaderboardPage from "./pages/FriendLeaderboardPage";
-import FriendsPage from "./pages/FriendsPage";
-import FlashcardPage from "./pages/FlashcardPage";
-import SpeakingPracticePage from "./pages/SpeakingPracticePage";
-import DailyChallengePage from "./pages/DailyChallengePage";
-import AchievementsPage from "./pages/AchievementsPage";
-import RewardsShopPage from "./pages/RewardsShopPage";
-import SkipLevelTestPage from "./pages/SkipLevelTestPage";
+
+// Lazy-loaded pages
+const MyPage = lazy(() => import("./pages/MyPage"));
+const LearnPage = lazy(() => import("./pages/LearnPage"));
+const ReadingPage = lazy(() => import("./pages/ReadingPage"));
+const QuizPage = lazy(() => import("./pages/QuizPage"));
+const LibraryPage = lazy(() => import("./pages/LibraryPage"));
+const ConversationPage = lazy(() => import("./pages/ConversationPage"));
+const WordGamesPage = lazy(() => import("./pages/WordGamesPage"));
+const DailyNewsPage = lazy(() => import("./pages/DailyNewsPage"));
+const PronunciationPage = lazy(() => import("./pages/PronunciationPage"));
+const ShopPage = lazy(() => import("./pages/ShopPage"));
+const AvatarPage = lazy(() => import("./pages/AvatarPage"));
+const FlashcardPage = lazy(() => import("./pages/FlashcardPage"));
+const SpeakingPracticePage = lazy(() => import("./pages/SpeakingPracticePage"));
+const DailyChallengePage = lazy(() => import("./pages/DailyChallengePage"));
+const AchievementsPage = lazy(() => import("./pages/AchievementsPage"));
+const RewardsShopPage = lazy(() => import("./pages/RewardsShopPage"));
+const SkipLevelTestPage = lazy(() => import("./pages/SkipLevelTestPage"));
+const PlacementTestPage = lazy(() => import("./pages/PlacementTestPage"));
+const FriendLeaderboardPage = lazy(() => import("./pages/FriendLeaderboardPage"));
+const FriendsPage = lazy(() => import("./pages/FriendsPage"));
+const SeasonPassPage = lazy(() => import("@/components/events/SeasonPassPage"));
+const PremiumPage = lazy(() => import("@/components/premium/PremiumPage"));
+const ParentReport = lazy(() => import("@/components/premium/ParentReport"));
+const AdminPage = lazy(() => import("@/pages/AdminPage"));
+const LineCallbackPage = lazy(() => import("./pages/LineCallbackPage"));
+const PracticePage = lazy(() => import("./pages/PracticePage"));
+const LearningPathPage = lazy(() => import("./pages/LearningPathPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -46,6 +51,7 @@ function AppContent() {
 
   return (
     <>
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
       <PageTransition>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -81,6 +87,7 @@ function AppContent() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>
+      </Suspense>
       <BottomNav />
       <DisplayNameModal
         open={showModal}
