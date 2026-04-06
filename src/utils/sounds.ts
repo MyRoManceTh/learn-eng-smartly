@@ -35,6 +35,28 @@ export const playWrong = () => {
   } catch {}
 };
 
+export const playLevelUp = () => {
+  try {
+    const ctx = audioCtx();
+    // Ascending fanfare: C5→E5→G5→C6 (fast) then sustained C6 chord
+    const notes = [523, 659, 784, 1047, 1319, 1568];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = i < 4 ? "sine" : "triangle";
+      const t = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(i < 4 ? 0.25 : 0.15, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + (i < 4 ? 0.2 : 0.6));
+      osc.frequency.value = freq;
+      osc.start(t);
+      osc.stop(t + (i < 4 ? 0.25 : 0.7));
+    });
+  } catch {}
+};
+
 export const playComplete = () => {
   try {
     const ctx = audioCtx();

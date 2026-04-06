@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { LevelUpProvider } from "@/contexts/LevelUpContext";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -104,11 +105,13 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <LevelUpProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </LevelUpProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
