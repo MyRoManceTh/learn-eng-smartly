@@ -136,6 +136,7 @@ export function drawLineStickerCharacter(
 
   drawHead(g, c);
   drawHair(g, hairStyle, c);
+  if (equipped.hat && c.hat) drawHat(g, equipped.hat, c);
   drawFace(g, c, emotion, blinkFrame, equipped.rightHand);
   drawAccessoryFront(g, equipped.rightHand, c);
 
@@ -728,7 +729,91 @@ function drawShoes(g: Graphics, c: Colors, lOff: number, rOff: number, shoesId: 
 function drawHat(g: Graphics, hatId: string, c: Colors) {
   const h = c.hat!, sh = c.hatShade!;
 
-  if (hatId.includes("baseball")) {
+  if (hatId.includes("beret")) {
+    // Flat beret cap sitting on top-right of head
+    g.ellipse(CX + 2, HEAD_CY - 12, HEAD_RX - 2, 7).fill(h);
+    g.ellipse(CX + 2, HEAD_CY - 12, HEAD_RX - 2, 7).fill(sh);
+    g.ellipse(CX + 2, HEAD_CY - 13, HEAD_RX - 4, 6).fill(h);
+    g.circle(CX + 2, HEAD_CY - 19, 2.5).fill(lightenColor(h, 0.3)); // pom-pom
+    g.ellipse(CX + 2, HEAD_CY - 12, HEAD_RX - 2, 7).stroke({ color: c.outline, width: OL });
+    g.circle(CX + 2, HEAD_CY - 19, 2.5).stroke({ color: c.outline, width: OL * 0.6 });
+  } else if (hatId.includes("bucket")) {
+    // Bucket hat: round crown + wide brim
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX - 1, 9).fill(h);
+    g.ellipse(CX, HEAD_CY - 3, HEAD_RX + 6, 4).fill(sh); // brim
+    g.roundRect(CX - 8, HEAD_CY - 6, 16, 2, 1).fill(darkenColor(h, 0.1)); // band
+    g.ellipse(CX, HEAD_CY - 10, HEAD_RX - 1, 9).stroke({ color: c.outline, width: OL });
+    g.ellipse(CX, HEAD_CY - 3, HEAD_RX + 6, 4).stroke({ color: c.outline, width: OL });
+  } else if (hatId.includes("catears") || hatId.includes("cat_ears")) {
+    // Cat ears: headband + two triangular ears with pink inner
+    g.roundRect(CX - HEAD_RX, HEAD_CY - 6, HEAD_RX * 2, 3, 1).fill(h); // headband
+    // Left ear
+    g.moveTo(CX - 14, HEAD_CY - 6).lineTo(CX - 18, HEAD_CY - 22).lineTo(CX - 6, HEAD_CY - 6).closePath().fill(h);
+    g.moveTo(CX - 13, HEAD_CY - 8).lineTo(CX - 16, HEAD_CY - 18).lineTo(CX - 8, HEAD_CY - 8).closePath().fill(0xffb6c1); // pink inner
+    // Right ear
+    g.moveTo(CX + 14, HEAD_CY - 6).lineTo(CX + 18, HEAD_CY - 22).lineTo(CX + 6, HEAD_CY - 6).closePath().fill(h);
+    g.moveTo(CX + 13, HEAD_CY - 8).lineTo(CX + 16, HEAD_CY - 18).lineTo(CX + 8, HEAD_CY - 8).closePath().fill(0xffb6c1);
+    // Outlines
+    g.moveTo(CX - 14, HEAD_CY - 6).lineTo(CX - 18, HEAD_CY - 22).lineTo(CX - 6, HEAD_CY - 6)
+      .stroke({ color: c.outline, width: OL });
+    g.moveTo(CX + 14, HEAD_CY - 6).lineTo(CX + 18, HEAD_CY - 22).lineTo(CX + 6, HEAD_CY - 6)
+      .stroke({ color: c.outline, width: OL });
+  } else if (hatId.includes("bunnyears") || hatId.includes("bunny_ears")) {
+    // Bunny ears: headband + two tall oval ears
+    g.roundRect(CX - HEAD_RX, HEAD_CY - 6, HEAD_RX * 2, 3, 1).fill(h); // headband
+    // Left ear
+    g.ellipse(CX - 10, HEAD_CY - 22, 5, 14).fill(h);
+    g.ellipse(CX - 10, HEAD_CY - 22, 3, 10).fill(0xffb6c1); // pink inner
+    g.ellipse(CX - 10, HEAD_CY - 22, 5, 14).stroke({ color: c.outline, width: OL });
+    // Right ear (slightly flopped)
+    g.ellipse(CX + 12, HEAD_CY - 20, 5, 14).fill(h);
+    g.ellipse(CX + 12, HEAD_CY - 20, 3, 10).fill(0xffb6c1);
+    g.ellipse(CX + 12, HEAD_CY - 20, 5, 14).stroke({ color: c.outline, width: OL });
+  } else if (hatId.includes("flower")) {
+    // Flower crown: thin vine band + small flowers
+    g.arc(CX, HEAD_CY - 2, HEAD_RX + 1, Math.PI + 0.3, -0.3, false)
+      .stroke({ color: 0x4caf50, width: 2.5 }); // green vine
+    // 5 small flowers
+    const flowerColors = [0xff69b4, 0xffeb3b, 0xff69b4, 0xe1bee7, 0xffeb3b];
+    for (let i = 0; i < 5; i++) {
+      const angle = Math.PI + 0.4 + i * 0.55;
+      const fx = CX + Math.cos(angle) * (HEAD_RX + 1);
+      const fy = HEAD_CY - 2 + Math.sin(angle) * (HEAD_RX + 1);
+      g.circle(fx, fy, 3).fill(flowerColors[i]);
+      g.circle(fx, fy, 1.2).fill(0xfff176); // pistil
+      g.circle(fx, fy, 3).stroke({ color: c.outline, width: OL * 0.5 });
+    }
+  } else if (hatId.includes("tiara")) {
+    // Crystal tiara: thin band + 3 crystal points
+    g.arc(CX, HEAD_CY - 2, HEAD_RX + 1, Math.PI + 0.2, -0.2, false)
+      .stroke({ color: h, width: 3 }); // band
+    // Center crystal (tall)
+    g.moveTo(CX - 4, HEAD_CY - 8).lineTo(CX, HEAD_CY - 20).lineTo(CX + 4, HEAD_CY - 8).closePath()
+      .fill(lightenColor(h, 0.4));
+    g.moveTo(CX - 4, HEAD_CY - 8).lineTo(CX, HEAD_CY - 20).lineTo(CX + 4, HEAD_CY - 8)
+      .stroke({ color: c.outline, width: OL * 0.7 });
+    // Side crystals
+    g.moveTo(CX - 10, HEAD_CY - 6).lineTo(CX - 8, HEAD_CY - 14).lineTo(CX - 6, HEAD_CY - 6).closePath()
+      .fill(lightenColor(h, 0.3));
+    g.moveTo(CX + 10, HEAD_CY - 6).lineTo(CX + 8, HEAD_CY - 14).lineTo(CX + 6, HEAD_CY - 6).closePath()
+      .fill(lightenColor(h, 0.3));
+    // Jewels
+    g.circle(CX, HEAD_CY - 10, 1.5).fill(0xffd700);
+    g.circle(CX - 8, HEAD_CY - 8, 1).fill(0xffd700);
+    g.circle(CX + 8, HEAD_CY - 8, 1).fill(0xffd700);
+  } else if (hatId.includes("unicorn")) {
+    // Unicorn horn: spiral horn on forehead + ear flowers
+    g.roundRect(CX - HEAD_RX, HEAD_CY - 5, HEAD_RX * 2, 3, 1).fill(0xf8bbd0); // pink headband
+    // Horn (stacked triangles for spiral effect)
+    g.moveTo(CX - 4, HEAD_CY - 8).lineTo(CX, HEAD_CY - 26).lineTo(CX + 4, HEAD_CY - 8).closePath().fill(0xfff9c4);
+    g.moveTo(CX - 3, HEAD_CY - 10).lineTo(CX, HEAD_CY - 24).lineTo(CX + 3, HEAD_CY - 10).closePath().fill(0xffe082);
+    g.moveTo(CX - 2, HEAD_CY - 14).lineTo(CX, HEAD_CY - 22).lineTo(CX + 2, HEAD_CY - 14).closePath().fill(0xffcc80);
+    g.moveTo(CX - 4, HEAD_CY - 8).lineTo(CX, HEAD_CY - 26).lineTo(CX + 4, HEAD_CY - 8)
+      .stroke({ color: c.outline, width: OL * 0.7 });
+    // Small flowers at base
+    g.circle(CX - 6, HEAD_CY - 7, 2.5).fill(0xff69b4);
+    g.circle(CX + 6, HEAD_CY - 7, 2.5).fill(0xce93d8);
+  } else if (hatId.includes("baseball")) {
     g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 8).fill(h);
     g.ellipse(CX + 4, HEAD_CY - 4, HEAD_RX + 5, 3).fill(sh);
     g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 8).stroke({ color: c.outline, width: OL });
@@ -739,6 +824,13 @@ function drawHat(g: Graphics, hatId: string, c: Colors) {
     g.moveTo(CX - HEAD_RX - 1, HEAD_CY - 2).lineTo(CX + HEAD_RX + 1, HEAD_CY - 2)
       .stroke({ color: sh, width: 3 });
     g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 10).stroke({ color: c.outline, width: OL });
+  } else if (hatId.includes("witch") || hatId.includes("wizard")) {
+    g.moveTo(CX - 16, HEAD_CY - 4).lineTo(CX, HEAD_CY - 32).lineTo(CX + 16, HEAD_CY - 4).closePath().fill(h);
+    drawStar(g, CX, HEAD_CY - 18, 3, 0xffd700);
+    g.ellipse(CX, HEAD_CY - 4, HEAD_RX + 8, 3.5).fill(sh);
+    g.moveTo(CX - 16, HEAD_CY - 4).lineTo(CX, HEAD_CY - 32).lineTo(CX + 16, HEAD_CY - 4)
+      .stroke({ color: c.outline, width: OL });
+    g.ellipse(CX, HEAD_CY - 4, HEAD_RX + 8, 3.5).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("crown")) {
     g.roundRect(CX - 14, HEAD_CY - 14, 28, 8, 2).fill(h);
     g.moveTo(CX - 14, HEAD_CY - 14).lineTo(CX - 10, HEAD_CY - 22).lineTo(CX - 6, HEAD_CY - 14).fill(h);
@@ -747,13 +839,6 @@ function drawHat(g: Graphics, hatId: string, c: Colors) {
     g.circle(CX - 6, HEAD_CY - 11, 2).fill(0xe53935);
     g.circle(CX + 6, HEAD_CY - 11, 2).fill(0x2196f3);
     g.roundRect(CX - 14, HEAD_CY - 14, 28, 8, 2).stroke({ color: c.outline, width: OL });
-  } else if (hatId.includes("wizard")) {
-    g.moveTo(CX - 16, HEAD_CY - 4).lineTo(CX, HEAD_CY - 32).lineTo(CX + 16, HEAD_CY - 4).closePath().fill(h);
-    drawStar(g, CX, HEAD_CY - 18, 3, 0xffd700);
-    g.ellipse(CX, HEAD_CY - 4, HEAD_RX + 8, 3.5).fill(sh);
-    g.moveTo(CX - 16, HEAD_CY - 4).lineTo(CX, HEAD_CY - 32).lineTo(CX + 16, HEAD_CY - 4)
-      .stroke({ color: c.outline, width: OL });
-    g.ellipse(CX, HEAD_CY - 4, HEAD_RX + 8, 3.5).stroke({ color: c.outline, width: OL });
   } else if (hatId.includes("santa")) {
     g.ellipse(CX, HEAD_CY - 10, HEAD_RX + 1, 10).fill(h);
     g.ellipse(CX + 14, HEAD_CY - 14, 6, 5).fill(h);
@@ -768,7 +853,7 @@ function drawHat(g: Graphics, hatId: string, c: Colors) {
     g.roundRect(CX + HEAD_RX, HEAD_CY, 4, 6, 2).fill(sh);
     g.roundRect(CX - HEAD_RX - 6, HEAD_CY - 2, 7, 10, 3).stroke({ color: c.outline, width: OL * 0.7 });
     g.roundRect(CX + HEAD_RX - 1, HEAD_CY - 2, 7, 10, 3).stroke({ color: c.outline, width: OL * 0.7 });
-  } else if (hatId.includes("halo")) {
+  } else if (hatId.includes("halo") || hatId.includes("angel")) {
     g.ellipse(CX, HEAD_CY - HEAD_RY - 5, 14, 3).fill({ color: 0xffd700, alpha: 0.7 });
     g.ellipse(CX, HEAD_CY - HEAD_RY - 5, 14, 3).stroke({ color: 0xffecb3, width: 1.5 });
   } else if (hatId.includes("devil")) {

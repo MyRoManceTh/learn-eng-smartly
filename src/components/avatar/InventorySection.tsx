@@ -8,6 +8,8 @@ interface InventorySectionProps {
   coins: number;
   onEquip: (item: AvatarItem) => void;
   onUnequip: (item: AvatarItem) => void;
+  onPreview?: (item: AvatarItem) => void;
+  onPreviewClear?: () => void;
 }
 
 const categoryConfig: Record<string, { label: string; icon: string; color: string }> = {
@@ -24,7 +26,7 @@ const categoryConfig: Record<string, { label: string; icon: string; color: strin
   aura: { label: "ออร่า", icon: "✨", color: "from-yellow-300 to-amber-400" },
 };
 
-const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: InventorySectionProps) => {
+const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip, onPreview, onPreviewClear }: InventorySectionProps) => {
   const defaultItems = avatarItems.filter((item) => item.price === 0);
   const purchasedItems = inventory
     .map((id) => getItemById(id))
@@ -100,6 +102,8 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
                   onBuy={() => {}}
                   onEquip={onEquip}
                   onUnequip={onUnequip}
+                  onPreview={onPreview}
+                  onPreviewClear={onPreviewClear}
                 />
               ))}
             </div>

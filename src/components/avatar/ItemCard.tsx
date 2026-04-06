@@ -22,6 +22,8 @@ interface ItemCardProps {
   onBuy: (item: AvatarItem) => void;
   onEquip: (item: AvatarItem) => void;
   onUnequip: (item: AvatarItem) => void;
+  onPreview?: (item: AvatarItem) => void;
+  onPreviewClear?: () => void;
 }
 
 const rarityGradients: Record<string, string> = {
@@ -45,10 +47,11 @@ const rarityGlow: Record<string, string> = {
   legendary: "shadow-yellow-400/40 animate-legendary-glow",
 };
 
-const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: ItemCardProps) => {
+const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip, onPreview, onPreviewClear }: ItemCardProps) => {
   const canAfford = coins >= item.price;
   const isFree = item.price === 0;
   const isDefaultOwned = isFree;
+  const isHat = item.category === "hat";
 
   return (
     <div
@@ -63,7 +66,14 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
           ? `hover:scale-[1.05] hover:shadow-lg ${rarityGlow[item.rarity]} cursor-pointer`
           : "opacity-50 grayscale-[30%]"
         }`}
-      style={{ borderWidth: "3px" }}
+      style={{
+        borderWidth: "3px",
+        ...(isHat && item.svgProps?.color ? {
+          background: `linear-gradient(135deg, ${item.svgProps.color}15, ${item.svgProps.color}08, transparent)`,
+        } : {}),
+      }}
+      onPointerEnter={() => onPreview?.(item)}
+      onPointerLeave={() => onPreviewClear?.()}
     >
       {/* Rarity badge */}
       <div
@@ -82,12 +92,16 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
 
       {/* Item pixel preview with background circle */}
       <div className="mt-3 mb-1 flex justify-center">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center
+        <div className={`${isHat ? "w-16 h-16" : "w-14 h-14"} rounded-full flex items-center justify-center
           bg-white/60 shadow-inner backdrop-blur-sm
           ${item.rarity === "legendary" ? "animate-pulse-soft" : ""}
           ${item.rarity === "epic" ? "animate-float" : ""}
-        `}>
-          <PixelItemPreview item={item} size="sm" />
+        `}
+          style={isHat && item.svgProps?.color ? {
+            boxShadow: `0 0 12px ${item.svgProps.color}40, inset 0 1px 3px rgba(255,255,255,0.5)`,
+          } : undefined}
+        >
+          <PixelItemPreview item={item} size={isHat ? "lg" : "sm"} />
         </div>
       </div>
 
