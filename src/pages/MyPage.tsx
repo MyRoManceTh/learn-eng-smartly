@@ -88,15 +88,6 @@ const RARITY_COLORS: Record<string, string> = {
 const ROOM_CATEGORIES = [
   { key: "wallpaper", label: "ผนัง", icon: "🧱" },
   { key: "floor", label: "พื้น", icon: "🪵" },
-  { key: "desk", label: "โต๊ะ", icon: "🪑" },
-  { key: "bed", label: "เตียง", icon: "🛏️" },
-  { key: "shelf", label: "ชั้น", icon: "📚" },
-  { key: "poster", label: "โปสเตอร์", icon: "🖼️" },
-  { key: "window", label: "หน้าต่าง", icon: "🪟" },
-  { key: "plant", label: "ต้นไม้", icon: "🌵" },
-  { key: "trophy", label: "ถ้วยรางวัล", icon: "🏆" },
-  { key: "pet", label: "สัตว์เลี้ยง", icon: "🐱" },
-  { key: "toy", label: "ของเล่น", icon: "🎮" },
 ];
 
 const MyPage = () => {
