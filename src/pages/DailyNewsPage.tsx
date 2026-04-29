@@ -158,13 +158,13 @@ const DailyNewsPage = () => {
           </div>
         </header>
         <main className="px-4 py-4 space-y-4 max-w-3xl mx-auto">
-          <VocabTable vocabulary={selectedArticle.vocabulary} />
           <ArticleReader
             sentences={selectedArticle.articleSentences}
             translation={selectedArticle.articleTranslation}
             title={selectedArticle.title}
             titleThai={selectedArticle.titleThai}
           />
+          <VocabTable vocabulary={selectedArticle.vocabulary} />
           {!showQuiz ? (
             <div className="text-center py-2">
               <Button onClick={() => setShowQuiz(true)} className="font-thai w-full max-w-xs bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg">

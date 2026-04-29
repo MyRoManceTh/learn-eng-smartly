@@ -45,7 +45,6 @@ const LibraryPage = () => {
         </header>
 
         <main className="px-4 py-4 space-y-4">
-          <VocabTable vocabulary={selectedFable.lesson.vocabulary} />
           <ArticleReader
             sentences={selectedFable.lesson.articleSentences}
             translation={selectedFable.lesson.articleTranslation}
@@ -53,6 +52,7 @@ const LibraryPage = () => {
             titleThai={selectedFable.lesson.titleThai}
             imageUrl={fableImageUrl}
           />
+          <VocabTable vocabulary={selectedFable.lesson.vocabulary} />
           {!showQuiz ? (
             <div className="text-center py-2">
               <Button onClick={() => setShowQuiz(true)} variant="outline" className="font-thai w-full max-w-xs">
