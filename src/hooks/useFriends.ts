@@ -126,7 +126,7 @@ export function useFriends() {
       .eq("claimed", false);
 
     if (gifts && (gifts as Record<string, unknown>[]).length > 0) {
-      const senderIds = [...new Set((gifts as Record<string, string>[]).map((g) => g.sender_id))];
+      const senderIds = [...new Set((gifts as any[]).map((g) => g.sender_id))];
       const { data: senderProfiles } = await supabase
         .from("profiles")
         .select("user_id, display_name")
@@ -211,7 +211,7 @@ export function useFriends() {
         requester_id: user.id,
         addressee_id: fp.user_id,
         status: "pending",
-      } as Record<string, string>);
+      } as any);
 
       if (error) {
         toast.error("เกิดข้อผิดพลาด");
@@ -315,7 +315,7 @@ export function useFriends() {
         item_id: itemId || null,
         coins: coins || 0,
         message: message || null,
-      } as Record<string, unknown>);
+      } as any);
 
       if (insertErr) {
         toast.error("ส่งของขวัญไม่สำเร็จ ลองอีกครั้ง");
@@ -389,7 +389,7 @@ export function useFriends() {
         item_id: "energy",
         coins: 0,
         message: "เติมไฟให้~ สู้ๆ นะ! 🔥",
-      } as Record<string, unknown>);
+      } as any);
 
       if (error) {
         // Rollback optimistic update

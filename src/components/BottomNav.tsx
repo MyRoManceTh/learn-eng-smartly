@@ -73,7 +73,7 @@ const BottomNav = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">
       <div className="bg-white/80 backdrop-blur-xl border-t border-white/50 shadow-[0_-4px_24px_-4px_rgba(124,58,237,0.08)]">
-        <div className="flex items-center justify-around h-[68px] px-1 max-w-md mx-auto">
+        <div className="flex items-center justify-around h-[68px] md:h-[72px] px-1 md:px-4 max-w-md md:max-w-2xl mx-auto">
           {tabs.map((tab) => {
             const learnSubPaths = ["/learn", "/practice", "/path", "/reading", "/news", "/pronunciation", "/library", "/flashcards", "/speaking", "/daily-challenge"];
             const friendSubPaths = ["/friends", "/friend-ranking"];
