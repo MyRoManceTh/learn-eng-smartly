@@ -26,6 +26,15 @@ const rarityConfig = {
     textColor: "text-slate-600",
     glowClass: "",
   },
+  uncommon: {
+    label: "พิเศษ",
+    icon: "🌿",
+    color: "#43A047",
+    bgGradient: "from-emerald-400 via-green-300 to-emerald-400",
+    borderColor: "border-emerald-500",
+    textColor: "text-emerald-600",
+    glowClass: "shadow-emerald-400/40",
+  },
   rare: {
     label: "หายาก",
     icon: "💎",
@@ -53,7 +62,16 @@ const rarityConfig = {
     textColor: "text-yellow-600",
     glowClass: "shadow-yellow-400/70",
   },
-};
+  mythic: {
+    label: "เหนือตำนาน",
+    icon: "💫",
+    color: "#FF1744",
+    bgGradient: "from-rose-500 via-fuchsia-500 to-indigo-500",
+    borderColor: "border-rose-500",
+    textColor: "text-rose-600",
+    glowClass: "shadow-rose-500/80",
+  },
+} as const;
 
 const GachaSpinner = ({
   coins,
@@ -76,31 +94,42 @@ const GachaSpinner = ({
   }, []);
 
   const fireConfetti = useCallback((rarity: string) => {
-    if (rarity === "epic") {
+    if (rarity === "uncommon") {
+      confetti({
+        particleCount: 60,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ["#43A047", "#A5D6A7", "#66BB6A"],
+      });
+    } else if (rarity === "epic") {
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
         colors: ["#9C27B0", "#E040FB", "#CE93D8", "#7B1FA2"],
       });
-    } else if (rarity === "legendary") {
+    } else if (rarity === "legendary" || rarity === "mythic") {
       // Heavy confetti burst
-      const duration = 2000;
+      const isMythic = rarity === "mythic";
+      const palette = isMythic
+        ? ["#FF1744", "#D500F9", "#651FFF", "#00E5FF", "#FFD600"]
+        : ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00"];
+      const duration = isMythic ? 3500 : 2000;
       const end = Date.now() + duration;
       const frame = () => {
         confetti({
-          particleCount: 15,
+          particleCount: 18,
           angle: 60,
           spread: 55,
           origin: { x: 0 },
-          colors: ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00"],
+          colors: palette,
         });
         confetti({
-          particleCount: 15,
+          particleCount: 18,
           angle: 120,
           spread: 55,
           origin: { x: 1 },
-          colors: ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00"],
+          colors: palette,
         });
         if (Date.now() < end) {
           requestAnimationFrame(frame);
@@ -108,10 +137,10 @@ const GachaSpinner = ({
       };
       // Initial big burst
       confetti({
-        particleCount: 300,
-        spread: 120,
+        particleCount: isMythic ? 500 : 300,
+        spread: 130,
         origin: { y: 0.5 },
-        colors: ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00", "#FFD54F"],
+        colors: palette,
         gravity: 0.8,
       });
       frame();
