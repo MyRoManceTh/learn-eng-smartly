@@ -182,7 +182,7 @@ const GachaSpinner = ({
       fireConfetti(gachaResult.rarity);
 
       // Legendary sound effect
-      if (gachaResult.rarity === "legendary") {
+      if (gachaResult.rarity === "legendary" || gachaResult.rarity === "mythic") {
         try {
           const audio = new Audio("/sounds/legendary.mp3");
           audio.volume = 0.5;
@@ -230,7 +230,7 @@ const GachaSpinner = ({
 
     fireConfetti(gachaResult.rarity);
 
-    if (gachaResult.rarity === "legendary") {
+    if (gachaResult.rarity === "legendary" || gachaResult.rarity === "mythic") {
       try {
         const audio = new Audio("/sounds/legendary.mp3");
         audio.volume = 0.5;
