@@ -232,10 +232,7 @@ const LearnPage = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
-                <div className="lg:col-span-2">
-                  <VocabTable vocabulary={lesson.vocabulary} />
-                </div>
-                <div className="lg:col-span-3">
+                <div className="lg:col-span-3 lg:order-1">
                   <ArticleReader
                     sentences={lesson.articleSentences}
                     translation={lesson.articleTranslation}
@@ -243,6 +240,9 @@ const LearnPage = () => {
                     titleThai={lesson.titleThai}
                     imageUrl={lessonImage || undefined}
                   />
+                </div>
+                <div className="lg:col-span-2 lg:order-2">
+                  <VocabTable vocabulary={lesson.vocabulary} />
                 </div>
               </div>
               {!showQuiz ? (

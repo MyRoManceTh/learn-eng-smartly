@@ -148,13 +148,13 @@ const ReadingPage = () => {
           </div>
         </header>
         <main className="px-4 py-4 space-y-4 max-w-3xl mx-auto">
-          <VocabTable vocabulary={selectedStory.vocabulary} />
           <ArticleReader
             sentences={selectedStory.articleSentences}
             translation={selectedStory.articleTranslation}
             title={selectedStory.title}
             titleThai={selectedStory.titleThai}
           />
+          <VocabTable vocabulary={selectedStory.vocabulary} />
           {!showStoryQuiz ? (
             <div className="text-center py-2">
               <Button onClick={() => setShowStoryQuiz(true)} className="font-thai w-full max-w-xs bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg">
