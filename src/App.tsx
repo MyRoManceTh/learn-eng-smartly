@@ -9,6 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/BottomNav";
 import PageTransition from "@/components/PageTransition";
 import DisplayNameModal, { useDisplayNameCheck } from "@/components/DisplayNameModal";
+import { HighlightWordRouteScope } from "@/contexts/HighlightWordRouteScope";
 
 // Eagerly loaded (landing + auth — first paint)
 import Index from "./pages/Index";
@@ -54,6 +55,7 @@ function AppContent() {
     <>
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
       <PageTransition>
+        <HighlightWordRouteScope>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<AuthPage />} />
@@ -87,6 +89,7 @@ function AppContent() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </HighlightWordRouteScope>
       </PageTransition>
       </Suspense>
       <BottomNav />
