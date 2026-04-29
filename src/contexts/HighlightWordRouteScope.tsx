@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { HighlightWordProvider, useHighlightWord } from "@/contexts/HighlightWordContext";
+import HighlightWordPopover from "@/components/HighlightWordPopover";
 
 const RouteHighlightReset = () => {
   const location = useLocation();
@@ -15,5 +16,6 @@ export const HighlightWordRouteScope = ({ children }: { children: React.ReactNod
   <HighlightWordProvider>
     <RouteHighlightReset />
     {children}
+    <HighlightWordPopover />
   </HighlightWordProvider>
 );

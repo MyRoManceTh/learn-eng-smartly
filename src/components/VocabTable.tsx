@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { VocabWord } from "@/types/lesson";
 import { SpeakButton } from "@/hooks/useSpeech";
 import { useHighlightWord, normalizeWord } from "@/contexts/HighlightWordContext";
@@ -9,9 +10,14 @@ interface VocabTableProps {
 }
 
 const VocabTable = ({ vocabulary, highlightWord: highlightOverride }: VocabTableProps) => {
-  const { highlightWord: ctxHighlight, toggleHighlight } = useHighlightWord();
+  const { highlightWord: ctxHighlight, toggleHighlight, setVocabulary } = useHighlightWord();
   const active = highlightOverride ?? ctxHighlight ?? "";
   const isActive = (word: string) => normalizeWord(active) === normalizeWord(word);
+
+  useEffect(() => {
+    setVocabulary(vocabulary);
+    return () => setVocabulary([]);
+  }, [vocabulary, setVocabulary]);
 
   return (
     <div className="rounded-2xl border border-indigo-100/50 bg-white/90 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-indigo-500/5">
