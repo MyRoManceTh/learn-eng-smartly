@@ -274,11 +274,13 @@ const GachaSpinner = ({
         </h2>
 
         {/* Probability rates */}
-        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 px-4 mt-2 mb-4">
-          <span className="text-xs font-bold text-slate-300">⭐ ธรรมดา 60%</span>
-          <span className="text-xs font-bold text-blue-300">💎 หายาก 25%</span>
-          <span className="text-xs font-bold text-purple-300">💜 เอพิค 10%</span>
-          <span className="text-xs font-bold text-yellow-300">👑 ตำนาน 5%</span>
+        <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 px-4 mt-2 mb-4">
+          <span className="text-[11px] font-bold text-slate-300">⭐ 40%</span>
+          <span className="text-[11px] font-bold text-emerald-300">🌿 28%</span>
+          <span className="text-[11px] font-bold text-blue-300">💎 18%</span>
+          <span className="text-[11px] font-bold text-purple-300">💜 9%</span>
+          <span className="text-[11px] font-bold text-yellow-300">👑 4.5%</span>
+          <span className="text-[11px] font-bold text-rose-300">💫 0.5%</span>
         </div>
 
         {/* Capsule Display Area */}
