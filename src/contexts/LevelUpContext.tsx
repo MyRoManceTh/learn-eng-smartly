@@ -55,7 +55,7 @@ export function LevelUpProvider({ children }: { children: ReactNode }) {
       setPreviousStage(oldStage);
       setNewStage(curStage);
       setShowCelebration(true);
-      playComplete();
+      playLevelUp();
     }
   }, []);
 
