@@ -353,26 +353,23 @@ const GachaSpinner = ({
             {/* Result reveal */}
             {showResult && result && wonItem && (
               <div
-                className={`flex flex-col items-center gap-3 z-10
-                  ${result.rarity === "common" ? "animate-pop" : ""}
-                  ${result.rarity === "rare" ? "animate-pop" : ""}
-                  ${result.rarity === "epic" ? "animate-pop" : ""}
-                  ${result.rarity === "legendary" ? "animate-pop" : ""}
-                `}
+                className="flex flex-col items-center gap-3 z-10 animate-pop"
               >
                 {/* Glow ring */}
                 <div
                   className={`relative p-1 rounded-full
+                    ${result.rarity === "uncommon" ? "shadow-2xl shadow-emerald-400/50" : ""}
                     ${result.rarity === "rare" ? "shadow-2xl shadow-blue-400/60" : ""}
                     ${result.rarity === "epic" ? "shadow-2xl shadow-purple-500/70" : ""}
                     ${result.rarity === "legendary" ? "shadow-2xl shadow-yellow-400/80 animate-pulse" : ""}
+                    ${result.rarity === "mythic" ? "shadow-2xl shadow-rose-500/90 animate-pulse" : ""}
                   `}
                 >
                   <div
                     className={`w-28 h-28 rounded-full flex items-center justify-center border-4 bg-gradient-to-br
                       ${rarityConfig[result.rarity].bgGradient}
                       ${rarityConfig[result.rarity].borderColor}
-                      ${result.rarity === "legendary" ? "animate-legendary-glow" : ""}
+                      ${result.rarity === "legendary" || result.rarity === "mythic" ? "animate-legendary-glow" : ""}
                     `}
                     style={{
                       boxShadow: result.rarity !== "common"
@@ -380,13 +377,13 @@ const GachaSpinner = ({
                         : undefined,
                     }}
                   >
-                    <span className={`text-5xl ${result.rarity === "legendary" ? "animate-bounce" : ""}`}>
+                    <span className={`text-5xl ${result.rarity === "legendary" || result.rarity === "mythic" ? "animate-bounce" : ""}`}>
                       {wonItem.icon}
                     </span>
                   </div>
 
                   {/* Sparkles for rare+ */}
-                  {(result.rarity === "rare" || result.rarity === "epic" || result.rarity === "legendary") && (
+                  {(result.rarity === "rare" || result.rarity === "epic" || result.rarity === "legendary" || result.rarity === "mythic") && (
                     <>
                       {[...Array(6)].map((_, i) => (
                         <div
