@@ -11,7 +11,7 @@ export type ItemCategory =
   | 'rightHand'
   | 'aura';
 
-export type ItemRarity = 'common' | 'rare' | 'epic' | 'legendary';
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 export interface AvatarItem {
   id: string;

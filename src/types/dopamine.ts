@@ -64,7 +64,7 @@ export interface EvolutionStage {
 }
 
 // === Gacha System ===
-export type GachaRarity = 'common' | 'rare' | 'epic' | 'legendary';
+export type GachaRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 export interface GachaResult {
   itemId: string;
