@@ -1,6 +1,7 @@
 import { InterlinearWord } from "@/types/lesson";
 import { useSpeech } from "@/hooks/useSpeech";
 import { Volume2 } from "lucide-react";
+import { useHighlightWord, normalizeWord } from "@/contexts/HighlightWordContext";
 
 interface ArticleReaderProps {
   sentences: InterlinearWord[][];
@@ -12,6 +13,8 @@ interface ArticleReaderProps {
 
 const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: ArticleReaderProps) => {
   const { speak } = useSpeech();
+  const { highlightWord, toggleHighlight } = useHighlightWord();
+  const activeNorm = normalizeWord(highlightWord ?? "");
 
   const readFullArticle = () => {
     const fullText = sentences.map(s => s.map(w => w.english).join(" ")).join(". ");
@@ -49,18 +52,30 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
       <div className="mb-4 sm:mb-6">
         {sentences.map((sentence, si) => (
           <span key={si} className="inline mr-2">
-            {sentence.map((word, wi) => (
-              <span
-                key={wi}
-                className="interlinear-word group cursor-pointer active:bg-purple-100 rounded-md px-0.5 transition-colors"
-                onClick={() => speak(word.english)}
-              >
-                <span className="interlinear-eng group-hover:text-purple-600 group-active:text-purple-700 transition-colors">
-                  {word.english}
+            {sentence.map((word, wi) => {
+              const isActive = !!activeNorm && normalizeWord(word.english) === activeNorm;
+              return (
+                <span
+                  key={wi}
+                  className={`interlinear-word group cursor-pointer rounded-md px-0.5 transition-all ${
+                    isActive
+                      ? "bg-yellow-200 ring-2 ring-yellow-400 shadow-sm"
+                      : "active:bg-purple-100"
+                  }`}
+                  onClick={() => {
+                    speak(word.english);
+                    toggleHighlight(word.english);
+                  }}
+                >
+                  <span className={`interlinear-eng transition-colors ${
+                    isActive ? "text-purple-800 font-bold" : "group-hover:text-purple-600 group-active:text-purple-700"
+                  }`}>
+                    {word.english}
+                  </span>
+                  <span className="interlinear-thai">{word.thai}</span>
                 </span>
-                <span className="interlinear-thai">{word.thai}</span>
-              </span>
-            ))}
+              );
+            })}
             <span className="inline-block w-3" />
           </span>
         ))}
