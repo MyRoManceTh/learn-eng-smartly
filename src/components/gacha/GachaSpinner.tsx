@@ -26,6 +26,15 @@ const rarityConfig = {
     textColor: "text-slate-600",
     glowClass: "",
   },
+  uncommon: {
+    label: "พิเศษ",
+    icon: "🌿",
+    color: "#43A047",
+    bgGradient: "from-emerald-400 via-green-300 to-emerald-400",
+    borderColor: "border-emerald-500",
+    textColor: "text-emerald-600",
+    glowClass: "shadow-emerald-400/40",
+  },
   rare: {
     label: "หายาก",
     icon: "💎",
@@ -53,7 +62,16 @@ const rarityConfig = {
     textColor: "text-yellow-600",
     glowClass: "shadow-yellow-400/70",
   },
-};
+  mythic: {
+    label: "เหนือตำนาน",
+    icon: "💫",
+    color: "#FF1744",
+    bgGradient: "from-rose-500 via-fuchsia-500 to-indigo-500",
+    borderColor: "border-rose-500",
+    textColor: "text-rose-600",
+    glowClass: "shadow-rose-500/80",
+  },
+} as const;
 
 const GachaSpinner = ({
   coins,
@@ -76,31 +94,42 @@ const GachaSpinner = ({
   }, []);
 
   const fireConfetti = useCallback((rarity: string) => {
-    if (rarity === "epic") {
+    if (rarity === "uncommon") {
+      confetti({
+        particleCount: 60,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ["#43A047", "#A5D6A7", "#66BB6A"],
+      });
+    } else if (rarity === "epic") {
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
         colors: ["#9C27B0", "#E040FB", "#CE93D8", "#7B1FA2"],
       });
-    } else if (rarity === "legendary") {
+    } else if (rarity === "legendary" || rarity === "mythic") {
       // Heavy confetti burst
-      const duration = 2000;
+      const isMythic = rarity === "mythic";
+      const palette = isMythic
+        ? ["#FF1744", "#D500F9", "#651FFF", "#00E5FF", "#FFD600"]
+        : ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00"];
+      const duration = isMythic ? 3500 : 2000;
       const end = Date.now() + duration;
       const frame = () => {
         confetti({
-          particleCount: 15,
+          particleCount: 18,
           angle: 60,
           spread: 55,
           origin: { x: 0 },
-          colors: ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00"],
+          colors: palette,
         });
         confetti({
-          particleCount: 15,
+          particleCount: 18,
           angle: 120,
           spread: 55,
           origin: { x: 1 },
-          colors: ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00"],
+          colors: palette,
         });
         if (Date.now() < end) {
           requestAnimationFrame(frame);
@@ -108,10 +137,10 @@ const GachaSpinner = ({
       };
       // Initial big burst
       confetti({
-        particleCount: 300,
-        spread: 120,
+        particleCount: isMythic ? 500 : 300,
+        spread: 130,
         origin: { y: 0.5 },
-        colors: ["#FFD700", "#FFA000", "#FFEA00", "#FF6F00", "#FFD54F"],
+        colors: palette,
         gravity: 0.8,
       });
       frame();
@@ -153,7 +182,7 @@ const GachaSpinner = ({
       fireConfetti(gachaResult.rarity);
 
       // Legendary sound effect
-      if (gachaResult.rarity === "legendary") {
+      if (gachaResult.rarity === "legendary" || gachaResult.rarity === "mythic") {
         try {
           const audio = new Audio("/sounds/legendary.mp3");
           audio.volume = 0.5;
@@ -201,7 +230,7 @@ const GachaSpinner = ({
 
     fireConfetti(gachaResult.rarity);
 
-    if (gachaResult.rarity === "legendary") {
+    if (gachaResult.rarity === "legendary" || gachaResult.rarity === "mythic") {
       try {
         const audio = new Audio("/sounds/legendary.mp3");
         audio.volume = 0.5;
@@ -245,11 +274,13 @@ const GachaSpinner = ({
         </h2>
 
         {/* Probability rates */}
-        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 px-4 mt-2 mb-4">
-          <span className="text-xs font-bold text-slate-300">⭐ ธรรมดา 60%</span>
-          <span className="text-xs font-bold text-blue-300">💎 หายาก 25%</span>
-          <span className="text-xs font-bold text-purple-300">💜 เอพิค 10%</span>
-          <span className="text-xs font-bold text-yellow-300">👑 ตำนาน 5%</span>
+        <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 px-4 mt-2 mb-4">
+          <span className="text-[11px] font-bold text-slate-300">⭐ 40%</span>
+          <span className="text-[11px] font-bold text-emerald-300">🌿 28%</span>
+          <span className="text-[11px] font-bold text-blue-300">💎 18%</span>
+          <span className="text-[11px] font-bold text-purple-300">💜 9%</span>
+          <span className="text-[11px] font-bold text-yellow-300">👑 4.5%</span>
+          <span className="text-[11px] font-bold text-rose-300">💫 0.5%</span>
         </div>
 
         {/* Capsule Display Area */}
@@ -322,26 +353,23 @@ const GachaSpinner = ({
             {/* Result reveal */}
             {showResult && result && wonItem && (
               <div
-                className={`flex flex-col items-center gap-3 z-10
-                  ${result.rarity === "common" ? "animate-pop" : ""}
-                  ${result.rarity === "rare" ? "animate-pop" : ""}
-                  ${result.rarity === "epic" ? "animate-pop" : ""}
-                  ${result.rarity === "legendary" ? "animate-pop" : ""}
-                `}
+                className="flex flex-col items-center gap-3 z-10 animate-pop"
               >
                 {/* Glow ring */}
                 <div
                   className={`relative p-1 rounded-full
+                    ${result.rarity === "uncommon" ? "shadow-2xl shadow-emerald-400/50" : ""}
                     ${result.rarity === "rare" ? "shadow-2xl shadow-blue-400/60" : ""}
                     ${result.rarity === "epic" ? "shadow-2xl shadow-purple-500/70" : ""}
                     ${result.rarity === "legendary" ? "shadow-2xl shadow-yellow-400/80 animate-pulse" : ""}
+                    ${result.rarity === "mythic" ? "shadow-2xl shadow-rose-500/90 animate-pulse" : ""}
                   `}
                 >
                   <div
                     className={`w-28 h-28 rounded-full flex items-center justify-center border-4 bg-gradient-to-br
                       ${rarityConfig[result.rarity].bgGradient}
                       ${rarityConfig[result.rarity].borderColor}
-                      ${result.rarity === "legendary" ? "animate-legendary-glow" : ""}
+                      ${result.rarity === "legendary" || result.rarity === "mythic" ? "animate-legendary-glow" : ""}
                     `}
                     style={{
                       boxShadow: result.rarity !== "common"
@@ -349,13 +377,13 @@ const GachaSpinner = ({
                         : undefined,
                     }}
                   >
-                    <span className={`text-5xl ${result.rarity === "legendary" ? "animate-bounce" : ""}`}>
+                    <span className={`text-5xl ${result.rarity === "legendary" || result.rarity === "mythic" ? "animate-bounce" : ""}`}>
                       {wonItem.icon}
                     </span>
                   </div>
 
                   {/* Sparkles for rare+ */}
-                  {(result.rarity === "rare" || result.rarity === "epic" || result.rarity === "legendary") && (
+                  {(result.rarity === "rare" || result.rarity === "epic" || result.rarity === "legendary" || result.rarity === "mythic") && (
                     <>
                       {[...Array(6)].map((_, i) => (
                         <div

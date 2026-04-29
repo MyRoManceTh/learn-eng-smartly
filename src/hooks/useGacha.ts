@@ -39,16 +39,19 @@ export function useGacha() {
       );
       const isPity = pullsSinceEpic === -1 && recentPulls.length >= PITY_THRESHOLD;
 
-      // Determine rarity
+      // Determine rarity (cumulative from rarest → commonest for clean math)
       let rarity: GachaRarity;
       if (isPity) {
         rarity = "epic"; // Pity guaranteed
       } else {
         const roll = Math.random();
-        if (roll < GACHA_RATES.legendary) rarity = "legendary";
-        else if (roll < GACHA_RATES.legendary + GACHA_RATES.epic) rarity = "epic";
-        else if (roll < GACHA_RATES.legendary + GACHA_RATES.epic + GACHA_RATES.rare) rarity = "rare";
-        else rarity = "common";
+        let cum = 0;
+        cum += GACHA_RATES.mythic;     if (roll < cum) rarity = "mythic";
+        else { cum += GACHA_RATES.legendary; if (roll < cum) rarity = "legendary";
+        else { cum += GACHA_RATES.epic;      if (roll < cum) rarity = "epic";
+        else { cum += GACHA_RATES.rare;      if (roll < cum) rarity = "rare";
+        else { cum += GACHA_RATES.uncommon;  if (roll < cum) rarity = "uncommon";
+        else rarity = "common"; }}}}
       }
 
       // Pick item

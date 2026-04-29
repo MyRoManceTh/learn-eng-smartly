@@ -138,9 +138,11 @@ export const getItemById = (id: string): AvatarItem | undefined =>
 export const getRarityColor = (rarity: ItemRarity): string => {
   const colors: Record<ItemRarity, string> = {
     common: "#9E9E9E",
+    uncommon: "#43A047",
     rare: "#2196F3",
     epic: "#9C27B0",
     legendary: "#FFD700",
+    mythic: "#FF1744",
   };
   return colors[rarity];
 };
@@ -148,9 +150,11 @@ export const getRarityColor = (rarity: ItemRarity): string => {
 export const getRarityLabel = (rarity: ItemRarity): string => {
   const labels: Record<ItemRarity, string> = {
     common: "ธรรมดา",
+    uncommon: "พิเศษ",
     rare: "หายาก",
-    epic: "พิเศษ",
+    epic: "เอพิค",
     legendary: "ตำนาน",
+    mythic: "ตำนานเหนือธรรมชาติ",
   };
   return labels[rarity];
 };
