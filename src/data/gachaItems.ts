@@ -1,47 +1,64 @@
 import { AvatarItem } from "@/types/avatar";
 
 /**
- * ไอเทม Exclusive เฉพาะกาชาเท่านั้น (ไม่ขายในร้านค้า)
+ * 🎰 Gacha Exclusive Items
+ *
+ * Design rules (NEVER violate):
+ * - NO hats (project Core rule). Use accessories that render on the body.
+ * - Only categories the avatar pipeline can render: necklace, leftHand,
+ *   rightHand, aura, hairColor, skin, shoes, shirt.
+ * - Every item is wearable + visible on the character.
+ * - 24 curated items spread across 6 rarities (common → mythic).
  */
 export const gachaExclusiveItems: AvatarItem[] = [
-  // ═══ SHIRTS ═══
-  { id: "gacha_shirt_dragon", name: "Dragon Scale", nameThai: "ชุดเกล็ดมังกร", category: "shirt", price: 0, rarity: "legendary", icon: "🐉", svgProps: { color: "#B71C1C", pattern: "dragonscale" } },
-  { id: "gacha_shirt_galaxy", name: "Galaxy Outfit", nameThai: "ชุดกาแล็กซี่", category: "shirt", price: 0, rarity: "epic", icon: "🌌", svgProps: { color: "#0D1B3E", pattern: "galaxy" } },
-  { id: "gacha_shirt_rainbow", name: "Rainbow Dress", nameThai: "ชุดสายรุ้ง", category: "shirt", price: 0, rarity: "epic", icon: "🌈", svgProps: { color: "#FF9A9E", pattern: "rainbow" } },
+  // ═══ COMMON (4) — สีผมและรองเท้าสนุกๆ ═══
+  { id: "gacha_haircolor_bubblegum", name: "Bubblegum", nameThai: "ผมหมากฝรั่ง", category: "hairColor", price: 0, rarity: "common", icon: "🩷", svgProps: { color: "#FF8FB1" } },
+  { id: "gacha_haircolor_skyblue", name: "Sky Blue", nameThai: "ผมฟ้าใส", category: "hairColor", price: 0, rarity: "common", icon: "🩵", svgProps: { color: "#7EC8E3" } },
+  { id: "gacha_shoes_jelly", name: "Jelly Shoes", nameThai: "รองเท้าเจลลี่", category: "shoes", price: 0, rarity: "common", icon: "🍬", svgProps: { color: "#FFB7D5" } },
+  { id: "gacha_neck_clover", name: "Lucky Clover", nameThai: "จี้ใบโคลเวอร์", category: "necklace", price: 0, rarity: "common", icon: "🍀", svgProps: { color: "#66BB6A" } },
 
-  // ═══ HATS ═══
-  { id: "gacha_hat_angel", name: "Angel Wings Band", nameThai: "คาดผมปีกเทวดา", category: "hat", price: 0, rarity: "legendary", icon: "😇", svgProps: { color: "#FFFFFF" } },
-  { id: "gacha_hat_devil", name: "Devil Horns", nameThai: "เขาปีศาจน่ารัก", category: "hat", price: 0, rarity: "epic", icon: "😈", svgProps: { color: "#E53935" } },
-  { id: "gacha_hat_astronaut", name: "Space Helmet", nameThai: "หมวกอวกาศ", category: "hat", price: 0, rarity: "legendary", icon: "👨‍🚀", svgProps: { color: "#ECEFF1" } },
-  { id: "gacha_hat_unicorn", name: "Unicorn Horn", nameThai: "เขายูนิคอร์น", category: "hat", price: 0, rarity: "epic", icon: "🦄", svgProps: { color: "#F8BBD0" } },
+  // ═══ UNCOMMON (5) — เครื่องประดับน่ารัก ═══
+  { id: "gacha_neck_candy", name: "Candy Locket", nameThai: "จี้ลูกอม", category: "necklace", price: 0, rarity: "uncommon", icon: "🍭", svgProps: { color: "#FF80AB" } },
+  { id: "gacha_left_balloon", name: "Heart Balloon", nameThai: "ลูกโป่งหัวใจ", category: "leftHand", price: 0, rarity: "uncommon", icon: "🎈", svgProps: { color: "#EF5350" } },
+  { id: "gacha_right_icecream", name: "Ice Cream Cone", nameThai: "ไอติมโคน", category: "rightHand", price: 0, rarity: "uncommon", icon: "🍦", svgProps: { color: "#FFE0B2" } },
+  { id: "gacha_shoes_strawberry", name: "Berry Sneakers", nameThai: "รองเท้าเบอร์รี่", category: "shoes", price: 0, rarity: "uncommon", icon: "🍓", svgProps: { color: "#E91E63" } },
+  { id: "gacha_haircolor_minty", name: "Minty Fresh", nameThai: "ผมมินต์ฟู", category: "hairColor", price: 0, rarity: "uncommon", icon: "🌱", svgProps: { color: "#4DD0A8" } },
 
-  // ═══ NECKLACE ═══
-  { id: "gacha_neck_dragon_soul", name: "Dragon Soul", nameThai: "วิญญาณมังกร", category: "necklace", price: 0, rarity: "legendary", icon: "🐉", svgProps: { color: "#FF6F00" } },
+  // ═══ RARE (5) — ของถือเท่ + ออร่าเริ่มต้น ═══
+  { id: "gacha_left_book_glow", name: "Glowing Tome", nameThai: "ตำราเรืองแสง", category: "leftHand", price: 0, rarity: "rare", icon: "📖", svgProps: { color: "#26C6DA" } },
+  { id: "gacha_right_quill", name: "Phoenix Quill", nameThai: "ขนนกฟีนิกซ์", category: "rightHand", price: 0, rarity: "rare", icon: "🪶", svgProps: { color: "#FF7043" } },
+  { id: "gacha_neck_starlocket", name: "Star Locket", nameThai: "จี้ดวงดาว", category: "necklace", price: 0, rarity: "rare", icon: "⭐", svgProps: { color: "#FFD54F" } },
+  { id: "gacha_aura_petals", name: "Petal Breeze", nameThai: "ออร่ากลีบดอก", category: "aura", price: 0, rarity: "rare", icon: "🌸", svgProps: { color: "#F48FB1" } },
+  { id: "gacha_shirt_starry", name: "Starry Tee", nameThai: "เสื้อดวงดาว", category: "shirt", price: 0, rarity: "rare", icon: "✨", svgProps: { color: "#5E35B1", pattern: "plain" } },
 
-  // ═══ LEFT HAND ═══
-  { id: "gacha_left_spirit_shield", name: "Spirit Shield", nameThai: "โล่วิญญาณ", category: "leftHand", price: 0, rarity: "legendary", icon: "🛡️", svgProps: { color: "#CE93D8" } },
+  // ═══ EPIC (5) — อาวุธ/ออร่าโดดเด่น ═══
+  { id: "gacha_right_crystal_wand", name: "Crystal Wand", nameThai: "ไม้กายสิทธิ์คริสตัล", category: "rightHand", price: 0, rarity: "epic", icon: "🔮", svgProps: { color: "#CE93D8" } },
+  { id: "gacha_left_aurora_shield", name: "Aurora Shield", nameThai: "โล่แสงเหนือ", category: "leftHand", price: 0, rarity: "epic", icon: "🛡️", svgProps: { color: "#80DEEA" } },
+  { id: "gacha_aura_galaxy", name: "Galaxy Aura", nameThai: "ออร่ากาแล็กซี่", category: "aura", price: 0, rarity: "epic", icon: "🌌", svgProps: { color: "#7C4DFF" } },
+  { id: "gacha_neck_phoenix", name: "Phoenix Tear", nameThai: "หยดน้ำตาฟีนิกซ์", category: "necklace", price: 0, rarity: "epic", icon: "🔥", svgProps: { color: "#FF6F00" } },
+  { id: "gacha_skin_porcelain", name: "Porcelain Glow", nameThai: "ผิวพอร์ซเลน", category: "skin", price: 0, rarity: "epic", icon: "🌟", svgProps: { color: "#FFF1E6" } },
 
-  // ═══ RIGHT HAND ═══
-  { id: "gacha_right_spirit_blade", name: "Spirit Blade", nameThai: "ดาบวิญญาณ", category: "rightHand", price: 0, rarity: "legendary", icon: "⚔️", svgProps: { color: "#B3E5FC" } },
-
-  // ═══ AURA ═══
+  // ═══ LEGENDARY (4) — ดาบและออร่าระดับโลก ═══
+  { id: "gacha_right_dragon_blade", name: "Dragon Blade", nameThai: "ดาบมังกรเพลิง", category: "rightHand", price: 0, rarity: "legendary", icon: "🐉", svgProps: { color: "#D84315" } },
+  { id: "gacha_left_celestial_shield", name: "Celestial Shield", nameThai: "โล่สวรรค์", category: "leftHand", price: 0, rarity: "legendary", icon: "✨", svgProps: { color: "#FFD700" } },
   { id: "gacha_aura_rainbow", name: "Rainbow Aura", nameThai: "ออร่าสายรุ้ง", category: "aura", price: 0, rarity: "legendary", icon: "🌈", svgProps: { color: "rainbow" } },
+  { id: "gacha_haircolor_aurora", name: "Aurora Hair", nameThai: "ผมแสงเหนือ", category: "hairColor", price: 0, rarity: "legendary", icon: "🌠", svgProps: { color: "#00E5FF" } },
 
-  // ═══ SHOES ═══
-  { id: "gacha_shoes_cloud", name: "Cloud Walkers", nameThai: "รองเท้าเมฆ", category: "shoes", price: 0, rarity: "epic", icon: "☁️", svgProps: { color: "#E3F2FD" } },
-
-  // ═══ SKIN ═══
-  { id: "gacha_skin_crystal", name: "Crystal Skin", nameThai: "ผิวคริสตัล", category: "skin", price: 0, rarity: "legendary", icon: "💎", svgProps: { color: "#E0F7FA" } },
-
-  // ═══ HAIR COLOR ═══
-  { id: "gacha_hair_aurora", name: "Aurora Hair", nameThai: "ผมแสงเหนือ", category: "hairColor", price: 0, rarity: "legendary", icon: "🌌", svgProps: { color: "#00E676" } },
+  // ═══ MYTHIC (1) — สุดยอดของสะสม ═══
+  { id: "gacha_aura_cosmic", name: "Cosmic Sovereign", nameThai: "ออร่าจักรวาล", category: "aura", price: 0, rarity: "mythic", icon: "💫", svgProps: { color: "rainbow" } },
 ];
 
+/**
+ * Drop rates — sums to 1.0
+ * Tuned so mythic feels truly rare, but each pull still feels rewarding.
+ */
 export const GACHA_RATES = {
-  common: 0.6,
-  rare: 0.25,
-  epic: 0.1,
-  legendary: 0.05,
+  common: 0.40,
+  uncommon: 0.28,
+  rare: 0.18,
+  epic: 0.09,
+  legendary: 0.045,
+  mythic: 0.005,
 } as const;
 
 export const GACHA_COIN_COST = 50;
