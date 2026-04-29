@@ -208,7 +208,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="px-4 py-4 space-y-4 max-w-lg mx-auto">
+      <main className="px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 max-w-lg md:max-w-3xl lg:max-w-5xl mx-auto">
         {/* === Avatar + Greeting Section === */}
         <div className="rounded-2xl bg-gradient-to-br from-purple-500/10 via-white/80 to-pink-500/10 border border-white/60 p-4 shadow-md backdrop-blur-sm">
           <div className="flex items-center gap-4">
@@ -344,7 +344,7 @@ const Index = () => {
           <h3 className="text-sm font-bold font-thai text-foreground mb-2">
             ⚡ กิจกรรมด่วน
           </h3>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
             {quickActions.map((action) => (
               <button
                 key={action.path}
@@ -406,7 +406,7 @@ const Index = () => {
           <h3 className="text-sm font-bold font-thai text-foreground mb-2">
             🎯 กิจกรรมทั้งหมด
           </h3>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
             {activities.map((act) => (
               <button
                 key={act.path}
