@@ -649,6 +649,30 @@ export type Database = {
         }
         Relationships: []
       }
+      story_progress: {
+        Row: {
+          chapter_id: string
+          completed_at: string
+          id: string
+          story_id: string
+          user_id: string
+        }
+        Insert: {
+          chapter_id: string
+          completed_at?: string
+          id?: string
+          story_id: string
+          user_id: string
+        }
+        Update: {
+          chapter_id?: string
+          completed_at?: string
+          id?: string
+          story_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_lesson_progress: {
         Row: {
           completed_at: string
