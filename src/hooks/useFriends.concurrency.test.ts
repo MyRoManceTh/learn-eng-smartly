@@ -71,7 +71,7 @@ vi.mock("sonner", () => ({
   }),
 }));
 
-const STABLE_USER = { id: "user-1" };
+const { STABLE_USER } = vi.hoisted(() => ({ STABLE_USER: { id: "user-1" } }));
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ user: STABLE_USER }),
 }));
