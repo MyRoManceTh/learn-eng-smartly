@@ -71,8 +71,9 @@ vi.mock("sonner", () => ({
   }),
 }));
 
+const STABLE_USER = { id: "user-1" };
 vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ user: { id: "user-1" } }),
+  useAuth: () => ({ user: STABLE_USER }),
 }));
 
 vi.mock("@/utils/timezone", () => ({
