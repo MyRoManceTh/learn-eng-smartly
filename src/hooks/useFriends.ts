@@ -418,62 +418,37 @@ export function useFriends() {
     [user, friends, energySentToday]
   );
 
-  // ── Claim Gift (DB-level guard against double claim) ──
+  // ── Claim Gift (atomic RPC: mark claimed + apply rewards in one tx) ──
   const claimGift = useCallback(
     async (giftId: string) => {
       if (!user) return;
-
-      const gift = pendingGifts.find((g) => g.id === giftId);
-      if (!gift) {
-        toast.error("ไม่พบของขวัญนี้");
-        return;
-      }
 
       // Guard: prevent double-click
       if (claimingIds.has(giftId)) return;
       setClaimingIds((prev) => new Set(prev).add(giftId));
 
-      // Step 1: Mark claimed at DB level first (with guard)
-      const { data: claimResult, error: claimErr } = await supabase
-        .from("gift_transactions")
-        .update({ claimed: true } as Record<string, boolean>)
-        .eq("id", giftId)
-        .eq("claimed", false) // DB-level guard: only update if still unclaimed
-        .select("id");
+      const { data, error } = await supabase.rpc("claim_gift", {
+        _gift_id: giftId,
+      });
 
-      if (claimErr || !claimResult || (claimResult as Record<string, string>[]).length === 0) {
-        toast.error("ของขวัญนี้ถูกรับไปแล้ว");
-        setClaimingIds((prev) => { const n = new Set(prev); n.delete(giftId); return n; });
-        loadFriends();
+      setClaimingIds((prev) => { const n = new Set(prev); n.delete(giftId); return n; });
+
+      if (error) {
+        toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
         return;
       }
 
-      // Step 2: Apply rewards
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("coins, inventory, energy")
-        .eq("user_id", user.id)
-        .single();
-
-      if (profile) {
-        const p = profile as Record<string, unknown>;
-        const updates: Record<string, unknown> = {};
-        if (gift.coins > 0) updates.coins = ((p.coins as number) || 0) + gift.coins;
-        if (gift.item_id === "energy") {
-          updates.energy = Math.min(5, ((p.energy as number) ?? 5) + 1);
-        } else if (gift.item_id) {
-          const inv = Array.isArray(p.inventory) ? (p.inventory as string[]) : [];
-          updates.inventory = [...inv, gift.item_id];
-        }
-        if (Object.keys(updates).length > 0) {
-          await supabase.from("profiles").update(updates).eq("user_id", user.id);
-        }
+      const result = data as { ok?: boolean; reason?: string } | null;
+      if (!result?.ok) {
+        toast.error("ของขวัญนี้ถูกรับไปแล้ว");
+        loadFriends();
+        return;
       }
 
       toast.success("รับของขวัญแล้ว! 🎉");
       loadFriends();
     },
-    [user, pendingGifts, claimingIds, loadFriends]
+    [user, claimingIds, loadFriends]
   );
 
   const notificationCount = pendingRequests.length + pendingGifts.length;
