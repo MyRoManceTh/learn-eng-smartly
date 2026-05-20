@@ -5,46 +5,39 @@ import {
   Handshake, Crown, Medal, Award, Gamepad2, Headphones, Lock, Rocket, Home,
   Smartphone, Dumbbell, Globe, Heart, Lightbulb, Mic, Megaphone, Newspaper,
   ClipboardList, Shirt, PawPrint, Egg, Bird, Cat, Flower2, Sprout, Leaf, Trees,
-  Castle, Shield, Sword, Swords, Bot, Eagle, Sparkle, Moon, Waves, Armchair,
-  Footprints, Hospital, Smile, CaseSensitive, Scissors, Hand, Image as ImageIcon,
-  Music, Film, Camera, Calendar, Clock, MapPin, Mail, Phone, Search, Settings,
-  User, UserCheck, UserPlus, UserX, Bell, BellRing, Eye, EyeOff, ThumbsUp,
-  ThumbsDown, Pin, Bookmark, Tag, Hash, AlertCircle, AlertTriangle, Info,
-  HelpCircle, Plus, Minus, ArrowRight, ArrowLeft, ArrowUp, ArrowDown,
-  ChevronRight, ChevronLeft, Loader, RefreshCw, Trash2, Edit, Save, Download,
-  Upload, Share2, Link, Copy, ExternalLink, Pizza, Cookie, Cake, Coffee, Apple,
-  Wine, Beer, Utensils, Soup, IceCream, Sun, Cloud, CloudRain, Snowflake, Wind,
-  Umbrella, Mountain, TreePalm, Bug, Fish, Rabbit, Dog, Squirrel, Turtle, Cog,
-  Wrench, Hammer, Briefcase, Building, Building2, Banknote, Wallet, CreditCard,
-  Receipt, Diamond, Atom, FlaskConical, Microscope, Telescope, Palette, Brush,
-  Drum, Piano, Guitar, Theater, Tv, Radio, Joystick, Dices, Puzzle, Trophy as TrophyIcon,
-  Ribbon, Tent, Backpack, Glasses, Compass, Anchor, Plane, Car, Bus, Train, Ship,
-  Bike, Battery, Plug, Wifi, Bluetooth, MonitorSmartphone, Laptop, Mouse, Keyboard,
-  Volume2, VolumeX, Play, Pause, SkipForward, SkipBack, Repeat, Shuffle,
-  Crosshair, Skull, Ghost, Aperture, Wand2, Wand, Snail, Feather, FlameKindling,
-  CircleDot, Circle, Square, Triangle, Hexagon,
+  Castle, Shield, Sword, Swords, Bot, Sparkle, Moon, Waves, Armchair,
+  Footprints, Hospital, Smile, Scissors, Hand, Image as ImageIcon,
+  Music, Film, Camera, Calendar, Clock, Mail, Phone, User,
+  Bell, Eye, ThumbsUp, AlertTriangle, Info, HelpCircle, Plus, Minus,
+  Loader, RefreshCw, Trash2, Edit, Save, Download, Share2,
+  Cookie, Cake, Coffee, Apple, Utensils,
+  Sun, Cloud, CloudRain, Snowflake, Wind,
+  Mountain, Fish, Dog, Rabbit,
+  Briefcase, Building, Building2, Wallet,
+  Palette, Brush, Tv, Radio,
+  Wand2, Puzzle, Dices,
+  type LucideIcon,
 } from "lucide-react";
 
-import type { LucideIcon } from "lucide-react";
-
-// Centralized emoji → lucide icon mapping.
-// Keys include the original emoji char AND a semantic name so data files can use either.
+/**
+ * Centralized emoji → lucide icon mapping.
+ * Keys include the original emoji char AND a semantic name so both
+ * `<EmojiIcon emoji="🔥" />` and `<EmojiIcon emoji="flame" />` work.
+ */
 export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
-  // Gamification core
+  // Gamification
   "🔥": Flame, flame: Flame, fire: Flame,
   "🪙": Coins, coin: Coins, coins: Coins,
   "💰": Wallet, money: Wallet,
   "⚡": Zap, zap: Zap, lightning: Zap, energy: Zap,
-  "✨": Sparkles, sparkles: Sparkles, shine: Sparkles,
+  "✨": Sparkles, sparkles: Sparkles,
   "💫": Sparkle, sparkle: Sparkle,
-  "🌟": Star, "⭐": Star, star: Star,
-  "✦": Star, "✧": Star,
-  "🎉": PartyPopper, party: PartyPopper, celebrate: PartyPopper,
-  "🎊": PartyPopper,
-  "🏆": Trophy, trophy: Trophy, champion: Trophy,
+  "🌟": Star, "⭐": Star, star: Star, "✦": Star, "✧": Star,
+  "🎉": PartyPopper, "🎊": PartyPopper, party: PartyPopper, celebrate: PartyPopper,
+  "🏆": Trophy, trophy: Trophy,
   "🎯": Target, target: Target, goal: Target,
   "🎁": Gift, gift: Gift,
-  "💎": Gem, gem: Gem, diamond: Diamond,
+  "💎": Gem, gem: Gem,
   "✅": CheckCircle2, check: CheckCircle2,
   "✓": Check, tick: Check,
   "❌": XCircle, cross: XCircle, fail: XCircle,
@@ -52,10 +45,10 @@ export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
   "❤": Heart, "❤️": Heart, "💕": Heart, "💜": Heart, "💖": Heart, "💗": Heart,
   heart: Heart, love: Heart,
 
-  // Content / learning
+  // Learning content
   "📚": BookOpen, books: BookOpen, library: BookOpen,
   "📖": Book, book: Book, reading: Book,
-  "📝": PencilLine, note: PencilLine, write: PencilLine, writing: PencilLine,
+  "📝": PencilLine, note: PencilLine, write: PencilLine,
   "✏": PencilLine, "✏️": PencilLine, pencil: PencilLine,
   "📊": BarChart3, chart: BarChart3, stats: BarChart3,
   "📋": ClipboardList, clipboard: ClipboardList,
@@ -64,12 +57,12 @@ export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
   "🗺": MapIcon, "🗺️": MapIcon, map: MapIcon,
   "🧠": Brain, brain: Brain,
   "💡": Lightbulb, idea: Lightbulb, tip: Lightbulb,
-  "🔤": CaseSensitive, alphabet: CaseSensitive, abc: CaseSensitive,
+  "🔤": BookOpen, alphabet: BookOpen, abc: BookOpen,
 
   // Social / shop
   "🛒": ShoppingCart, cart: ShoppingCart, shop: ShoppingCart,
   "👥": Users, users: Users, friends: Users,
-  "👤": User,
+  "👤": User, user: User,
   "💬": MessageCircle, chat: MessageCircle, message: MessageCircle,
   "🗣": Megaphone, "🗣️": Megaphone, speak: Megaphone,
   "🎙": Mic, "🎙️": Mic, mic: Mic,
@@ -80,47 +73,40 @@ export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
   "🥉": Medal, bronze: Medal,
   "🎖": Award, "🎖️": Award, award: Award,
   "🏅": Medal, medal: Medal,
-  "🎀": Ribbon, ribbon: Ribbon,
 
-  // Activities / tools
-  "🎮": Gamepad2, game: Gamepad2, gaming: Gamepad2,
-  "🕹": Joystick, "🕹️": Joystick,
-  "🎲": Dices, dice: Dices,
-  "🎰": Dices, slot: Dices,
+  // Activities
+  "🎮": Gamepad2, "🕹": Gamepad2, "🕹️": Gamepad2, game: Gamepad2, gaming: Gamepad2,
+  "🎲": Dices, "🎰": Dices, dice: Dices, slot: Dices,
   "🧩": Puzzle, puzzle: Puzzle,
   "🎧": Headphones, headphones: Headphones, audio: Headphones,
   "🎵": Music, "🎶": Music, music: Music,
   "🎨": Palette, art: Palette,
   "🖌": Brush, "🖌️": Brush, brush: Brush,
-  "🎭": Theater, theater: Theater,
   "📺": Tv, tv: Tv,
   "📻": Radio, radio: Radio,
   "🎬": Film, movie: Film, film: Film,
   "📷": Camera, "📸": Camera, camera: Camera,
   "🖼": ImageIcon, "🖼️": ImageIcon, image: ImageIcon,
-  "🥁": Drum, drum: Drum,
-  "🎹": Piano, piano: Piano,
-  "🎸": Guitar, guitar: Guitar,
 
-  // Security / system
+  // Security / battle
   "🔒": Lock, "🔐": Lock, lock: Lock,
   "🛡": Shield, "🛡️": Shield, shield: Shield,
   "⚔": Swords, "⚔️": Swords, swords: Swords, battle: Swords,
   "🗡": Sword, "🗡️": Sword, sword: Sword,
   "🤖": Bot, robot: Bot, ai: Bot,
+  "🪄": Wand2, magic: Wand2,
 
-  // Places / world
+  // Places
   "🏠": Home, "🏡": Home, home: Home, house: Home,
   "🏰": Castle, castle: Castle,
   "🏥": Hospital, hospital: Hospital,
   "🏢": Building2, office: Building2,
   "🏛": Building, "🏛️": Building, building: Building,
-  "⛺": Tent, tent: Tent,
   "🌍": Globe, "🌎": Globe, "🌏": Globe, world: Globe, globe: Globe,
   "🌌": Sparkles, galaxy: Sparkles,
   "🚀": Rocket, rocket: Rocket, launch: Rocket,
   "📱": Smartphone, phone: Smartphone, mobile: Smartphone,
-  "💻": Laptop, laptop: Laptop,
+  "💼": Briefcase, briefcase: Briefcase, work: Briefcase,
 
   // Nature
   "🌱": Sprout, sprout: Sprout, seedling: Sprout,
@@ -135,19 +121,59 @@ export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
   "🌧": CloudRain, "🌧️": CloudRain, rain: CloudRain,
   "❄": Snowflake, "❄️": Snowflake, snow: Snowflake,
   "💨": Wind, wind: Wind,
-  "☂": Umbrella, "☂️": Umbrella, "☔": Umbrella, umbrella: Umbrella,
   "⛰": Mountain, "⛰️": Mountain, "🏔": Mountain, "🏔️": Mountain, mountain: Mountain,
-  "🌴": TreePalm, palm: TreePalm,
 
   // Animals
-  "🐉": Bird, dragon: Bird, // closest available
-  "🐲": Bird,
+  "🐉": Bird, "🐲": Bird, dragon: Bird,
   "🐱": Cat, "🐈": Cat, cat: Cat,
   "🐶": Dog, "🐕": Dog, dog: Dog,
   "🐰": Rabbit, "🐇": Rabbit, rabbit: Rabbit,
-  "🐢": Turtle, turtle: Turtle,
-  "🐦": Bird, bird: Bird,
-  "🦅": Eagle, eagle: Eagle,
+  "🐦": Bird, "🐥": Bird, "🐣": Bird, "🦅": Bird, bird: Bird, chick: Bird, eagle: Bird,
   "🐾": PawPrint, paw: PawPrint, pet: PawPrint,
   "🥚": Egg, egg: Egg,
-  
+  "🐟": Fish, "🐠": Fish, fish: Fish,
+
+  // Body / character
+  "👕": Shirt, shirt: Shirt, clothes: Shirt,
+  "👖": Shirt, pants: Shirt,
+  "👟": Footprints, shoes: Footprints, sneaker: Footprints,
+  "💪": Dumbbell, strong: Dumbbell, strength: Dumbbell,
+  "💇": Scissors, "💇‍♀️": Scissors, "💇‍♂️": Scissors, haircut: Scissors,
+  "🫲": Hand, hand: Hand,
+  "😊": Smile, smile: Smile, happy: Smile,
+  "🪑": Armchair, chair: Armchair, furniture: Armchair,
+  "🧸": Gift, toy: Gift,
+  "🦥": PawPrint, sloth: PawPrint,
+
+  // Food
+  "🍕": Cookie, pizza: Cookie,
+  "🍪": Cookie, cookie: Cookie,
+  "🎂": Cake, "🍰": Cake, cake: Cake,
+  "☕": Coffee, coffee: Coffee,
+  "🍎": Apple, "🍏": Apple, apple: Apple,
+  "🍽": Utensils, "🍽️": Utensils, food: Utensils, eat: Utensils,
+
+  // Meta / system
+  "📅": Calendar, calendar: Calendar, date: Calendar,
+  "⏰": Clock, "⏲": Clock, "⏲️": Clock, "🕐": Clock, clock: Clock, time: Clock,
+  "📧": Mail, "📨": Mail, "✉": Mail, "✉️": Mail, mail: Mail, email: Mail,
+  "📞": Phone, telephone: Phone,
+  "🔔": Bell, bell: Bell, notification: Bell,
+  "👁": Eye, "👁️": Eye, eye: Eye, view: Eye,
+  "👍": ThumbsUp, like: ThumbsUp,
+  "⚠": AlertTriangle, "⚠️": AlertTriangle, warning: AlertTriangle,
+  "ℹ": Info, "ℹ️": Info, info: Info,
+  "❓": HelpCircle, "❔": HelpCircle, help: HelpCircle, question: HelpCircle,
+  "➕": Plus, plus: Plus, add: Plus,
+  "➖": Minus, minus: Minus,
+  "🔄": RefreshCw, refresh: RefreshCw,
+  "⏳": Loader, "⌛": Loader, loading: Loader,
+  "🗑": Trash2, "🗑️": Trash2, trash: Trash2, delete: Trash2,
+  "✂": Scissors, "✂️": Scissors,
+  "📤": Share2, share: Share2,
+  "📥": Download, download: Download,
+  "💾": Save, save: Save,
+};
+
+/** Convenience: list of every emoji char the map handles (for codemods). */
+export const KNOWN_EMOJIS = Object.keys(EMOJI_ICON_MAP);
