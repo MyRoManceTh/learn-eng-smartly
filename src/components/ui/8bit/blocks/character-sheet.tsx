@@ -282,7 +282,7 @@ export function CharacterSheet({
                     className="flex items-center justify-between py-1.5 px-2"
                   >
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <EmojiIcon emoji={stat.icon} />
+                      {stat.icon}
                       {stat.name}
                     </span>
                     <span
@@ -320,7 +320,7 @@ export function CharacterSheet({
                       {item.slot}
                     </span>
                     <span className="text-sm font-medium flex items-center gap-1">
-                      <EmojiIcon emoji={item.icon} />
+                      {item.icon}
                       {item.name}
                     </span>
                   </div>
