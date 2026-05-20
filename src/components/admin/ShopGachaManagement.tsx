@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingBag, Dice5, Trophy, FileCode } from "lucide-react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const rarityColor: Record<string, string> = {
   common: "bg-gray-400",
@@ -56,7 +57,7 @@ const ShopGachaManagement = () => {
                 {(shopItems || []).map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-thai">
-                      {item.icon} {item.name}
+                      <EmojiIcon emoji={item.icon} /> {item.name}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{item.category}</Badge>
@@ -120,7 +121,7 @@ const ShopGachaManagement = () => {
                   {(gachaExclusiveItems || []).map((item: any) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-thai">
-                        {item.icon} {item.name}
+                        <EmojiIcon emoji={item.icon} /> {item.name}
                       </TableCell>
                       <TableCell>
                         <Badge className={`${rarityColor[item.rarity] || "bg-gray-400"} text-white`}>

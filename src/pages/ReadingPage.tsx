@@ -262,7 +262,7 @@ const ReadingPage = () => {
             <Button variant="ghost" size="sm" onClick={() => setSelectedCategory(null)}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <span className="text-xl">{cat.icon}</span>
+            <span className="text-xl"><EmojiIcon emoji={cat.icon} /></span>
             <span className="text-base font-bold font-thai">{cat.nameThai}</span>
           </div>
         </header>
@@ -374,7 +374,7 @@ const ReadingPage = () => {
                   <div className={cn("absolute inset-0 opacity-10 bg-gradient-to-br", cat.color)} />
                   <div className="relative">
                     <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-2 shadow-sm bg-gradient-to-br", cat.color)}>
-                      {cat.icon}
+                      <EmojiIcon emoji={cat.icon} />
                     </div>
                     <h3 className="font-bold font-thai text-sm">{cat.nameThai}</h3>
                     <p className="text-[11px] text-muted-foreground font-reading">{cat.name}</p>

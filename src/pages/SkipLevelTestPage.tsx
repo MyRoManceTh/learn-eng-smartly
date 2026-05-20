@@ -97,7 +97,7 @@ export default function SkipLevelTestPage() {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">
-            <p className="text-sm font-bold font-thai">ข้ามระดับไป {info.cefr} {info.icon}</p>
+            <p className="text-sm font-bold font-thai">ข้ามระดับไป {info.cefr} <EmojiIcon emoji={info.icon} /></p>
             <Progress value={progress} className="h-1.5 mt-1" />
           </div>
           <span className="text-xs font-bold text-muted-foreground">

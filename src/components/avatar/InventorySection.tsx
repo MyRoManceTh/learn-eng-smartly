@@ -85,7 +85,7 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
             {/* Category header */}
             <div className="flex items-center gap-2 mb-3">
               <div className={`flex items-center gap-1.5 bg-gradient-to-r ${config?.color || "from-gray-400 to-gray-500"} text-white rounded-full px-3 py-1 shadow-md`}>
-                <span className="text-sm">{config?.icon}</span>
+                <span className="text-sm"><EmojiIcon emoji={config?.icon} /></span>
                 <span className="text-[11px] font-black font-thai">{config?.label || category}</span>
               </div>
               <div className="flex-1 h-0.5 rounded-full bg-gradient-to-r from-gray-200 to-transparent" />

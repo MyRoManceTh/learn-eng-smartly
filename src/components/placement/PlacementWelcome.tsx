@@ -40,7 +40,7 @@ const PlacementWelcome = ({ onStart }: PlacementWelcomeProps) => {
               className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10"
             >
               <div className={`w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center ${stage.color}`}>
-                {stage.icon}
+                <EmojiIcon emoji={stage.icon} />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">{stage.name}</p>

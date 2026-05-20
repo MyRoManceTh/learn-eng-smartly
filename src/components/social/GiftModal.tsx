@@ -184,7 +184,7 @@ export default function GiftModal({
                           : "border-muted hover:bg-muted/30"
                       }`}
                     >
-                      <span className="text-lg">{item.icon}</span>
+                      <span className="text-lg"><EmojiIcon emoji={item.icon} /></span>
                       <span className="text-[9px] leading-tight truncate w-full">
                         {item.nameThai}
                       </span>
@@ -215,7 +215,7 @@ export default function GiftModal({
               {giftType === "coins" ? (
                 <span className="font-medium">🪙 {coinAmount} เหรียญ</span>
               ) : selectedItemData ? (
-                <span className="font-medium">{selectedItemData.icon} {selectedItemData.nameThai}</span>
+                <span className="font-medium"><EmojiIcon emoji={selectedItemData.icon} /> {selectedItemData.nameThai}</span>
               ) : (
                 <span className="text-muted-foreground text-xs">ยังไม่ได้เลือกไอเทม</span>
               )}

@@ -82,7 +82,7 @@ export const StoryCollection = ({ onOpen }: Props) => {
                   : "bg-white text-foreground/70 border-white/80 hover:border-foreground/30"
               }`}
             >
-              {meta.emoji} {meta.th}
+              <EmojiIcon emoji={meta.emoji} /> {meta.th}
             </button>
           );
         })}

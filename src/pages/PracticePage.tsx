@@ -38,7 +38,7 @@ const PracticePage = () => {
 
               <div className="flex items-center gap-4 pl-3">
                 <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br", act.color)}>
-                  <span className="drop-shadow-sm">{act.icon}</span>
+                  <span className="drop-shadow-sm"><EmojiIcon emoji={act.icon} /></span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

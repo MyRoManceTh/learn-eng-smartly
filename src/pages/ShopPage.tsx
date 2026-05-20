@@ -95,7 +95,7 @@ const ShopPage = () => {
                     : "text-gray-500 hover:text-gray-700"
                 )}
               >
-                {tab.icon} {tab.label}
+                <EmojiIcon emoji={tab.icon} /> {tab.label}
               </button>
             ))}
           </div>
@@ -133,7 +133,7 @@ const ShopPage = () => {
                 )}
 
                 <div className="text-center mb-2">
-                  <span className="text-3xl">{item.icon}</span>
+                  <span className="text-3xl"><EmojiIcon emoji={item.icon} /></span>
                 </div>
                 <h3 className="font-bold font-thai text-sm text-center">{item.nameThai}</h3>
                 <p className="text-[10px] text-muted-foreground font-thai text-center mt-1 line-clamp-2">{item.description}</p>

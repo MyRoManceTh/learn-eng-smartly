@@ -16,6 +16,7 @@ import ManaBar from "@/components/ui/8bit/mana-bar";
 import { Progress } from "@/components/ui/8bit/progress";
 import { Separator } from "@/components/ui/8bit/separator";
 import "@/components/ui/8bit/styles/retro.css";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export interface PrimaryAttribute {
   name: string;
@@ -281,7 +282,7 @@ export function CharacterSheet({
                     className="flex items-center justify-between py-1.5 px-2"
                   >
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      {stat.icon}
+                      <EmojiIcon emoji={stat.icon} />
                       {stat.name}
                     </span>
                     <span
@@ -319,7 +320,7 @@ export function CharacterSheet({
                       {item.slot}
                     </span>
                     <span className="text-sm font-medium flex items-center gap-1">
-                      {item.icon}
+                      <EmojiIcon emoji={item.icon} />
                       {item.name}
                     </span>
                   </div>

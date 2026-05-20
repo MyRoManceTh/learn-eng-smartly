@@ -135,7 +135,7 @@ export default function RewardsShopPage() {
       .eq("user_id", user.id);
 
     refreshProfile();
-    toast.success(`ซื้อ ${powerUp.nameThai} สำเร็จ! ${powerUp.emoji}`);
+    toast.success(`ซื้อ ${powerUp.nameThai} สำเร็จ! $<EmojiIcon emoji={powerUp.emoji} />`);
     confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
     setBuying(null);
   };
@@ -176,7 +176,7 @@ export default function RewardsShopPage() {
                   "w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0 bg-gradient-to-br text-white shadow-md",
                   pu.color
                 )}>
-                  {pu.emoji}
+                  <EmojiIcon emoji={pu.emoji} />
                 </div>
 
                 {/* Info */}

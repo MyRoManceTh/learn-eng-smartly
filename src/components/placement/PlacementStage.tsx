@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
 import { playCorrect, playWrong } from "@/utils/sounds";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PlacementStageProps {
   stage: PlacementStageType;
@@ -64,7 +65,7 @@ const PlacementStageComponent = ({
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg">{info.icon}</span>
+              <span className="text-lg"><EmojiIcon emoji={info.icon} /></span>
               <span className="text-sm font-semibold text-white">{info.name}</span>
             </div>
             <span className="text-xs text-purple-300 font-thai">

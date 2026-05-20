@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/8bit/alert";
 // Image component removed - using standard img tag instead
 import { cva } from "class-variance-authority";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const rarityVariants = cva("", {
   variants: {
@@ -103,7 +104,7 @@ function VictoryScreen({
                       <div className="flex flex-row justify-center md:justify-start items-center gap-2 truncate w-full md:max-w-[65%]">
                         {showItemIcon && item.icon && (
                           <img
-                            src={item.icon}
+                            src=<EmojiIcon emoji={item.icon} />
                             alt={item.name}
                             width={48}
                             height={48}

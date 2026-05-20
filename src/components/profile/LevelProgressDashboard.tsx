@@ -3,6 +3,7 @@ import { useSkillTreeProgress } from "@/hooks/useSkillTreeProgress";
 import { useProfile } from "@/hooks/useProfile";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export default function LevelProgressDashboard() {
   const { profile } = useProfile();
@@ -24,7 +25,7 @@ export default function LevelProgressDashboard() {
     <div className="rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 p-4 shadow-sm space-y-3">
       {/* Current level */}
       <div className="flex items-center gap-3">
-        <span className="text-3xl">{info.icon}</span>
+        <span className="text-3xl"><EmojiIcon emoji={info.icon} /></span>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold font-thai">Level {currentLevel}</span>
@@ -51,7 +52,7 @@ export default function LevelProgressDashboard() {
           "flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-thai",
           progress >= 100 ? "bg-green-50 text-green-700 border border-green-200" : "bg-muted/50 text-muted-foreground"
         )}>
-          <span>{nextInfo.icon}</span>
+          <span><EmojiIcon emoji={nextInfo.icon} /></span>
           {progress >= 100 ? (
             <span className="font-bold">พร้อมเลื่อนระดับเป็น {nextInfo.cefr}! 🎉</span>
           ) : (

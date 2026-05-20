@@ -121,7 +121,7 @@ const ConversationPage = () => {
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
             <div className="flex-1">
-              <span className="text-base font-bold font-thai">{selected.icon} {selected.titleThai}</span>
+              <span className="text-base font-bold font-thai"><EmojiIcon emoji={selected.icon} /> {selected.titleThai}</span>
               <span className="text-xs text-muted-foreground ml-2 font-thai">กับ {selected.npcName}</span>
             </div>
             <div className="flex items-center gap-1 bg-green-100 rounded-full px-2 py-0.5">
@@ -252,7 +252,7 @@ const ConversationPage = () => {
                   "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br relative",
                   isDone ? "from-green-400 to-emerald-500" : sc.color
                 )}>
-                  {sc.icon}
+                  <EmojiIcon emoji={sc.icon} />
                   {isDone && (
                     <div className="absolute -right-1 -top-1 w-6 h-6 rounded-full bg-green-500 border-2 border-white flex items-center justify-center shadow-md">
                       <CheckCircle className="w-4 h-4 text-white" />

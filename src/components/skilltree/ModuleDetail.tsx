@@ -58,7 +58,7 @@ const ModuleDetail = ({
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
             <div className="flex items-center gap-2 ml-auto">
-              <span className="text-xl">{module.icon}</span>
+              <span className="text-xl"><EmojiIcon emoji={module.icon} /></span>
               <span className="text-sm font-bold text-white font-thai">{module.nameThai}</span>
             </div>
           </div>
@@ -99,7 +99,7 @@ const ModuleDetail = ({
               "bg-white/10 backdrop-blur-sm",
               colors.border
             )}>
-              {module.icon}
+              <EmojiIcon emoji={module.icon} />
             </div>
             <div className="flex-1">
               <h2 className="text-base font-bold text-white">{module.name}</h2>

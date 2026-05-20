@@ -107,7 +107,7 @@ const PathCard = ({
         {isLocked ? (
           <Lock className="w-6 h-6 text-slate-400" />
         ) : (
-          <span className="drop-shadow-lg">{path.icon}</span>
+          <span className="drop-shadow-lg"><EmojiIcon emoji={path.icon} /></span>
         )}
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { stageInfo, PlacementStage } from "@/data/placementTestQuestions";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface StageTransitionProps {
   stage: PlacementStage;
@@ -27,7 +28,7 @@ const StageTransition = ({ stage, stageIndex, totalStages, onComplete }: StageTr
       }`}
     >
       <div className="text-center space-y-4 animate-in zoom-in duration-500">
-        <div className="text-7xl">{info.icon}</div>
+        <div className="text-7xl"><EmojiIcon emoji={info.icon} /></div>
         <div>
           <p className="text-white/60 text-sm font-thai">
             ด่านที่ {stageIndex + 1}/{totalStages}

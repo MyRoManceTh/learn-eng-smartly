@@ -64,7 +64,7 @@ export default function VocabMilestoneCounter() {
                 : "bg-muted/50 text-muted-foreground opacity-50"
             }`}
           >
-            <span>{m.icon}</span>
+            <span><EmojiIcon emoji={m.icon} /></span>
             <span>{m.count}</span>
           </div>
         ))}
@@ -72,7 +72,7 @@ export default function VocabMilestoneCounter() {
 
       {nextMilestone && (
         <p className="text-[11px] text-muted-foreground font-thai text-center">
-          อีก {nextMilestone.count - learnedCount} คำ ถึง {nextMilestone.label} {nextMilestone.icon}
+          อีก {nextMilestone.count - learnedCount} คำ ถึง {nextMilestone.label} <EmojiIcon emoji={nextMilestone.icon} />
         </p>
       )}
     </div>

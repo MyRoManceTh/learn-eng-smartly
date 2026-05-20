@@ -199,7 +199,7 @@ const ZoneHeader = ({
         theme.labelBg, theme.labelBorder
       )}>
         <span className="text-xl animate-sway" style={{ display: 'inline-block' }}>
-          {info.icon}
+          <EmojiIcon emoji={info.icon} />
         </span>
         <div className="text-center">
           <p className={cn("text-xs font-bold", theme.label)}>

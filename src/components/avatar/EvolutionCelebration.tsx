@@ -162,7 +162,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
             {/* Previous Stage */}
             <div className="flex flex-col items-center gap-1.5">
               <div className="relative">
-                <span className="text-4xl grayscale-[40%] opacity-60">{previousStage.icon}</span>
+                <span className="text-4xl grayscale-[40%] opacity-60"><EmojiIcon emoji={previousStage.icon} /></span>
               </div>
               <span className="text-[11px] text-white/40 font-thai font-bold">{previousStage.nameThai}</span>
               <span className="text-[10px] text-white/25 font-bold">{getCefrLabel(previousStage.stage)}</span>
@@ -185,7 +185,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                     animation: "icon-bounce 0.8s ease-out 0.6s both",
                   }}
                 >
-                  {newStage.icon}
+                  <EmojiIcon emoji={newStage.icon} />
                 </span>
                 {/* Glow ring behind icon */}
                 <div

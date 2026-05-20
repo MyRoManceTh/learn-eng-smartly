@@ -1,6 +1,7 @@
 import { Story, themeMeta, rarityMeta } from "@/data/storyCollection";
 import { useStoryProgress } from "@/hooks/useStoryProgress";
 import { Check, Sparkles } from "lucide-react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   story: Story;
@@ -27,7 +28,7 @@ export const StoryCard = ({ story, onOpen }: Props) => {
         {/* Big emoji */}
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-7xl drop-shadow-lg group-hover:scale-110 transition-transform duration-500">
-            {story.cover.emoji}
+            <EmojiIcon emoji={story.cover.emoji} />
           </span>
         </div>
 
@@ -38,7 +39,7 @@ export const StoryCard = ({ story, onOpen }: Props) => {
 
         {/* Theme badge */}
         <div className={`absolute top-2 left-3 text-[10px] px-2 py-0.5 rounded-full bg-white/85 backdrop-blur font-thai font-bold text-foreground/80`}>
-          {theme.emoji} {theme.th}
+          <EmojiIcon emoji={theme.emoji} /> {theme.th}
         </div>
 
         {/* Completed stamp */}

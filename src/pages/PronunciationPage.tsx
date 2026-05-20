@@ -31,7 +31,7 @@ const PronunciationPage = () => {
             <Button variant="ghost" size="sm" onClick={() => setSelectedGroup(null)}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <span className="text-xl">{selectedGroup.icon}</span>
+            <span className="text-xl"><EmojiIcon emoji={selectedGroup.icon} /></span>
             <div>
               <h2 className="text-base font-bold font-thai">{selectedGroup.titleThai}</h2>
               <p className="text-[10px] text-muted-foreground">{selectedGroup.description}</p>
@@ -118,7 +118,7 @@ const PronunciationPage = () => {
               <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b", g.color)} />
               <div className="flex items-center gap-4 pl-3">
                 <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br", g.color)}>
-                  {g.icon}
+                  <EmojiIcon emoji={g.icon} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

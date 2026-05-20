@@ -363,7 +363,7 @@ const MyPage = () => {
                   : user?.user_metadata?.display_name || user?.user_metadata?.full_name || "ห้องของฉัน"}
               </h1>
               <p className="text-xs text-muted-foreground font-thai">
-                {evolutionStage.nameThai} {evolutionStage.icon} · {getCefrLabel(profileData?.current_level || 1)}
+                {evolutionStage.nameThai} <EmojiIcon emoji={evolutionStage.icon} /> · {getCefrLabel(profileData?.current_level || 1)}
               </p>
             </div>
           </div>
@@ -660,7 +660,7 @@ const MyPage = () => {
                         : "border-border/50 bg-white/60 text-muted-foreground hover:bg-white/80"
                     )}
                   >
-                    <span className="text-lg">{cat.icon}</span>
+                    <span className="text-lg"><EmojiIcon emoji={cat.icon} /></span>
                     <span className="text-[10px] font-thai font-semibold">{cat.label}</span>
                   </button>
                 ))}
@@ -748,7 +748,7 @@ const MyPage = () => {
                       const item = getItemById(id);
                       return (
                         <span key={`${id}-${i}`} className="inline-flex items-center gap-1 px-3 py-1.5 bg-secondary rounded-full text-xs font-thai">
-                          {item?.icon} {item?.nameThai || id}
+                          <EmojiIcon emoji={item?.icon} /> {item?.nameThai || id}
                         </span>
                       );
                     })}

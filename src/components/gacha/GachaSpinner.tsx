@@ -379,7 +379,7 @@ const GachaSpinner = ({
                     }}
                   >
                     <span className={`text-5xl ${result.rarity === "legendary" || result.rarity === "mythic" ? "animate-bounce" : ""}`}>
-                      {wonItem.icon}
+                      <EmojiIcon emoji={wonItem.icon} />
                     </span>
                   </div>
 

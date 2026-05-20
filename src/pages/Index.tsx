@@ -356,7 +356,7 @@ const Index = () => {
                   "w-11 h-11 rounded-xl flex items-center justify-center text-xl bg-gradient-to-br shadow-md",
                   action.color
                 )}>
-                  <span>{action.emoji}</span>
+                  <span><EmojiIcon emoji={action.emoji} /></span>
                 </div>
                 <span className="text-[10px] font-bold font-thai text-foreground leading-tight text-center">
                   {action.label}
@@ -417,7 +417,7 @@ const Index = () => {
                 <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-gradient-to-b", act.color)} />
                 <div className="flex items-center gap-3 pl-2">
                   <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm bg-gradient-to-br", act.color)}>
-                    <span>{act.icon}</span>
+                    <span><EmojiIcon emoji={act.icon} /></span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold font-thai text-sm">{act.title}</h4>

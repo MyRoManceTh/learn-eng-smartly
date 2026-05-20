@@ -4,6 +4,7 @@ import { PlacementResult } from "@/utils/placementEngine";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
 import { useEffect } from "react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PlacementResultProps {
   result: PlacementResult;
@@ -26,7 +27,7 @@ const PlacementResultComponent = ({ result, onStartLearning }: PlacementResultPr
       <div className="w-full max-w-md space-y-5 animate-in fade-in zoom-in duration-700">
         {/* Level badge */}
         <div className="text-center space-y-3">
-          <div className="text-7xl animate-bounce">{level.icon}</div>
+          <div className="text-7xl animate-bounce"><EmojiIcon emoji={level.icon} /></div>
           <div>
             <p className="text-purple-400 text-sm font-thai">ระดับของคุณคือ</p>
             <h1 className="text-3xl font-bold text-white mt-1">{level.name}</h1>
@@ -57,7 +58,7 @@ const PlacementResultComponent = ({ result, onStartLearning }: PlacementResultPr
 
               return (
                 <div key={stage} className="flex items-center gap-3">
-                  <span className="text-lg w-6 text-center">{info.icon}</span>
+                  <span className="text-lg w-6 text-center"><EmojiIcon emoji={info.icon} /></span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs text-purple-300 font-thai">{info.nameThai}</span>
@@ -99,7 +100,7 @@ const PlacementResultComponent = ({ result, onStartLearning }: PlacementResultPr
                     : "opacity-30"
                 }`}
               >
-                <span className="text-lg">{lvlInfo.icon}</span>
+                <span className="text-lg"><EmojiIcon emoji={lvlInfo.icon} /></span>
                 <span className="text-[9px] text-purple-300">{lvlInfo.cefr}</span>
               </div>
             );

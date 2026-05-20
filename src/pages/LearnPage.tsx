@@ -212,7 +212,7 @@ const LearnPage = () => {
             >
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <span className="text-lg">{selectedModule.icon}</span>
+            <span className="text-lg"><EmojiIcon emoji={selectedModule.icon} /></span>
             <span className="text-sm font-bold text-white font-thai">
               {selectedLesson.topicThai}
             </span>
@@ -225,7 +225,7 @@ const LearnPage = () => {
               <div className="relative">
                 <Loader2 className="w-12 h-12 animate-spin text-purple-400" />
                 <span className="absolute inset-0 flex items-center justify-center text-xl">
-                  {selectedModule.icon}
+                  <EmojiIcon emoji={selectedModule.icon} />
                 </span>
               </div>
               <p className="font-thai mt-4 text-lg text-white/60">กำลังสร้างบทเรียน...</p>
@@ -410,7 +410,7 @@ const LearnPage = () => {
                     : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
                 )}
               >
-                <span>{specialtyPath.icon}</span> {specialtyPath.nameThai}
+                <span><EmojiIcon emoji={specialtyPath.icon} /></span> {specialtyPath.nameThai}
               </button>
 
               <button
