@@ -1,5 +1,7 @@
+import { motion } from "framer-motion";
 import { EMOJI_ICON_MAP } from "@/lib/emojiIconMap";
 import { ANIMATED_ICON_MAP } from "@/components/icons/animated";
+import { springBouncy } from "@/lib/motionPresets";
 import { cn } from "@/lib/utils";
 
 interface EmojiIconProps {
