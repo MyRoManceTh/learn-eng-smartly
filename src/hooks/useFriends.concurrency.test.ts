@@ -97,7 +97,13 @@ vi.mock("@/integrations/supabase/client", () => {
         if (table === "friendships") {
           return {
             select: () => ({
-              or: () => Promise.resolve({ data: [], error: null }),
+              // loadFriends path
+              or: (_filter: string) => {
+                const chain: any = Promise.resolve({ data: [], error: null });
+                // addFriendByCode existence check uses .or(...).maybeSingle()
+                chain.maybeSingle = () => Promise.resolve({ data: null, error: null });
+                return chain;
+              },
             }),
             insert: mocks.friendshipsInsert,
           };
