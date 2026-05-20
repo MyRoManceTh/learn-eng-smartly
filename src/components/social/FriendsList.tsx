@@ -238,10 +238,8 @@ export default function FriendsList() {
                   key={req.friendship_id}
                   className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50/50 p-2 dark:border-orange-900 dark:bg-orange-950/20"
                 >
-                  <div className="shrink-0 w-12 h-14 flex items-center justify-center overflow-hidden">
-                    <div className="scale-[0.45] origin-center">
-                      <SpriteAvatar equipped={parseEquipped(req.equipped)} size="sm" />
-                    </div>
+                  <div className="shrink-0 w-16 h-20 flex items-center justify-center">
+                    <SpriteAvatar equipped={parseEquipped(req.equipped)} size="xs" />
                   </div>
                   <span className="flex-1 text-sm font-medium truncate">
                     {req.display_name}
