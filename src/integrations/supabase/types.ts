@@ -713,6 +713,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_gift: { Args: { _gift_id: string }; Returns: Json }
       sync_story_progress: {
         Args: { _entries: Json }
         Returns: {
