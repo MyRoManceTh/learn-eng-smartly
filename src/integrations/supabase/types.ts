@@ -713,7 +713,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      sync_story_progress: {
+        Args: { _entries: Json }
+        Returns: {
+          chapter_id: string
+          completed_at: string
+          story_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
