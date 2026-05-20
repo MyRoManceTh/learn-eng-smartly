@@ -16,6 +16,9 @@ import {
   Briefcase, Building, Building2, Wallet,
   Palette, Brush, Tv, Radio,
   Wand2, Puzzle, Dices,
+  Plane, Hash, Bus, CloudSun, Scale, MessageSquare, Laptop, Search, Microscope,
+  Sparkles as SparklesIcon, Siren, LifeBuoy, FileText, Contact, Files, Scroll,
+  Hotel, School, MapPin, Antenna, Hand as HandWave, Tornado, Network,
   type LucideIcon,
 } from "lucide-react";
 
@@ -173,6 +176,37 @@ export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
   "📤": Share2, share: Share2,
   "📥": Download, download: Download,
   "💾": Save, save: Save,
+
+  // Additional skill tree / path icons
+  "✈": Plane, "✈️": Plane, plane: Plane, airplane: Plane,
+  "🔢": Hash, numbers: Hash, "🔠": Hash,
+  "👋": HandWave, wave_hand: HandWave, hello: HandWave,
+  "👨‍👩‍👧‍👦": Users, family: Users,
+  "🍔": Utensils, burger: Utensils,
+  "📍": MapPin, "📌": MapPin, pin: MapPin, location: MapPin,
+  "🏫": School, "🏨": Hotel, hotel: Hotel,
+  "🚌": Bus, "🚎": Bus, "🚐": Bus, bus: Bus,
+  "🌦": CloudSun, "🌦️": CloudSun, "⛅": CloudSun, "🌤": CloudSun, "🌤️": CloudSun,
+  "☎": Phone, "☎️": Phone, "📲": Smartphone,
+  "⚖": Scale, "⚖️": Scale, balance: Scale, justice: Scale,
+  "💭": MessageSquare, thought: MessageSquare,
+  "🎤": Mic, microphone: Mic,
+  "💻": Laptop, laptop: Laptop, computer: Laptop,
+  "🌐": Globe, "🌀": Tornado, cyclone: Tornado,
+  "📡": Antenna, antenna: Antenna,
+  "📢": Megaphone, "📣": Megaphone,
+  "🔎": Search, "🔍": Search, search: Search,
+  "🔬": Microscope, microscope: Microscope,
+  "🔮": SparklesIcon, crystal_ball: SparklesIcon,
+  "🗃": Files, "🗃️": Files,
+  "🚨": Siren, siren: Siren, alert: Siren,
+  "🛟": LifeBuoy, lifebuoy: LifeBuoy,
+  "🤗": Smile, hug: Smile,
+  "✍": PencilLine, "✍️": PencilLine,
+  "📄": FileText, "📃": FileText, document: FileText,
+  "📇": Contact, contact: Contact,
+  "📑": Files,
+  "📜": Scroll, scroll: Scroll,
 };
 
 /** Convenience: list of every emoji char the map handles (for codemods). */
