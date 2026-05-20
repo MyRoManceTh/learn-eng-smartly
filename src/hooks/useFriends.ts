@@ -207,11 +207,36 @@ export function useFriends() {
         return false;
       }
 
+      // Insert; the normalized unique index on (LEAST, GREATEST) prevents
+      // duplicates if the user double-taps or two devices race.
       const { error } = await supabase.from("friendships").insert({
         requester_id: user.id,
         addressee_id: fp.user_id,
         status: "pending",
       } as any);
+
+      if (error) {
+        const code = (error as any).code;
+        if (code === "23505" || /duplicate|unique/i.test(error.message || "")) {
+          toast.error("มีคำขอ/มิตรภาพกับคนนี้อยู่แล้ว");
+          loadFriends();
+          return false;
+        }
+        toast.error("เกิดข้อผิดพลาด");
+        return false;
+      }
+
+      // Skip the now-redundant generic error branch below.
+      toast.success("ส่งคำขอเป็นเพื่อนแล้ว!");
+      loadFriends();
+      return true;
+    },
+    [user, loadFriends]
+  );
+
+  // (legacy block removed — handled above)
+  const _unused_addFriendByCode_old = async () => {
+    if (false) {
 
       if (error) {
         toast.error("เกิดข้อผิดพลาด");
