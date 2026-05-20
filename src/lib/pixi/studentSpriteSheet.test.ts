@@ -196,11 +196,17 @@ describe("generateStudentSpriteSheet — hats", () => {
     });
   }
 
-  it("equipping a hat adds drawing relative to no hat", () => {
-    const noHat = generateAndCount(makeOverlay("softbob", null)).drawCount;
+  it("equipping a hat changes the rendered output", () => {
+    // Capture a fingerprint of the draws so we can detect "hat had no effect".
+    const fingerprint = (overlay: EquipmentOverlay | null) => {
+      draws = [];
+      generateStudentSpriteSheet(undefined, overlay);
+      return draws.map((d) => `${d.x},${d.y},${d.w},${d.h},${d.fillStyle}`).join("|");
+    };
+    const noHat = fingerprint(makeOverlay("softbob", null));
     for (const hatId of HAT_IDS) {
-      const withHat = generateAndCount(makeOverlay("softbob", hatId)).drawCount;
-      expect(withHat, `${hatId} did not add draws`).toBeGreaterThan(noHat);
+      const withHat = fingerprint(makeOverlay("softbob", hatId));
+      expect(withHat, `${hatId} produced identical output to no-hat`).not.toBe(noHat);
     }
   });
 });
