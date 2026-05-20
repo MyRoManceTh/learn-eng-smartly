@@ -3,7 +3,6 @@ import { AvatarItem } from "@/types/avatar";
 import { getRarityColor, getRarityLabel } from "@/data/avatarItems";
 import PixelItemPreview from "./PixelItemPreview";
 import {
-import { EmojiIcon } from "@/components/ui/EmojiIcon";
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -14,6 +13,7 @@ import { EmojiIcon } from "@/components/ui/EmojiIcon";
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface ItemCardProps {
   item: AvatarItem;
