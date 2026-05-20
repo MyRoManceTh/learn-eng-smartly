@@ -36,25 +36,29 @@ const mocks = vi.hoisted(() => {
   const friendshipsDelete = () => ({
     eq: (_col: string, id: string) => {
       deleteCalls.push({ id, mode: nextDeleteMode });
-      if (nextDeleteMode === "rls_error") {
-        return Promise.resolve({
-          data: null,
-          error: {
-            code: "42501",
-            message: "new row violates row-level security policy",
-          },
-        });
-      }
-      if (nextDeleteMode === "silent") {
-        // no policy → driver returns success with no rows touched
-        return Promise.resolve({ data: [], error: null });
-      }
-      const before = db.friendships.length;
-      db.friendships = db.friendships.filter((r) => r.id !== id);
-      return Promise.resolve({
-        data: before !== db.friendships.length ? [{ id }] : [],
-        error: null,
-      });
+      const buildResult = () => {
+        if (nextDeleteMode === "rls_error") {
+          return {
+            data: null,
+            error: {
+              code: "42501",
+              message: "new row violates row-level security policy",
+            },
+          };
+        }
+        if (nextDeleteMode === "silent") {
+          // no policy → driver returns success with 0 rows touched
+          return { data: [], error: null };
+        }
+        const before = db.friendships.length;
+        db.friendships = db.friendships.filter((r) => r.id !== id);
+        const deleted = before !== db.friendships.length ? [{ id }] : [];
+        return { data: deleted, error: null };
+      };
+      // Support both `.eq(...)` and `.eq(...).select("id")` chains.
+      const promise: any = Promise.resolve(buildResult());
+      promise.select = (_cols: string) => Promise.resolve(buildResult());
+      return promise;
     },
   });
 
