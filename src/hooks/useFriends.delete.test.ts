@@ -36,28 +36,29 @@ const mocks = vi.hoisted(() => {
   const friendshipsDelete = () => ({
     eq: (_col: string, id: string) => {
       deleteCalls.push({ id, mode: nextDeleteMode });
-      const buildResult = () => {
-        if (nextDeleteMode === "rls_error") {
-          return {
-            data: null,
-            error: {
-              code: "42501",
-              message: "new row violates row-level security policy",
-            },
-          };
-        }
-        if (nextDeleteMode === "silent") {
-          // no policy → driver returns success with 0 rows touched
-          return { data: [], error: null };
-        }
+      let result: { data: unknown; error: unknown };
+      if (nextDeleteMode === "rls_error") {
+        result = {
+          data: null,
+          error: {
+            code: "42501",
+            message: "new row violates row-level security policy",
+          },
+        };
+      } else if (nextDeleteMode === "silent") {
+        result = { data: [], error: null };
+      } else {
         const before = db.friendships.length;
         db.friendships = db.friendships.filter((r) => r.id !== id);
-        const deleted = before !== db.friendships.length ? [{ id }] : [];
-        return { data: deleted, error: null };
-      };
-      // Support both `.eq(...)` and `.eq(...).select("id")` chains.
-      const promise: any = Promise.resolve(buildResult());
-      promise.select = (_cols: string) => Promise.resolve(buildResult());
+        result = {
+          data: before !== db.friendships.length ? [{ id }] : [],
+          error: null,
+        };
+      }
+      // Support both `.eq(...)` and `.eq(...).select("id")` chains
+      // by sharing one resolved result.
+      const promise: any = Promise.resolve(result);
+      promise.select = (_cols: string) => Promise.resolve(result);
       return promise;
     },
   });
