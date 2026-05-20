@@ -16,6 +16,9 @@ import {
   Briefcase, Building, Building2, Wallet,
   Palette, Brush, Tv, Radio,
   Wand2, Puzzle, Dices,
+  Plane, Hash, Bus, CloudSun, Scale, MessageSquare, Laptop, Search, Microscope,
+  Sparkles as SparklesIcon, Siren, LifeBuoy, FileText, Contact, Files, Scroll,
+  Hotel, School, MapPin, Antenna, Hand as HandWave, Tornado, Network,
   type LucideIcon,
 } from "lucide-react";
 
