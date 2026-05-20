@@ -129,7 +129,7 @@ export default function FriendLeaderboard({ compact = false }: Props) {
 
             {/* Streak */}
             <span className="text-xs text-muted-foreground shrink-0">
-              🔥{entry.current_streak}
+              {<EmojiIcon emoji="🔥" />}{entry.current_streak}
             </span>
           </div>
         ))}

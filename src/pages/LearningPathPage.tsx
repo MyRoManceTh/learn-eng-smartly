@@ -367,19 +367,19 @@ const LearningPathPage = () => {
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '0ms' }}>
-                📚 {totalCompleted}
+                {<EmojiIcon emoji="📚" />} {totalCompleted}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">บทเรียน</p>
             </div>
             <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '100ms' }}>
-                🏆 {totalModulesCompleted}
+                {<EmojiIcon emoji="🏆" />} {totalModulesCompleted}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">Modules</p>
             </div>
             <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '200ms' }}>
-                🔥 {(profile as any)?.streak_count || 0}
+                {<EmojiIcon emoji="🔥" />} {(profile as any)?.streak_count || 0}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">วันติดต่อ</p>
             </div>

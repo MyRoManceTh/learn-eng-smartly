@@ -333,7 +333,7 @@ export default function DailyChallengePage() {
               ⏱ {timeLeft}s
             </span>
             <span className="text-xs font-bold text-green-600">
-              ✅ {score}
+              {<EmojiIcon emoji="✅" />} {score}
             </span>
           </div>
 
@@ -394,7 +394,7 @@ export default function DailyChallengePage() {
           <p className="text-sm text-amber-100 font-thai">จาก {challenge.items.length} คำ</p>
           {displayScore > 0 && (
             <p className="text-xs text-amber-200 mt-2 font-thai">
-              +{displayScore} 🪙 +{displayScore * 5} XP
+              +{displayScore} {<EmojiIcon emoji="🪙" />} +{displayScore * 5} XP
             </p>
           )}
         </div>

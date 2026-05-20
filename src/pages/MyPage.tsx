@@ -711,7 +711,7 @@ const MyPage = () => {
                             onClick={() => handleBuyRoomItem(item)}
                             className="font-thai text-xs w-full"
                           >
-                            🪙 {item.price} เหรียญ
+                            {<EmojiIcon emoji="🪙" />} {item.price} เหรียญ
                           </Button>
                         )}
                       </div>

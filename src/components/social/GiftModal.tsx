@@ -136,7 +136,7 @@ export default function GiftModal({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">จำนวนเหรียญ</span>
-                <span className="text-muted-foreground">คุณมี: 🪙 {coins.toLocaleString()}</span>
+                <span className="text-muted-foreground">คุณมี: {<EmojiIcon emoji="🪙" />} {coins.toLocaleString()}</span>
               </div>
               {maxCoins >= 10 && (
                 <Slider
@@ -213,7 +213,7 @@ export default function GiftModal({
             <p className="text-[10px] text-muted-foreground mb-1">ตัวอย่าง:</p>
             <div className="flex items-center gap-2 text-sm">
               {giftType === "coins" ? (
-                <span className="font-medium">🪙 {coinAmount} เหรียญ</span>
+                <span className="font-medium">{<EmojiIcon emoji="🪙" />} {coinAmount} เหรียญ</span>
               ) : selectedItemData ? (
                 <span className="font-medium"><EmojiIcon emoji={selectedItemData.icon} /> {selectedItemData.nameThai}</span>
               ) : (

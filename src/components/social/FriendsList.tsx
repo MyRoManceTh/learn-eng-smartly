@@ -189,7 +189,7 @@ export default function FriendsList() {
           {pendingGifts.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-semibold text-pink-500">
-                🎁 ของขวัญรอรับ ({pendingGifts.length})
+                {<EmojiIcon emoji="🎁" />} ของขวัญรอรับ ({pendingGifts.length})
               </h4>
               {pendingGifts.map((gift) => {
                 const item = gift.item_id ? getItemById(gift.item_id) : null;
@@ -232,7 +232,7 @@ export default function FriendsList() {
           {pendingRequests.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-semibold text-orange-500">
-                📨 คำขอเป็นเพื่อน ({pendingRequests.length})
+                {<EmojiIcon emoji="📨" />} คำขอเป็นเพื่อน ({pendingRequests.length})
               </h4>
               {pendingRequests.map((req) => (
                 <div
@@ -323,9 +323,9 @@ export default function FriendsList() {
                           {friend.display_name}
                         </p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>⚡ {friend.total_exp.toLocaleString()} EXP</span>
-                          <span>🔥 {friend.current_streak} วัน</span>
-                          <span>📚 {friend.lessons_completed} บท</span>
+                          <span>{<EmojiIcon emoji="⚡" />} {friend.total_exp.toLocaleString()} EXP</span>
+                          <span>{<EmojiIcon emoji="🔥" />} {friend.current_streak} วัน</span>
+                          <span>{<EmojiIcon emoji="📚" />} {friend.lessons_completed} บท</span>
                         </div>
                       </div>
                       {/* Energy display */}

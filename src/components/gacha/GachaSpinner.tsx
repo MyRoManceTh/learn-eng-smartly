@@ -482,7 +482,7 @@ const GachaSpinner = ({
               disabled={isSpinning || gachaTickets <= 0}
               className="w-full h-12 text-sm font-black font-thai rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/30 border-2 border-pink-400 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              🎟️ หมุนด้วยตั๋ว ({gachaTickets} ใบ)
+              {<EmojiIcon emoji="🎟" />}️ หมุนด้วยตั๋ว ({gachaTickets} ใบ)
             </Button>
 
             {/* Coin pull */}
@@ -491,16 +491,16 @@ const GachaSpinner = ({
               disabled={isSpinning || coins < GACHA_COIN_COST}
               className="w-full h-12 text-sm font-black font-thai rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 hover:from-amber-600 hover:via-yellow-600 hover:to-amber-600 text-gray-900 shadow-lg shadow-amber-400/30 border-2 border-yellow-400 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              🪙 หมุนด้วยเหรียญ ({GACHA_COIN_COST} 🪙)
+              {<EmojiIcon emoji="🪙" />} หมุนด้วยเหรียญ ({GACHA_COIN_COST} {<EmojiIcon emoji="🪙" />})
             </Button>
 
             {/* Current balance display */}
             <div className="flex justify-center gap-6 pt-2 text-sm">
               <span className="text-yellow-300 font-bold font-thai">
-                🪙 {coins.toLocaleString()} เหรียญ
+                {<EmojiIcon emoji="🪙" />} {coins.toLocaleString()} เหรียญ
               </span>
               <span className="text-pink-300 font-bold font-thai">
-                🎟️ {gachaTickets} ตั๋ว
+                {<EmojiIcon emoji="🎟" />}️ {gachaTickets} ตั๋ว
               </span>
             </div>
           </div>

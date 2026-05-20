@@ -148,7 +148,7 @@ const PetShop = ({ coins, roomInventory, room, onBuyPet, onPlacePet, onRemovePet
                       coins < pet.price && "opacity-50"
                     )}
                   >
-                    🪙 {pet.price} เหรียญ
+                    {<EmojiIcon emoji="🪙" />} {pet.price} เหรียญ
                   </Button>
                 )}
               </div>

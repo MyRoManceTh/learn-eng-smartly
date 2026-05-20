@@ -303,7 +303,7 @@ const Index = () => {
                       )}
                     </div>
                     <span className="text-[10px] text-amber-600 font-bold shrink-0">
-                      +{m.reward_coins}🪙
+                      +{m.reward_coins}{<EmojiIcon emoji="🪙" />}
                     </span>
                   </div>
                 );
@@ -327,7 +327,7 @@ const Index = () => {
                   {completedLessonIds.has(currentLesson.id) ? "ทบทวนบทเรียน" : "เรียนต่อเลย! 🎯"}
                 </p>
                 <h3 className="text-white font-bold text-base">
-                  📖 บทที่ {currentLesson.lesson_order}: {currentLesson.title}
+                  {<EmojiIcon emoji="📖" />} บทที่ {currentLesson.lesson_order}: {currentLesson.title}
                 </h3>
                 <p className="text-purple-200 text-xs font-thai mt-0.5">
                   {currentLesson.title_thai} · Level {currentLesson.level}

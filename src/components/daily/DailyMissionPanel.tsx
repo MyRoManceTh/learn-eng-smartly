@@ -146,12 +146,12 @@ const DailyMissionPanel = ({
                   <div className="flex items-center gap-2 mt-1">
                     {mission.reward_coins > 0 && (
                       <span className="text-[11px] text-amber-500">
-                        🪙 {mission.reward_coins}
+                        {<EmojiIcon emoji="🪙" />} {mission.reward_coins}
                       </span>
                     )}
                     {mission.reward_exp > 0 && (
                       <span className="text-[11px] text-emerald-500">
-                        ✨ {mission.reward_exp} EXP
+                        {<EmojiIcon emoji="✨" />} {mission.reward_exp} EXP
                       </span>
                     )}
                   </div>

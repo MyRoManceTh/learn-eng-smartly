@@ -54,7 +54,7 @@ export default function LevelProgressDashboard() {
         )}>
           <span><EmojiIcon emoji={nextInfo.icon} /></span>
           {progress >= 100 ? (
-            <span className="font-bold">พร้อมเลื่อนระดับเป็น {nextInfo.cefr}! 🎉</span>
+            <span className="font-bold">พร้อมเลื่อนระดับเป็น {nextInfo.cefr}! {<EmojiIcon emoji="🎉" />}</span>
           ) : (
             <span>จบโมดูลทั้งหมดเพื่อเลื่อนเป็น {nextInfo.cefr}</span>
           )}

@@ -117,7 +117,7 @@ export default function SocialHomeSection() {
       {pendingChallenges.length > 0 && (
         <div>
           <p className="text-[10px] font-bold text-muted-foreground font-thai mb-1">
-            ⚔️ คำท้าทาย ({pendingChallenges.length})
+            {<EmojiIcon emoji="⚔" />}️ คำท้าทาย ({pendingChallenges.length})
           </p>
           {pendingChallenges.slice(0, 2).map((challenge) => (
             <div
@@ -156,7 +156,7 @@ export default function SocialHomeSection() {
       {pendingGifts.length > 0 && (
         <div>
           <p className="text-[10px] font-bold text-muted-foreground font-thai mb-1">
-            🎁 ของขวัญ ({pendingGifts.length})
+            {<EmojiIcon emoji="🎁" />} ของขวัญ ({pendingGifts.length})
           </p>
           {pendingGifts.slice(0, 2).map((gift) => (
             <div

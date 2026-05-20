@@ -243,7 +243,7 @@ const ReadingPage = () => {
                   : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-purple-500/25"
               )}
             >
-              📝 {isCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
+              {<EmojiIcon emoji="📝" />} {isCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
             </Button>
           </div>
         </main>

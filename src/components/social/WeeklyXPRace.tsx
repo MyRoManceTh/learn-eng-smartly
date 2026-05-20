@@ -74,7 +74,7 @@ export default function WeeklyXPRace() {
       {/* Rewards hint */}
       <div className="mt-3 pt-2 border-t border-gray-100">
         <p className="text-[10px] text-muted-foreground font-thai text-center">
-          🏆 รางวัล Top 3: {rankRewards[1]} {rankRewards[2]} {rankRewards[3]}
+          {<EmojiIcon emoji="🏆" />} รางวัล Top 3: {rankRewards[1]} {rankRewards[2]} {rankRewards[3]}
         </p>
       </div>
     </div>

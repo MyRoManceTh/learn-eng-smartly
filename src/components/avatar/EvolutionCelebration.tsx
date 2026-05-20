@@ -243,7 +243,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                       animation: `fade-slide-up 0.4s ease-out ${0.9 + i * 0.1}s both`,
                     }}
                   >
-                    ✨ {effectLabels[effect] ?? effect}
+                    {<EmojiIcon emoji="✨" />} {effectLabels[effect] ?? effect}
                   </span>
                 ))}
               </div>

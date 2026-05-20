@@ -497,7 +497,7 @@ const WordGamesPage = () => {
             <div className="flex items-center gap-3 text-sm">
               {smStreak >= 2 && (
                 <span className="font-bold text-orange-500 animate-pulse">
-                  🔥 x{smStreak}
+                  {<EmojiIcon emoji="🔥" />} x{smStreak}
                 </span>
               )}
               <span className="font-bold text-purple-600">{smScore} แต้ม</span>

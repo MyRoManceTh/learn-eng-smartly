@@ -71,7 +71,7 @@ const DailyRewardModal = ({
       <DialogContent className="sm:max-w-md border-0 bg-gradient-to-b from-indigo-950 via-purple-950 to-violet-950 text-white overflow-hidden">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="text-xl font-bold text-amber-300">
-            สวัสดี! วันที่ {streakDays} ติดต่อกัน 🔥
+            สวัสดี! วันที่ {streakDays} ติดต่อกัน {<EmojiIcon emoji="🔥" />}
           </DialogTitle>
           <DialogDescription className="text-purple-200">
             เปิดกล่องสุ่มรับรางวัลประจำวัน!
@@ -154,7 +154,7 @@ const DailyRewardModal = ({
               {isMilestone && (
                 <div className="mt-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500/30 via-yellow-400/30 to-amber-500/30 border border-yellow-400/50">
                   <p className="text-center text-base font-bold bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-200 bg-clip-text text-transparent">
-                    🏆 {milestoneMessage}
+                    {<EmojiIcon emoji="🏆" />} {milestoneMessage}
                   </p>
                 </div>
               )}

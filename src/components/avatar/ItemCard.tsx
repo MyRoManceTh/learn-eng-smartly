@@ -129,7 +129,7 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
                     : "text-gray-400 bg-gray-200 cursor-not-allowed"
                 }`}
               >
-                🪙 {item.price}
+                {<EmojiIcon emoji="🪙" />} {item.price}
               </button>
             </AlertDialogTrigger>
             <AlertDialogContent className="rounded-3xl border-4 mx-4" style={{ borderColor: getRarityColor(item.rarity) }}>

@@ -57,7 +57,7 @@ export default function ChallengeModal({ open, friendId, friendName, onClose, on
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="text-base font-bold font-thai">
-            ⚔️ ท้าทาย {friendName}
+            {<EmojiIcon emoji="⚔" />}️ ท้าทาย {friendName}
           </h3>
           <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100">
             <X className="w-5 h-5" />

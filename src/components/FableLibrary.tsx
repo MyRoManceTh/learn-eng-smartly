@@ -162,7 +162,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
                       {entry.lesson.titleThai}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-1 font-thai">
-                      📝 {entry.lesson.vocabulary.length} คำ · {entry.quiz.length} ข้อ
+                      {<EmojiIcon emoji="📝" />} {entry.lesson.vocabulary.length} คำ · {entry.quiz.length} ข้อ
                     </p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-1" />

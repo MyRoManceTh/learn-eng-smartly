@@ -124,7 +124,7 @@ export default function AchievementsPage() {
                       </p>
                       {isUnlocked && (
                         <p className="text-[9px] text-amber-600 font-bold mt-1 dark:text-amber-400">
-                          +{ach.reward.coins}🪙 +{ach.reward.exp}⚡
+                          +{ach.reward.coins}{<EmojiIcon emoji="🪙" />} +{ach.reward.exp}{<EmojiIcon emoji="⚡" />}
                         </p>
                       )}
                     </div>
