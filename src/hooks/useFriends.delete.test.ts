@@ -36,25 +36,30 @@ const mocks = vi.hoisted(() => {
   const friendshipsDelete = () => ({
     eq: (_col: string, id: string) => {
       deleteCalls.push({ id, mode: nextDeleteMode });
+      let result: { data: unknown; error: unknown };
       if (nextDeleteMode === "rls_error") {
-        return Promise.resolve({
+        result = {
           data: null,
           error: {
             code: "42501",
             message: "new row violates row-level security policy",
           },
-        });
+        };
+      } else if (nextDeleteMode === "silent") {
+        result = { data: [], error: null };
+      } else {
+        const before = db.friendships.length;
+        db.friendships = db.friendships.filter((r) => r.id !== id);
+        result = {
+          data: before !== db.friendships.length ? [{ id }] : [],
+          error: null,
+        };
       }
-      if (nextDeleteMode === "silent") {
-        // no policy → driver returns success with no rows touched
-        return Promise.resolve({ data: [], error: null });
-      }
-      const before = db.friendships.length;
-      db.friendships = db.friendships.filter((r) => r.id !== id);
-      return Promise.resolve({
-        data: before !== db.friendships.length ? [{ id }] : [],
-        error: null,
-      });
+      // Support both `.eq(...)` and `.eq(...).select("id")` chains
+      // by sharing one resolved result.
+      const promise: any = Promise.resolve(result);
+      promise.select = (_cols: string) => Promise.resolve(result);
+      return promise;
     },
   });
 
@@ -160,11 +165,9 @@ describe("declineRequest", () => {
     expect(mocks.toastNeutral.calls.length).toBe(1);
   });
 
-  it("regression: when no DELETE policy exists the driver returns success silently", async () => {
-    // Documents the current behaviour — if there is no DELETE RLS policy,
-    // postgrest returns ok with 0 rows, and the hook (which only checks
-    // `error`) ends up showing the success notice. If this ever changes
-    // (e.g. we add an affected-rows check), update this test alongside.
+  it("shows error toast when no row is affected (no DELETE policy / wrong id)", async () => {
+    // When there is no DELETE RLS policy, or the id doesn't belong to us,
+    // postgrest returns ok with 0 rows. The hook must NOT show success.
     mocks.setNextDelete("silent");
 
     const { result } = renderHook(() => useFriends());
@@ -174,8 +177,9 @@ describe("declineRequest", () => {
       await result.current.declineRequest("fr-1");
     });
 
-    expect(mocks.toastError.calls.length).toBe(0);
-    expect(mocks.toastNeutral.calls.length).toBe(1);
+    expect(mocks.toastError.calls.length).toBe(1);
+    expect(mocks.toastSuccess.calls.length).toBe(0);
+    expect(mocks.toastNeutral.calls.length).toBe(0);
   });
 });
 
@@ -220,11 +224,7 @@ describe("removeFriend", () => {
     expect(mocks.db.friendships.find((r) => r.id === "fr-1")).toBeUndefined();
   });
 
-  it("regression: silent no-op when no DELETE policy exists", async () => {
-    // Same caveat as the declineRequest regression test: with no policy,
-    // postgrest returns ok with 0 rows. The hook currently treats this as
-    // success. This test pins that behaviour so adding a proper
-    // affected-rows check forces an intentional update.
+  it("shows error toast when no row is affected (no DELETE policy / wrong id)", async () => {
     mocks.setNextDelete("silent");
 
     const { result } = renderHook(() => useFriends());
@@ -234,7 +234,7 @@ describe("removeFriend", () => {
       await result.current.removeFriend("fr-1");
     });
 
-    expect(mocks.toastError.calls.length).toBe(0);
-    expect(mocks.toastSuccess.calls.length).toBe(1);
+    expect(mocks.toastError.calls.length).toBe(1);
+    expect(mocks.toastSuccess.calls.length).toBe(0);
   });
 });

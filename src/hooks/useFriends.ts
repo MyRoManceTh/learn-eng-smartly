@@ -255,9 +255,19 @@ export function useFriends() {
 
   const declineRequest = useCallback(
     async (friendshipId: string) => {
-      const { error } = await supabase.from("friendships").delete().eq("id", friendshipId);
+      // .select() makes PostgREST return the deleted rows so we can verify
+      // the DELETE actually hit a row (e.g. RLS hides it → 0 rows back).
+      const { data, error } = await supabase
+        .from("friendships")
+        .delete()
+        .eq("id", friendshipId)
+        .select("id");
       if (error) {
         toast.error("เกิดข้อผิดพลาด ลองอีกครั้ง");
+        return;
+      }
+      if (!data || data.length === 0) {
+        toast.error("ไม่พบคำขอ หรือไม่มีสิทธิ์ลบ");
         return;
       }
       toast("ปฏิเสธคำขอแล้ว");
@@ -269,9 +279,17 @@ export function useFriends() {
   const removeFriend = useCallback(
     async (friendshipId: string) => {
       if (!user) return;
-      const { error } = await supabase.from("friendships").delete().eq("id", friendshipId);
+      const { data, error } = await supabase
+        .from("friendships")
+        .delete()
+        .eq("id", friendshipId)
+        .select("id");
       if (error) {
         toast.error("เกิดข้อผิดพลาด");
+        return;
+      }
+      if (!data || data.length === 0) {
+        toast.error("ไม่พบเพื่อน หรือไม่มีสิทธิ์ลบ");
         return;
       }
       toast.success("ลบเพื่อนแล้ว");
