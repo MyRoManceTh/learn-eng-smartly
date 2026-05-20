@@ -104,7 +104,7 @@ function VictoryScreen({
                       <div className="flex flex-row justify-center md:justify-start items-center gap-2 truncate w-full md:max-w-[65%]">
                         {showItemIcon && item.icon && (
                           <img
-                            src=<EmojiIcon emoji={item.icon} />
+                            src={item.icon}
                             alt={item.name}
                             width={48}
                             height={48}
