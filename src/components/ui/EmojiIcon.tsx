@@ -44,14 +44,22 @@ export const EmojiIcon = ({
     ? { role: "img" as const, "aria-label": label }
     : { "aria-hidden": true };
 
-  // 1) Custom animated icons
+  // 1) Custom animated icons — wrapped in a Jitter-style spring entry
   if (!isStatic) {
     const Animated = ANIMATED_ICON_MAP[emoji];
     if (Animated) {
       return (
-        <span className={cn("inline-flex items-center justify-center leading-none", className)} {...ariaProps}>
+        <motion.span
+          className={cn("inline-flex items-center justify-center leading-none origin-center", className)}
+          initial={{ scale: 0.4, rotate: -12, opacity: 0 }}
+          animate={{ scale: 1, rotate: 0, opacity: 1 }}
+          whileHover={{ scale: 1.15, rotate: [0, -8, 8, 0], transition: { duration: 0.4 } }}
+          whileTap={{ scale: 0.88 }}
+          transition={springBouncy}
+          {...ariaProps}
+        >
           <Animated size={size} />
-        </span>
+        </motion.span>
       );
     }
   }
