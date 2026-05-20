@@ -160,28 +160,31 @@ const SkillTreeNode = ({
 
         {/* Icon or lock */}
         <span className={cn(
-          "relative z-10 select-none transition-transform duration-200",
-          isCompleted ? "text-3xl drop-shadow-md" : "text-2xl",
+          "relative z-10 select-none transition-transform duration-200 flex items-center justify-center",
           !isUnlocked && "grayscale"
         )}>
           {!isUnlocked ? (
             <Lock className="w-6 h-6 text-slate-400" />
           ) : (
-            module.icon
+            <EmojiIcon emoji={module.icon} size={isCompleted ? 32 : 28} className="text-white drop-shadow-md" />
           )}
         </span>
 
         {/* Completed checkmark badge */}
         {isCompleted && (
           <span className="absolute -right-0.5 -top-0.5 w-7 h-7 rounded-full bg-green-500 border-[3px] border-green-300 flex items-center justify-center shadow-lg z-20 animate-cartoon-pop">
-            <span className="text-sm">{<EmojiIcon emoji="✓" />}</span>
+            <EmojiIcon emoji="✓" size={14} className="text-white" />
           </span>
         )}
 
         {/* Reward badge */}
         {module.reward && isCompleted && (
-          <span className="absolute -left-1 -bottom-1 text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded-full font-bold shadow-md z-20 animate-cartoon-pop border-2 border-amber-300">
-            {module.reward.type === 'coins' ? '🪙' : module.reward.type === 'exp' ? '⚡' : '🎁'}
+          <span className="absolute -left-1 -bottom-1 bg-amber-500 text-white px-1.5 py-0.5 rounded-full shadow-md z-20 animate-cartoon-pop border-2 border-amber-300 flex items-center justify-center">
+            <EmojiIcon
+              emoji={module.reward.type === 'coins' ? '🪙' : module.reward.type === 'exp' ? '⚡' : '🎁'}
+              size={12}
+              className="text-white"
+            />
           </span>
         )}
 
