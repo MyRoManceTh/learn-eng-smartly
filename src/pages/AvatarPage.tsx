@@ -16,6 +16,7 @@ import { getEvolutionStage, getEvolutionProgress } from "@/data/evolutionStages"
 import EvolutionProgressBar from "@/components/avatar/EvolutionProgressBar";
 import GachaSpinner from "@/components/gacha/GachaSpinner";
 import { trackEvent } from "@/utils/analytics";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const AvatarPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -151,7 +152,7 @@ const AvatarPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sky-300 via-purple-200 to-pink-200 flex items-center justify-center">
         <div className="text-center space-y-4 animate-pulse">
-          <div className="text-6xl animate-bounce">🎮</div>
+          <div className="text-6xl animate-bounce">{<EmojiIcon emoji="🎮" />}</div>
           <p className="text-lg font-black font-thai text-white drop-shadow-lg">กำลังโหลด...</p>
           <div className="flex gap-2 justify-center">
             <div className="w-3 h-3 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -179,7 +180,7 @@ const AvatarPage = () => {
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500
                 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                <span className="text-xl">✨</span>
+                <span className="text-xl">{<EmojiIcon emoji="✨" />}</span>
               </div>
               <div>
                 <h1 className="text-lg font-black font-thai text-white drop-shadow-md">
@@ -201,9 +202,9 @@ const AvatarPage = () => {
 
           {/* Decorative elements */}
           <div className="absolute top-3 left-4 text-lg animate-float opacity-50">⭐</div>
-          <div className="absolute top-6 right-5 text-sm animate-float opacity-40" style={{ animationDelay: "1s" }}>✨</div>
-          <div className="absolute top-12 left-8 text-xs animate-float opacity-30" style={{ animationDelay: "0.5s" }}>💫</div>
-          <div className="absolute bottom-12 right-4 text-lg animate-float opacity-40" style={{ animationDelay: "1.5s" }}>🌟</div>
+          <div className="absolute top-6 right-5 text-sm animate-float opacity-40" style={{ animationDelay: "1s" }}>{<EmojiIcon emoji="✨" />}</div>
+          <div className="absolute top-12 left-8 text-xs animate-float opacity-30" style={{ animationDelay: "0.5s" }}>{<EmojiIcon emoji="💫" />}</div>
+          <div className="absolute bottom-12 right-4 text-lg animate-float opacity-40" style={{ animationDelay: "1.5s" }}>{<EmojiIcon emoji="🌟" />}</div>
 
           {/* Avatar */}
           <div className="flex justify-center py-6">
@@ -240,7 +241,7 @@ const AvatarPage = () => {
                 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-400 data-[state=active]:to-amber-500
                 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-400/30"
             >
-              <span className="mr-1.5 text-lg">🛒</span>
+              <span className="mr-1.5 text-lg">{<EmojiIcon emoji="🛒" />}</span>
               ร้านค้า
             </TabsTrigger>
             <TabsTrigger
@@ -249,7 +250,7 @@ const AvatarPage = () => {
                 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-400 data-[state=active]:to-purple-500
                 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-400/30"
             >
-              <span className="mr-1.5 text-lg">👔</span>
+              <span className="mr-1.5 text-lg">{<EmojiIcon emoji="👔" />}</span>
               ตู้เสื้อผ้า
             </TabsTrigger>
             <TabsTrigger
@@ -258,7 +259,7 @@ const AvatarPage = () => {
                 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-cyan-500
                 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-400/30"
             >
-              <span className="mr-1.5 text-lg">🎰</span>
+              <span className="mr-1.5 text-lg">{<EmojiIcon emoji="🎰" />}</span>
               กาชา
             </TabsTrigger>
           </TabsList>

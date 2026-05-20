@@ -1,4 +1,5 @@
 import { getEvolutionProgress } from "@/data/evolutionStages";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   totalExp: number;
@@ -17,7 +18,7 @@ const EvolutionProgressBar = ({ totalExp }: Props) => {
       {/* Stage Labels */}
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center gap-1.5">
-          <span className="text-xl">{current.icon}</span>
+          <span className="text-xl"><EmojiIcon emoji={current.icon} /></span>
           <span className="font-bold" style={{ color: current.color }}>
             {current.nameThai}
           </span>
@@ -25,12 +26,12 @@ const EvolutionProgressBar = ({ totalExp }: Props) => {
 
         {isMaxStage ? (
           <span className="text-yellow-400 font-bold text-xs animate-pulse">
-            ขั้นสูงสุดแล้ว! 👑
+            ขั้นสูงสุดแล้ว! {<EmojiIcon emoji="👑" />}
           </span>
         ) : (
           <div className="flex items-center gap-1.5">
             <span className="text-white/60 text-xs animate-bounce-x">→</span>
-            <span className="text-xl">{next.icon}</span>
+            <span className="text-xl"><EmojiIcon emoji={next.icon} /></span>
             <span className="font-semibold" style={{ color: next.color }}>
               {next.nameThai}
             </span>

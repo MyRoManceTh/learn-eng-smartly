@@ -2,6 +2,7 @@ import { InterlinearWord } from "@/types/lesson";
 import { useSpeech } from "@/hooks/useSpeech";
 import { Volume2 } from "lucide-react";
 import { useHighlightWord, normalizeWord } from "@/contexts/HighlightWordContext";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface ArticleReaderProps {
   sentences: InterlinearWord[][];
@@ -86,7 +87,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
 
       {/* Thai translation */}
       <div>
-        <h4 className="text-sm font-semibold text-muted-foreground mb-2 font-thai">📝 แปลเป็นไทย</h4>
+        <h4 className="text-sm font-semibold text-muted-foreground mb-2 font-thai">{<EmojiIcon emoji="📝" />} แปลเป็นไทย</h4>
         <p className="font-thai text-foreground leading-relaxed text-sm">{translation}</p>
       </div>
     </div>

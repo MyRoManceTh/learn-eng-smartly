@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface ItemCardProps {
   item: AvatarItem;
@@ -76,7 +77,7 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
       {/* Equipped badge */}
       {equipped && (
         <div className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-lg animate-bounce-slow z-10">
-          ✅ ใส่อยู่
+          {<EmojiIcon emoji="✅" />} ใส่อยู่
         </div>
       )}
 
@@ -106,7 +107,7 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
               rounded-xl py-1.5 hover:from-red-500 hover:to-red-600 transition-all
               shadow-md shadow-red-400/30 active:scale-95"
           >
-            ✖ ถอดออก
+            {<EmojiIcon emoji="✖" />} ถอดออก
           </button>
         ) : owned || isDefaultOwned ? (
           <button
@@ -115,7 +116,7 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
               rounded-xl py-1.5 hover:from-green-500 hover:to-emerald-600 transition-all
               shadow-md shadow-green-400/30 active:scale-95"
           >
-            👆 สวมใส่!
+            {<EmojiIcon emoji="👆" />} สวมใส่!
           </button>
         ) : (
           <AlertDialog>
@@ -128,7 +129,7 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
                     : "text-gray-400 bg-gray-200 cursor-not-allowed"
                 }`}
               >
-                🪙 {item.price}
+                {<EmojiIcon emoji="🪙" />} {item.price}
               </button>
             </AlertDialogTrigger>
             <AlertDialogContent className="rounded-3xl border-4 mx-4" style={{ borderColor: getRarityColor(item.rarity) }}>
@@ -151,7 +152,7 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
                       ⭐ {getRarityLabel(item.rarity)}
                     </span>
                     <div className="flex items-center justify-center gap-2 text-2xl font-black">
-                      <span className="animate-coin-spin">🪙</span>
+                      <span className="animate-coin-spin">{<EmojiIcon emoji="🪙" />}</span>
                       <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
                         {item.price} เหรียญ
                       </span>
@@ -161,14 +162,14 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
               </AlertDialogHeader>
               <AlertDialogFooter className="gap-2 sm:gap-2">
                 <AlertDialogCancel className="font-thai rounded-xl font-bold">
-                  ❌ ยกเลิก
+                  {<EmojiIcon emoji="❌" />} ยกเลิก
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => onBuy(item)}
                   className="font-thai rounded-xl font-black bg-gradient-to-r from-amber-400 to-orange-500
                     hover:from-amber-500 hover:to-orange-600 shadow-lg shadow-amber-400/30 text-white border-0"
                 >
-                  🛒 ซื้อเลย!
+                  {<EmojiIcon emoji="🛒" />} ซื้อเลย!
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Swords, BookOpen, Headphones, MessageSquare } from "lucide-react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PlacementWelcomeProps {
   onStart: () => void;
@@ -18,7 +19,7 @@ const PlacementWelcome = ({ onStart }: PlacementWelcomeProps) => {
       <div className="w-full max-w-md space-y-6 animate-in fade-in zoom-in duration-500">
         {/* Hero */}
         <div className="text-center space-y-3">
-          <div className="text-6xl animate-bounce">🏰</div>
+          <div className="text-6xl animate-bounce">{<EmojiIcon emoji="🏰" />}</div>
           <h1 className="text-2xl font-bold text-white font-thai">
             ยินดีต้อนรับนักผจญภัย!
           </h1>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/8bit/alert";
 // Image component removed - using standard img tag instead
 import { cva } from "class-variance-authority";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const rarityVariants = cva("", {
   variants: {

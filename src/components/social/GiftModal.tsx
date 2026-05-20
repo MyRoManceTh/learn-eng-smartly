@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { getItemById } from "@/data/avatarItems";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   open: boolean;
@@ -93,7 +94,7 @@ export default function GiftModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-[340px] sm:max-w-sm p-4 gap-3">
         <DialogHeader className="space-y-1">
-          <DialogTitle className="text-base">🎁 ส่งของขวัญ</DialogTitle>
+          <DialogTitle className="text-base">{<EmojiIcon emoji="🎁" />} ส่งของขวัญ</DialogTitle>
           <DialogDescription className="text-xs">
             ส่งของขวัญให้ <span className="font-semibold">{friendName}</span>
           </DialogDescription>
@@ -113,7 +114,7 @@ export default function GiftModal({
                   : "border-muted bg-muted/30 text-muted-foreground hover:bg-muted/50"
               }`}
             >
-              🪙 เหรียญ
+              {<EmojiIcon emoji="🪙" />} เหรียญ
             </button>
             <button
               onClick={() => {
@@ -126,7 +127,7 @@ export default function GiftModal({
                   : "border-muted bg-muted/30 text-muted-foreground hover:bg-muted/50"
               }`}
             >
-              📦 ไอเทม
+              {<EmojiIcon emoji="📦" />} ไอเทม
             </button>
           </div>
 
@@ -135,7 +136,7 @@ export default function GiftModal({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">จำนวนเหรียญ</span>
-                <span className="text-muted-foreground">คุณมี: 🪙 {coins.toLocaleString()}</span>
+                <span className="text-muted-foreground">คุณมี: {<EmojiIcon emoji="🪙" />} {coins.toLocaleString()}</span>
               </div>
               {maxCoins >= 10 && (
                 <Slider
@@ -183,7 +184,7 @@ export default function GiftModal({
                           : "border-muted hover:bg-muted/30"
                       }`}
                     >
-                      <span className="text-lg">{item.icon}</span>
+                      <span className="text-lg"><EmojiIcon emoji={item.icon} /></span>
                       <span className="text-[9px] leading-tight truncate w-full">
                         {item.nameThai}
                       </span>
@@ -212,9 +213,9 @@ export default function GiftModal({
             <p className="text-[10px] text-muted-foreground mb-1">ตัวอย่าง:</p>
             <div className="flex items-center gap-2 text-sm">
               {giftType === "coins" ? (
-                <span className="font-medium">🪙 {coinAmount} เหรียญ</span>
+                <span className="font-medium">{<EmojiIcon emoji="🪙" />} {coinAmount} เหรียญ</span>
               ) : selectedItemData ? (
-                <span className="font-medium">{selectedItemData.icon} {selectedItemData.nameThai}</span>
+                <span className="font-medium"><EmojiIcon emoji={selectedItemData.icon} /> {selectedItemData.nameThai}</span>
               ) : (
                 <span className="text-muted-foreground text-xs">ยังไม่ได้เลือกไอเทม</span>
               )}

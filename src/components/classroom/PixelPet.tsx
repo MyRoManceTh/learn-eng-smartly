@@ -5,6 +5,7 @@ import {
   PET_FRAME_W,
   PET_FRAME_H,
 } from "@/lib/pixi/petSpriteSheet";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 // ── Pet speech lines (bilingual) ──
 const PET_SPEECHES: Record<string, { th: string; en: string }[]> = {
@@ -249,9 +250,9 @@ const PixelPet = ({ pet, charX }: PixelPetProps) => {
           }}
         >
           <div className="flex gap-1">
-            <span className="text-xs animate-bounce" style={{ animationDelay: "0ms", animationDuration: "0.8s" }}>💕</span>
-            <span className="text-[10px] animate-bounce" style={{ animationDelay: "200ms", animationDuration: "0.9s" }}>❤️</span>
-            <span className="text-xs animate-bounce" style={{ animationDelay: "400ms", animationDuration: "0.7s" }}>💕</span>
+            <span className="text-xs animate-bounce" style={{ animationDelay: "0ms", animationDuration: "0.8s" }}>{<EmojiIcon emoji="💕" />}</span>
+            <span className="text-[10px] animate-bounce" style={{ animationDelay: "200ms", animationDuration: "0.9s" }}>{<EmojiIcon emoji="❤" />}️</span>
+            <span className="text-xs animate-bounce" style={{ animationDelay: "400ms", animationDuration: "0.7s" }}>{<EmojiIcon emoji="💕" />}</span>
           </div>
         </div>
       )}

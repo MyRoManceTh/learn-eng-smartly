@@ -1,6 +1,7 @@
 import { SkillTreeModule } from "@/data/skillTreeData";
 import { Lock, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface SkillTreeNodeProps {
   module: SkillTreeModule;
@@ -108,7 +109,7 @@ const SkillTreeNode = ({
       {/* Bouncing arrow for current node */}
       {isCurrent && !isCompleted && (
         <div className="animate-hop text-2xl -mb-1 drop-shadow-lg">
-          👇
+          {<EmojiIcon emoji="👇" />}
         </div>
       )}
 
@@ -173,7 +174,7 @@ const SkillTreeNode = ({
         {/* Completed checkmark badge */}
         {isCompleted && (
           <span className="absolute -right-0.5 -top-0.5 w-7 h-7 rounded-full bg-green-500 border-[3px] border-green-300 flex items-center justify-center shadow-lg z-20 animate-cartoon-pop">
-            <span className="text-sm">✓</span>
+            <span className="text-sm">{<EmojiIcon emoji="✓" />}</span>
           </span>
         )}
 
@@ -187,7 +188,7 @@ const SkillTreeNode = ({
         {/* Sparkle effects for completed */}
         {isCompleted && (
           <>
-            <span className="absolute -top-2 -right-3 text-sm animate-sparkle-twinkle" style={{ animationDelay: '0ms' }}>✨</span>
+            <span className="absolute -top-2 -right-3 text-sm animate-sparkle-twinkle" style={{ animationDelay: '0ms' }}>{<EmojiIcon emoji="✨" />}</span>
             <span className="absolute -bottom-1 -left-3 text-xs animate-sparkle-twinkle" style={{ animationDelay: '600ms' }}>⭐</span>
           </>
         )}

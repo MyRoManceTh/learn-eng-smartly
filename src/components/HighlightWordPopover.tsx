@@ -1,6 +1,7 @@
 import { useHighlightWord } from "@/contexts/HighlightWordContext";
 import { SpeakButton } from "@/hooks/useSpeech";
 import { X } from "lucide-react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const HighlightWordPopover = () => {
   const { highlightWord, activeVocab, setHighlightWord } = useHighlightWord();
@@ -26,7 +27,7 @@ const HighlightWordPopover = () => {
             {activeVocab ? (
               <div className="mt-1 space-y-0.5">
                 <div className="text-sm font-thai text-thai-phonetic">
-                  🔊 {activeVocab.phonetic}
+                  {<EmojiIcon emoji="🔊" />} {activeVocab.phonetic}
                 </div>
                 <div className="text-base font-thai font-semibold text-foreground">
                   {activeVocab.meaning}

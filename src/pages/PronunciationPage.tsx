@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Volume2, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpeech } from "@/hooks/useSpeech";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const diffLabel: Record<number, string> = { 1: "ง่าย", 2: "ปานกลาง", 3: "ยาก" };
 const diffColor: Record<number, string> = { 1: "bg-emerald-100 text-emerald-700", 2: "bg-amber-100 text-amber-700", 3: "bg-red-100 text-red-700" };
@@ -30,7 +31,7 @@ const PronunciationPage = () => {
             <Button variant="ghost" size="sm" onClick={() => setSelectedGroup(null)}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <span className="text-xl">{selectedGroup.icon}</span>
+            <span className="text-xl"><EmojiIcon emoji={selectedGroup.icon} /></span>
             <div>
               <h2 className="text-base font-bold font-thai">{selectedGroup.titleThai}</h2>
               <p className="text-[10px] text-muted-foreground">{selectedGroup.description}</p>
@@ -82,7 +83,7 @@ const PronunciationPage = () => {
           </div>
           {/* Tips section */}
           <div className="mt-6 rounded-2xl border border-purple-100 bg-purple-50/50 p-4">
-            <h3 className="font-bold font-thai text-sm text-purple-700 mb-2">💡 เคล็ดลับ</h3>
+            <h3 className="font-bold font-thai text-sm text-purple-700 mb-2">{<EmojiIcon emoji="💡" />} เคล็ดลับ</h3>
             <ul className="text-xs text-purple-600 font-thai space-y-1">
               <li>• กดที่คำเพื่อฟังเสียง แล้วลองพูดตาม</li>
               <li>• สังเกตความแตกต่างระหว่างเสียงที่คล้ายกัน</li>
@@ -102,7 +103,7 @@ const PronunciationPage = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/practice")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
           </Button>
-          <h1 className="text-lg font-bold font-thai">🗣️ ฝึกออกเสียง</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🗣" />}️ ฝึกออกเสียง</h1>
         </div>
       </header>
       <main className="px-4 py-5 max-w-3xl mx-auto">
@@ -117,7 +118,7 @@ const PronunciationPage = () => {
               <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b", g.color)} />
               <div className="flex items-center gap-4 pl-3">
                 <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br", g.color)}>
-                  {g.icon}
+                  <EmojiIcon emoji={g.icon} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

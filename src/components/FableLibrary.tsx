@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, ChevronRight, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface FableLibraryProps {
   currentLevel: LearnerLevel;
@@ -75,7 +76,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
     <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-5 shadow-lg">
       <div className="flex items-center gap-2 mb-4">
         <BookOpen className="w-5 h-5 text-purple-600" />
-        <h3 className="text-lg font-bold font-thai">📚 คลังนิทานอีสป</h3>
+        <h3 className="text-lg font-bold font-thai">{<EmojiIcon emoji="📚" />} คลังนิทานอีสป</h3>
       </div>
 
       {/* Level filter */}
@@ -140,7 +141,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
                   >
                     <div className="text-center space-y-1.5">
                       <ImageIcon className="w-8 h-8 text-muted-foreground/50 mx-auto" />
-                      <p className="text-[11px] text-muted-foreground font-thai">กดเพื่อสร้างรูป 🎨</p>
+                      <p className="text-[11px] text-muted-foreground font-thai">กดเพื่อสร้างรูป {<EmojiIcon emoji="🎨" />}</p>
                     </div>
                   </div>
                 )}
@@ -161,7 +162,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
                       {entry.lesson.titleThai}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-1 font-thai">
-                      📝 {entry.lesson.vocabulary.length} คำ · {entry.quiz.length} ข้อ
+                      {<EmojiIcon emoji="📝" />} {entry.lesson.vocabulary.length} คำ · {entry.quiz.length} ข้อ
                     </p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-1" />
@@ -192,7 +193,7 @@ const FableLibrary = ({ currentLevel, onSelectFable }: FableLibraryProps) => {
             }
           }}
         >
-          🎨 สร้างรูปทั้งหมด
+          {<EmojiIcon emoji="🎨" />} สร้างรูปทั้งหมด
         </Button>
       </div>
     </div>

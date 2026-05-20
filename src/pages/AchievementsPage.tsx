@@ -6,6 +6,7 @@ import { useFriends } from "@/hooks/useFriends";
 import { achievements, getUnlockedAchievements, categoryLabels, type UserStats } from "@/data/achievements";
 import { ChevronLeft, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export default function AchievementsPage() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export default function AchievementsPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex-1">
-              <h1 className="text-lg font-bold font-thai">🏅 เหรียญรางวัล</h1>
+              <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🏅" />} เหรียญรางวัล</h1>
               <p className="text-xs text-amber-100 font-thai">
                 ปลดล็อกแล้ว {unlocked.length}/{achievements.length}
               </p>
@@ -63,7 +64,7 @@ export default function AchievementsPage() {
             <div className="flex -space-x-2">
               {unlocked.slice(0, 5).map((a) => (
                 <span key={a.id} className="text-2xl bg-white/20 rounded-full w-10 h-10 flex items-center justify-center">
-                  {a.emoji}
+                  <EmojiIcon emoji={a.emoji} />
                 </span>
               ))}
               {unlocked.length > 5 && (
@@ -91,7 +92,7 @@ export default function AchievementsPage() {
           return (
             <div key={cat}>
               <h3 className="text-sm font-bold font-thai mb-2 flex items-center gap-1.5 dark:text-gray-200">
-                {catInfo.emoji} {catInfo.label}
+                <EmojiIcon emoji={catInfo.emoji} /> {catInfo.label}
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 {catAchievements.map((ach) => {
@@ -123,7 +124,7 @@ export default function AchievementsPage() {
                       </p>
                       {isUnlocked && (
                         <p className="text-[9px] text-amber-600 font-bold mt-1 dark:text-amber-400">
-                          +{ach.reward.coins}🪙 +{ach.reward.exp}⚡
+                          +{ach.reward.coins}{<EmojiIcon emoji="🪙" />} +{ach.reward.exp}{<EmojiIcon emoji="⚡" />}
                         </p>
                       )}
                     </div>

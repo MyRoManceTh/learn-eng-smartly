@@ -4,6 +4,7 @@ import { loadCards } from "@/data/flashcardSRS";
 import { levelInfo } from "@/data/skillTreeData";
 import { useProfile } from "@/hooks/useProfile";
 import { Progress } from "@/components/ui/progress";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export default function VocabMilestoneCounter() {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ export default function VocabMilestoneCounter() {
     <div className="rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 p-4 shadow-sm space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl">📚</span>
+          <span className="text-xl">{<EmojiIcon emoji="📚" />}</span>
           <span className="text-sm font-bold font-thai">คำศัพท์ที่เรียนรู้</span>
         </div>
         <span className="text-lg font-bold text-primary">{learnedCount}</span>
@@ -63,7 +64,7 @@ export default function VocabMilestoneCounter() {
                 : "bg-muted/50 text-muted-foreground opacity-50"
             }`}
           >
-            <span>{m.icon}</span>
+            <span><EmojiIcon emoji={m.icon} /></span>
             <span>{m.count}</span>
           </div>
         ))}
@@ -71,7 +72,7 @@ export default function VocabMilestoneCounter() {
 
       {nextMilestone && (
         <p className="text-[11px] text-muted-foreground font-thai text-center">
-          อีก {nextMilestone.count - learnedCount} คำ ถึง {nextMilestone.label} {nextMilestone.icon}
+          อีก {nextMilestone.count - learnedCount} คำ ถึง {nextMilestone.label} <EmojiIcon emoji={nextMilestone.icon} />
         </p>
       )}
     </div>

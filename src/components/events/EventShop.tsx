@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   eventTheme: string;
@@ -129,7 +130,7 @@ const EventShop = ({ eventTheme, exclusiveItemIds, coins, inventory, onBuy }: Pr
                     className="w-14 h-14 mx-auto rounded-xl flex items-center justify-center text-3xl mb-2"
                     style={{ backgroundColor: `${rarityColor}10` }}
                   >
-                    {item.icon}
+                    <EmojiIcon emoji={item.icon} />
                   </div>
 
                   {/* Item Name */}

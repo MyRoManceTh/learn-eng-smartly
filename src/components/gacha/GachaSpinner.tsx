@@ -7,6 +7,7 @@ import { AvatarItem } from "@/types/avatar";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   coins: number;
@@ -270,17 +271,17 @@ const GachaSpinner = ({
 
         {/* Title */}
         <h2 className="text-center text-3xl font-black font-thai text-yellow-300 mt-4 drop-shadow-lg">
-          🎰 กาชา
+          {<EmojiIcon emoji="🎰" />} กาชา
         </h2>
 
         {/* Probability rates */}
         <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 px-4 mt-2 mb-4">
           <span className="text-[11px] font-bold text-slate-300">⭐ 40%</span>
-          <span className="text-[11px] font-bold text-emerald-300">🌿 28%</span>
-          <span className="text-[11px] font-bold text-blue-300">💎 18%</span>
-          <span className="text-[11px] font-bold text-purple-300">💜 9%</span>
-          <span className="text-[11px] font-bold text-yellow-300">👑 4.5%</span>
-          <span className="text-[11px] font-bold text-rose-300">💫 0.5%</span>
+          <span className="text-[11px] font-bold text-emerald-300">{<EmojiIcon emoji="🌿" />} 28%</span>
+          <span className="text-[11px] font-bold text-blue-300">{<EmojiIcon emoji="💎" />} 18%</span>
+          <span className="text-[11px] font-bold text-purple-300">{<EmojiIcon emoji="💜" />} 9%</span>
+          <span className="text-[11px] font-bold text-yellow-300">{<EmojiIcon emoji="👑" />} 4.5%</span>
+          <span className="text-[11px] font-bold text-rose-300">{<EmojiIcon emoji="💫" />} 0.5%</span>
         </div>
 
         {/* Capsule Display Area */}
@@ -339,7 +340,7 @@ const GachaSpinner = ({
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-400 via-red-500 to-red-600 flex items-center justify-center shadow-xl border-4 border-red-300 animate-float">
                     <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                      <span className="text-4xl">🎲</span>
+                      <span className="text-4xl">{<EmojiIcon emoji="🎲" />}</span>
                     </div>
                   </div>
                   <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-20 h-3 bg-black/20 rounded-full blur-sm" />
@@ -378,7 +379,7 @@ const GachaSpinner = ({
                     }}
                   >
                     <span className={`text-5xl ${result.rarity === "legendary" || result.rarity === "mythic" ? "animate-bounce" : ""}`}>
-                      {wonItem.icon}
+                      <EmojiIcon emoji={wonItem.icon} />
                     </span>
                   </div>
 
@@ -396,7 +397,7 @@ const GachaSpinner = ({
                             animationDuration: "1s",
                           }}
                         >
-                          ✨
+                          {<EmojiIcon emoji="✨" />}
                         </div>
                       ))}
                     </>
@@ -424,7 +425,7 @@ const GachaSpinner = ({
                 {/* New / Duplicate badge */}
                 {result.isNew ? (
                   <div className="bg-gradient-to-r from-green-400 to-emerald-500 text-white px-4 py-1 rounded-full font-black font-thai text-sm shadow-lg animate-bounce">
-                    ใหม่! 🆕
+                    ใหม่! {<EmojiIcon emoji="🆕" />}
                   </div>
                 ) : (
                   <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-4 py-1 rounded-full font-bold font-thai text-xs shadow-md">
@@ -450,7 +451,7 @@ const GachaSpinner = ({
                     }}
                     className="font-thai font-black rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-gray-900 shadow-lg shadow-amber-400/30"
                   >
-                    🔄 หมุนอีกครั้ง
+                    {<EmojiIcon emoji="🔄" />} หมุนอีกครั้ง
                   </Button>
                 </div>
               </div>
@@ -469,7 +470,7 @@ const GachaSpinner = ({
                 className="w-full h-14 text-base font-black font-thai rounded-2xl bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 hover:from-green-500 hover:via-emerald-500 hover:to-green-600 text-white shadow-xl shadow-green-500/30 border-2 border-green-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  🎁 หมุนฟรีประจำสัปดาห์!
+                  {<EmojiIcon emoji="🎁" />} หมุนฟรีประจำสัปดาห์!
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               </Button>
@@ -481,7 +482,7 @@ const GachaSpinner = ({
               disabled={isSpinning || gachaTickets <= 0}
               className="w-full h-12 text-sm font-black font-thai rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white shadow-lg shadow-pink-500/30 border-2 border-pink-400 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              🎟️ หมุนด้วยตั๋ว ({gachaTickets} ใบ)
+              {<EmojiIcon emoji="🎟" />}️ หมุนด้วยตั๋ว ({gachaTickets} ใบ)
             </Button>
 
             {/* Coin pull */}
@@ -490,16 +491,16 @@ const GachaSpinner = ({
               disabled={isSpinning || coins < GACHA_COIN_COST}
               className="w-full h-12 text-sm font-black font-thai rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 hover:from-amber-600 hover:via-yellow-600 hover:to-amber-600 text-gray-900 shadow-lg shadow-amber-400/30 border-2 border-yellow-400 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              🪙 หมุนด้วยเหรียญ ({GACHA_COIN_COST} 🪙)
+              {<EmojiIcon emoji="🪙" />} หมุนด้วยเหรียญ ({GACHA_COIN_COST} {<EmojiIcon emoji="🪙" />})
             </Button>
 
             {/* Current balance display */}
             <div className="flex justify-center gap-6 pt-2 text-sm">
               <span className="text-yellow-300 font-bold font-thai">
-                🪙 {coins.toLocaleString()} เหรียญ
+                {<EmojiIcon emoji="🪙" />} {coins.toLocaleString()} เหรียญ
               </span>
               <span className="text-pink-300 font-bold font-thai">
-                🎟️ {gachaTickets} ตั๋ว
+                {<EmojiIcon emoji="🎟" />}️ {gachaTickets} ตั๋ว
               </span>
             </div>
           </div>

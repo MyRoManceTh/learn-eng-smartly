@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/useNotifications";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const NotificationBell = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
@@ -70,7 +71,7 @@ const NotificationBell = () => {
           <div className="overflow-y-auto max-h-72">
             {notifications.length === 0 ? (
               <div className="p-6 text-center">
-                <span className="text-3xl">🔔</span>
+                <span className="text-3xl">{<EmojiIcon emoji="🔔" />}</span>
                 <p className="text-sm text-muted-foreground font-thai mt-2">
                   ยังไม่มีการแจ้งเตือน
                 </p>

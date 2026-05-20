@@ -5,6 +5,7 @@ import { aesopFables } from "@/data/aesopFables";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, MessageCircle, Volume2, Library, Database, FileCode } from "lucide-react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const ContentOverview = () => {
   const readingCount = readingCategories?.reduce(
@@ -40,7 +41,7 @@ const ContentOverview = () => {
             <div className="mt-2 space-y-1">
               {readingCategories?.map((cat: any) => (
                 <div key={cat.id} className="flex justify-between text-sm">
-                  <span className="font-thai">{cat.icon} {cat.nameThai}</span>
+                  <span className="font-thai"><EmojiIcon emoji={cat.icon} /> {cat.nameThai}</span>
                   <span className="text-muted-foreground">{cat.storiesCount || 0}</span>
                 </div>
               ))}

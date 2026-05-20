@@ -7,6 +7,7 @@ import QuizSection from "@/components/QuizSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronRight, Check, BookOpen, Sparkles } from "lucide-react";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   story: Story;
@@ -63,7 +64,7 @@ export const StoryReader = ({ story, onBack }: Props) => {
           </button>
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-9xl drop-shadow-2xl animate-[float_4s_ease-in-out_infinite]">
-              {story.cover.emoji}
+              <EmojiIcon emoji={story.cover.emoji} />
             </span>
           </div>
           {progress.completed && (
@@ -78,7 +79,7 @@ export const StoryReader = ({ story, onBack }: Props) => {
           <div className={`rounded-3xl border-2 ${rarity.bg} p-5 shadow-xl bg-white`}>
             <div className="flex items-center gap-2 mb-2">
               <span className={`text-[11px] px-2.5 py-0.5 rounded-full bg-gradient-to-r ${theme.color} text-white font-thai font-bold`}>
-                {theme.emoji} {theme.th}
+                <EmojiIcon emoji={theme.emoji} /> {theme.th}
               </span>
               <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-thai font-bold ${rarity.bg} ${rarity.color} border`}>
                 ◆ {rarity.th}

@@ -9,6 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const COMPLETED_KEY = "completedConversations";
 
@@ -120,7 +121,7 @@ const ConversationPage = () => {
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
             <div className="flex-1">
-              <span className="text-base font-bold font-thai">{selected.icon} {selected.titleThai}</span>
+              <span className="text-base font-bold font-thai"><EmojiIcon emoji={selected.icon} /> {selected.titleThai}</span>
               <span className="text-xs text-muted-foreground ml-2 font-thai">กับ {selected.npcName}</span>
             </div>
             <div className="flex items-center gap-1 bg-green-100 rounded-full px-2 py-0.5">
@@ -157,7 +158,7 @@ const ConversationPage = () => {
         <div className="border-t border-white/50 bg-white/80 backdrop-blur-xl p-4 safe-area-bottom">
           {finished ? (
             <div className="text-center space-y-3">
-              <p className="font-thai font-bold text-lg">สนทนาจบแล้ว! 🎉</p>
+              <p className="font-thai font-bold text-lg">สนทนาจบแล้ว! {<EmojiIcon emoji="🎉" />}</p>
               <p className="text-sm text-muted-foreground font-thai">ตอบถูก {score}/{totalChoices} ข้อ</p>
               <div className="flex gap-2 justify-center">
                 <Button onClick={() => startScenario(selected)} variant="outline" className="font-thai">
@@ -226,7 +227,7 @@ const ConversationPage = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/practice")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
           </Button>
-          <h1 className="text-lg font-bold font-thai">💬 ฝึกบทสนทนา</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="💬" />} ฝึกบทสนทนา</h1>
         </div>
       </header>
       <main className="px-4 py-5 max-w-3xl mx-auto">
@@ -251,7 +252,7 @@ const ConversationPage = () => {
                   "w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-md bg-gradient-to-br relative",
                   isDone ? "from-green-400 to-emerald-500" : sc.color
                 )}>
-                  {sc.icon}
+                  <EmojiIcon emoji={sc.icon} />
                   {isDone && (
                     <div className="absolute -right-1 -top-1 w-6 h-6 rounded-full bg-green-500 border-2 border-white flex items-center justify-center shadow-md">
                       <CheckCircle className="w-4 h-4 text-white" />
@@ -267,7 +268,7 @@ const ConversationPage = () => {
                       ))}
                     </div>
                     {isDone && (
-                      <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-thai">เรียนแล้ว ✓</span>
+                      <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-thai">เรียนแล้ว {<EmojiIcon emoji="✓" />}</span>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">{sc.description}</p>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useFriendLeaderboard, FriendLeaderboardEntry } from "@/hooks/useFriendLeaderboard";
 import { evolutionStages } from "@/data/evolutionStages";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const rankMedals = ["", "🥇", "🥈", "🥉"];
 
@@ -27,7 +28,7 @@ export default function FriendLeaderboard({ compact = false }: Props) {
     return (
       <div className="rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-sm">👥</span>
+          <span className="text-sm">{<EmojiIcon emoji="👥" />}</span>
           <span className="text-sm font-bold font-thai">อันดับเพื่อน</span>
         </div>
         <div className="space-y-2">
@@ -42,7 +43,7 @@ export default function FriendLeaderboard({ compact = false }: Props) {
   if (!hasFriends) {
     return (
       <div className="rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm backdrop-blur-sm text-center">
-        <p className="text-2xl mb-1">🤝</p>
+        <p className="text-2xl mb-1">{<EmojiIcon emoji="🤝" />}</p>
         <p className="text-sm font-bold font-thai mb-1">เพิ่มเพื่อนเพื่อแข่งขัน!</p>
         <p className="text-xs text-muted-foreground font-thai mb-2">
           ไปที่หน้า "ฉัน" แล้วแชร์รหัสเพื่อน
@@ -62,7 +63,7 @@ export default function FriendLeaderboard({ compact = false }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm">👥</span>
+          <span className="text-sm">{<EmojiIcon emoji="👥" />}</span>
           <span className="text-sm font-bold font-thai">อันดับเพื่อน</span>
         </div>
         {!compact && (
@@ -128,7 +129,7 @@ export default function FriendLeaderboard({ compact = false }: Props) {
 
             {/* Streak */}
             <span className="text-xs text-muted-foreground shrink-0">
-              🔥{entry.current_streak}
+              {<EmojiIcon emoji="🔥" />}{entry.current_streak}
             </span>
           </div>
         ))}

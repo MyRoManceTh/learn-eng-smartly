@@ -1,6 +1,7 @@
 import React from "react";
 import CSSBox3D from "../CSSBox3D";
 import { shade } from "../colorUtils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Torso3DProps {
   shirtColor: string;
@@ -48,7 +49,7 @@ const ShirtPattern: React.FC<{ shirtId: string; shirtColor: string }> = ({ shirt
           <div style={{
             position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)",
             fontSize: 8, lineHeight: "8px", opacity: 0.6,
-          }}>⚓</div>
+          }}>{<EmojiIcon emoji="⚓" />}</div>
           {/* Bottom stripe */}
           <div style={{ position: "absolute", bottom: 4, left: 4, right: 4, height: 2, backgroundColor: "#1565C0", opacity: 0.4 }} />
         </div>
@@ -241,7 +242,7 @@ const ShirtPattern: React.FC<{ shirtId: string; shirtColor: string }> = ({ shirt
           }} />
           {/* Dragon emblem */}
           <div style={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", fontSize: 14, lineHeight: "14px" }}>
-            🐉
+            {<EmojiIcon emoji="🐉" />}
           </div>
           {/* Gold chest plate edge */}
           <div style={{

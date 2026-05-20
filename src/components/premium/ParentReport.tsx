@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Share2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const levelNames = ["เริ่มต้น", "มือใหม่", "กลาง", "ก้าวหน้า", "เก่งมาก"];
 
@@ -202,7 +203,7 @@ const ParentReport = () => {
                 key={stat.label}
                 className="p-3 rounded-xl bg-muted/30 border border-border/30 text-center"
               >
-                <span className="text-xl">{stat.icon}</span>
+                <span className="text-xl"><EmojiIcon emoji={stat.icon} /></span>
                 <p className={cn("text-xl font-bold mt-1", stat.color)}>
                   {stat.value}
                   {stat.unit && (

@@ -23,6 +23,7 @@ import SocialHomeSection from "@/components/social/SocialHomeSection";
 import GachaSpinner from "@/components/gacha/GachaSpinner";
 import NotificationBell from "@/components/NotificationBell";
 import type { DailyMission, MissionType } from "@/types/dopamine";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const missionIcons: Record<MissionType, string> = {
   streak_login: "🔥",
@@ -220,7 +221,7 @@ const Index = () => {
             </button>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-muted-foreground font-thai">
-                สวัสดี! 👋
+                สวัสดี! {<EmojiIcon emoji="👋" />}
               </p>
               <h2 className="text-lg font-bold font-thai text-foreground truncate">
                 {displayName}
@@ -253,7 +254,7 @@ const Index = () => {
           <div className="rounded-2xl bg-white/80 border border-white/60 p-3 shadow-sm backdrop-blur-sm">
             <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-2">
-                <span className="text-sm">📋</span>
+                <span className="text-sm">{<EmojiIcon emoji="📋" />}</span>
                 <span className="text-sm font-bold font-thai">ภารกิจวันนี้</span>
               </div>
               <span className={cn(
@@ -302,7 +303,7 @@ const Index = () => {
                       )}
                     </div>
                     <span className="text-[10px] text-amber-600 font-bold shrink-0">
-                      +{m.reward_coins}🪙
+                      +{m.reward_coins}{<EmojiIcon emoji="🪙" />}
                     </span>
                   </div>
                 );
@@ -326,7 +327,7 @@ const Index = () => {
                   {completedLessonIds.has(currentLesson.id) ? "ทบทวนบทเรียน" : "เรียนต่อเลย! 🎯"}
                 </p>
                 <h3 className="text-white font-bold text-base">
-                  📖 บทที่ {currentLesson.lesson_order}: {currentLesson.title}
+                  {<EmojiIcon emoji="📖" />} บทที่ {currentLesson.lesson_order}: {currentLesson.title}
                 </h3>
                 <p className="text-purple-200 text-xs font-thai mt-0.5">
                   {currentLesson.title_thai} · Level {currentLesson.level}
@@ -342,7 +343,7 @@ const Index = () => {
         {/* === Quick Actions Grid === */}
         <div>
           <h3 className="text-sm font-bold font-thai text-foreground mb-2">
-            ⚡ กิจกรรมด่วน
+            {<EmojiIcon emoji="⚡" />} กิจกรรมด่วน
           </h3>
           <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3">
             {quickActions.map((action) => (
@@ -355,7 +356,7 @@ const Index = () => {
                   "w-11 h-11 rounded-xl flex items-center justify-center text-xl bg-gradient-to-br shadow-md",
                   action.color
                 )}>
-                  <span>{action.emoji}</span>
+                  <span><EmojiIcon emoji={action.emoji} /></span>
                 </div>
                 <span className="text-[10px] font-bold font-thai text-foreground leading-tight text-center">
                   {action.label}
@@ -388,7 +389,7 @@ const Index = () => {
                   แนะนำสำหรับผู้เรียนใหม่
                 </p>
                 <h3 className="text-white font-bold text-base">
-                  🏰 ทำแบบทดสอบวัดระดับ
+                  {<EmojiIcon emoji="🏰" />} ทำแบบทดสอบวัดระดับ
                 </h3>
                 <p className="text-amber-100 text-xs font-thai mt-0.5">
                   วัดระดับเพื่อเริ่มเรียนที่จุดที่เหมาะสม
@@ -404,7 +405,7 @@ const Index = () => {
         {/* === Activities Section === */}
         <div>
           <h3 className="text-sm font-bold font-thai text-foreground mb-2">
-            🎯 กิจกรรมทั้งหมด
+            {<EmojiIcon emoji="🎯" />} กิจกรรมทั้งหมด
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
             {activities.map((act) => (
@@ -416,7 +417,7 @@ const Index = () => {
                 <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-gradient-to-b", act.color)} />
                 <div className="flex items-center gap-3 pl-2">
                   <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm bg-gradient-to-br", act.color)}>
-                    <span>{act.icon}</span>
+                    <span><EmojiIcon emoji={act.icon} /></span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold font-thai text-sm">{act.title}</h4>
@@ -436,7 +437,7 @@ const Index = () => {
         {/* === Not logged in prompt === */}
         {!user && (
           <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-dashed border-purple-200 p-6 text-center">
-            <p className="text-3xl mb-2">🎓</p>
+            <p className="text-3xl mb-2">{<EmojiIcon emoji="🎓" />}</p>
             <h3 className="font-bold font-thai text-foreground mb-1">เริ่มเรียนภาษาอังกฤษ!</h3>
             <p className="text-xs text-muted-foreground font-thai mb-3">
               เข้าสู่ระบบเพื่อบันทึกความก้าวหน้า รับรางวัล และแต่ง Avatar

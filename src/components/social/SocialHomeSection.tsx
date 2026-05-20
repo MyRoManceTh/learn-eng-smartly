@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const rankMedals = ["", "🥇", "🥈", "🥉"];
 
@@ -71,7 +72,7 @@ export default function SocialHomeSection() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm">👥</span>
+          <span className="text-sm">{<EmojiIcon emoji="👥" />}</span>
           <span className="text-sm font-bold font-thai">กิจกรรมเพื่อน</span>
         </div>
         <button
@@ -85,7 +86,7 @@ export default function SocialHomeSection() {
       {/* Mini Friend Leaderboard */}
       {topFriends.length > 0 && (
         <div>
-          <p className="text-[10px] font-bold text-muted-foreground font-thai mb-1">🏆 อันดับประจำสัปดาห์</p>
+          <p className="text-[10px] font-bold text-muted-foreground font-thai mb-1">{<EmojiIcon emoji="🏆" />} อันดับประจำสัปดาห์</p>
           <div className="flex gap-2">
             {topFriends.map((entry) => (
               <div
@@ -116,7 +117,7 @@ export default function SocialHomeSection() {
       {pendingChallenges.length > 0 && (
         <div>
           <p className="text-[10px] font-bold text-muted-foreground font-thai mb-1">
-            ⚔️ คำท้าทาย ({pendingChallenges.length})
+            {<EmojiIcon emoji="⚔" />}️ คำท้าทาย ({pendingChallenges.length})
           </p>
           {pendingChallenges.slice(0, 2).map((challenge) => (
             <div
@@ -155,7 +156,7 @@ export default function SocialHomeSection() {
       {pendingGifts.length > 0 && (
         <div>
           <p className="text-[10px] font-bold text-muted-foreground font-thai mb-1">
-            🎁 ของขวัญ ({pendingGifts.length})
+            {<EmojiIcon emoji="🎁" />} ของขวัญ ({pendingGifts.length})
           </p>
           {pendingGifts.slice(0, 2).map((gift) => (
             <div

@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LearnerLevel, QuizQuestion } from "@/types/lesson";
 import { skillTreeModules } from "@/data/skillTreeData";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const levelLabel: Record<number, string> = { 1: "ง่าย", 2: "ปานกลาง", 3: "ยาก" };
 const levelColor: Record<number, string> = { 1: "bg-emerald-100 text-emerald-700", 2: "bg-amber-100 text-amber-700", 3: "bg-red-100 text-red-700" };
@@ -158,7 +159,7 @@ const ReadingPage = () => {
           {!showStoryQuiz ? (
             <div className="text-center py-2">
               <Button onClick={() => setShowStoryQuiz(true)} className="font-thai w-full max-w-xs bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg">
-                📝 ทำแบบทดสอบ (+EXP & เหรียญ)
+                {<EmojiIcon emoji="📝" />} ทำแบบทดสอบ (+EXP & เหรียญ)
               </Button>
             </div>
           ) : (
@@ -183,7 +184,7 @@ const ReadingPage = () => {
               <span className="font-bold font-thai text-sm">
                 บทที่ {selectedLesson.lesson_order}
               </span>
-              {isCompleted && <span className="ml-2 text-xs text-emerald-600">✅</span>}
+              {isCompleted && <span className="ml-2 text-xs text-emerald-600">{<EmojiIcon emoji="✅" />}</span>}
             </div>
           </div>
         </header>
@@ -205,7 +206,7 @@ const ReadingPage = () => {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              📝 คำศัพท์
+              {<EmojiIcon emoji="📝" />} คำศัพท์
             </button>
             <button
               onClick={() => setLessonActiveTab("article")}
@@ -216,7 +217,7 @@ const ReadingPage = () => {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              📖 บทอ่าน
+              {<EmojiIcon emoji="📖" />} บทอ่าน
             </button>
           </div>
 
@@ -242,7 +243,7 @@ const ReadingPage = () => {
                   : "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-purple-500/25"
               )}
             >
-              📝 {isCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
+              {<EmojiIcon emoji="📝" />} {isCompleted ? "ทำแบบทดสอบอีกครั้ง" : "ทำแบบทดสอบ"}
             </Button>
           </div>
         </main>
@@ -261,7 +262,7 @@ const ReadingPage = () => {
             <Button variant="ghost" size="sm" onClick={() => setSelectedCategory(null)}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <span className="text-xl">{cat.icon}</span>
+            <span className="text-xl"><EmojiIcon emoji={cat.icon} /></span>
             <span className="text-base font-bold font-thai">{cat.nameThai}</span>
           </div>
         </header>
@@ -327,7 +328,7 @@ const ReadingPage = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <h1 className="text-lg font-bold font-thai">📖 ฝึกอ่าน</h1>
+            <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="📖" />} ฝึกอ่าน</h1>
           </div>
 
           {/* Main Tab Switcher */}
@@ -341,7 +342,7 @@ const ReadingPage = () => {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              📖 เรื่องสนุก
+              {<EmojiIcon emoji="📖" />} เรื่องสนุก
             </button>
             <button
               onClick={() => setMainTab("lessons")}
@@ -352,7 +353,7 @@ const ReadingPage = () => {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              📚 บทเรียน
+              {<EmojiIcon emoji="📚" />} บทเรียน
             </button>
           </div>
         </div>
@@ -373,7 +374,7 @@ const ReadingPage = () => {
                   <div className={cn("absolute inset-0 opacity-10 bg-gradient-to-br", cat.color)} />
                   <div className="relative">
                     <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-2 shadow-sm bg-gradient-to-br", cat.color)}>
-                      {cat.icon}
+                      <EmojiIcon emoji={cat.icon} />
                     </div>
                     <h3 className="font-bold font-thai text-sm">{cat.nameThai}</h3>
                     <p className="text-[11px] text-muted-foreground font-reading">{cat.name}</p>
@@ -439,7 +440,7 @@ const ReadingPage = () => {
                             </p>
                           </div>
                           {completedCount === moduleLessons.length && moduleLessons.length > 0 && (
-                            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">✅ จบแล้ว</span>
+                            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">{<EmojiIcon emoji="✅" />} จบแล้ว</span>
                           )}
                         </div>
 
@@ -478,7 +479,7 @@ const ReadingPage = () => {
                   {noModule.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg">📘</span>
+                        <span className="text-lg">{<EmojiIcon emoji="📘" />}</span>
                         <h4 className="font-bold text-sm font-thai">บทเรียนทั่วไป</h4>
                       </div>
                       <div className="grid grid-cols-2 gap-2">

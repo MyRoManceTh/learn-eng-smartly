@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { evolutionStages } from "@/data/evolutionStages";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -25,7 +26,7 @@ export default function LeaderboardSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">🏆 กระดานผู้นำ</CardTitle>
+          <CardTitle className="text-lg">{<EmojiIcon emoji="🏆" />} กระดานผู้นำ</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -44,7 +45,7 @@ export default function LeaderboardSection() {
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">🏆 กระดานผู้นำ</CardTitle>
+          <CardTitle className="text-lg">{<EmojiIcon emoji="🏆" />} กระดานผู้นำ</CardTitle>
           <div className="flex gap-1">
             <button
               onClick={() => setTimeRange("weekly")}
@@ -102,8 +103,8 @@ export default function LeaderboardSection() {
                   )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                  <span>⚡ {entry.total_exp.toLocaleString()} EXP</span>
-                  <span>🔥 {entry.current_streak} วัน</span>
+                  <span>{<EmojiIcon emoji="⚡" />} {entry.total_exp.toLocaleString()} EXP</span>
+                  <span>{<EmojiIcon emoji="🔥" />} {entry.current_streak} วัน</span>
                 </div>
               </div>
             </div>
@@ -139,8 +140,8 @@ export default function LeaderboardSection() {
                 </div>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground shrink-0">
-                <span>⚡ {entry.total_exp.toLocaleString()}</span>
-                <span>🔥 {entry.current_streak}</span>
+                <span>{<EmojiIcon emoji="⚡" />} {entry.total_exp.toLocaleString()}</span>
+                <span>{<EmojiIcon emoji="🔥" />} {entry.current_streak}</span>
               </div>
             </div>
           );

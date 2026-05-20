@@ -4,6 +4,7 @@ import { RoomLayout } from "@/types/room";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PetShopProps {
   coins: number;
@@ -40,7 +41,7 @@ const PetShop = ({ coins, roomInventory, room, onBuyPet, onPlacePet, onRemovePet
       {/* Active pet display */}
       {activePetId && PET_IMAGES[activePetId] && (
         <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-green-50 to-emerald-50/50 p-4 shadow-lg text-center">
-          <p className="text-xs font-thai font-semibold text-muted-foreground mb-2">🐾 สัตว์เลี้ยงของฉัน</p>
+          <p className="text-xs font-thai font-semibold text-muted-foreground mb-2">{<EmojiIcon emoji="🐾" />} สัตว์เลี้ยงของฉัน</p>
           <div className="relative inline-block">
             <img
               src={PET_IMAGES[activePetId]}
@@ -99,7 +100,7 @@ const PetShop = ({ coins, roomInventory, room, onBuyPet, onPlacePet, onRemovePet
                   )}
                   {placed && (
                     <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                      <span className="text-white text-[10px]">✓</span>
+                      <span className="text-white text-[10px]">{<EmojiIcon emoji="✓" />}</span>
                     </div>
                   )}
                 </div>
@@ -126,7 +127,7 @@ const PetShop = ({ coins, roomInventory, room, onBuyPet, onPlacePet, onRemovePet
                     onClick={(e) => { e.stopPropagation(); onRemovePet(pet.id); }}
                     className="font-thai text-xs w-full border-green-300 text-green-700 hover:bg-green-50"
                   >
-                    ✓ อยู่ในห้อง
+                    {<EmojiIcon emoji="✓" />} อยู่ในห้อง
                   </Button>
                 ) : owned ? (
                   <Button
@@ -134,7 +135,7 @@ const PetShop = ({ coins, roomInventory, room, onBuyPet, onPlacePet, onRemovePet
                     onClick={(e) => { e.stopPropagation(); onPlacePet(pet); }}
                     className="font-thai text-xs w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
                   >
-                    🐾 วางในห้อง
+                    {<EmojiIcon emoji="🐾" />} วางในห้อง
                   </Button>
                 ) : (
                   <Button
@@ -147,7 +148,7 @@ const PetShop = ({ coins, roomInventory, room, onBuyPet, onPlacePet, onRemovePet
                       coins < pet.price && "opacity-50"
                     )}
                   >
-                    🪙 {pet.price} เหรียญ
+                    {<EmojiIcon emoji="🪙" />} {pet.price} เหรียญ
                   </Button>
                 )}
               </div>

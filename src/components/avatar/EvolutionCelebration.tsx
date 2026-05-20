@@ -3,6 +3,7 @@ import confetti from "canvas-confetti";
 import { EvolutionStage } from "@/types/dopamine";
 import { getCefrLabel } from "@/data/evolutionStages";
 import { Button } from "@/components/ui/button";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   open: boolean;
@@ -146,7 +147,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
           {/* Header with staggered entrance */}
           <div style={{ animation: "fade-slide-up 0.5s ease-out 0.2s both" }}>
             <div className="text-4xl mb-1" style={{ animation: "icon-bounce 1s ease-out 0.3s both" }}>
-              🎉
+              {<EmojiIcon emoji="🎉" />}
             </div>
             <h2 className="text-2xl font-bold text-yellow-300 drop-shadow-lg font-thai">
               เลเวลอัพ!
@@ -161,7 +162,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
             {/* Previous Stage */}
             <div className="flex flex-col items-center gap-1.5">
               <div className="relative">
-                <span className="text-4xl grayscale-[40%] opacity-60">{previousStage.icon}</span>
+                <span className="text-4xl grayscale-[40%] opacity-60"><EmojiIcon emoji={previousStage.icon} /></span>
               </div>
               <span className="text-[11px] text-white/40 font-thai font-bold">{previousStage.nameThai}</span>
               <span className="text-[10px] text-white/25 font-bold">{getCefrLabel(previousStage.stage)}</span>
@@ -184,7 +185,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                     animation: "icon-bounce 0.8s ease-out 0.6s both",
                   }}
                 >
-                  {newStage.icon}
+                  <EmojiIcon emoji={newStage.icon} />
                 </span>
                 {/* Glow ring behind icon */}
                 <div
@@ -242,7 +243,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                       animation: `fade-slide-up 0.4s ease-out ${0.9 + i * 0.1}s both`,
                     }}
                   >
-                    ✨ {effectLabels[effect] ?? effect}
+                    {<EmojiIcon emoji="✨" />} {effectLabels[effect] ?? effect}
                   </span>
                 ))}
               </div>
@@ -259,7 +260,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                 boxShadow: `0 4px 24px ${newStage.color}50`,
               }}
             >
-              สุดยอด! 🎊
+              สุดยอด! {<EmojiIcon emoji="🎊" />}
             </Button>
           </div>
         </div>

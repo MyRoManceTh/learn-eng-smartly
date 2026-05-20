@@ -16,6 +16,7 @@ import ManaBar from "@/components/ui/8bit/mana-bar";
 import { Progress } from "@/components/ui/8bit/progress";
 import { Separator } from "@/components/ui/8bit/separator";
 import "@/components/ui/8bit/styles/retro.css";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export interface PrimaryAttribute {
   name: string;

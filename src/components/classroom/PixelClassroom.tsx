@@ -10,6 +10,7 @@ import ClassroomZoneComponent from "./ClassroomZone";
 import ClassroomSpeechBubble from "./ClassroomSpeechBubble";
 import { useClassroomNavigation } from "./useClassroomNavigation";
 import "@/components/ui/8bit/styles/retro.css";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PixelClassroomProps {
   equipped: EquippedItems;
@@ -135,7 +136,7 @@ const PixelClassroom = ({
       {/* Help text — retro style */}
       <div className="absolute bottom-2 right-3 z-20 pointer-events-none">
         <span className="retro-label text-[7px]">
-          🎮 TAP FURNITURE
+          {<EmojiIcon emoji="🎮" />} TAP FURNITURE
         </span>
       </div>
     </div>

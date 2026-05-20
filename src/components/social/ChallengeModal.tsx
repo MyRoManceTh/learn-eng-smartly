@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { X, Shuffle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Lesson {
   id: string;
@@ -56,7 +57,7 @@ export default function ChallengeModal({ open, friendId, friendName, onClose, on
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="text-base font-bold font-thai">
-            ⚔️ ท้าทาย {friendName}
+            {<EmojiIcon emoji="⚔" />}️ ท้าทาย {friendName}
           </h3>
           <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100">
             <X className="w-5 h-5" />
@@ -86,7 +87,7 @@ export default function ChallengeModal({ open, friendId, friendName, onClose, on
               <p className="text-sm font-bold font-thai">สุ่มบทเรียน</p>
               <p className="text-[10px] text-muted-foreground font-thai">ลุ้นบทไหนก็ได้!</p>
             </div>
-            {isRandom && <span className="ml-auto text-purple-600 text-xs font-bold">เลือก ✓</span>}
+            {isRandom && <span className="ml-auto text-purple-600 text-xs font-bold">เลือก {<EmojiIcon emoji="✓" />}</span>}
           </button>
 
           {/* Lesson list */}

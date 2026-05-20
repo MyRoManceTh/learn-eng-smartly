@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { RewardData } from "@/types/dopamine";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   open: boolean;
@@ -70,7 +71,7 @@ const DailyRewardModal = ({
       <DialogContent className="sm:max-w-md border-0 bg-gradient-to-b from-indigo-950 via-purple-950 to-violet-950 text-white overflow-hidden">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="text-xl font-bold text-amber-300">
-            สวัสดี! วันที่ {streakDays} ติดต่อกัน 🔥
+            สวัสดี! วันที่ {streakDays} ติดต่อกัน {<EmojiIcon emoji="🔥" />}
           </DialogTitle>
           <DialogDescription className="text-purple-200">
             เปิดกล่องสุ่มรับรางวัลประจำวัน!
@@ -93,7 +94,7 @@ const DailyRewardModal = ({
                   "animate-[shake_0.8s_ease-in-out_infinite] group-hover:scale-110 group-active:scale-95"
                 )}
               >
-                🎁
+                {<EmojiIcon emoji="🎁" />}
               </div>
               <p className="mt-3 text-sm text-purple-200 animate-pulse text-center">
                 แตะเพื่อเปิด!
@@ -103,13 +104,13 @@ const DailyRewardModal = ({
             /* แสดงรางวัล */
             <div className="flex flex-col items-center gap-3 animate-bounce-in">
               {/* ไอคอนรางวัล */}
-              <div className="text-6xl animate-float">🎉</div>
+              <div className="text-6xl animate-float">{<EmojiIcon emoji="🎉" />}</div>
 
               {/* รางวัลหลัก */}
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {reward?.coins != null && reward.coins > 0 && (
                   <div className="flex items-center gap-1.5 bg-amber-500/20 border border-amber-400/30 rounded-full px-4 py-2">
-                    <span className="text-2xl">🪙</span>
+                    <span className="text-2xl">{<EmojiIcon emoji="🪙" />}</span>
                     <span className="text-lg font-bold text-amber-300">
                       +{reward.coins} เหรียญ
                     </span>
@@ -117,7 +118,7 @@ const DailyRewardModal = ({
                 )}
                 {reward?.exp != null && reward.exp > 0 && (
                   <div className="flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/30 rounded-full px-4 py-2">
-                    <span className="text-2xl">✨</span>
+                    <span className="text-2xl">{<EmojiIcon emoji="✨" />}</span>
                     <span className="text-lg font-bold text-emerald-300">
                       +{reward.exp} EXP
                     </span>
@@ -133,7 +134,7 @@ const DailyRewardModal = ({
                       key={idx}
                       className="flex items-center gap-1.5 bg-violet-500/20 border border-violet-400/30 rounded-full px-4 py-2"
                     >
-                      <span className="text-xl">🎀</span>
+                      <span className="text-xl">{<EmojiIcon emoji="🎀" />}</span>
                       <span className="text-sm font-semibold text-violet-200">
                         {item}
                       </span>
@@ -153,7 +154,7 @@ const DailyRewardModal = ({
               {isMilestone && (
                 <div className="mt-2 px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500/30 via-yellow-400/30 to-amber-500/30 border border-yellow-400/50">
                   <p className="text-center text-base font-bold bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-200 bg-clip-text text-transparent">
-                    🏆 {milestoneMessage}
+                    {<EmojiIcon emoji="🏆" />} {milestoneMessage}
                   </p>
                 </div>
               )}

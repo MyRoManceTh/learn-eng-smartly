@@ -4,6 +4,7 @@ import { evolutionStages } from "@/data/evolutionStages";
 import confetti from "canvas-confetti";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   myScore: number;
@@ -56,7 +57,7 @@ export default function ChallengeResult({
       <div className="w-full max-w-md text-center space-y-4 animate-in fade-in zoom-in duration-500">
         <div className="rounded-3xl border border-white/50 bg-white/90 backdrop-blur-xl p-6 space-y-4 shadow-2xl">
           {/* Title */}
-          <h2 className="text-lg font-bold font-thai">⚔️ ผลการท้าทาย</h2>
+          <h2 className="text-lg font-bold font-thai">{<EmojiIcon emoji="⚔" />}️ ผลการท้าทาย</h2>
 
           {/* VS Display */}
           <div className="flex items-center justify-center gap-4">
@@ -105,16 +106,16 @@ export default function ChallengeResult({
           ) : isWin ? (
             <div className="bg-emerald-50 rounded-xl p-3">
               <p className="text-lg font-bold font-thai text-emerald-700">
-                🎉 คุณชนะ!
+                {<EmojiIcon emoji="🎉" />} คุณชนะ!
               </p>
               <p className="text-xs text-emerald-600 font-thai">
-                +30🪙 โบนัสชนะ Challenge!
+                +30{<EmojiIcon emoji="🪙" />} โบนัสชนะ Challenge!
               </p>
             </div>
           ) : isLose ? (
             <div className="bg-red-50 rounded-xl p-3">
               <p className="text-lg font-bold font-thai text-red-600">
-                เพื่อนเก่งกว่า! 😤
+                เพื่อนเก่งกว่า! {<EmojiIcon emoji="😤" />}
               </p>
               <p className="text-xs text-red-500 font-thai">
                 ลองทบทวนแล้วท้าทายอีกครั้ง!
@@ -123,7 +124,7 @@ export default function ChallengeResult({
           ) : (
             <div className="bg-purple-50 rounded-xl p-3">
               <p className="text-lg font-bold font-thai text-purple-700">
-                🤝 เสมอกัน!
+                {<EmojiIcon emoji="🤝" />} เสมอกัน!
               </p>
               <p className="text-xs text-purple-600 font-thai">
                 ทั้งคู่เก่งพอกัน!
@@ -134,11 +135,11 @@ export default function ChallengeResult({
           {/* EXP + Coins earned */}
           <div className="flex items-center justify-center gap-3">
             <div className="flex items-center gap-1.5 bg-purple-100 rounded-xl py-2 px-3">
-              <span className="text-sm">⚡</span>
+              <span className="text-sm">{<EmojiIcon emoji="⚡" />}</span>
               <span className="font-bold text-sm text-purple-700">+{earnedExp} EXP</span>
             </div>
             <div className="flex items-center gap-1.5 bg-amber-100 rounded-xl py-2 px-3">
-              <span className="text-sm">🪙</span>
+              <span className="text-sm">{<EmojiIcon emoji="🪙" />}</span>
               <span className="font-bold text-sm text-amber-700">+{earnedCoins}</span>
             </div>
           </div>
@@ -151,7 +152,7 @@ export default function ChallengeResult({
               onClick={onRematch}
               className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 text-white"
             >
-              ⚔️ ท้าทายอีกครั้ง
+              {<EmojiIcon emoji="⚔" />}️ ท้าทายอีกครั้ง
             </Button>
           )}
           <Button

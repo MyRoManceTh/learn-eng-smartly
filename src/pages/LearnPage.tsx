@@ -24,6 +24,7 @@ import { ArrowLeft, Trophy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const LearnPage = () => {
   const { user } = useAuth();
@@ -211,7 +212,7 @@ const LearnPage = () => {
             >
               <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
             </Button>
-            <span className="text-lg">{selectedModule.icon}</span>
+            <span className="text-lg"><EmojiIcon emoji={selectedModule.icon} /></span>
             <span className="text-sm font-bold text-white font-thai">
               {selectedLesson.topicThai}
             </span>
@@ -224,7 +225,7 @@ const LearnPage = () => {
               <div className="relative">
                 <Loader2 className="w-12 h-12 animate-spin text-purple-400" />
                 <span className="absolute inset-0 flex items-center justify-center text-xl">
-                  {selectedModule.icon}
+                  <EmojiIcon emoji={selectedModule.icon} />
                 </span>
               </div>
               <p className="font-thai mt-4 text-lg text-white/60">กำลังสร้างบทเรียน...</p>
@@ -251,7 +252,7 @@ const LearnPage = () => {
                     onClick={() => setShowQuiz(true)}
                     className="font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg"
                   >
-                    📝 ทำแบบทดสอบ
+                    {<EmojiIcon emoji="📝" />} ทำแบบทดสอบ
                   </Button>
                 </div>
               ) : (
@@ -305,7 +306,7 @@ const LearnPage = () => {
               fontSize: `${8 + (i % 4) * 4}px`,
             }}
           >
-            ✦
+            {<EmojiIcon emoji="✦" />}
           </span>
         ))}
       </div>
@@ -314,7 +315,7 @@ const LearnPage = () => {
       <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-white font-thai flex items-center gap-2">
-            🗺️ เรียน<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">รู้</span>
+            {<EmojiIcon emoji="🗺" />}️ เรียน<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">รู้</span>
           </h1>
           <div className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-400" />
@@ -331,7 +332,7 @@ const LearnPage = () => {
           {/* Title */}
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-bold text-white font-thai flex items-center gap-2">
-              <span className="text-xl animate-sway" style={{ display: 'inline-block' }}>⚔️</span>
+              <span className="text-xl animate-sway" style={{ display: 'inline-block' }}>{<EmojiIcon emoji="⚔" />}️</span>
               เส้นทางการผจญภัย
             </h2>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
@@ -353,7 +354,7 @@ const LearnPage = () => {
               className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-700"
               style={{ left: `${Math.max(progressPercent, 3)}%` }}
             >
-              <span className="text-lg drop-shadow-lg">🚀</span>
+              <span className="text-lg drop-shadow-lg">{<EmojiIcon emoji="🚀" />}</span>
             </div>
           </div>
 
@@ -361,19 +362,19 @@ const LearnPage = () => {
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '0ms' }}>
-                📚 {totalCompleted}
+                {<EmojiIcon emoji="📚" />} {totalCompleted}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">บทเรียน</p>
             </div>
             <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '100ms' }}>
-                🏆 {totalModulesCompleted}
+                {<EmojiIcon emoji="🏆" />} {totalModulesCompleted}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">Modules</p>
             </div>
             <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-2.5 text-center">
               <p className="text-xl font-bold text-white animate-cartoon-pop" style={{ animationDelay: '200ms' }}>
-                🔥 {(profile as any)?.streak_count || 0}
+                {<EmojiIcon emoji="🔥" />} {(profile as any)?.streak_count || 0}
               </p>
               <p className="text-[10px] text-white/40 font-thai font-bold">วันติดต่อ</p>
             </div>
@@ -394,7 +395,7 @@ const LearnPage = () => {
                     : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
                 )}
               >
-                <span>🏰</span> พื้นฐาน
+                <span>{<EmojiIcon emoji="🏰" />}</span> พื้นฐาน
               </button>
 
               <button
@@ -409,7 +410,7 @@ const LearnPage = () => {
                     : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
                 )}
               >
-                <span>{specialtyPath.icon}</span> {specialtyPath.nameThai}
+                <span><EmojiIcon emoji={specialtyPath.icon} /></span> {specialtyPath.nameThai}
               </button>
 
               <button
@@ -427,7 +428,7 @@ const LearnPage = () => {
               onClick={() => navigate("/placement")}
               className="mt-3 w-full flex items-center gap-3 rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3 text-left hover:bg-amber-500/15 hover:scale-[1.01] active:scale-[0.99] transition-all"
             >
-              <span className="text-2xl animate-float-gentle">🏰</span>
+              <span className="text-2xl animate-float-gentle">{<EmojiIcon emoji="🏰" />}</span>
               <div className="flex-1">
                 <p className="text-sm font-bold text-amber-300 font-thai">ยังไม่ได้ทำแบบทดสอบวัดระดับ</p>
                 <p className="text-xs text-amber-400/60 font-thai">ทำเลยเพื่อเริ่มต้นที่ระดับที่เหมาะสม</p>

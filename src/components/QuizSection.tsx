@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle, ArrowRight, RotateCcw, BookOpen } from "lucide-react";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface QuizSectionProps {
   questions: QuizQuestion[];
@@ -129,7 +130,7 @@ const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: Q
   return (
     <div ref={containerRef} className={`rounded-2xl border-2 border-white/60 bg-white/90 backdrop-blur-sm p-6 shadow-xl shadow-purple-500/10 transition-transform ${shaking ? "animate-[shake_0.5s_ease-in-out]" : ""}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold font-thai">📝 แบบทดสอบ</h3>
+        <h3 className="text-lg font-semibold font-thai">{<EmojiIcon emoji="📝" />} แบบทดสอบ</h3>
         <span className="text-sm text-muted-foreground">
           {currentQ + 1}/{questions.length}
         </span>

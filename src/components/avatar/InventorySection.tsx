@@ -1,6 +1,7 @@
 import { AvatarItem, EquippedItems, ItemCategory } from "@/types/avatar";
 import { getItemById, avatarItems } from "@/data/avatarItems";
 import ItemCard from "./ItemCard";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface InventorySectionProps {
   inventory: string[];
@@ -48,9 +49,9 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
   if (allOwned.length === 0) {
     return (
       <div className="text-center py-16 font-thai">
-        <div className="text-7xl mb-4 animate-bounce">🛍️</div>
+        <div className="text-7xl mb-4 animate-bounce">{<EmojiIcon emoji="🛍" />}️</div>
         <p className="text-lg font-black text-gray-500">ยังไม่มีไอเทม</p>
-        <p className="text-sm mt-2 text-gray-400">ไปซื้อที่ร้านค้าได้เลย! 🏪</p>
+        <p className="text-sm mt-2 text-gray-400">ไปซื้อที่ร้านค้าได้เลย! {<EmojiIcon emoji="🏪" />}</p>
       </div>
     );
   }
@@ -60,13 +61,13 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
       {/* Stats bar */}
       <div className="flex items-center justify-center gap-3 py-2">
         <div className="flex items-center gap-1.5 bg-white/80 rounded-full px-3 py-1.5 shadow-md">
-          <span className="text-sm">📦</span>
+          <span className="text-sm">{<EmojiIcon emoji="📦" />}</span>
           <span className="text-xs font-black font-thai text-gray-600">
             {allOwned.length} ไอเทม
           </span>
         </div>
         <div className="flex items-center gap-1.5 bg-white/80 rounded-full px-3 py-1.5 shadow-md">
-          <span className="text-sm">🏷️</span>
+          <span className="text-sm">{<EmojiIcon emoji="🏷" />}️</span>
           <span className="text-xs font-black font-thai text-gray-600">
             {Object.keys(grouped).length} หมวด
           </span>
@@ -84,7 +85,7 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
             {/* Category header */}
             <div className="flex items-center gap-2 mb-3">
               <div className={`flex items-center gap-1.5 bg-gradient-to-r ${config?.color || "from-gray-400 to-gray-500"} text-white rounded-full px-3 py-1 shadow-md`}>
-                <span className="text-sm">{config?.icon}</span>
+                <span className="text-sm"><EmojiIcon emoji={config?.icon} /></span>
                 <span className="text-[11px] font-black font-thai">{config?.label || category}</span>
               </div>
               <div className="flex-1 h-0.5 rounded-full bg-gradient-to-r from-gray-200 to-transparent" />

@@ -1,3 +1,4 @@
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 interface CoinDisplayProps {
   coins: number;
   size?: "sm" | "md" | "lg";
@@ -24,7 +25,7 @@ const CoinDisplay = ({ coins, size = "md" }: CoinDisplayProps) => {
         border-2 border-yellow-300/50
         animate-coin-glow`}
     >
-      <span className={`${iconSize[size]} animate-coin-spin`}>🪙</span>
+      <span className={`${iconSize[size]} animate-coin-spin`}>{<EmojiIcon emoji="🪙" />}</span>
       <span className="drop-shadow-md tracking-wide">{coins.toLocaleString()}</span>
     </div>
   );
