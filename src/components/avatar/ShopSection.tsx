@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ItemCategory, AvatarItem, EquippedItems } from "@/types/avatar";
 import { getItemsByCategory, categoryLabels } from "@/data/avatarItems";
 import ItemCard from "./ItemCard";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface ShopSectionProps {
   coins: number;
@@ -96,7 +97,7 @@ const ShopSection = ({ coins, inventory, equipped, onBuy, onEquip, onUnequip }: 
 
       {items.length === 0 && (
         <div className="text-center py-12 font-thai">
-          <div className="text-6xl mb-3 animate-bounce">🤷</div>
+          <div className="text-6xl mb-3 animate-bounce">{<EmojiIcon emoji="🤷" />}</div>
           <p className="text-sm text-gray-400 font-bold">ไม่มีไอเทมในหมวดนี้</p>
         </div>
       )}

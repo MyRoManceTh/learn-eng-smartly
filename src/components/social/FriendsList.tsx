@@ -15,6 +15,7 @@ import { DEFAULT_EQUIPPED, EquippedItems } from "@/types/avatar";
 import GiftModal from "./GiftModal";
 import ChallengeModal from "./ChallengeModal";
 import DisplayNameModal from "@/components/DisplayNameModal";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 function parseEquipped(raw: any): EquippedItems {
   if (!raw || typeof raw !== "object") return DEFAULT_EQUIPPED;
@@ -114,7 +115,7 @@ export default function FriendsList() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">👥 เพื่อน</CardTitle>
+            <CardTitle className="text-lg">{<EmojiIcon emoji="👥" />} เพื่อน</CardTitle>
             {friends.length > 0 && (
               <Button
                 variant="ghost"
@@ -122,7 +123,7 @@ export default function FriendsList() {
                 className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50"
                 onClick={() => navigate("/friend-ranking")}
               >
-                🏆 อันดับวันนี้
+                {<EmojiIcon emoji="🏆" />} อันดับวันนี้
               </Button>
             )}
           </div>
@@ -157,7 +158,7 @@ export default function FriendsList() {
                   onClick={handleCopyCode}
                   className="ml-auto h-7 px-2 text-xs"
                 >
-                  📋 คัดลอก
+                  {<EmojiIcon emoji="📋" />} คัดลอก
                 </Button>
               </div>
             </div>
@@ -277,7 +278,7 @@ export default function FriendsList() {
             </div>
           ) : friends.length === 0 ? (
             <div className="py-6 text-center">
-              <p className="text-3xl mb-2">🤝</p>
+              <p className="text-3xl mb-2">{<EmojiIcon emoji="🤝" />}</p>
               <p className="text-sm text-muted-foreground">
                 ยังไม่มีเพื่อน ลองเพิ่มเพื่อนด้วยรหัสด้านบน
               </p>
@@ -331,7 +332,7 @@ export default function FriendsList() {
                       <div className="flex items-center gap-0.5 shrink-0" title={`ไฟ ${friend.energy}/5`}>
                         {Array.from({ length: 5 }).map((_, i) => (
                           <span key={i} className={`text-xs ${i < friend.energy ? "opacity-100" : "opacity-20"}`}>
-                            ⚡
+                            {<EmojiIcon emoji="⚡" />}
                           </span>
                         ))}
                       </div>
@@ -382,7 +383,7 @@ export default function FriendsList() {
                           })
                         }
                       >
-                        🎁 ของขวัญ
+                        {<EmojiIcon emoji="🎁" />} ของขวัญ
                       </Button>
                       <Button
                         variant="ghost"
@@ -395,7 +396,7 @@ export default function FriendsList() {
                           })
                         }
                       >
-                        ⚔️ ท้าดวล
+                        {<EmojiIcon emoji="⚔" />}️ ท้าดวล
                       </Button>
                       {/* Remove friend */}
                       {isConfirmingRemove ? (

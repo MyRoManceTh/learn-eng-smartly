@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { EnergyState } from "@/types/dopamine";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   energy: EnergyState;
@@ -60,7 +61,7 @@ const EnergyDisplay = ({ energy }: Props) => {
           filled ? "opacity-100" : "opacity-25 grayscale"
         )}
       >
-        ⚡
+        {<EmojiIcon emoji="⚡" />}
       </span>
     );
   }

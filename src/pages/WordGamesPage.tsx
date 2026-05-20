@@ -9,6 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 type GameMode = "matching" | "fillblank" | "speedmatch";
 
@@ -279,7 +280,7 @@ const WordGamesPage = () => {
               <Button variant="ghost" size="sm" onClick={() => { setSelectedSet(null); setGameMode(null); }}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <span className="font-bold font-thai">🎯 จับคู่คำศัพท์</span>
+              <span className="font-bold font-thai">{<EmojiIcon emoji="🎯" />} จับคู่คำศัพท์</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
               <span className="font-thai text-muted-foreground">ครั้งที่ {moves}</span>
@@ -293,7 +294,7 @@ const WordGamesPage = () => {
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto shadow-lg">
                 <Trophy className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-xl font-bold font-thai">จับคู่สำเร็จ! 🎉</h2>
+              <h2 className="text-xl font-bold font-thai">จับคู่สำเร็จ! {<EmojiIcon emoji="🎉" />}</h2>
               <p className="text-muted-foreground font-thai">ใช้ {moves} ครั้ง จับคู่ {totalPairs} คู่</p>
               <div className="flex gap-2 justify-center">
                 <Button onClick={() => startMatching(selectedSet)} variant="outline" className="font-thai">
@@ -326,7 +327,7 @@ const WordGamesPage = () => {
                         {card.text}
                       </span>
                     ) : (
-                      <span className="text-2xl">❓</span>
+                      <span className="text-2xl">{<EmojiIcon emoji="❓" />}</span>
                     )}
                   </button>
                 );
@@ -349,7 +350,7 @@ const WordGamesPage = () => {
           <div className="w-full max-w-md text-center space-y-4 animate-in fade-in">
             <div className="rounded-3xl border border-white/50 bg-white/90 backdrop-blur-xl p-8 space-y-4 shadow-2xl">
               <Trophy className="w-16 h-16 text-amber-500 mx-auto" />
-              <h2 className="text-xl font-bold font-thai">เก่งมาก! 🎉</h2>
+              <h2 className="text-xl font-bold font-thai">เก่งมาก! {<EmojiIcon emoji="🎉" />}</h2>
               <p className="text-3xl font-bold text-purple-600">{fbScore}/{questions.length}</p>
               <p className="text-muted-foreground font-thai text-sm">
                 {fbScore === questions.length ? "สุดยอด! ตอบถูกทุกข้อ" : fbScore >= questions.length / 2 ? "ดีมาก!" : "ลองอีกครั้งนะ"}
@@ -376,7 +377,7 @@ const WordGamesPage = () => {
               <Button variant="ghost" size="sm" onClick={() => { setSelectedSet(null); setGameMode(null); }}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <span className="font-bold font-thai">✏️ เติมคำ</span>
+              <span className="font-bold font-thai">{<EmojiIcon emoji="✏" />}️ เติมคำ</span>
             </div>
             <span className="text-sm text-muted-foreground font-thai">ข้อ {fbIndex + 1}/{questions.length}</span>
           </div>
@@ -451,7 +452,7 @@ const WordGamesPage = () => {
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mx-auto shadow-lg">
                 <Zap className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-xl font-bold font-thai">หมดเวลา! ⚡</h2>
+              <h2 className="text-xl font-bold font-thai">หมดเวลา! {<EmojiIcon emoji="⚡" />}</h2>
               <div className="grid grid-cols-3 gap-3">
                 <div className="rounded-xl bg-gradient-to-b from-purple-50 to-purple-100 p-3">
                   <p className="text-2xl font-bold text-purple-600">{smScore}</p>
@@ -491,7 +492,7 @@ const WordGamesPage = () => {
               <Button variant="ghost" size="sm" onClick={() => { if (smTimerRef.current) clearInterval(smTimerRef.current); setSelectedSet(null); setGameMode(null); }}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <span className="font-bold font-thai">⚡ เร็วแค่ไหน</span>
+              <span className="font-bold font-thai">{<EmojiIcon emoji="⚡" />} เร็วแค่ไหน</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
               {smStreak >= 2 && (
@@ -536,7 +537,7 @@ const WordGamesPage = () => {
                 <h2 className="text-xl font-bold font-thai">พร้อมยัง?</h2>
                 <p className="text-sm text-muted-foreground font-thai mt-2">
                   คำอังกฤษกับคำไทยจะโผล่มา<br/>
-                  กด <span className="text-green-600 font-bold">✅ ตรงกัน</span> หรือ <span className="text-red-600 font-bold">❌ ไม่ตรง</span><br/>
+                  กด <span className="text-green-600 font-bold">{<EmojiIcon emoji="✅" />} ตรงกัน</span> หรือ <span className="text-red-600 font-bold">{<EmojiIcon emoji="❌" />} ไม่ตรง</span><br/>
                   มี 30 วินาที ตอบให้เร็วที่สุด!
                 </p>
               </div>
@@ -544,7 +545,7 @@ const WordGamesPage = () => {
                 onClick={() => setSmStarted(true)}
                 className="font-thai text-lg px-8 py-6 bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl transition-shadow"
               >
-                เริ่มเลย! ⚡
+                เริ่มเลย! {<EmojiIcon emoji="⚡" />}
               </Button>
             </div>
           ) : round ? (
@@ -619,7 +620,7 @@ const WordGamesPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-24">
       <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
-          <h1 className="text-lg font-bold font-thai">🎮 เกมคำศัพท์</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🎮" />} เกมคำศัพท์</h1>
           <p className="text-xs text-muted-foreground font-thai mt-0.5">เลือกหมวดแล้วเริ่มเล่นเลย!</p>
         </div>
       </header>
@@ -627,24 +628,24 @@ const WordGamesPage = () => {
         {/* Game Mode Selector */}
         <div className="grid grid-cols-3 gap-2">
           <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 p-3 text-white shadow-lg">
-            <span className="text-2xl">🎯</span>
+            <span className="text-2xl">{<EmojiIcon emoji="🎯" />}</span>
             <h3 className="font-bold font-thai text-xs mt-1">จับคู่คำ</h3>
             <p className="text-[10px] text-purple-200 font-thai">Matching</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-3 text-white shadow-lg">
-            <span className="text-2xl">✏️</span>
+            <span className="text-2xl">{<EmojiIcon emoji="✏" />}️</span>
             <h3 className="font-bold font-thai text-xs mt-1">เติมคำ</h3>
             <p className="text-[10px] text-pink-200 font-thai">Fill Blank</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 p-3 text-white shadow-lg">
-            <span className="text-2xl">⚡</span>
+            <span className="text-2xl">{<EmojiIcon emoji="⚡" />}</span>
             <h3 className="font-bold font-thai text-xs mt-1">เร็วแค่ไหน</h3>
             <p className="text-[10px] text-orange-200 font-thai">Speed Match</p>
           </div>
         </div>
 
         {/* Game Sets */}
-        <h3 className="text-sm font-bold font-thai text-foreground">🎲 เลือกหมวดคำศัพท์</h3>
+        <h3 className="text-sm font-bold font-thai text-foreground">{<EmojiIcon emoji="🎲" />} เลือกหมวดคำศัพท์</h3>
         {wordGameSets.map((set) => (
           <div key={set.id} className="rounded-2xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
@@ -662,13 +663,13 @@ const WordGamesPage = () => {
             </div>
             <div className="flex gap-2">
               <Button onClick={() => startMatching(set)} variant="outline" className="flex-1 font-thai text-xs h-10 px-2">
-                🎯 จับคู่คำ
+                {<EmojiIcon emoji="🎯" />} จับคู่คำ
               </Button>
               <Button onClick={() => startFillBlank(set)} variant="outline" className="flex-1 font-thai text-xs h-10 px-2">
-                ✏️ เติมคำ
+                {<EmojiIcon emoji="✏" />}️ เติมคำ
               </Button>
               <Button onClick={() => startSpeedMatch(set)} variant="outline" className="flex-1 font-thai text-xs h-10 px-2">
-                ⚡ เร็วแค่ไหน
+                {<EmojiIcon emoji="⚡" />} เร็วแค่ไหน
               </Button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { useFriendLeaderboard } from "@/hooks/useFriendLeaderboard";
 import { evolutionStages } from "@/data/evolutionStages";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const rankColors = [
   "", // 0-indexed placeholder
@@ -27,7 +28,7 @@ export default function WeeklyXPRace() {
     <div className="rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm backdrop-blur-sm">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm">🏃</span>
+          <span className="text-sm">{<EmojiIcon emoji="🏃" />}</span>
           <span className="text-sm font-bold font-thai">Weekly XP Race</span>
         </div>
         <span className="text-[10px] text-muted-foreground font-thai">

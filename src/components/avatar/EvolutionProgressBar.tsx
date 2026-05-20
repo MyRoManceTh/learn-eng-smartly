@@ -1,4 +1,5 @@
 import { getEvolutionProgress } from "@/data/evolutionStages";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   totalExp: number;
@@ -25,7 +26,7 @@ const EvolutionProgressBar = ({ totalExp }: Props) => {
 
         {isMaxStage ? (
           <span className="text-yellow-400 font-bold text-xs animate-pulse">
-            ขั้นสูงสุดแล้ว! 👑
+            ขั้นสูงสุดแล้ว! {<EmojiIcon emoji="👑" />}
           </span>
         ) : (
           <div className="flex items-center gap-1.5">

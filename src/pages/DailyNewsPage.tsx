@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { VocabWord, InterlinearWord, QuizQuestion } from "@/types/lesson";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface NewsArticle {
   id: string;
@@ -168,7 +169,7 @@ const DailyNewsPage = () => {
           {!showQuiz ? (
             <div className="text-center py-2">
               <Button onClick={() => setShowQuiz(true)} className="font-thai w-full max-w-xs bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg">
-                📝 ทดสอบความเข้าใจ (+EXP & เหรียญ)
+                {<EmojiIcon emoji="📝" />} ทดสอบความเข้าใจ (+EXP & เหรียญ)
               </Button>
             </div>
           ) : (
@@ -187,7 +188,7 @@ const DailyNewsPage = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/practice")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
           </Button>
-          <h1 className="text-lg font-bold font-thai">📰 ข่าวง่ายรายวัน</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="📰" />} ข่าวง่ายรายวัน</h1>
         </div>
       </header>
       <main className="px-4 py-5 max-w-3xl mx-auto">

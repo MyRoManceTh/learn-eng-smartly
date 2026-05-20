@@ -24,6 +24,7 @@ import { ArrowLeft, Trophy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDailyMissions } from "@/hooks/useDailyMissions";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const LearningPathPage = () => {
   const { user } = useAuth();
@@ -251,7 +252,7 @@ const LearningPathPage = () => {
                     onClick={() => setShowQuiz(true)}
                     className="font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg"
                   >
-                    📝 ทำแบบทดสอบ
+                    {<EmojiIcon emoji="📝" />} ทำแบบทดสอบ
                   </Button>
                 </div>
               ) : (
@@ -305,7 +306,7 @@ const LearningPathPage = () => {
               fontSize: `${8 + (i % 4) * 4}px`,
             }}
           >
-            ✦
+            {<EmojiIcon emoji="✦" />}
           </span>
         ))}
       </div>
@@ -336,7 +337,7 @@ const LearningPathPage = () => {
           {/* Title */}
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-bold text-white font-thai flex items-center gap-2">
-              <span className="text-2xl animate-sway" style={{ display: 'inline-block' }}>🗺️</span>
+              <span className="text-2xl animate-sway" style={{ display: 'inline-block' }}>{<EmojiIcon emoji="🗺" />}️</span>
               เส้นทางการผจญภัย
             </h1>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
@@ -358,7 +359,7 @@ const LearningPathPage = () => {
               className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-700"
               style={{ left: `${Math.max(progressPercent, 3)}%` }}
             >
-              <span className="text-lg drop-shadow-lg">🚀</span>
+              <span className="text-lg drop-shadow-lg">{<EmojiIcon emoji="🚀" />}</span>
             </div>
           </div>
 
@@ -399,7 +400,7 @@ const LearningPathPage = () => {
                     : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10"
                 )}
               >
-                <span>🏰</span> พื้นฐาน
+                <span>{<EmojiIcon emoji="🏰" />}</span> พื้นฐาน
               </button>
 
               <button
@@ -432,7 +433,7 @@ const LearningPathPage = () => {
               onClick={() => navigate("/placement")}
               className="mt-3 w-full flex items-center gap-3 rounded-2xl border-2 border-amber-500/30 bg-amber-500/10 p-3 text-left hover:bg-amber-500/15 hover:scale-[1.01] active:scale-[0.99] transition-all"
             >
-              <span className="text-2xl animate-float-gentle">🏰</span>
+              <span className="text-2xl animate-float-gentle">{<EmojiIcon emoji="🏰" />}</span>
               <div className="flex-1">
                 <p className="text-sm font-bold text-amber-300 font-thai">ยังไม่ได้ทำแบบทดสอบวัดระดับ</p>
                 <p className="text-xs text-amber-400/60 font-thai">ทำเลยเพื่อเริ่มต้นที่ระดับที่เหมาะสม</p>

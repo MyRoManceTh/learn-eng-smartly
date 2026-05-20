@@ -3,6 +3,7 @@ import confetti from "canvas-confetti";
 import { EvolutionStage } from "@/types/dopamine";
 import { getCefrLabel } from "@/data/evolutionStages";
 import { Button } from "@/components/ui/button";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   open: boolean;
@@ -146,7 +147,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
           {/* Header with staggered entrance */}
           <div style={{ animation: "fade-slide-up 0.5s ease-out 0.2s both" }}>
             <div className="text-4xl mb-1" style={{ animation: "icon-bounce 1s ease-out 0.3s both" }}>
-              🎉
+              {<EmojiIcon emoji="🎉" />}
             </div>
             <h2 className="text-2xl font-bold text-yellow-300 drop-shadow-lg font-thai">
               เลเวลอัพ!
@@ -259,7 +260,7 @@ const EvolutionCelebration = ({ open, previousStage, newStage, onClose }: Props)
                 boxShadow: `0 4px 24px ${newStage.color}50`,
               }}
             >
-              สุดยอด! 🎊
+              สุดยอด! {<EmojiIcon emoji="🎊" />}
             </Button>
           </div>
         </div>

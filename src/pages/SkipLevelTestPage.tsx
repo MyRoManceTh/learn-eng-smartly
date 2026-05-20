@@ -10,6 +10,7 @@ import { levelLabels } from "@/data/skillTreeData";
 import { placementQuestions } from "@/data/placementTestQuestions";
 import { cn } from "@/lib/utils";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const TOTAL_QUESTIONS = 20;
 const PASS_THRESHOLD = 0.7;
@@ -80,7 +81,7 @@ export default function SkipLevelTestPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 to-background p-4">
         <div className="text-center space-y-4">
-          <span className="text-5xl">📝</span>
+          <span className="text-5xl">{<EmojiIcon emoji="📝" />}</span>
           <p className="font-thai text-muted-foreground">ไม่มีข้อสอบสำหรับระดับนี้</p>
           <Button onClick={() => navigate(-1)}>กลับ</Button>
         </div>

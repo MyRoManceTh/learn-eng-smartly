@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { getItemById } from "@/data/avatarItems";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   open: boolean;
@@ -93,7 +94,7 @@ export default function GiftModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-[340px] sm:max-w-sm p-4 gap-3">
         <DialogHeader className="space-y-1">
-          <DialogTitle className="text-base">🎁 ส่งของขวัญ</DialogTitle>
+          <DialogTitle className="text-base">{<EmojiIcon emoji="🎁" />} ส่งของขวัญ</DialogTitle>
           <DialogDescription className="text-xs">
             ส่งของขวัญให้ <span className="font-semibold">{friendName}</span>
           </DialogDescription>
@@ -113,7 +114,7 @@ export default function GiftModal({
                   : "border-muted bg-muted/30 text-muted-foreground hover:bg-muted/50"
               }`}
             >
-              🪙 เหรียญ
+              {<EmojiIcon emoji="🪙" />} เหรียญ
             </button>
             <button
               onClick={() => {
@@ -126,7 +127,7 @@ export default function GiftModal({
                   : "border-muted bg-muted/30 text-muted-foreground hover:bg-muted/50"
               }`}
             >
-              📦 ไอเทม
+              {<EmojiIcon emoji="📦" />} ไอเทม
             </button>
           </div>
 

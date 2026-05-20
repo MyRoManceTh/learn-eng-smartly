@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Volume2, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpeech } from "@/hooks/useSpeech";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const diffLabel: Record<number, string> = { 1: "ง่าย", 2: "ปานกลาง", 3: "ยาก" };
 const diffColor: Record<number, string> = { 1: "bg-emerald-100 text-emerald-700", 2: "bg-amber-100 text-amber-700", 3: "bg-red-100 text-red-700" };
@@ -82,7 +83,7 @@ const PronunciationPage = () => {
           </div>
           {/* Tips section */}
           <div className="mt-6 rounded-2xl border border-purple-100 bg-purple-50/50 p-4">
-            <h3 className="font-bold font-thai text-sm text-purple-700 mb-2">💡 เคล็ดลับ</h3>
+            <h3 className="font-bold font-thai text-sm text-purple-700 mb-2">{<EmojiIcon emoji="💡" />} เคล็ดลับ</h3>
             <ul className="text-xs text-purple-600 font-thai space-y-1">
               <li>• กดที่คำเพื่อฟังเสียง แล้วลองพูดตาม</li>
               <li>• สังเกตความแตกต่างระหว่างเสียงที่คล้ายกัน</li>
@@ -102,7 +103,7 @@ const PronunciationPage = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/practice")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
           </Button>
-          <h1 className="text-lg font-bold font-thai">🗣️ ฝึกออกเสียง</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🗣" />}️ ฝึกออกเสียง</h1>
         </div>
       </header>
       <main className="px-4 py-5 max-w-3xl mx-auto">

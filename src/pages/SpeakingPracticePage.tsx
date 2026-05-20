@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { playCorrect, playWrong } from "@/utils/sounds";
 import { useAllLessons } from "@/hooks/useAllLessons";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PracticeWord {
   english: string;
@@ -116,7 +117,7 @@ export default function SpeakingPracticePage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-rose-50 to-pink-50 flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-sm">
-          <span className="text-5xl">🎙️</span>
+          <span className="text-5xl">{<EmojiIcon emoji="🎙" />}️</span>
           <h2 className="text-lg font-bold font-thai">เบราว์เซอร์ไม่รองรับ</h2>
           <p className="text-sm text-muted-foreground font-thai">
             ฟีเจอร์ฝึกพูดต้องใช้ Chrome หรือ Edge
@@ -139,7 +140,7 @@ export default function SpeakingPracticePage() {
           <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-sm font-bold font-thai">🎙️ ฝึกพูด</h1>
+          <h1 className="text-sm font-bold font-thai">{<EmojiIcon emoji="🎙" />}️ ฝึกพูด</h1>
           <span className="text-xs text-muted-foreground font-thai">
             เฉลี่ย {avgScore}%
           </span>

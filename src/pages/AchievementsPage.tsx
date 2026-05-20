@@ -6,6 +6,7 @@ import { useFriends } from "@/hooks/useFriends";
 import { achievements, getUnlockedAchievements, categoryLabels, type UserStats } from "@/data/achievements";
 import { ChevronLeft, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export default function AchievementsPage() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export default function AchievementsPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex-1">
-              <h1 className="text-lg font-bold font-thai">🏅 เหรียญรางวัล</h1>
+              <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🏅" />} เหรียญรางวัล</h1>
               <p className="text-xs text-amber-100 font-thai">
                 ปลดล็อกแล้ว {unlocked.length}/{achievements.length}
               </p>

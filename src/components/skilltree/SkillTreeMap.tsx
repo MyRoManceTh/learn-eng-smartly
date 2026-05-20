@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { SkillTreeModule, levelLabels } from "@/data/skillTreeData";
 import SkillTreeNode from "./SkillTreeNode";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface SkillTreeMapProps {
   modules: SkillTreeModule[];
@@ -421,7 +422,7 @@ const SkillTreeMap = ({
                   {/* Sparkle effects when unlocked */}
                   {isCoreLevel1Done && (
                     <>
-                      <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">✨</span>
+                      <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">{<EmojiIcon emoji="✨" />}</span>
                       <span className="absolute -bottom-1 -left-2 text-sm animate-sparkle-twinkle" style={{ animationDelay: '700ms' }}>⭐</span>
                     </>
                   )}
@@ -465,7 +466,7 @@ const SkillTreeMap = ({
                       : `ฝึกพูด ${speakingSessions}/${SPEAKING_GATE_REQUIRED} ครั้ง`}
                   </p>
                   {speakingGatePassed && (
-                    <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">✨</span>
+                    <span className="absolute -top-2 -right-2 text-lg animate-sparkle-twinkle">{<EmojiIcon emoji="✨" />}</span>
                   )}
                 </div>
                 <div className="w-0.5 h-6 bg-gradient-to-b from-transparent to-white/10 rounded-full" />
@@ -477,7 +478,7 @@ const SkillTreeMap = ({
               <div className="flex items-center justify-center gap-2 py-6">
                 <div className="w-16 h-px bg-gradient-to-r from-transparent to-white/10" />
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                  <span className="text-base animate-float" style={{ animationDelay: '0ms' }}>🏁</span>
+                  <span className="text-base animate-float" style={{ animationDelay: '0ms' }}>{<EmojiIcon emoji="🏁" />}</span>
                   <span className="text-[10px] text-white/40 font-thai font-bold">
                     {allCompleted ? "สำเร็จ!" : "ด่านต่อไป"}
                   </span>
@@ -492,7 +493,7 @@ const SkillTreeMap = ({
 
       {/* End-of-path treasure */}
       <div className="flex flex-col items-center gap-2 pt-8 pb-4">
-        <div className="text-4xl animate-float-gentle">🏆</div>
+        <div className="text-4xl animate-float-gentle">{<EmojiIcon emoji="🏆" />}</div>
         <p className="text-xs text-white/30 font-thai font-bold">จุดหมายปลายทาง</p>
       </div>
     </div>

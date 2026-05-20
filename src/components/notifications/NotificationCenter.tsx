@@ -3,6 +3,7 @@ import { Bell, Users, Gift } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   pendingRequests: number;
@@ -31,7 +32,7 @@ export default function NotificationCenter({
       <PopoverContent align="end" className="w-64 p-0">
         {/* Header */}
         <div className="border-b px-4 py-3">
-          <h4 className="text-sm font-semibold">📬 แจ้งเตือน</h4>
+          <h4 className="text-sm font-semibold">{<EmojiIcon emoji="📬" />} แจ้งเตือน</h4>
         </div>
 
         {/* Content */}

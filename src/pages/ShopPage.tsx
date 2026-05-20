@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 type Tab = "power-up" | "cosmetic" | "special";
 
@@ -71,11 +72,11 @@ const ShopPage = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-bold font-thai">
-              🛒 ร้านค้า
+              {<EmojiIcon emoji="🛒" />} ร้านค้า
             </h1>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-100 to-yellow-100 rounded-full px-3 py-1.5 shadow-sm border border-amber-200">
-                <span className="text-lg">🪙</span>
+                <span className="text-lg">{<EmojiIcon emoji="🪙" />}</span>
                 <span className="font-bold text-amber-700">{coins.toLocaleString()}</span>
               </div>
             </div>
@@ -153,7 +154,7 @@ const ShopPage = () => {
                         : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-md"
                     )}
                   >
-                    <span className="mr-1">🪙</span>
+                    <span className="mr-1">{<EmojiIcon emoji="🪙" />}</span>
                     {buying === item.id ? "กำลังซื้อ..." : `${item.price}`}
                   </Button>
                 )}
@@ -170,26 +171,26 @@ const ShopPage = () => {
 
         {/* How to earn coins */}
         <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50/50 p-4">
-          <h3 className="font-bold font-thai text-sm text-amber-800 mb-3">💰 วิธีหาเหรียญ</h3>
+          <h3 className="font-bold font-thai text-sm text-amber-800 mb-3">{<EmojiIcon emoji="💰" />} วิธีหาเหรียญ</h3>
           <div className="space-y-2 text-xs font-thai text-amber-700">
             <div className="flex items-center gap-2">
-              <span className="text-base">📖</span>
+              <span className="text-base">{<EmojiIcon emoji="📖" />}</span>
               <span>เรียนบทเรียน +10 เหรียญ</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-base">📝</span>
+              <span className="text-base">{<EmojiIcon emoji="📝" />}</span>
               <span>Quiz ได้คะแนนเต็ม +20 เหรียญ</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-base">🔥</span>
+              <span className="text-base">{<EmojiIcon emoji="🔥" />}</span>
               <span>Streak 7 วัน +50 เหรียญ โบนัส</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-base">🎮</span>
+              <span className="text-base">{<EmojiIcon emoji="🎮" />}</span>
               <span>เล่นเกมชนะ +5-10 เหรียญ</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-base">🎁</span>
+              <span className="text-base">{<EmojiIcon emoji="🎁" />}</span>
               <span>เข้าแอปทุกวัน รับเหรียญฟรี</span>
             </div>
           </div>

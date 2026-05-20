@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const activities = [
   { path: "/path", icon: "🗺️", title: "เส้นทางการเรียน", subtitle: "เรียนตามลำดับ ปลดล็อคทีละด่าน", color: "from-emerald-400 to-green-500", badge: "Pre-A1 – B2" },
@@ -18,7 +19,7 @@ const PracticePage = () => {
       <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3">
           <h1 className="text-lg font-bold font-thai">
-            📚 เรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">รู้</span>
+            {<EmojiIcon emoji="📚" />} เรียน<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">รู้</span>
           </h1>
           <p className="text-xs text-muted-foreground font-thai mt-0.5">เลือกกิจกรรมที่อยากฝึกได้เลย</p>
         </div>

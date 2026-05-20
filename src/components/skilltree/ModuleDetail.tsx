@@ -2,6 +2,7 @@ import { SkillTreeModule, getLessonsByModule, SkillTreeLesson } from "@/data/ski
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2, Lock, Play, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface ModuleDetailProps {
   module: SkillTreeModule;
@@ -107,7 +108,7 @@ const ModuleDetail = ({
               </p>
               {module.reward && (
                 <p className="text-xs text-amber-400 font-thai mt-1 flex items-center gap-1">
-                  <span>🎁</span> รางวัล: {module.reward.label}
+                  <span>{<EmojiIcon emoji="🎁" />}</span> รางวัล: {module.reward.label}
                 </p>
               )}
             </div>
@@ -246,16 +247,16 @@ const ModuleDetail = ({
             </div>
 
             <div className="relative z-10">
-              <div className="text-5xl mb-3 animate-hop">🏆</div>
+              <div className="text-5xl mb-3 animate-hop">{<EmojiIcon emoji="🏆" />}</div>
               <p className="text-amber-300 font-bold font-thai text-xl">
-                🎉 จบ Module แล้ว! 🎉
+                {<EmojiIcon emoji="🎉" />} จบ Module แล้ว! {<EmojiIcon emoji="🎉" />}
               </p>
               <p className="text-sm text-amber-400/60 font-thai mt-1">
                 {module.nameThai}
               </p>
               {module.reward && (
                 <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30">
-                  <span className="text-lg">🎁</span>
+                  <span className="text-lg">{<EmojiIcon emoji="🎁" />}</span>
                   <span className="text-sm text-amber-300 font-bold font-thai">
                     ได้รับ: {module.reward.label}
                   </span>

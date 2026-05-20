@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   streak: number;
@@ -28,7 +29,7 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
   if (streak <= 2) {
     return (
       <div className="flex items-center gap-0.5">
-        <span className={isSm ? "text-base" : "text-lg"}>🔥</span>
+        <span className={isSm ? "text-base" : "text-lg"}>{<EmojiIcon emoji="🔥" />}</span>
         <span
           className={cn(
             "font-bold text-orange-500",
@@ -51,7 +52,7 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
             isSm ? "text-lg" : "text-xl"
           )}
         >
-          🔥
+          {<EmojiIcon emoji="🔥" />}
         </span>
         <span
           className={cn(
@@ -84,7 +85,7 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
             )}
             style={{ animationDuration: "1s" }}
           >
-            🔥
+            {<EmojiIcon emoji="🔥" />}
           </span>
           <span
             className={cn(
@@ -93,7 +94,7 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
             )}
             style={{ animationDuration: "1.2s", animationDelay: "0.1s" }}
           >
-            🔥
+            {<EmojiIcon emoji="🔥" />}
           </span>
         </div>
         <span
@@ -135,7 +136,7 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
           )}
           style={{ animationDuration: "0.8s" }}
         >
-          🔥
+          {<EmojiIcon emoji="🔥" />}
         </span>
         <span
           className={cn(
@@ -144,7 +145,7 @@ const StreakFireDisplay = ({ streak, size = "md" }: Props) => {
           )}
           style={{ animationDuration: "1s", animationDelay: "0.15s" }}
         >
-          🔥
+          {<EmojiIcon emoji="🔥" />}
         </span>
       </div>
       <span

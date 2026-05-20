@@ -13,6 +13,7 @@ import { useChallenges } from "@/hooks/useChallenges";
 import { useProfile } from "@/hooks/useProfile";
 import { trackEvent } from "@/utils/analytics";
 import ChallengeResult from "@/components/social/ChallengeResult";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface QuizLocationState {
   questions: QuizQuestion[];
@@ -246,7 +247,7 @@ const QuizPage = () => {
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto shadow-lg shadow-purple-500/30">
               <Trophy className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-2xl font-bold font-thai">🎉 ทำแบบทดสอบเสร็จแล้ว!</h2>
+            <h2 className="text-2xl font-bold font-thai">{<EmojiIcon emoji="🎉" />} ทำแบบทดสอบเสร็จแล้ว!</h2>
             <p className="text-4xl font-bold text-primary">
               {score}/{questions.length}
             </p>
@@ -265,7 +266,7 @@ const QuizPage = () => {
                 <span className="font-bold text-lg text-purple-700">+{earnedExp} EXP</span>
               </div>
               <div className="flex items-center gap-2 bg-gradient-to-r from-amber-100 to-yellow-100 rounded-xl py-3 px-4 shadow-sm">
-                <span className="text-xl">🪙</span>
+                <span className="text-xl">{<EmojiIcon emoji="🪙" />}</span>
                 <span className="font-bold text-lg text-amber-700">+{earnedCoins}</span>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { Story, StoryTheme, storyCollection, themeMeta } from "@/data/storyColle
 import { useStoryProgress } from "@/hooks/useStoryProgress";
 import StoryCard from "./StoryCard";
 import { Sparkles, BookMarked } from "lucide-react";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   onOpen: (story: Story) => void;
@@ -32,7 +33,7 @@ export const StoryCollection = ({ onOpen }: Props) => {
     <div className="space-y-4">
       {/* Collection header */}
       <div className="rounded-3xl p-5 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 text-white shadow-xl shadow-purple-500/30 relative overflow-hidden">
-        <div className="absolute -right-6 -top-6 text-9xl opacity-10 rotate-12">📖</div>
+        <div className="absolute -right-6 -top-6 text-9xl opacity-10 rotate-12">{<EmojiIcon emoji="📖" />}</div>
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
             <BookMarked className="w-5 h-5" />
@@ -66,7 +67,7 @@ export const StoryCollection = ({ onOpen }: Props) => {
               : "bg-white text-foreground/70 border-white/80 hover:border-foreground/30"
           }`}
         >
-          ✨ ทั้งหมด
+          {<EmojiIcon emoji="✨" />} ทั้งหมด
         </button>
         {themeOrder.map((t) => {
           const meta = themeMeta[t];

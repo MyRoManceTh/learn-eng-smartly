@@ -8,6 +8,7 @@ import { useAllLessons } from "@/hooks/useAllLessons";
 import { SRSCard, createCard, reviewCard, getDueCards, loadCards, saveCards } from "@/data/flashcardSRS";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 export default function FlashcardPage() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ export default function FlashcardPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-violet-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-sm">
-          <span className="text-6xl">🎉</span>
+          <span className="text-6xl">{<EmojiIcon emoji="🎉" />}</span>
           <h2 className="text-xl font-bold font-thai">ทบทวนครบแล้ว!</h2>
           <div className="flex justify-center gap-6">
             <div className="text-center">
@@ -128,7 +129,7 @@ export default function FlashcardPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-violet-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="text-center space-y-4 max-w-sm">
-          <span className="text-6xl">✅</span>
+          <span className="text-6xl">{<EmojiIcon emoji="✅" />}</span>
           <h2 className="text-xl font-bold font-thai">ไม่มีคำต้องทบทวนวันนี้</h2>
           <p className="text-sm text-muted-foreground font-thai">
             คุณมีทั้งหมด {cards.length} คำในคลัง
@@ -226,13 +227,13 @@ export default function FlashcardPage() {
                 onClick={() => handleAnswer(false)}
                 className="flex-1 h-14 text-base bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 text-white border-0 rounded-2xl"
               >
-                😣 ไม่รู้
+                {<EmojiIcon emoji="😣" />} ไม่รู้
               </Button>
               <Button
                 onClick={() => handleAnswer(true)}
                 className="flex-1 h-14 text-base bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border-0 rounded-2xl"
               >
-                😊 รู้แล้ว
+                {<EmojiIcon emoji="😊" />} รู้แล้ว
               </Button>
             </div>
           )}

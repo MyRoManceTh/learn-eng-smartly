@@ -15,6 +15,7 @@ import FriendsList from "@/components/social/FriendsList";
 import { trackEvent } from "@/utils/analytics";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Profile {
   display_name: string | null;
@@ -346,14 +347,14 @@ const ProfilePage = () => {
               className="font-thai h-14 text-sm"
               onClick={() => navigate("/season-pass")}
             >
-              🏆 Season Pass
+              {<EmojiIcon emoji="🏆" />} Season Pass
             </Button>
             <Button
               variant="outline"
               className="font-thai h-14 text-sm"
               onClick={() => navigate("/parent-report")}
             >
-              📊 รายงานผู้ปกครอง
+              {<EmojiIcon emoji="📊" />} รายงานผู้ปกครอง
             </Button>
             <Button
               variant="outline"

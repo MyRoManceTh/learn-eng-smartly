@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { evolutionStages } from "@/data/evolutionStages";
 import { ChevronLeft, Trophy, Flame, Zap, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface DailyScore {
   user_id: string;
@@ -240,7 +241,7 @@ export default function FriendLeaderboardPage() {
           </div>
         ) : scores.length === 0 ? (
           <div className="py-12 text-center">
-            <p className="text-4xl mb-3">🤝</p>
+            <p className="text-4xl mb-3">{<EmojiIcon emoji="🤝" />}</p>
             <p className="text-sm text-muted-foreground font-thai">
               ยังไม่มีเพื่อน เพิ่มเพื่อนก่อนนะ!
             </p>
@@ -254,7 +255,7 @@ export default function FriendLeaderboardPage() {
                 <div className="flex flex-col items-center w-24">
                   <span className="text-2xl mb-1">{getEvolutionIcon(scores[1].evolution_stage)}</span>
                   <div className="bg-gradient-to-b from-gray-300 to-gray-400 rounded-t-xl w-full h-16 flex items-center justify-center">
-                    <span className="text-xl">🥈</span>
+                    <span className="text-xl">{<EmojiIcon emoji="🥈" />}</span>
                   </div>
                   <p className="text-[10px] font-bold font-thai truncate w-full text-center mt-1">
                     {scores[1].display_name}
@@ -265,7 +266,7 @@ export default function FriendLeaderboardPage() {
                 <div className="flex flex-col items-center w-28">
                   <span className="text-3xl mb-1">{getEvolutionIcon(scores[0].evolution_stage)}</span>
                   <div className="bg-gradient-to-b from-yellow-400 to-amber-500 rounded-t-xl w-full h-24 flex items-center justify-center">
-                    <span className="text-2xl">🥇</span>
+                    <span className="text-2xl">{<EmojiIcon emoji="🥇" />}</span>
                   </div>
                   <p className="text-xs font-bold font-thai truncate w-full text-center mt-1">
                     {scores[0].display_name}
@@ -276,7 +277,7 @@ export default function FriendLeaderboardPage() {
                 <div className="flex flex-col items-center w-24">
                   <span className="text-2xl mb-1">{getEvolutionIcon(scores[2].evolution_stage)}</span>
                   <div className="bg-gradient-to-b from-orange-400 to-orange-500 rounded-t-xl w-full h-12 flex items-center justify-center">
-                    <span className="text-xl">🥉</span>
+                    <span className="text-xl">{<EmojiIcon emoji="🥉" />}</span>
                   </div>
                   <p className="text-[10px] font-bold font-thai truncate w-full text-center mt-1">
                     {scores[2].display_name}

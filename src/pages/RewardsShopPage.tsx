@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import CoinDisplay from "@/components/avatar/CoinDisplay";
 import confetti from "canvas-confetti";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PowerUp {
   id: string;
@@ -150,7 +151,7 @@ export default function RewardsShopPage() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-lg font-bold font-thai">🛒 ร้านค้า Power-Up</h1>
+                <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🛒" />} ร้านค้า Power-Up</h1>
                 <p className="text-xs text-emerald-100 font-thai">ใช้เหรียญซื้อพลังพิเศษ</p>
               </div>
             </div>
@@ -206,7 +207,7 @@ export default function RewardsShopPage() {
         {/* Earn more coins hint */}
         <div className="text-center py-4">
           <p className="text-xs text-muted-foreground font-thai">
-            💡 ได้เหรียญจาก: เรียนบทเรียน, ทำภารกิจ, Daily Challenge
+            {<EmojiIcon emoji="💡" />} ได้เหรียญจาก: เรียนบทเรียน, ทำภารกิจ, Daily Challenge
           </p>
         </div>
       </div>

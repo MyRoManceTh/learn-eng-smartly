@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { VocabWord } from "@/types/lesson";
 import { SpeakButton } from "@/hooks/useSpeech";
 import { useHighlightWord, normalizeWord } from "@/contexts/HighlightWordContext";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface VocabTableProps {
   vocabulary: VocabWord[];
@@ -21,7 +22,7 @@ const VocabTable = ({ vocabulary, highlightWord: highlightOverride }: VocabTable
 
   return (
     <div className="rounded-2xl border border-indigo-100/50 bg-white/90 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-indigo-500/5">
-      <h3 className="text-base sm:text-lg font-semibold mb-3 text-foreground font-thai">📖 คำศัพท์</h3>
+      <h3 className="text-base sm:text-lg font-semibold mb-3 text-foreground font-thai">{<EmojiIcon emoji="📖" />} คำศัพท์</h3>
 
       {/* Card layout for mobile, table for desktop */}
       <div className="block sm:hidden space-y-2">

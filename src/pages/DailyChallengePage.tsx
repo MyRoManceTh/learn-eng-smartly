@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { trackEvent } from "@/utils/analytics";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 // ── Seeded random (same as missionTemplates) ────────────────────
 function dateToSeed(date: string): number {
@@ -257,7 +258,7 @@ export default function DailyChallengePage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-lg font-bold font-thai">⚔️ Daily Challenge</h1>
+              <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="⚔" />}️ Daily Challenge</h1>
               <p className="text-xs text-amber-100 font-thai">{today}</p>
             </div>
           </div>
@@ -265,7 +266,7 @@ export default function DailyChallengePage() {
 
         <div className="max-w-md mx-auto px-4 py-6 space-y-4">
           <div className="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-500 p-6 text-white text-center shadow-xl">
-            <span className="text-5xl">⚔️</span>
+            <span className="text-5xl">{<EmojiIcon emoji="⚔" />}️</span>
             <h2 className="text-xl font-bold mt-3 font-thai">Vocab Speed Challenge</h2>
             <p className="text-sm text-amber-100 mt-1 font-thai">
               ตอบคำศัพท์ {challenge.items.length} คำ ภายใน {challenge.timeLimit} วินาที
@@ -280,13 +281,13 @@ export default function DailyChallengePage() {
             onClick={() => { setPhase("playing"); setTimeLeft(challenge.timeLimit); }}
             className="w-full h-14 text-lg font-bold font-thai bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl"
           >
-            เริ่ม Challenge! ⚔️
+            เริ่ม Challenge! {<EmojiIcon emoji="⚔" />}️
           </Button>
 
           {/* Mini leaderboard */}
           {leaderboard.length > 0 && (
             <div className="rounded-2xl bg-white/80 border border-white/60 p-4 shadow-sm">
-              <h3 className="text-sm font-bold font-thai mb-2">🏆 อันดับวันนี้</h3>
+              <h3 className="text-sm font-bold font-thai mb-2">{<EmojiIcon emoji="🏆" />} อันดับวันนี้</h3>
               {leaderboard.slice(0, 5).map((e, i) => (
                 <div key={e.user_id} className="flex items-center gap-2 py-1.5">
                   <span className="w-6 text-center text-sm">{i < 3 ? MEDALS[i] : i + 1}</span>
@@ -381,7 +382,7 @@ export default function DailyChallengePage() {
           <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-bold font-thai">⚔️ ผลลัพธ์ Daily Challenge</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="⚔" />}️ ผลลัพธ์ Daily Challenge</h1>
         </div>
       </header>
 

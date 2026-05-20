@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ChevronDown, Check, Loader2 } from "lucide-react";
 import type { DailyMission, MissionType } from "@/types/dopamine";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface Props {
   missions: DailyMission[];
@@ -41,7 +42,7 @@ const DailyMissionPanel = ({
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
       <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 bg-white/70 backdrop-blur-sm rounded-2xl border border-white/50 hover:bg-white/90 transition-colors shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="text-base">📋</span>
+          <span className="text-base">{<EmojiIcon emoji="📋" />}</span>
           <span className="font-semibold text-sm">
             ภารกิจวันนี้
           </span>
@@ -57,7 +58,7 @@ const DailyMissionPanel = ({
           </Badge>
           {allCompleted && (
             <span className="text-xs font-bold text-amber-500 animate-pulse">
-              🎉 ครบแล้ว! โบนัส x2
+              {<EmojiIcon emoji="🎉" />} ครบแล้ว! โบนัส x2
             </span>
           )}
         </div>

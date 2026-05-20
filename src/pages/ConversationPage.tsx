@@ -9,6 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const COMPLETED_KEY = "completedConversations";
 
@@ -157,7 +158,7 @@ const ConversationPage = () => {
         <div className="border-t border-white/50 bg-white/80 backdrop-blur-xl p-4 safe-area-bottom">
           {finished ? (
             <div className="text-center space-y-3">
-              <p className="font-thai font-bold text-lg">สนทนาจบแล้ว! 🎉</p>
+              <p className="font-thai font-bold text-lg">สนทนาจบแล้ว! {<EmojiIcon emoji="🎉" />}</p>
               <p className="text-sm text-muted-foreground font-thai">ตอบถูก {score}/{totalChoices} ข้อ</p>
               <div className="flex gap-2 justify-center">
                 <Button onClick={() => startScenario(selected)} variant="outline" className="font-thai">
@@ -226,7 +227,7 @@ const ConversationPage = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/practice")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> กลับ
           </Button>
-          <h1 className="text-lg font-bold font-thai">💬 ฝึกบทสนทนา</h1>
+          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="💬" />} ฝึกบทสนทนา</h1>
         </div>
       </header>
       <main className="px-4 py-5 max-w-3xl mx-auto">
@@ -267,7 +268,7 @@ const ConversationPage = () => {
                       ))}
                     </div>
                     {isDone && (
-                      <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-thai">เรียนแล้ว ✓</span>
+                      <span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-thai">เรียนแล้ว {<EmojiIcon emoji="✓" />}</span>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">{sc.description}</p>

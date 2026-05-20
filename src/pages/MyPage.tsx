@@ -40,6 +40,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Save, Settings, Flame, Trophy, Zap, Star, TrendingUp, History } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const levelColorValues: Record<number, string> = {
   1: "hsl(152, 76%, 44%)",
@@ -332,7 +333,7 @@ const MyPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 flex items-center justify-center">
         <div className="text-center space-y-4 animate-pulse">
-          <div className="text-6xl animate-bounce">🏠</div>
+          <div className="text-6xl animate-bounce">{<EmojiIcon emoji="🏠" />}</div>
           <p className="text-lg font-bold font-thai text-foreground">กำลังโหลด...</p>
           <div className="flex gap-2 justify-center">
             <div className="w-3 h-3 rounded-full bg-yellow-400 animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -391,19 +392,19 @@ const MyPage = () => {
         <Tabs defaultValue="character" className="w-full">
           <TabsList className="w-full mb-4 h-12 p-1 bg-white/50 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 grid grid-cols-5">
             <TabsTrigger value="character" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
-              👤 ตัวเรา
+              {<EmojiIcon emoji="👤" />} ตัวเรา
             </TabsTrigger>
             <TabsTrigger value="room" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
-              🛋️ ห้อง
+              {<EmojiIcon emoji="🛋" />}️ ห้อง
             </TabsTrigger>
             <TabsTrigger value="pets" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
-              🐾 สัตว์เลี้ยง
+              {<EmojiIcon emoji="🐾" />} สัตว์เลี้ยง
             </TabsTrigger>
             <TabsTrigger value="stats" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
-              📊 สถิติ
+              {<EmojiIcon emoji="📊" />} สถิติ
             </TabsTrigger>
             <TabsTrigger value="inventory" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
-              📦 คลัง
+              {<EmojiIcon emoji="📦" />} คลัง
             </TabsTrigger>
           </TabsList>
 
@@ -560,10 +561,10 @@ const MyPage = () => {
               {/* Quick links */}
               <div className="grid grid-cols-2 gap-3">
                 <Button variant="outline" className="font-thai h-14 text-sm" onClick={() => navigate("/season-pass")}>
-                  🏆 Season Pass
+                  {<EmojiIcon emoji="🏆" />} Season Pass
                 </Button>
                 <Button variant="outline" className="font-thai h-14 text-sm" onClick={() => navigate("/parent-report")}>
-                  📊 รายงานผู้ปกครอง
+                  {<EmojiIcon emoji="📊" />} รายงานผู้ปกครอง
                 </Button>
                 <Button variant="outline" className="font-thai h-14 text-sm col-span-2" onClick={() => navigate("/premium")}>
                   ⭐ สมาชิกพรีเมียม
@@ -586,9 +587,9 @@ const MyPage = () => {
               {/* Shop / Inventory / Gacha sub-tabs */}
               <Tabs defaultValue="shop">
                 <TabsList className="w-full grid grid-cols-3 mb-3 h-11 bg-white/50 backdrop-blur rounded-xl">
-                  <TabsTrigger value="shop" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">🛒 ร้านค้า</TabsTrigger>
-                  <TabsTrigger value="closet" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">👔 ตู้เสื้อผ้า</TabsTrigger>
-                  <TabsTrigger value="gacha" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">🎰 กาชา</TabsTrigger>
+                  <TabsTrigger value="shop" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">{<EmojiIcon emoji="🛒" />} ร้านค้า</TabsTrigger>
+                  <TabsTrigger value="closet" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">{<EmojiIcon emoji="👔" />} ตู้เสื้อผ้า</TabsTrigger>
+                  <TabsTrigger value="gacha" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">{<EmojiIcon emoji="🎰" />} กาชา</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="shop">
@@ -685,7 +686,7 @@ const MyPage = () => {
                         </span>
 
                         {locked ? (
-                          <p className="text-xs font-thai text-amber-600">🔒 ยังไม่ปลดล็อค</p>
+                          <p className="text-xs font-thai text-amber-600">{<EmojiIcon emoji="🔒" />} ยังไม่ปลดล็อค</p>
                         ) : placed ? (
                           <Button
                             variant="destructive"
@@ -738,7 +739,7 @@ const MyPage = () => {
             <div className="space-y-4">
               {/* Clothing items */}
               <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg">
-                <h2 className="font-semibold font-thai text-lg mb-3">👕 เสื้อผ้า</h2>
+                <h2 className="font-semibold font-thai text-lg mb-3">{<EmojiIcon emoji="👕" />} เสื้อผ้า</h2>
                 {inventory.length === 0 ? (
                   <p className="text-sm text-muted-foreground font-thai">ยังไม่มีไอเทม</p>
                 ) : (
@@ -757,7 +758,7 @@ const MyPage = () => {
 
               {/* Room items */}
               <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg">
-                <h2 className="font-semibold font-thai text-lg mb-3">🏠 ของตกแต่งห้อง</h2>
+                <h2 className="font-semibold font-thai text-lg mb-3">{<EmojiIcon emoji="🏠" />} ของตกแต่งห้อง</h2>
                 {roomInventory.length === 0 ? (
                   <p className="text-sm text-muted-foreground font-thai">ยังไม่มีของตกแต่ง</p>
                 ) : (
@@ -776,7 +777,7 @@ const MyPage = () => {
 
               {/* Gacha section */}
               <div className="rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm p-6 shadow-lg">
-                <h2 className="font-semibold font-thai text-lg mb-3">🎰 กาชา</h2>
+                <h2 className="font-semibold font-thai text-lg mb-3">{<EmojiIcon emoji="🎰" />} กาชา</h2>
                 <GachaSpinner
                   coins={coins}
                   gachaTickets={profile?.gacha_tickets || 0}

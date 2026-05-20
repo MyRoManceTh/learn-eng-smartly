@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { evolutionStages } from "@/data/evolutionStages";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -25,7 +26,7 @@ export default function LeaderboardSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">🏆 กระดานผู้นำ</CardTitle>
+          <CardTitle className="text-lg">{<EmojiIcon emoji="🏆" />} กระดานผู้นำ</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -44,7 +45,7 @@ export default function LeaderboardSection() {
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">🏆 กระดานผู้นำ</CardTitle>
+          <CardTitle className="text-lg">{<EmojiIcon emoji="🏆" />} กระดานผู้นำ</CardTitle>
           <div className="flex gap-1">
             <button
               onClick={() => setTimeRange("weekly")}

@@ -2,6 +2,7 @@ import { skillTreePaths, SkillTreePath } from "@/data/skillTreeData";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 interface PathSelectionScreenProps {
   onSelect: (pathId: string) => void;
@@ -147,7 +148,7 @@ const PathCard = ({
       {/* Selected indicator */}
       {isSelected && (
         <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-green-500 border-[3px] border-green-300 flex items-center justify-center shadow-lg animate-cartoon-pop">
-          <span className="text-sm">✓</span>
+          <span className="text-sm">{<EmojiIcon emoji="✓" />}</span>
         </div>
       )}
     </button>
@@ -197,7 +198,7 @@ const PathSelectionScreen = ({
       <div className="max-w-lg mx-auto px-4 py-8 relative">
         {/* Epic title */}
         <div className="text-center mb-8 animate-cartoon-pop">
-          <div className="text-5xl mb-3 animate-float-gentle">⚔️</div>
+          <div className="text-5xl mb-3 animate-float-gentle">{<EmojiIcon emoji="⚔" />}️</div>
           <h1 className="text-2xl font-bold text-white font-thai mb-1">
             เลือกเส้นทางผจญภัย
           </h1>
@@ -227,7 +228,7 @@ const PathSelectionScreen = ({
         {!isCoreLevel1Done && (
           <div className="mt-6 text-center animate-cartoon-pop" style={{ animationDelay: '600ms' }}>
             <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30">
-              <span className="text-lg">🏰</span>
+              <span className="text-lg">{<EmojiIcon emoji="🏰" />}</span>
               <p className="text-xs text-amber-300 font-thai font-bold">
                 จบบทเรียนพื้นฐาน A1 เพื่อปลดล็อค
               </p>
@@ -249,7 +250,7 @@ const PathSelectionScreen = ({
                 "transition-all duration-200"
               )}
             >
-              🗺️ ไปผจญภัยเลย!
+              {<EmojiIcon emoji="🗺" />}️ ไปผจญภัยเลย!
             </button>
           </div>
         )}
