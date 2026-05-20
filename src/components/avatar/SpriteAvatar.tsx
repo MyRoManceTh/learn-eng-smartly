@@ -8,14 +8,15 @@ import { renderAura, SPRITE_SCALE, type AuraParticle } from "@/lib/pixi/auraEffe
 
 interface SpriteAvatarProps {
   equipped?: EquippedItems;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   walking?: boolean;
   direction?: "left" | "right";
   pose?: CharacterPose;
 }
 
-/** CSS display sizes — 3× integer scale of 32×40 sprite */
+/** CSS display sizes — integer scale of 32×40 sprite */
 const SIZE_CONFIG = {
+  xs: { cssWidth: 64,  cssHeight: 80  }, // 2× — fits compact rows (friends list)
   sm: { cssWidth: 96,  cssHeight: 120 },
   md: { cssWidth: 128, cssHeight: 160 },
   lg: { cssWidth: 192, cssHeight: 240 },
