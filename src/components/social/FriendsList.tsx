@@ -311,13 +311,11 @@ export default function FriendsList() {
                   >
                     {/* Top row: avatar + info */}
                     <div className="flex items-center gap-3">
-                      <div className="shrink-0 w-14 h-16 rounded-lg overflow-hidden bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center">
-                        <div className="scale-50 origin-center">
-                          <SpriteAvatar
-                            equipped={parseEquipped(friend.equipped)}
-                            size="sm"
-                          />
-                        </div>
+                      <div className="shrink-0 w-16 h-20 rounded-lg bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center">
+                        <SpriteAvatar
+                          equipped={parseEquipped(friend.equipped)}
+                          size="xs"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
