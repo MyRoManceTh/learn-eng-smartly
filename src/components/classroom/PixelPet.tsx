@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { RoomItem } from "@/types/room";
 import {
-import { EmojiIcon } from "@/components/ui/EmojiIcon";
   generatePetSpriteSheet,
   PET_FRAME_W,
   PET_FRAME_H,
 } from "@/lib/pixi/petSpriteSheet";
+import { EmojiIcon } from "@/components/ui/EmojiIcon";
 
 // ── Pet speech lines (bilingual) ──
 const PET_SPEECHES: Record<string, { th: string; en: string }[]> = {
