@@ -46,44 +46,36 @@ export const useStoryProgress = () => {
     syncedRef.current = true;
 
     (async () => {
-      const { data, error } = await supabase
-        .from("story_progress")
-        .select("story_id, chapter_id")
-        .eq("user_id", user.id);
-      if (error) return;
-
-      const cloudMap: ProgressMap = {};
-      for (const row of data ?? []) {
-        const sid = (row as any).story_id as string;
-        const cid = (row as any).chapter_id as string;
-        (cloudMap[sid] ??= []).push(cid);
-      }
-
+      // Build the local payload to send up. The RPC will insert any rows
+      // that don't already exist and return the full reconciled cloud state
+      // in a single atomic transaction — so we can never end up half-synced.
       const local = load();
-      const merged = mergeMaps(local, cloudMap);
-      save(merged);
-      setProgress(merged);
-
-      // Push local-only entries to cloud
-      const toInsert: { user_id: string; story_id: string; chapter_id: string }[] = [];
+      const entries: { story_id: string; chapter_id: string }[] = [];
       for (const [sid, chapters] of Object.entries(local)) {
-        const cloudSet = new Set(cloudMap[sid] ?? []);
         for (const cid of chapters) {
-          if (!cloudSet.has(cid)) {
-            toInsert.push({ user_id: user.id, story_id: sid, chapter_id: cid });
-          }
+          entries.push({ story_id: sid, chapter_id: cid });
         }
       }
-      if (toInsert.length > 0) {
-        // upsert + ignoreDuplicates so concurrent devices don't error on unique violation
-        const { error: upErr } = await supabase
-          .from("story_progress")
-          .upsert(toInsert, {
-            onConflict: "user_id,story_id,chapter_id",
-            ignoreDuplicates: true,
-          });
-        if (upErr) console.warn("story_progress backfill failed", upErr);
+
+      const { data, error } = await supabase.rpc("sync_story_progress", {
+        _entries: entries as any,
+      });
+
+      if (error) {
+        // Don't blow away local state on transient network errors.
+        syncedRef.current = false;
+        console.warn("story_progress backfill failed", error);
+        return;
       }
+
+      const cloudMap: ProgressMap = {};
+      for (const row of (data ?? []) as Array<{ story_id: string; chapter_id: string }>) {
+        (cloudMap[row.story_id] ??= []).push(row.chapter_id);
+      }
+
+      // Cloud is now authoritative (it already contains everything local had).
+      save(cloudMap);
+      setProgress(cloudMap);
     })();
   }, [user]);
 
