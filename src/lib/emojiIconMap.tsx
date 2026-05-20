@@ -187,7 +187,7 @@ export const EMOJI_ICON_MAP: Record<string, LucideIcon> = {
   "🏫": School, "🏨": Hotel, hotel: Hotel,
   "🚌": Bus, "🚎": Bus, "🚐": Bus, bus: Bus,
   "🌦": CloudSun, "🌦️": CloudSun, "⛅": CloudSun, "🌤": CloudSun, "🌤️": CloudSun,
-  "📞": Phone, "☎": Phone, "☎️": Phone, "📲": Smartphone,
+  "☎": Phone, "☎️": Phone, "📲": Smartphone,
   "⚖": Scale, "⚖️": Scale, balance: Scale, justice: Scale,
   "💭": MessageSquare, thought: MessageSquare,
   "🎤": Mic, microphone: Mic,
