@@ -234,21 +234,6 @@ export function useFriends() {
     [user, loadFriends]
   );
 
-  // (legacy block removed — handled above)
-  const _unused_addFriendByCode_old = async () => {
-    if (false) {
-
-      if (error) {
-        toast.error("เกิดข้อผิดพลาด");
-        return false;
-      }
-
-      toast.success("ส่งคำขอเป็นเพื่อนแล้ว!");
-      loadFriends();
-      return true;
-    },
-    [user, loadFriends]
-  );
 
   // ── Accept / Decline / Remove ───────────────────
   const acceptRequest = useCallback(
