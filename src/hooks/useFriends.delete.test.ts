@@ -164,11 +164,9 @@ describe("declineRequest", () => {
     expect(mocks.toastNeutral.calls.length).toBe(1);
   });
 
-  it("regression: when no DELETE policy exists the driver returns success silently", async () => {
-    // Documents the current behaviour — if there is no DELETE RLS policy,
-    // postgrest returns ok with 0 rows, and the hook (which only checks
-    // `error`) ends up showing the success notice. If this ever changes
-    // (e.g. we add an affected-rows check), update this test alongside.
+  it("shows error toast when no row is affected (no DELETE policy / wrong id)", async () => {
+    // When there is no DELETE RLS policy, or the id doesn't belong to us,
+    // postgrest returns ok with 0 rows. The hook must NOT show success.
     mocks.setNextDelete("silent");
 
     const { result } = renderHook(() => useFriends());
@@ -178,8 +176,9 @@ describe("declineRequest", () => {
       await result.current.declineRequest("fr-1");
     });
 
-    expect(mocks.toastError.calls.length).toBe(0);
-    expect(mocks.toastNeutral.calls.length).toBe(1);
+    expect(mocks.toastError.calls.length).toBe(1);
+    expect(mocks.toastSuccess.calls.length).toBe(0);
+    expect(mocks.toastNeutral.calls.length).toBe(0);
   });
 });
 
