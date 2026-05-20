@@ -136,24 +136,32 @@ export const useStoryProgress = () => {
 
   const markChapterRead = useCallback(
     (storyId: string, chapterId: string) => {
+      let didAdd = false;
       setProgress((prev) => {
         const list = prev[storyId] ?? [];
         if (list.includes(chapterId)) return prev;
+        didAdd = true;
         const next = { ...prev, [storyId]: [...list, chapterId] };
         save(next);
         return next;
       });
-      if (user) {
-        supabase
-          .from("story_progress")
-          .insert({ user_id: user.id, story_id: storyId, chapter_id: chapterId })
-          .then(({ error }) => {
-            // ignore unique-violation (already synced); other errors silent
-            if (error && !error.message?.includes("duplicate")) {
-              console.warn("story_progress sync failed", error);
-            }
-          });
-      }
+      if (!didAdd || !user) return;
+
+      // Use upsert with ignoreDuplicates so a race between devices / realtime echo
+      // never produces a duplicate row or a noisy error toast.
+      supabase
+        .from("story_progress")
+        .upsert(
+          { user_id: user.id, story_id: storyId, chapter_id: chapterId },
+          { onConflict: "user_id,story_id,chapter_id", ignoreDuplicates: true }
+        )
+        .then(({ error }) => {
+          if (!error) return;
+          // 23505 = unique_violation (race with realtime). Safe to ignore.
+          const code = (error as any).code;
+          if (code === "23505" || /duplicate|conflict/i.test(error.message || "")) return;
+          console.warn("story_progress sync failed", error);
+        });
     },
     [user]
   );
