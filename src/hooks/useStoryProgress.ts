@@ -75,7 +75,14 @@ export const useStoryProgress = () => {
         }
       }
       if (toInsert.length > 0) {
-        await supabase.from("story_progress").insert(toInsert);
+        // upsert + ignoreDuplicates so concurrent devices don't error on unique violation
+        const { error: upErr } = await supabase
+          .from("story_progress")
+          .upsert(toInsert, {
+            onConflict: "user_id,story_id,chapter_id",
+            ignoreDuplicates: true,
+          });
+        if (upErr) console.warn("story_progress backfill failed", upErr);
       }
     })();
   }, [user]);
