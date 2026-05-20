@@ -223,11 +223,7 @@ describe("removeFriend", () => {
     expect(mocks.db.friendships.find((r) => r.id === "fr-1")).toBeUndefined();
   });
 
-  it("regression: silent no-op when no DELETE policy exists", async () => {
-    // Same caveat as the declineRequest regression test: with no policy,
-    // postgrest returns ok with 0 rows. The hook currently treats this as
-    // success. This test pins that behaviour so adding a proper
-    // affected-rows check forces an intentional update.
+  it("shows error toast when no row is affected (no DELETE policy / wrong id)", async () => {
     mocks.setNextDelete("silent");
 
     const { result } = renderHook(() => useFriends());
@@ -237,7 +233,7 @@ describe("removeFriend", () => {
       await result.current.removeFriend("fr-1");
     });
 
-    expect(mocks.toastError.calls.length).toBe(0);
-    expect(mocks.toastSuccess.calls.length).toBe(1);
+    expect(mocks.toastError.calls.length).toBe(1);
+    expect(mocks.toastSuccess.calls.length).toBe(0);
   });
 });
