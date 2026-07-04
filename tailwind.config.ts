@@ -236,6 +236,10 @@ export default {
   				'0%, 100%': { transform: 'rotate(-3deg)' },
   				'50%': { transform: 'rotate(3deg)' }
   			},
+  			'bounce-x': {
+  				'0%, 100%': { transform: 'translateX(0)' },
+  				'50%': { transform: 'translateX(4px)' }
+  			},
   			'accordion-down': {
   				from: {
   					height: '0'
@@ -271,7 +275,8 @@ export default {
   			'sparkle-twinkle': 'sparkle-twinkle 2s ease-in-out infinite',
   			'hop': 'hop 0.8s ease-in-out infinite',
   			'dash-flow': 'dash-flow 1s linear infinite',
-  			'sway': 'sway 3s ease-in-out infinite'
+  			'sway': 'sway 3s ease-in-out infinite',
+  			'bounce-x': 'bounce-x 1s ease-in-out infinite'
   		}
   	}
   },

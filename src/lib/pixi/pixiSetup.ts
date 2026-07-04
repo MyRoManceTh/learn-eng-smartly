@@ -5,6 +5,12 @@ export interface PixiAppOptions {
   height: number;
   backgroundColor?: number;
   transparent?: boolean;
+  /**
+   * Backing-store multiplier. Vector characters are drawn in a small logical
+   * space (e.g. 64×80) and CSS-scaled up — without a high enough resolution
+   * the result is blurry. Pass ceil(cssSize / logicalSize) × devicePixelRatio.
+   */
+  resolution?: number;
 }
 
 export async function createPixelApp(
@@ -22,7 +28,7 @@ export async function createPixelApp(
     backgroundColor: options.transparent ? 0x000000 : (options.backgroundColor ?? 0x000000),
     backgroundAlpha: options.transparent ? 0 : 1,
     antialias: true,
-    resolution: 2, // 2x for crisp vector art on retina displays
+    resolution: Math.min(8, Math.max(2, options.resolution ?? 2)),
     autoDensity: true,
   });
 

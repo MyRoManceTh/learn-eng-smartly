@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, ArrowRight, RotateCcw, BookOpen } from "lucide-react";
+import { ArrowRight, RotateCcw, BookOpen } from "lucide-react";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { EmojiIcon } from "@/components/ui/EmojiIcon";
+import { QuizOptionButton } from "@/components/QuizOptionButton";
 
 interface QuizSectionProps {
   questions: QuizQuestion[];
@@ -129,47 +130,41 @@ const QuizSection = ({ questions, onComplete, onNextLesson, nextLessonLabel }: Q
 
   return (
     <div ref={containerRef} className={`rounded-2xl border-2 border-white/60 bg-white/90 backdrop-blur-sm p-6 shadow-xl shadow-purple-500/10 transition-transform ${shaking ? "animate-[shake_0.5s_ease-in-out]" : ""}`}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold font-thai">{<EmojiIcon emoji="📝" />} แบบทดสอบ</h3>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm font-bold text-purple-500">
           {currentQ + 1}/{questions.length}
         </span>
       </div>
 
-      <p className="text-base font-thai mb-4">{question.question}</p>
+      {/* Progress bar */}
+      <div className="h-2 bg-purple-100 rounded-full overflow-hidden mb-4">
+        <div
+          className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
+          style={{ width: `${((currentQ + (showResult ? 1 : 0)) / questions.length) * 100}%` }}
+        />
+      </div>
 
-      <div className="space-y-2 mb-4">
-        {question.options.map((opt, idx) => {
-          let variant: "outline" | "default" | "destructive" = "outline";
-          let icon = null;
+      <div key={currentQ} className="animate-in fade-in slide-in-from-right-4 duration-300">
+        <p className="text-base font-thai mb-4 leading-relaxed">{question.question}</p>
 
-          if (showResult) {
-            if (idx === question.correctIndex) {
-              variant = "default";
-              icon = <CheckCircle className="w-4 h-4 mr-2" />;
-            } else if (idx === selected) {
-              variant = "destructive";
-              icon = <XCircle className="w-4 h-4 mr-2" />;
-            }
-          }
-
-          return (
-            <Button
+        <div className="space-y-2.5 mb-4">
+          {question.options.map((opt, idx) => (
+            <QuizOptionButton
               key={idx}
-              variant={variant}
-              className="w-full justify-start text-left font-thai"
-              onClick={() => handleSelect(idx)}
-              disabled={showResult}
-            >
-              {icon}
-              {opt}
-            </Button>
-          );
-        })}
+              option={opt}
+              index={idx}
+              showResult={showResult}
+              isCorrect={idx === question.correctIndex}
+              isSelected={idx === selected}
+              onSelect={handleSelect}
+            />
+          ))}
+        </div>
       </div>
 
       {showResult && (
-        <Button ref={nextBtnRef} onClick={handleNext} className="w-full font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25 mb-2">
+        <Button ref={nextBtnRef} onClick={handleNext} className="w-full h-11 font-thai bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {currentQ + 1 >= questions.length ? "ดูผลคะแนน" : "ข้อถัดไป →"}
         </Button>
       )}
