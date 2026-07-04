@@ -21,7 +21,7 @@ const VocabTable = ({ vocabulary, highlightWord: highlightOverride }: VocabTable
   }, [vocabulary, setVocabulary]);
 
   return (
-    <div className="rounded-2xl border border-indigo-100/50 bg-white/90 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-indigo-500/5">
+    <div className="rounded-2xl border border-indigo-100/50 bg-white/90 backdrop-blur-sm p-3 sm:p-4 shadow-lg shadow-indigo-500/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <h3 className="text-base sm:text-lg font-semibold mb-3 text-foreground font-thai">{<EmojiIcon emoji="📖" />} คำศัพท์</h3>
 
       {/* Card layout for mobile, table for desktop */}
