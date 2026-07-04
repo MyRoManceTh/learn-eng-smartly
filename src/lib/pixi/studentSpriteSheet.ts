@@ -15,7 +15,15 @@ import type { SpritePalette } from "./spriteColors";
 import { DEFAULT_PALETTE } from "./spriteColors";
 
 export const SPRITE_FRAME_W = 32;
-export const SPRITE_FRAME_H = 40;
+export const SPRITE_FRAME_H = 46;
+
+/**
+ * Vertical headroom above the character inside each frame.
+ * Tall equipment (bunny ears, wizard hats, halos, mohawks, space buns)
+ * draws above the head at negative offsets — without this padding those
+ * pixels get clipped at the canvas edge.
+ */
+export const SPRITE_HEADROOM = 6;
 
 /* ─── shorthand ──────────────────────────────────── */
 
@@ -730,7 +738,7 @@ function drawEquipAccessory(
     drawSpriteGlasses(ctx, ox, oy, accColor);
   } else if (accId.includes("bow")) {
     drawSpriteBow(ctx, ox, oy, accColor);
-  } else if (accId.includes("necklace")) {
+  } else if (accId.includes("neck")) {
     drawSpriteNecklace(ctx, ox, oy, accColor);
   } else if (accId.includes("scarf")) {
     drawSpriteScarf(ctx, ox, oy, accColor);
@@ -1097,9 +1105,9 @@ function drawHairForFrame(ctx: CanvasRenderingContext2D, ox: number, oy: number,
 }
 
 function drawIdleFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: number, P: SpritePalette, equip: EquipmentOverlay | null) {
-  const bob = [0, -1, 0, 1][frameIdx] || 0;
+  const bob = SPRITE_HEADROOM + ([0, -1, 0, 1][frameIdx] || 0);
   const blink = frameIdx === 2;
-  drawShadow(ctx, ox, 0, false, P);
+  drawShadow(ctx, ox, SPRITE_HEADROOM, false, P);
   drawShoesIdle(ctx, ox, bob, P);
   drawLegsIdle(ctx, ox, bob, P);
   drawShirt(ctx, ox, bob, P);
@@ -1111,8 +1119,8 @@ function drawIdleFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
 }
 
 function drawWalkFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: number, P: SpritePalette, equip: EquipmentOverlay | null) {
-  const bob = [0, -1, -1, 0, 0, -1, -1, 0][frameIdx] || 0;
-  drawShadow(ctx, ox, 0, false, P);
+  const bob = SPRITE_HEADROOM + ([0, -1, -1, 0, 0, -1, -1, 0][frameIdx] || 0);
+  drawShadow(ctx, ox, SPRITE_HEADROOM, false, P);
   drawShoesWalk(ctx, ox, bob, frameIdx, P);
   drawLegsWalk(ctx, ox, bob, frameIdx, P);
   drawShirt(ctx, ox, bob, P);
@@ -1125,8 +1133,8 @@ function drawWalkFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
 
 function drawSitFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: number, P: SpritePalette, equip: EquipmentOverlay | null) {
   const bob = frameIdx === 1 ? -1 : 0;
-  const sitOffset = 4;
-  drawShadow(ctx, ox, 0, true, P);
+  const sitOffset = SPRITE_HEADROOM + 4;
+  drawShadow(ctx, ox, SPRITE_HEADROOM, true, P);
   drawShoesSitting(ctx, ox, sitOffset, P);
   drawLegsSitting(ctx, ox, sitOffset, P);
   drawShirt(ctx, ox, sitOffset + bob, P);
@@ -1139,8 +1147,8 @@ function drawSitFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numbe
 
 function drawReadFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: number, P: SpritePalette, equip: EquipmentOverlay | null) {
   const bob = frameIdx === 1 ? -1 : 0;
-  const sitOffset = 4;
-  drawShadow(ctx, ox, 0, true, P);
+  const sitOffset = SPRITE_HEADROOM + 4;
+  drawShadow(ctx, ox, SPRITE_HEADROOM, true, P);
   drawShoesSitting(ctx, ox, sitOffset, P);
   drawLegsSitting(ctx, ox, sitOffset, P);
   drawShirt(ctx, ox, sitOffset + bob, P);

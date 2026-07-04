@@ -107,9 +107,23 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Source Sans 3', 'Noto Sans Thai', sans-serif;
+    /* Native-app feel on mobile: no rubber-band page bounce, no gray tap flash */
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, a, [role="button"] {
+    /* Remove the 300ms double-tap-zoom delay on touch devices */
+    touch-action: manipulation;
   }
 
   .font-reading {
@@ -138,6 +152,20 @@
 
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/*
+ * Mobile browsers include the collapsing URL bar in 100vh, which makes
+ * min-h-screen layouts jump and leave dead space. Dynamic viewport units
+ * track the real visible height.
+ */
+@supports (min-height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+  .h-screen {
+    height: 100dvh;
   }
 }
 

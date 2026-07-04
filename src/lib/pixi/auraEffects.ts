@@ -30,7 +30,8 @@ export interface AuraScale {
   bodyW: number;   // body width (for spike spread)
 }
 
-export const SPRITE_SCALE: AuraScale = { cx: 16, bodyCenter: 22, bodyH: 22, bodyW: 14 };
+// bodyCenter includes the 6px sprite headroom (frame is 32×46, body starts at y=6)
+export const SPRITE_SCALE: AuraScale = { cx: 16, bodyCenter: 28, bodyH: 22, bodyW: 14 };
 export const STICKER_SCALE: AuraScale = { cx: 32, bodyCenter: 45, bodyH: 40, bodyW: 26 };
 
 // ════════════════════════════════════════════

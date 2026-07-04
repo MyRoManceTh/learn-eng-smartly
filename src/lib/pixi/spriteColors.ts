@@ -106,22 +106,28 @@ export function resolveHairStyle(equipped: EquippedItems): string | null {
 
 /** Get hat ID if equipped */
 export function resolveHatId(equipped: EquippedItems): string | null {
-  return null;
+  return equipped.hat || null;
 }
 
-/** Get accessory ID if equipped */
+/**
+ * Get accessory ID if equipped.
+ * The sprite accessory layer renders neck/face items; hand items are
+ * drawn separately via leftHandId/rightHandId in the equipment overlay.
+ */
 export function resolveAccessoryId(equipped: EquippedItems): string | null {
-  return equipped.rightHand || null;
+  return equipped.necklace || null;
 }
 
 /** Get hat color as CSS hex string */
 export function resolveHatColor(equipped: EquippedItems): string {
-  return "#e53935";
+  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
+  if (!hatItem) return "#e53935";
+  return numToHex(parseColor(hatItem.svgProps?.color || "#E53935"));
 }
 
 /** Get accessory color as CSS hex string */
 export function resolveAccessoryColor(equipped: EquippedItems): string {
-  const accItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
-  if (!accItem) return "#80deea";
-  return numToHex(parseColor(accItem.svgProps?.color || "#80DEEA"));
+  const accItem = equipped.necklace ? getItemById(equipped.necklace) : null;
+  if (!accItem) return "#ffd700";
+  return numToHex(parseColor(accItem.svgProps?.color || "#FFD700"));
 }
