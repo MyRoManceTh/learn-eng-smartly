@@ -129,7 +129,7 @@ export function useFriends() {
         .rpc("get_public_profiles", { _ids: senderIds });
 
       const senderMap = new Map<string, string>();
-      ((senderProfiles as Record<string, string>[]) || []).forEach((p) =>
+      ((senderProfiles as Array<{ user_id: string; display_name: string | null }>) || []).forEach((p) =>
         senderMap.set(p.user_id, p.display_name || "ไม่ระบุชื่อ")
       );
 
