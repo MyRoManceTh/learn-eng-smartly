@@ -10,11 +10,7 @@ export function useLeaderboard() {
     queryKey: ["leaderboard"],
     queryFn: async () => {
       const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name, total_exp, current_streak, equipped, evolution_stage")
-        .not("display_name", "is", null)
-        .order("total_exp" as any, { ascending: false })
-        .limit(50);
+        .rpc("get_leaderboard", { _limit: 50 });
 
       if (!profiles) return { entries: [] as LeaderboardEntry[], myRank: 0 };
 
