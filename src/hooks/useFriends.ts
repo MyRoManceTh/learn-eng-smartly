@@ -167,18 +167,16 @@ export function useFriends() {
         return false;
       }
 
-      const { data: friendProfile } = await supabase
-        .from("profiles")
-        .select("user_id")
-        .eq("friend_code", code)
-        .maybeSingle();
+      const { data: friendProfileRows } = await supabase
+        .rpc("get_user_id_by_friend_code", { _code: code });
 
+      const friendProfile = Array.isArray(friendProfileRows) ? friendProfileRows[0] : null;
       if (!friendProfile) {
         toast.error("ไม่พบรหัสเพื่อนนี้");
         return false;
       }
 
-      const fp = friendProfile as Record<string, string>;
+      const fp = friendProfile as { user_id: string; display_name: string | null };
       if (fp.user_id === user.id) {
         toast.error("ไม่สามารถเพิ่มตัวเองเป็นเพื่อนได้");
         return false;
