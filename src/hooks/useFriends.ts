@@ -63,9 +63,7 @@ export function useFriends() {
     }
 
     const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, display_name, total_exp, current_streak, equipped, evolution_stage, lessons_completed, energy")
-      .in("user_id", friendUserIds);
+      .rpc("get_public_profiles", { _ids: friendUserIds });
 
     const profileMap = new Map<string, Record<string, unknown>>();
     ((profiles as Record<string, unknown>[]) || []).forEach((p) =>
