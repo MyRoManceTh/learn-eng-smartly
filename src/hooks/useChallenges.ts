@@ -52,9 +52,7 @@ export function useChallenges() {
 
       // Fetch profiles
       const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name")
-        .in("user_id", [...userIds]);
+        .rpc("get_public_profiles", { _ids: [...userIds] });
 
       const nameMap = new Map<string, string>();
       ((profiles as any[]) || []).forEach((p) =>
