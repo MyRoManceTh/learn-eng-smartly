@@ -714,6 +714,39 @@ export type Database = {
     }
     Functions: {
       claim_gift: { Args: { _gift_id: string }; Returns: Json }
+      get_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          current_streak: number
+          display_name: string
+          equipped: Json
+          evolution_stage: number
+          total_exp: number
+          user_id: string
+        }[]
+      }
+      get_public_profiles: {
+        Args: { _ids: string[] }
+        Returns: {
+          current_level: string
+          current_streak: number
+          display_name: string
+          energy: number
+          equipped: Json
+          evolution_stage: number
+          friend_code: string
+          lessons_completed: number
+          total_exp: number
+          user_id: string
+        }[]
+      }
+      get_user_id_by_friend_code: {
+        Args: { _code: string }
+        Returns: {
+          display_name: string
+          user_id: string
+        }[]
+      }
       sync_story_progress: {
         Args: { _entries: Json }
         Returns: {
