@@ -710,45 +710,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles: {
-        Row: {
-          current_level: number | null
-          current_streak: number | null
-          display_name: string | null
-          energy: number | null
-          equipped: Json | null
-          evolution_stage: number | null
-          friend_code: string | null
-          lessons_completed: number | null
-          total_exp: number | null
-          user_id: string | null
-        }
-        Insert: {
-          current_level?: number | null
-          current_streak?: number | null
-          display_name?: string | null
-          energy?: number | null
-          equipped?: Json | null
-          evolution_stage?: number | null
-          friend_code?: string | null
-          lessons_completed?: number | null
-          total_exp?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          current_level?: number | null
-          current_streak?: number | null
-          display_name?: string | null
-          energy?: number | null
-          equipped?: Json | null
-          evolution_stage?: number | null
-          friend_code?: string | null
-          lessons_completed?: number | null
-          total_exp?: number | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       claim_gift: { Args: { _gift_id: string }; Returns: Json }
