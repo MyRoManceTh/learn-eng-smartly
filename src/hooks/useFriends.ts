@@ -126,9 +126,7 @@ export function useFriends() {
     if (gifts && (gifts as Record<string, unknown>[]).length > 0) {
       const senderIds = [...new Set((gifts as any[]).map((g) => g.sender_id))];
       const { data: senderProfiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name")
-        .in("user_id", senderIds);
+        .rpc("get_public_profiles", { _ids: senderIds });
 
       const senderMap = new Map<string, string>();
       ((senderProfiles as Record<string, string>[]) || []).forEach((p) =>
