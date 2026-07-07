@@ -102,11 +102,20 @@ export default function RewardsShopPage() {
 
     setBuying(powerUp.id);
 
-    const updates: Record<string, any> = {
-      coins: coins - powerUp.price,
-    };
+    // Atomic debit first — raises server-side if the balance is insufficient,
+    // so we never grant the effect without charging (or charge without the guard).
+    const { error: spendError } = await (supabase as any).rpc("spend_coins", {
+      p_amount: powerUp.price,
+      p_reason: powerUp.id,
+    });
+    if (spendError) {
+      toast.error("เหรียญไม่พอ!");
+      setBuying(null);
+      return;
+    }
 
-    // Apply power-up effect
+    // Apply the (non-currency) power-up effect.
+    const updates: Record<string, any> = {};
     switch (powerUp.action) {
       case "freeze":
         updates.streak_freeze_count = ((profile as any).streak_freeze_count || 0) + 1;

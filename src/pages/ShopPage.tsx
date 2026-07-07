@@ -6,6 +6,7 @@ import { Coins, Zap, ShoppingBag, Sparkles, Shield, CheckCircle } from "lucide-r
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { EmojiIcon } from "@/components/ui/EmojiIcon";
@@ -21,7 +22,7 @@ const tabConfig: { key: Tab; label: string; icon: string }[] = [
 const ShopPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { profile, addCoins, updateProfile, refreshProfile } = useProfile();
+  const { profile, refreshProfile } = useProfile();
   const [activeTab, setActiveTab] = useState<Tab>("power-up");
   const [buying, setBuying] = useState<string | null>(null);
 
@@ -47,11 +48,14 @@ const ShopPage = () => {
 
     setBuying(item.id);
     try {
-      const newInventory = [...inventory, item.id];
-      await updateProfile({
-        coins: coins - item.price,
-        inventory: newInventory,
+      // Atomic server-side purchase: balance check + max-owned cap + coin debit
+      // + inventory append happen in one transaction (no double-buy race / lost update).
+      const { error } = await (supabase as any).rpc("purchase_item", {
+        p_item_id: item.id,
+        p_price: item.price,
+        p_max_owned: item.maxOwned ?? 0,
       });
+      if (error) throw error;
       refreshProfile();
 
       confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 }, colors: ["#7c3aed", "#ec4899", "#f59e0b"] });

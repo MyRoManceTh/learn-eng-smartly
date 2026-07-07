@@ -63,34 +63,28 @@ export function useGacha() {
 
       const isNew = !inventory.includes(wonItem.id);
 
-      // Save to DB
-      const newInventory = isNew ? [...inventory, wonItem.id] : inventory;
-      const profileUpdates: any = {};
+      // Atomic commit: the DB checks the balance/ticket, deducts, grants the item
+      // (only if new) and writes gacha_history in ONE transaction. This closes the
+      // double-pull race (two tabs / double-click charging once but granting twice)
+      // and the partial-failure case where coins were taken but no item saved.
+      const { data, error } = await (supabase as any).rpc("commit_gacha_pull", {
+        p_item_id: wonItem.id,
+        p_rarity: wonItem.rarity,
+        p_use_ticket: useTicket,
+        p_cost: GACHA_COIN_COST,
+      });
 
-      if (useTicket) {
-        profileUpdates.gacha_tickets = gachaTickets - 1;
-      } else {
-        profileUpdates.coins = coins - GACHA_COIN_COST;
+      if (error) {
+        return { result: null, error: "บันทึกผลไม่สำเร็จ ลองใหม่อีกครั้ง" };
       }
-      profileUpdates.inventory = newInventory;
 
-      await Promise.all([
-        supabase
-          .from("profiles")
-          .update(profileUpdates)
-          .eq("user_id", user.id),
-        supabase.from("gacha_history").insert({
-          user_id: user.id,
-          item_id: wonItem.id,
-          rarity: wonItem.rarity,
-        } as any),
-      ]);
+      const committed = data as { is_new?: boolean } | null;
 
       return {
         result: {
           itemId: wonItem.id,
           rarity: wonItem.rarity as GachaRarity,
-          isNew,
+          isNew: committed?.is_new ?? isNew,
         },
       };
     },

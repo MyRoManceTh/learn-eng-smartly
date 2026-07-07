@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { RewardData } from "@/types/dopamine";
 import { avatarItems } from "@/data/avatarItems";
+import { getThaiToday } from "@/utils/timezone";
 
 interface UseDailyRewardReturn {
   showModal: boolean;
@@ -20,11 +22,14 @@ export function useDailyReward(
   inventory: string[]
 ): UseDailyRewardReturn {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [reward, setReward] = useState<RewardData | null>(null);
   const [claimed, setClaimed] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
+  // Thai timezone so the "new day" boundary matches the server (claim_daily_reward
+  // dates the claim in Asia/Bangkok). Using UTC here caused a 7h mismatch window.
+  const today = getThaiToday();
   const needsClaim = mysteryBoxLastClaimed !== today;
 
   // Milestone bonuses
@@ -52,47 +57,24 @@ export function useDailyReward(
   const claimReward = useCallback(async () => {
     if (!user || !reward) return;
 
-    // Apply rewards
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("coins, total_exp, inventory")
-      .eq("user_id", user.id)
-      .single();
+    // Atomic + idempotent server-side claim: coins/exp/milestone are computed
+    // from the server's own streak, the (user, day, type) unique row prevents
+    // double-claims across tabs/devices, and the day is dated in Asia/Bangkok so
+    // it can't be farmed by changing the device clock.
+    const { error } = await (supabase as any).rpc("claim_daily_reward", {
+      p_items: reward.items ?? [],
+    });
 
-    if (!profile) return;
-    const p = profile as any;
-
-    const updates: any = {
-      coins: (p.coins || 0) + (reward.coins || 0),
-      total_exp: (p.total_exp || 0) + (reward.exp || 0),
-      mystery_box_last_claimed: today,
-    };
-
-    // Add milestone bonus
-    if (isMilestone) {
-      updates.coins += milestones[currentStreak].coins;
+    if (error) {
+      console.error("claim_daily_reward failed:", error);
+      return;
     }
 
-    // Add items to inventory
-    if (reward.items && reward.items.length > 0) {
-      const currentInv = Array.isArray(p.inventory) ? p.inventory : [];
-      updates.inventory = [...currentInv, ...reward.items];
-    }
-
-    await supabase.from("profiles").update(updates).eq("user_id", user.id);
-
-    // Record in daily_rewards
-    await supabase.from("daily_rewards").insert({
-      user_id: user.id,
-      reward_date: today,
-      reward_type: "mystery_box",
-      reward_data: reward,
-      claimed: true,
-      claimed_at: new Date().toISOString(),
-    } as any);
-
+    // On success (or an idempotent "already claimed") mark done and refresh the
+    // cached profile so the new coin balance shows immediately everywhere.
     setClaimed(true);
-  }, [user, reward, today, isMilestone, currentStreak]);
+    queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+  }, [user, reward, queryClient]);
 
   const closeModal = useCallback(() => {
     setShowModal(false);
