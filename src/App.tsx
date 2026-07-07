@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import BottomNav from "@/components/BottomNav";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import PageTransition from "@/components/PageTransition";
 import DisplayNameModal, { useDisplayNameCheck } from "@/components/DisplayNameModal";
 import { HighlightWordRouteScope } from "@/contexts/HighlightWordRouteScope";
@@ -53,6 +54,7 @@ function AppContent() {
 
   return (
     <>
+      <ErrorBoundary>
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
       <PageTransition>
         <HighlightWordRouteScope>
@@ -92,6 +94,7 @@ function AppContent() {
         </HighlightWordRouteScope>
       </PageTransition>
       </Suspense>
+      </ErrorBoundary>
       <BottomNav />
       <DisplayNameModal
         open={showModal}

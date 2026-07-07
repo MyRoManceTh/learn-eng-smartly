@@ -65,8 +65,10 @@ export default function SpeakingPracticePage() {
     return pool.sort(() => 0.5 - Math.random()).slice(0, 50);
   }, [allLessons]);
 
-  const currentWord = words[currentIdx % words.length];
-  const result = showResult && transcript ? scoreAccuracy(currentWord.english, transcript) : null;
+  // words can be empty on first render (lessons still loading) or when no
+  // vocabulary exists. Guard against words[NaN] === undefined before any deref.
+  const currentWord = words.length > 0 ? words[currentIdx % words.length] : undefined;
+  const result = showResult && transcript && currentWord ? scoreAccuracy(currentWord.english, transcript) : null;
 
   const speak = (text: string) => {
     if (!window.speechSynthesis) return;
@@ -88,7 +90,7 @@ export default function SpeakingPracticePage() {
   };
 
   // Auto-show result when transcript arrives
-  if (transcript && !showResult && !isListening) {
+  if (transcript && !showResult && !isListening && currentWord) {
     setShowResult(true);
     const r = scoreAccuracy(currentWord.english, transcript);
     setTotalScore((s) => s + r.score);
@@ -131,6 +133,30 @@ export default function SpeakingPracticePage() {
   }
 
   const avgScore = totalAttempts > 0 ? Math.round(totalScore / totalAttempts) : 0;
+
+  // No word available yet: show a loading spinner or an empty-state, never crash.
+  if (!currentWord) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-rose-50 to-pink-50 flex items-center justify-center p-4">
+        <div className="text-center space-y-4 max-w-sm">
+          {lessonsLoading ? (
+            <div className="animate-spin h-8 w-8 border-4 border-pink-400 border-t-transparent rounded-full mx-auto" />
+          ) : (
+            <>
+              <span className="text-5xl">{<EmojiIcon emoji="📭" />}</span>
+              <h2 className="text-lg font-bold font-thai">ยังไม่มีคำศัพท์ให้ฝึก</h2>
+              <p className="text-sm text-muted-foreground font-thai">
+                ลองเรียนบทเรียนก่อน แล้วกลับมาฝึกพูดนะ
+              </p>
+              <Button onClick={() => navigate("/learn")} variant="outline">
+                ไปเรียนบทเรียน
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-white pb-24">

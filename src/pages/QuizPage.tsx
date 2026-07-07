@@ -36,7 +36,10 @@ const QuizPage = () => {
   const { profile } = useProfile();
 
   const state = location.state as QuizLocationState | null;
-  const questions = state?.questions || sampleQuiz;
+  // An empty array is truthy, so `state?.questions || sampleQuiz` would keep the
+  // empty list and crash on questions[currentQ]. Fall back only on a non-empty set.
+  const questions =
+    state?.questions && state.questions.length > 0 ? state.questions : sampleQuiz;
   const lessonTitle = state?.lessonTitle || "บทเรียน";
   const lessonLevel = state?.lessonLevel || 1;
   const lessonId = state?.lessonId;
