@@ -104,24 +104,33 @@ export function resolveHairStyle(equipped: EquippedItems): string | null {
   return hairItem?.svgProps?.path || null;
 }
 
+/** Get shirt pattern name (stripe / bearhoodie / kimono / …) from equipped shirt */
+export function resolveShirtPattern(equipped: EquippedItems): string | null {
+  const shirtItem = getItemById(equipped.shirt);
+  return shirtItem?.svgProps?.pattern || null;
+}
+
 /** Get hat ID if equipped */
 export function resolveHatId(equipped: EquippedItems): string | null {
-  return null;
+  return equipped.hat || null;
 }
 
-/** Get accessory ID if equipped */
+/** Get accessory ID if equipped (necklace slot). Right-hand items are drawn
+ *  separately via the hand pipeline, so the accessory slot is the necklace. */
 export function resolveAccessoryId(equipped: EquippedItems): string | null {
-  return equipped.rightHand || null;
+  return equipped.necklace || null;
 }
 
-/** Get hat color as CSS hex string */
+/** Get hat color as CSS hex string from the equipped hat item */
 export function resolveHatColor(equipped: EquippedItems): string {
-  return "#e53935";
+  const hatItem = equipped.hat ? getItemById(equipped.hat) : null;
+  if (!hatItem) return "#e53935";
+  return numToHex(parseColor(hatItem.svgProps?.color || "#e53935"));
 }
 
-/** Get accessory color as CSS hex string */
+/** Get accessory (necklace) color as CSS hex string */
 export function resolveAccessoryColor(equipped: EquippedItems): string {
-  const accItem = equipped.rightHand ? getItemById(equipped.rightHand) : null;
+  const accItem = equipped.necklace ? getItemById(equipped.necklace) : null;
   if (!accItem) return "#80deea";
   return numToHex(parseColor(accItem.svgProps?.color || "#80DEEA"));
 }

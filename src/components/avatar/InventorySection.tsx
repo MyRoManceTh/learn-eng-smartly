@@ -11,7 +11,8 @@ interface InventorySectionProps {
   onUnequip: (item: AvatarItem) => void;
 }
 
-const hiddenCategories = new Set(["hat"]);
+// Hats are now fully supported (resolveHatId + drawEquipHat), so nothing is hidden.
+const hiddenCategories = new Set<string>([]);
 
 const categoryConfig: Record<string, { label: string; icon: string; color: string }> = {
   skin: { label: "สีผิว", icon: "👤", color: "from-orange-400 to-amber-500" },

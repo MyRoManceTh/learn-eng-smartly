@@ -21,6 +21,7 @@ import {
 import {
   resolveSpritePalette,
   resolveHairStyle,
+  resolveShirtPattern,
   resolveHatId,
   resolveHatColor,
   resolveAccessoryId,
@@ -69,6 +70,7 @@ function resolveEquipOverlay(equipped?: EquippedItems): EquipmentOverlay | null 
 
   return {
     hairStyle: resolveHairStyle(equipped),
+    shirtPattern: resolveShirtPattern(equipped),
     hatId: resolveHatId(equipped),
     hatColor: resolveHatColor(equipped),
     accessoryId: resolveAccessoryId(equipped),

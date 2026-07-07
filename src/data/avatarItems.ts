@@ -55,6 +55,12 @@ export const avatarItems: AvatarItem[] = [
   { id: "hat_witch", name: "Star Witch Hat", nameThai: "หมวกแม่มดดาว", category: "hat", price: 280, rarity: "epic", icon: "🧙", svgProps: { color: "#4A148C" } },
   { id: "hat_tiara", name: "Crystal Tiara", nameThai: "มงกุฎคริสตัล", category: "hat", price: 350, rarity: "epic", icon: "👑", svgProps: { color: "#B39DDB" } },
   { id: "hat_crown", name: "Royal Crown", nameThai: "มงกุฎราชา", category: "hat", price: 500, rarity: "legendary", icon: "👑", svgProps: { color: "#FFD700" } },
+  // ── new hats ──
+  { id: "hat_baseball", name: "Sporty Cap", nameThai: "หมวกแก๊ปสปอร์ต", category: "hat", price: 90, rarity: "common", icon: "🧢", svgProps: { color: "#EF5350" } },
+  { id: "hat_party", name: "Party Hat", nameThai: "หมวกปาร์ตี้", category: "hat", price: 110, rarity: "common", icon: "🎉", svgProps: { color: "#FF4081" } },
+  { id: "hat_chef", name: "Chef Toque", nameThai: "หมวกเชฟ", category: "hat", price: 160, rarity: "rare", icon: "👨‍🍳", svgProps: { color: "#FFFFFF" } },
+  { id: "hat_grad", name: "Graduation Cap", nameThai: "หมวกบัณฑิต", category: "hat", price: 220, rarity: "epic", icon: "🎓", svgProps: { color: "#263238" } },
+  { id: "hat_astronaut", name: "Space Helmet", nameThai: "หมวกนักบินอวกาศ", category: "hat", price: 320, rarity: "epic", icon: "🚀", svgProps: { color: "#ECEFF1" } },
 
   // ═══════════════════════════════════════════
   // 👕 SHIRTS (8) — ออกแบบใหม่ ไม่มีเนคไท
@@ -166,6 +172,7 @@ export const categoryLabels: { key: ItemCategory; label: string; icon: string }[
   { key: "shirt", label: "เสื้อ", icon: "👕" },
   { key: "pants", label: "กางเกง", icon: "👖" },
   { key: "shoes", label: "รองเท้า", icon: "👟" },
+  { key: "hat", label: "หมวก", icon: "🎩" },
   { key: "necklace", label: "สร้อยคอ", icon: "📿" },
   { key: "leftHand", label: "มือซ้าย", icon: "🫲" },
   { key: "rightHand", label: "มือขวา", icon: "🫱" },

@@ -81,13 +81,104 @@ function drawNeck(ctx: CanvasRenderingContext2D, ox: number, oy: number, P: Spri
   px(ctx, ox+14, oy+14, 4, 2, P.skin);
 }
 
-function drawShirt(ctx: CanvasRenderingContext2D, ox: number, oy: number, P: SpritePalette) {
+function drawShirt(
+  ctx: CanvasRenderingContext2D,
+  ox: number, oy: number,
+  P: SpritePalette,
+  pattern?: string | null,
+) {
   px(ctx, ox+10, oy+16, 12, 11, P.shirt);
   px(ctx, ox+11, oy+16, 10, 1, P.collar);
   px(ctx, ox+10, oy+17, 1, 5, P.shirtShade);
   px(ctx, ox+21, oy+17, 1, 5, P.shirtShade);
   // V-neck line instead of tie
   px(ctx, ox+15, oy+17, 2, 1, P.shirtShade);
+
+  if (pattern && pattern !== "plain") {
+    drawShirtPattern(ctx, ox, oy, P, pattern);
+  }
+}
+
+/**
+ * Draws the shirt pattern on top of the base torso (x 10..21, y 16..26).
+ * Everything stays inside the torso rectangle so it never bleeds into the
+ * neighbouring sprite frame. Colors derive from the shirt color so any hue works.
+ */
+function drawShirtPattern(
+  ctx: CanvasRenderingContext2D,
+  ox: number, oy: number,
+  P: SpritePalette,
+  pattern: string,
+) {
+  const light = lightenHex(P.shirt, 0.4);
+  const dark = darkenHex(P.shirt, 0.18);
+  const darker = darkenHex(P.shirt, 0.3);
+
+  switch (pattern) {
+    case "stripe":
+      px(ctx, ox+10, oy+19, 12, 1, light);
+      px(ctx, ox+10, oy+22, 12, 1, light);
+      px(ctx, ox+10, oy+25, 12, 1, light);
+      break;
+
+    case "bearhoodie":
+      // hood collar band + little bear ears + drawstrings + kangaroo pocket
+      px(ctx, ox+11, oy+16, 10, 2, dark);
+      px(ctx, ox+11, oy+15, 2, 1, darker); // left ear
+      px(ctx, ox+19, oy+15, 2, 1, darker); // right ear
+      px(ctx, ox+14, oy+18, 1, 3, "#ffffff"); // string
+      px(ctx, ox+17, oy+18, 1, 3, "#ffffff"); // string
+      px(ctx, ox+12, oy+23, 8, 2, dark); // pocket
+      break;
+
+    case "overalls":
+      px(ctx, ox+13, oy+19, 6, 6, dark);      // bib panel
+      px(ctx, ox+12, oy+16, 1, 4, darker);    // left strap
+      px(ctx, ox+19, oy+16, 1, 4, darker);    // right strap
+      px(ctx, ox+12, oy+19, 1, 1, "#ffd54f"); // buckle
+      px(ctx, ox+19, oy+19, 1, 1, "#ffd54f"); // buckle
+      px(ctx, ox+15, oy+21, 2, 1, darker);    // pocket seam
+      break;
+
+    case "cardigan":
+      px(ctx, ox+11, oy+16, 10, 1, darker);   // ribbed collar
+      px(ctx, ox+15, oy+17, 2, 9, darker);    // center placket
+      px(ctx, ox+15, oy+19, 1, 1, "#fff8e1"); // buttons
+      px(ctx, ox+15, oy+22, 1, 1, "#fff8e1");
+      px(ctx, ox+15, oy+25, 1, 1, "#fff8e1");
+      break;
+
+    case "kimono": {
+      const trim = lightenHex(P.shirt, 0.5);
+      const obi = darker;
+      // crossed collar
+      px(ctx, ox+13, oy+17, 2, 1, trim);
+      px(ctx, ox+14, oy+18, 2, 1, trim);
+      px(ctx, ox+15, oy+19, 2, 1, trim);
+      px(ctx, ox+16, oy+18, 2, 1, trim);
+      px(ctx, ox+17, oy+17, 2, 1, trim);
+      // obi belt + knot
+      px(ctx, ox+10, oy+22, 12, 2, obi);
+      px(ctx, ox+15, oy+22, 2, 2, lightenHex(obi, 0.35));
+      break;
+    }
+
+    case "magical":
+      px(ctx, ox+12, oy+19, 1, 1, "#fff59d");
+      px(ctx, ox+18, oy+21, 1, 1, "#fff59d");
+      px(ctx, ox+14, oy+24, 1, 1, "#e1bee7");
+      px(ctx, ox+16, oy+18, 1, 1, "#fff59d");
+      px(ctx, ox+19, oy+24, 1, 1, "#b39ddb");
+      break;
+
+    case "celestial":
+      px(ctx, ox+12, oy+19, 1, 1, "#fff59d"); // star
+      px(ctx, ox+18, oy+20, 1, 1, "#fff59d"); // star
+      px(ctx, ox+15, oy+23, 2, 1, "#e3f2fd"); // moon sliver
+      px(ctx, ox+13, oy+25, 1, 1, "#fff59d");
+      px(ctx, ox+19, oy+23, 1, 1, "#fff59d");
+      break;
+  }
 }
 
 function drawArmsIdle(ctx: CanvasRenderingContext2D, ox: number, oy: number, P: SpritePalette) {
@@ -714,6 +805,50 @@ function drawEquipHat(
       px(ctx, ox+13, oy+2, 1, 1, "#4fc3f7"); // side gem
       px(ctx, ox+18, oy+2, 1, 1, "#4fc3f7"); // side gem
       break;
+
+    case "party": {
+      // Cone party hat with pom-pom and polka dots
+      px(ctx, ox+16, oy-4, 1, 1, "#fff59d"); // pom-pom
+      px(ctx, ox+16, oy-3, 1, 1, hatColor);
+      px(ctx, ox+16, oy-2, 2, 1, hatColor);
+      px(ctx, ox+15, oy-1, 3, 1, hatColor);
+      px(ctx, ox+15, oy+0, 4, 1, highlight);
+      px(ctx, ox+14, oy+1, 5, 1, hatColor);
+      px(ctx, ox+13, oy+2, 7, 1, hatColor);
+      px(ctx, ox+12, oy+3, 9, 1, hatColor);
+      px(ctx, ox+11, oy+4, 11, 1, shadow); // brim
+      px(ctx, ox+15, oy+1, 1, 1, "#ffffff"); // dots
+      px(ctx, ox+17, oy+2, 1, 1, "#ffffff");
+      break;
+    }
+
+    case "chef": {
+      // White puffy toque (color-independent; chef hats are white)
+      const puff = "#ffffff";
+      const puffShade = "#eeeeee";
+      px(ctx, ox+11, oy-2, 3, 2, puff);
+      px(ctx, ox+15, oy-3, 3, 2, puff);
+      px(ctx, ox+18, oy-2, 3, 2, puff);
+      px(ctx, ox+10, oy+0, 12, 2, puff);
+      px(ctx, ox+11, oy+0, 10, 1, puffShade);
+      px(ctx, ox+10, oy+2, 12, 2, puffShade); // band
+      px(ctx, ox+10, oy+3, 12, 1, "#e0e0e0");
+      break;
+    }
+
+    case "graduation": {
+      // Mortarboard cap with tassel
+      px(ctx, ox+10, oy+1, 12, 1, hatColor);
+      px(ctx, ox+9,  oy+2, 14, 1, hatColor);  // flat board
+      px(ctx, ox+8,  oy+3, 16, 1, shadow);    // board underside
+      px(ctx, ox+12, oy+4, 8, 1, hatColor);   // cap dome
+      px(ctx, ox+13, oy+5, 6, 1, shadow);
+      px(ctx, ox+16, oy+1, 1, 1, "#ffd54f");  // center button
+      px(ctx, ox+20, oy+2, 1, 1, "#ffd54f");  // tassel
+      px(ctx, ox+21, oy+3, 1, 1, "#ffd54f");
+      px(ctx, ox+21, oy+4, 1, 1, "#ffca28");
+      break;
+    }
   }
 }
 
@@ -730,7 +865,8 @@ function drawEquipAccessory(
     drawSpriteGlasses(ctx, ox, oy, accColor);
   } else if (accId.includes("bow")) {
     drawSpriteBow(ctx, ox, oy, accColor);
-  } else if (accId.includes("necklace")) {
+  } else if (accId.includes("neck") || accId.includes("pendant")) {
+    // Shop necklaces use ids like neck_heart / neck_star (no "necklace" substring).
     drawSpriteNecklace(ctx, ox, oy, accColor);
   } else if (accId.includes("scarf")) {
     drawSpriteScarf(ctx, ox, oy, accColor);
@@ -897,6 +1033,14 @@ function lightenHex(hex: string, amount: number): string {
   ].join("");
 }
 
+/** Hat styles that rest on the head (get a brim contact shadow). Floating or
+ *  ear-style hats — halo, catears, bunnyears, tiara, flowerband, headphones,
+ *  devil — are intentionally excluded. */
+const HAT_CASTS_SHADOW = new Set([
+  "baseball", "beanie", "crown", "wizard", "santa", "beret", "bucket",
+  "astronaut", "party", "chef", "graduation",
+]);
+
 function getHatStyleFromId(hatId: string): string {
   // Map avatarItems IDs (hat_beret, hat_catears, etc.) to drawer names
   if (hatId.includes("beret")) return "beret";
@@ -914,6 +1058,9 @@ function getHatStyleFromId(hatId: string): string {
   if (hatId.includes("halo")) return "halo";
   if (hatId.includes("devil")) return "devil";
   if (hatId.includes("astronaut")) return "astronaut";
+  if (hatId.includes("party")) return "party";
+  if (hatId.includes("chef")) return "chef";
+  if (hatId.includes("grad")) return "graduation";
   return "baseball";
 }
 
@@ -922,6 +1069,7 @@ function getHatStyleFromId(hatId: string): string {
 /** Equipment overlay info passed to frame composers */
 export interface EquipmentOverlay {
   hairStyle: string | null;
+  shirtPattern?: string | null;
   hatId: string | null;
   hatColor: string;
   accessoryId: string | null;
@@ -1065,6 +1213,12 @@ function drawEquipOverlays(
 
   // Hat overlay
   if (equip.hatId) {
+    // Contact shadow: hats that sit on the head cast a soft shadow on the
+    // forehead/hair below the brim so the hat reads as resting on the head
+    // rather than floating. Skipped for floating styles (halo, ears, tiara…).
+    if (HAT_CASTS_SHADOW.has(getHatStyleFromId(equip.hatId))) {
+      px(ctx, ox+10, oy+7, 12, 1, P.skinShade);
+    }
     drawEquipHat(ctx, ox, oy, equip.hatId, equip.hatColor, P);
   }
 
@@ -1102,7 +1256,7 @@ function drawIdleFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
   drawShadow(ctx, ox, 0, false, P);
   drawShoesIdle(ctx, ox, bob, P);
   drawLegsIdle(ctx, ox, bob, P);
-  drawShirt(ctx, ox, bob, P);
+  drawShirt(ctx, ox, bob, P, equip?.shirtPattern);
   drawArmsIdle(ctx, ox, bob, P);
   drawNeck(ctx, ox, bob, P);
   drawFace(ctx, ox, bob, blink, P);
@@ -1115,7 +1269,7 @@ function drawWalkFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
   drawShadow(ctx, ox, 0, false, P);
   drawShoesWalk(ctx, ox, bob, frameIdx, P);
   drawLegsWalk(ctx, ox, bob, frameIdx, P);
-  drawShirt(ctx, ox, bob, P);
+  drawShirt(ctx, ox, bob, P, equip?.shirtPattern);
   drawArmsWalk(ctx, ox, bob, frameIdx, P);
   drawNeck(ctx, ox, bob, P);
   drawFace(ctx, ox, bob, false, P);
@@ -1129,7 +1283,7 @@ function drawSitFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numbe
   drawShadow(ctx, ox, 0, true, P);
   drawShoesSitting(ctx, ox, sitOffset, P);
   drawLegsSitting(ctx, ox, sitOffset, P);
-  drawShirt(ctx, ox, sitOffset + bob, P);
+  drawShirt(ctx, ox, sitOffset + bob, P, equip?.shirtPattern);
   drawArmsSitting(ctx, ox, sitOffset + bob, P);
   drawNeck(ctx, ox, sitOffset + bob, P);
   drawFace(ctx, ox, sitOffset + bob, false, P);
@@ -1143,7 +1297,7 @@ function drawReadFrame(ctx: CanvasRenderingContext2D, ox: number, frameIdx: numb
   drawShadow(ctx, ox, 0, true, P);
   drawShoesSitting(ctx, ox, sitOffset, P);
   drawLegsSitting(ctx, ox, sitOffset, P);
-  drawShirt(ctx, ox, sitOffset + bob, P);
+  drawShirt(ctx, ox, sitOffset + bob, P, equip?.shirtPattern);
   drawArmsReading(ctx, ox, sitOffset + bob, P);
   drawBook(ctx, ox, sitOffset + bob, P);
   drawNeck(ctx, ox, sitOffset + bob, P);

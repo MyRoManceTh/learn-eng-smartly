@@ -3,12 +3,13 @@ import { AvatarItem } from "@/types/avatar";
 /**
  * 🎰 Gacha Exclusive Items
  *
- * Design rules (NEVER violate):
- * - NO hats (project Core rule). Use accessories that render on the body.
- * - Only categories the avatar pipeline can render: necklace, leftHand,
+ * Design rules:
+ * - Only categories the avatar pipeline can render: hat, necklace, leftHand,
  *   rightHand, aura, hairColor, skin, shoes, shirt.
  * - Every item is wearable + visible on the character.
- * - 24 curated items spread across 6 rarities (common → mythic).
+ * - Hats are supported now that the sprite renderer draws equipped hats
+ *   (resolveHatId + drawEquipHat), so a few gacha-exclusive hats are included.
+ * - Curated items spread across 6 rarities (common → mythic).
  */
 export const gachaExclusiveItems: AvatarItem[] = [
   // ═══ COMMON (4) — สีผมและรองเท้าสนุกๆ ═══
@@ -23,13 +24,16 @@ export const gachaExclusiveItems: AvatarItem[] = [
   { id: "gacha_right_icecream", name: "Ice Cream Cone", nameThai: "ไอติมโคน", category: "rightHand", price: 0, rarity: "uncommon", icon: "🍦", svgProps: { color: "#FFE0B2" } },
   { id: "gacha_shoes_strawberry", name: "Berry Sneakers", nameThai: "รองเท้าเบอร์รี่", category: "shoes", price: 0, rarity: "uncommon", icon: "🍓", svgProps: { color: "#E91E63" } },
   { id: "gacha_haircolor_minty", name: "Minty Fresh", nameThai: "ผมมินต์ฟู", category: "hairColor", price: 0, rarity: "uncommon", icon: "🌱", svgProps: { color: "#4DD0A8" } },
+  { id: "gacha_hat_party", name: "Confetti Cone", nameThai: "หมวกปาร์ตี้คอนเฟตตี", category: "hat", price: 0, rarity: "uncommon", icon: "🎉", svgProps: { color: "#FFD54F" } },
 
   // ═══ RARE (5) — ของถือเท่ + ออร่าเริ่มต้น ═══
   { id: "gacha_left_book_glow", name: "Glowing Tome", nameThai: "ตำราเรืองแสง", category: "leftHand", price: 0, rarity: "rare", icon: "📖", svgProps: { color: "#26C6DA" } },
   { id: "gacha_right_quill", name: "Phoenix Quill", nameThai: "ขนนกฟีนิกซ์", category: "rightHand", price: 0, rarity: "rare", icon: "🪶", svgProps: { color: "#FF7043" } },
   { id: "gacha_neck_starlocket", name: "Star Locket", nameThai: "จี้ดวงดาว", category: "necklace", price: 0, rarity: "rare", icon: "⭐", svgProps: { color: "#FFD54F" } },
   { id: "gacha_aura_petals", name: "Petal Breeze", nameThai: "ออร่ากลีบดอก", category: "aura", price: 0, rarity: "rare", icon: "🌸", svgProps: { color: "#F48FB1" } },
-  { id: "gacha_shirt_starry", name: "Starry Tee", nameThai: "เสื้อดวงดาว", category: "shirt", price: 0, rarity: "rare", icon: "✨", svgProps: { color: "#5E35B1", pattern: "plain" } },
+  { id: "gacha_shirt_starry", name: "Starry Tee", nameThai: "เสื้อดวงดาว", category: "shirt", price: 0, rarity: "rare", icon: "✨", svgProps: { color: "#5E35B1", pattern: "celestial" } },
+  { id: "gacha_hat_halo", name: "Angel Halo", nameThai: "ฮาโลนางฟ้า", category: "hat", price: 0, rarity: "rare", icon: "😇", svgProps: { color: "#FFD700" } },
+  { id: "gacha_hat_santa", name: "Santa Hat", nameThai: "หมวกซานต้า", category: "hat", price: 0, rarity: "rare", icon: "🎅", svgProps: { color: "#E53935" } },
 
   // ═══ EPIC (5) — อาวุธ/ออร่าโดดเด่น ═══
   { id: "gacha_right_crystal_wand", name: "Crystal Wand", nameThai: "ไม้กายสิทธิ์คริสตัล", category: "rightHand", price: 0, rarity: "epic", icon: "🔮", svgProps: { color: "#CE93D8" } },
@@ -37,6 +41,7 @@ export const gachaExclusiveItems: AvatarItem[] = [
   { id: "gacha_aura_galaxy", name: "Galaxy Aura", nameThai: "ออร่ากาแล็กซี่", category: "aura", price: 0, rarity: "epic", icon: "🌌", svgProps: { color: "#7C4DFF" } },
   { id: "gacha_neck_phoenix", name: "Phoenix Tear", nameThai: "หยดน้ำตาฟีนิกซ์", category: "necklace", price: 0, rarity: "epic", icon: "🔥", svgProps: { color: "#FF6F00" } },
   { id: "gacha_skin_porcelain", name: "Porcelain Glow", nameThai: "ผิวพอร์ซเลน", category: "skin", price: 0, rarity: "epic", icon: "🌟", svgProps: { color: "#FFF1E6" } },
+  { id: "gacha_hat_star_crown", name: "Starlight Crown", nameThai: "มงกุฎแสงดาว", category: "hat", price: 0, rarity: "epic", icon: "👑", svgProps: { color: "#FFD700" } },
 
   // ═══ LEGENDARY (4) — ดาบและออร่าระดับโลก ═══
   { id: "gacha_right_dragon_blade", name: "Dragon Blade", nameThai: "ดาบมังกรเพลิง", category: "rightHand", price: 0, rarity: "legendary", icon: "🐉", svgProps: { color: "#D84315" } },

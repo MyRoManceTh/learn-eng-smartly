@@ -75,9 +75,11 @@ const TOTAL_FRAMES = 17;
 function makeOverlay(
   hairStyle: string | null,
   hatId: string | null,
+  shirtPattern: string | null = null,
 ): EquipmentOverlay {
   return {
     hairStyle,
+    shirtPattern,
     hatId,
     hatColor: "#cc3344",
     accessoryId: null,
@@ -149,6 +151,19 @@ const HAT_IDS = [
   "hat_bunnyears",
   "hat_flowerband",
   "hat_tiara",
+  "hat_party",
+  "hat_chef",
+  "hat_grad",
+];
+
+const SHIRT_PATTERNS = [
+  "stripe",
+  "bearhoodie",
+  "overalls",
+  "cardigan",
+  "kimono",
+  "magical",
+  "celestial",
 ];
 
 // ── Tests ───────────────────────────────────────────────────────────────
@@ -233,4 +248,22 @@ describe("generateStudentSpriteSheet — hair × hat combinations", () => {
       });
     }
   }
+});
+
+describe("generateStudentSpriteSheet — shirt patterns", () => {
+  for (const pattern of SHIRT_PATTERNS) {
+    it(`shirt pattern="${pattern}" renders inside frame bounds`, () => {
+      const r = generateAndCount(makeOverlay("softbob", null, pattern));
+      expect(r.drawCount).toBeGreaterThan(0);
+      expect(r.outOfFrameX, `${pattern} drew outside its frame`).toEqual([]);
+    });
+  }
+
+  it("a shirt pattern adds pixels vs. a plain shirt", () => {
+    const plain = generateAndCount(makeOverlay("softbob", null, "plain")).drawCount;
+    for (const pattern of SHIRT_PATTERNS) {
+      const withPattern = generateAndCount(makeOverlay("softbob", null, pattern)).drawCount;
+      expect(withPattern, `${pattern} added no pixels`).toBeGreaterThan(plain);
+    }
+  });
 });
