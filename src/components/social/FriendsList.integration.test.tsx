@@ -34,7 +34,11 @@ const mocks = vi.hoisted(() => {
     { user_id: "user-requester", display_name: "Requester One", total_exp: 0, current_streak: 0, equipped: {}, evolution_stage: 1, lessons_completed: 0, energy: 5 },
   ];
 
-  return { toastSuccess, toastError, toastNeutral, deleteMode: () => deleteMode, setDeleteMode, deleteCalls, USER_ID, friendships, profiles };
+  // Stable user reference: useFriends' loadFriends is useCallback([user]); a
+  // fresh object every render would re-fire its effect → infinite re-render.
+  const authUser = { id: USER_ID };
+
+  return { toastSuccess, toastError, toastNeutral, deleteMode: () => deleteMode, setDeleteMode, deleteCalls, USER_ID, friendships, profiles, authUser };
 });
 
 vi.mock("sonner", () => ({
@@ -45,7 +49,7 @@ vi.mock("sonner", () => ({
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ user: { id: mocks.USER_ID } }),
+  useAuth: () => ({ user: mocks.authUser }),
 }));
 
 vi.mock("@/utils/timezone", () => ({
@@ -132,7 +136,15 @@ vi.mock("@/integrations/supabase/client", () => {
 
   return {
     supabase: {
-      rpc: () => Promise.resolve({ data: null, error: null }),
+      // loadFriends resolves friend/requester display data via the
+      // get_public_profiles SECURITY DEFINER RPC (direct profiles reads are
+      // blocked by RLS for other users), so the mock must serve it.
+      rpc: (fn: string) => {
+        if (fn === "get_public_profiles") {
+          return Promise.resolve({ data: mocks.profiles, error: null });
+        }
+        return Promise.resolve({ data: null, error: null });
+      },
       from: (table: string) => {
         if (table === "friendships") return friendshipsApi();
         if (table === "profiles") return profilesApi();

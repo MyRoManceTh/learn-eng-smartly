@@ -110,6 +110,11 @@ vi.mock("@/integrations/supabase/client", () => {
     supabase: {
       rpc: (fn: string, args: Record<string, unknown>) => {
         if (fn === "claim_gift") return mocks.claimGiftRpc(args as any);
+        // addFriendByCode looks up the friend via this SECURITY DEFINER RPC.
+        if (fn === "get_user_id_by_friend_code") {
+          const row = mocks.db.friendCodeIndex[(args as any)._code as string];
+          return Promise.resolve({ data: row ? [row] : [], error: null });
+        }
         return Promise.resolve({ data: null, error: null });
       },
       from: (table: string) => {

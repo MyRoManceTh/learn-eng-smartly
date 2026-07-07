@@ -91,6 +91,10 @@ vi.mock("@/integrations/supabase/client", () => {
     supabase: {
       rpc: (fn: string, args: Record<string, unknown>) => {
         if (fn === "claim_gift") return mocks.claimGiftRpc(args as any);
+        // addFriendByCode resolves the target via this SECURITY DEFINER RPC.
+        if (fn === "get_user_id_by_friend_code") {
+          return Promise.resolve({ data: [{ user_id: "user-2" }], error: null });
+        }
         return Promise.resolve({ data: null, error: null });
       },
       from: (table: string) => {
