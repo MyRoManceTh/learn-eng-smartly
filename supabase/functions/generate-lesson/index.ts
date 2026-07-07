@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getAuthUser, isAdmin } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -243,9 +244,23 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Require a real logged-in user for every action. The public anon key is a
+    // valid JWT but resolves to no user, so this rejects anonymous callers and
+    // stops unauthenticated lesson destruction / paid AI generation abuse.
+    const user = await getAuthUser(req);
+    if (!user) {
+      return jsonResponse({ error: "Unauthorized: login required" }, 403);
+    }
+    const callerIsAdmin = await isAdmin(req);
+
     const body = await req.json();
     const { action, moduleId, level, lessonOrder, topic } = body;
     const supabase = getSupabase();
+
+    // Seeding whole modules/batches is destructive + expensive: admins only.
+    if ((action === "seed-module" || action === "seed-batch") && !callerIsAdmin) {
+      return jsonResponse({ error: "Unauthorized: admin access required" }, 403);
+    }
 
     // ─── GET: ดึงบทเรียน (จาก DB หรือ generate ถ้าไม่มี) ───
     if (!action || action === "get") {
@@ -264,11 +279,12 @@ serve(async (req) => {
 
       // ถ้ามีบทเรียนอยู่แล้ว ตรวจสอบว่า topic ตรงกันหรือไม่
       if (existing) {
-        // ถ้า topic ตรงกัน หรือไม่ได้ส่ง topic มา → ใช้บทเรียนเดิม
-        if (!topic || existing.topic === topic) {
+        // ถ้า topic ตรงกัน ไม่ได้ส่ง topic มา หรือผู้เรียกไม่ใช่แอดมิน → ใช้บทเรียนเดิม
+        // (ป้องกันไม่ให้ผู้เรียนทั่วไปส่ง topic ปลอมมาลบ/เขียนทับบทเรียนที่เผยแพร่แล้ว)
+        if (!topic || existing.topic === topic || !callerIsAdmin) {
           return lessonResponse(existing);
         }
-        // topic ไม่ตรง → ลบบทเรียนเดิมแล้ว generate ใหม่
+        // topic ไม่ตรง + เป็นแอดมิน → ลบบทเรียนเดิมแล้ว generate ใหม่
         console.log(`Topic mismatch: DB="${existing.topic}" vs requested="${topic}". Regenerating...`);
         await supabase.from("lessons").delete().eq("id", existing.id);
       }

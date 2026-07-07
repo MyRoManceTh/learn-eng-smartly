@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { isServiceOrCron, unauthorized } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 const LINE_NOTIFY_API = "https://notify-api.line.me/api/notify";
@@ -38,6 +39,11 @@ async function sendLineNotify(accessToken: string, message: string): Promise<boo
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Fan-out LINE messaging is admin/cron only (prevents mass spam via anon key).
+  if (!(await isServiceOrCron(req))) {
+    return unauthorized(corsHeaders, "Unauthorized: admin or cron access required");
   }
 
   try {

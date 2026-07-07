@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { isAdmin, unauthorized } from "../_shared/auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,11 @@ function getSupabase() {
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Writing to / broadcasting notifications is an admin/service action.
+  if (!(await isAdmin(req))) {
+    return unauthorized(corsHeaders, "Unauthorized: admin access required");
   }
 
   try {
