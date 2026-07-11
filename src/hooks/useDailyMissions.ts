@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DailyMission, MissionType } from "@/types/dopamine";
 import { generateDailyMissions } from "@/data/missionTemplates";
+import { getThaiToday } from "@/utils/timezone";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 
@@ -18,10 +20,13 @@ interface UseDailyMissionsReturn {
 
 export function useDailyMissions(): UseDailyMissionsReturn {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [missions, setMissions] = useState<DailyMission[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const today = new Date().toISOString().split("T")[0];
+  // Thai (UTC+7) day so mission creation/lookup lines up with increment_mission,
+  // which dates progress in Asia/Bangkok server-side. UTC here reset at 07:00.
+  const today = getThaiToday();
 
   const loadOrCreateMissions = useCallback(async () => {
     if (!user) return;
@@ -85,70 +90,32 @@ export function useDailyMissions(): UseDailyMissionsReturn {
     );
     if (!mission) return;
 
-    const newCount = Math.min(mission.current_count + amount, mission.target_count);
-    const nowCompleted = newCount >= mission.target_count;
+    // Atomic server-side progress + reward: the DB validates the mission, applies
+    // coins/XP once with row locking, and computes the all-done x2 bonus + streak
+    // server-side. Removes the client coin/XP write (cheatable + lost-update race).
+    const { data, error } = await (supabase as any).rpc("increment_mission", {
+      p_type: type,
+      p_amount: amount,
+    });
 
-    const updates: any = { current_count: newCount };
-    if (nowCompleted) {
-      updates.completed = true;
-      updates.completed_at = new Date().toISOString();
-    }
+    if (error || !data?.ok || !data?.found) return;
 
-    await supabase
-      .from("daily_missions")
-      .update(updates)
-      .eq("id", mission.id);
-
-    // Update local state
-    const updatedMissions = currentMissions.map((m) =>
-      m.id === mission.id
-        ? { ...m, current_count: newCount, completed: nowCompleted }
-        : m
+    setMissions(
+      currentMissions.map((m) =>
+        m.id === mission.id
+          ? { ...m, current_count: data.current_count ?? m.current_count, completed: !!data.completed }
+          : m
+      )
     );
-    setMissions(updatedMissions);
 
-    if (nowCompleted) {
-      toast.success(`✅ ภารกิจ "${mission.mission_title}" สำเร็จ! +${mission.reward_coins}🪙 +${mission.reward_exp}⚡`);
-
-      // Apply rewards
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("coins, total_exp, total_missions_completed")
-        .eq("user_id", user.id)
-        .single();
-
-      if (profile) {
-        const p = profile as any;
-        let bonusCoins = mission.reward_coins;
-        let bonusExp = mission.reward_exp;
-
-        // Check if ALL missions completed → x2 bonus
-        const allDone = updatedMissions.every((m) => m.completed);
-        if (allDone) {
-          bonusCoins *= 2;
-          bonusExp *= 2;
-          toast.success("🎉 ภารกิจครบ! ได้โบนัส x2!", { duration: 3000 });
-          confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-
-          // Update mission streak
-          await supabase
-            .from("profiles")
-            .update({
-              daily_mission_streak: (p.daily_mission_streak || 0) + 1,
-              last_mission_complete_date: today,
-            } as any)
-            .eq("user_id", user.id);
-        }
-
-        await supabase
-          .from("profiles")
-          .update({
-            coins: (p.coins || 0) + bonusCoins,
-            total_exp: (p.total_exp || 0) + bonusExp,
-            total_missions_completed: (p.total_missions_completed || 0) + 1,
-          } as any)
-          .eq("user_id", user.id);
+    if (data.completed) {
+      toast.success(`✅ ภารกิจ "${data.title || mission.mission_title}" สำเร็จ! +${data.coins}🪙 +${data.exp}⚡`);
+      if (data.all_done) {
+        toast.success("🎉 ภารกิจครบ! ได้โบนัส x2!", { duration: 3000 });
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
       }
+      // Refresh the cached profile so the new coin/XP balance shows immediately.
+      queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
     }
   };
 

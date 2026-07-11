@@ -102,49 +102,22 @@ export default function RewardsShopPage() {
 
     setBuying(powerUp.id);
 
-    // Atomic debit first — raises server-side if the balance is insufficient,
-    // so we never grant the effect without charging (or charge without the guard).
-    const { error: spendError } = await (supabase as any).rpc("spend_coins", {
-      p_amount: powerUp.price,
-      p_reason: powerUp.id,
+    // Atomic debit + effect in one RPC: the coins are never taken unless the
+    // power-up is granted, and the power-up counter columns are updated safely.
+    const { error } = await (supabase as any).rpc("purchase_power_up", {
+      p_action: powerUp.action,
+      p_price: powerUp.price,
     });
-    if (spendError) {
-      toast.error("เหรียญไม่พอ!");
+
+    if (error) {
+      const insufficient = /insufficient/i.test(error.message || "");
+      toast.error(insufficient ? "เหรียญไม่พอ!" : "ซื้อไม่สำเร็จ ลองใหม่อีกครั้ง");
       setBuying(null);
       return;
     }
 
-    // Apply the (non-currency) power-up effect.
-    const updates: Record<string, any> = {};
-    switch (powerUp.action) {
-      case "freeze":
-        updates.streak_freeze_count = ((profile as any).streak_freeze_count || 0) + 1;
-        break;
-      case "double_xp":
-        updates.double_xp_count = ((profile as any).double_xp_count || 0) + 1;
-        break;
-      case "refill":
-        updates.energy = 5;
-        updates.energy_last_refill = new Date().toISOString();
-        break;
-      case "gacha":
-        updates.gacha_tickets = (profile.gacha_tickets || 0) + 1;
-        break;
-      case "hints":
-        updates.hint_count = ((profile as any).hint_count || 0) + 5;
-        break;
-      case "double_coins":
-        updates.double_coins_count = ((profile as any).double_coins_count || 0) + 1;
-        break;
-    }
-
-    await supabase
-      .from("profiles")
-      .update(updates as any)
-      .eq("user_id", user.id);
-
     refreshProfile();
-    toast.success(`ซื้อ ${powerUp.nameThai} สำเร็จ! $<EmojiIcon emoji={powerUp.emoji} />`);
+    toast.success(`ซื้อ ${powerUp.nameThai} สำเร็จ!`);
     confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
     setBuying(null);
   };
