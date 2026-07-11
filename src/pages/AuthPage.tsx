@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { redirectToLineLogin } from "@/lib/line-auth";
@@ -9,6 +10,7 @@ import { BookOpen, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const AuthPage = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,28 +21,20 @@ const AuthPage = () => {
     setLoading(true);
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          console.error("Login error:", error);
-          throw error;
-        }
-        console.log("Login successful:", data);
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
         toast.success("เข้าสู่ระบบสำเร็จ!");
+        navigate("/", { replace: true });
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin },
         });
-        if (error) {
-          console.error("SignUp error:", error);
-          throw error;
-        }
-        console.log("SignUp successful:", data);
+        if (error) throw error;
         toast.success("สมัครสมาชิกสำเร็จ! กรุณาตรวจสอบอีเมลเพื่อยืนยัน");
       }
     } catch (err: any) {
-      console.error("Auth error details:", err);
       // แสดง error message ที่ชัดเจนขึ้น
       let errorMessage = "เกิดข้อผิดพลาด";
       if (err.message) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,9 @@ const QuizPage = () => {
   const [shaking, setShaking] = useState(false);
   const [earnedExp, setEarnedExp] = useState(0);
   const [earnedCoins, setEarnedCoins] = useState(0);
+  // Guards the final submit so a double-tap on the results button can't insert
+  // learning_history twice or double-increment daily missions.
+  const submittingRef = useRef(false);
 
   const question = questions[currentQ];
 
@@ -82,7 +85,9 @@ const QuizPage = () => {
 
   const handleNext = async () => {
     if (currentQ + 1 >= questions.length) {
-      const finalScore = score + (selected === question.correctIndex ? 0 : 0);
+      // Reentrancy guard: ignore repeat taps while the results are being saved.
+      if (submittingRef.current) return;
+      submittingRef.current = true;
       // Score was already incremented in handleSelect
       setFinished(true);
       playComplete();

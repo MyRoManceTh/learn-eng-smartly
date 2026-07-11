@@ -5,6 +5,18 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// Fail loudly and visibly (not a blank white screen) if a deploy forgets the
+// Supabase env vars — createClient would otherwise throw before React mounts.
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  const msg = "Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY environment variable.";
+  if (typeof document !== "undefined") {
+    document.body.innerHTML =
+      `<div style="font-family:sans-serif;padding:2rem;text-align:center;color:#b91c1c">` +
+      `แอปตั้งค่าไม่ครบ — ไม่พบค่า Supabase environment variables<br/><small>${msg}</small></div>`;
+  }
+  throw new Error(msg);
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 

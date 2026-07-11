@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { RewardData } from "@/types/dopamine";
 import { avatarItems } from "@/data/avatarItems";
 import { getThaiToday } from "@/utils/timezone";
+import { toast } from "sonner";
 
 interface UseDailyRewardReturn {
   showModal: boolean;
@@ -66,7 +67,9 @@ export function useDailyReward(
     });
 
     if (error) {
-      console.error("claim_daily_reward failed:", error);
+      // Real failure (network / RPC missing) — tell the user instead of silently
+      // closing the modal as if the reward was granted.
+      toast.error("รับรางวัลไม่สำเร็จ ลองใหม่อีกครั้ง");
       return;
     }
 
