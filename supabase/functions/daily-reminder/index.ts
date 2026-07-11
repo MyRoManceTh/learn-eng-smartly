@@ -327,18 +327,18 @@ serve(async (req) => {
     let linesSent = 0;
     let notifsSent = 0;
 
-    // Build LINE userId map from auth metadata
-    const { data: authData } = await supabase.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000,
-    });
-
+    // Build LINE userId map from auth metadata — paginate so users beyond the
+    // first 1000 still get reminders (listUsers returns one page at a time).
     const lineUserMap = new Map<string, string>();
-    if (authData?.users) {
-      for (const u of authData.users) {
+    const perPage = 1000;
+    for (let page = 1; page <= 100; page++) {
+      const { data: authData } = await supabase.auth.admin.listUsers({ page, perPage });
+      const users = authData?.users ?? [];
+      for (const u of users) {
         const lineId = u.user_metadata?.line_user_id;
         if (lineId) lineUserMap.set(u.id, lineId);
       }
+      if (users.length < perPage) break; // last page reached
     }
 
     // Send reminders
