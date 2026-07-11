@@ -10,7 +10,7 @@ RETURNS TABLE (
   lessons_completed integer,
   energy integer,
   friend_code text,
-  current_level text
+  current_level integer
 )
 LANGUAGE sql
 STABLE
