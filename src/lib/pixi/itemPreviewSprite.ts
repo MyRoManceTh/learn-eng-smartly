@@ -382,22 +382,8 @@ function drawAccessoryPreview(ctx: CanvasRenderingContext2D, id: string, color: 
     px(ctx, 14, 10, 7, 3, color);
     px(ctx, 16, 10, 3, 1, hi);
     px(ctx, 15, 13, 5, 1, dk);
-  } else if (id.includes("necklace")) {
-    // Heart pendant necklace
-    px(ctx, 4, 5, 16, 1, color);
-    px(ctx, 5, 6, 14, 1, color);
-    px(ctx, 7, 7, 10, 1, color);
-    px(ctx, 9, 8, 6, 1, color);
-    px(ctx, 6, 6, 2, 1, hi);
-    px(ctx, 14, 6, 2, 1, hi);
-    // Heart
-    px(ctx, 10, 10, 2, 1, "#ff4081");
-    px(ctx, 13, 10, 2, 1, "#ff4081");
-    px(ctx, 9, 11, 7, 2, "#ff4081");
-    px(ctx, 10, 13, 5, 1, "#ff4081");
-    px(ctx, 11, 14, 3, 1, "#ff4081");
-    px(ctx, 12, 15, 1, 1, "#ff4081");
-    px(ctx, 10, 11, 2, 1, "#ff8ab3"); // shine
+  } else if (id.includes("neck") || id.includes("pendant")) {
+    drawNecklacePreview(ctx, id, color);
   } else if (id.includes("teddy")) {
     // Teddy bear
     const fur = color;
@@ -501,6 +487,109 @@ function drawAccessoryPreview(ctx: CanvasRenderingContext2D, id: string, color: 
     px(ctx, 10, 10, 4, 4, color);
     px(ctx, 11, 14, 2, 2, color);
     px(ctx, 11, 10, 2, 1, hi);
+  }
+}
+
+/**
+ * Necklace preview — draped chain + the item's own pendant shape in its
+ * item color, mirroring drawSpriteNecklace on the avatar sprite.
+ */
+function drawNecklacePreview(ctx: CanvasRenderingContext2D, id: string, color: string) {
+  const dk = darken(color, 0.4);
+  const hi = lighten(color, 0.3);
+
+  if (id.includes("pearl")) {
+    // Strand of shaded beads, no pendant
+    px(ctx, 4, 6, 16, 2, "#ffffff");
+    px(ctx, 5, 8, 14, 1, "#e8e8ee");
+    for (let i = 0; i < 7; i++) px(ctx, 5 + i * 2, 7, 1, 1, "#c7c7d1");
+    px(ctx, 7, 9, 10, 1, "#ffffff");
+    px(ctx, 9, 9, 1, 1, "#9e9ea8");
+    px(ctx, 13, 9, 1, 1, "#9e9ea8");
+    px(ctx, 10, 10, 4, 3, "#ffffff"); // drop pearl
+    px(ctx, 12, 11, 1, 1, "#c7c7d1");
+    px(ctx, 10, 12, 4, 1, "#9e9ea8");
+    return;
+  }
+
+  // Draped gold chain
+  px(ctx, 4, 5, 16, 1, "#c9a02c");
+  px(ctx, 5, 6, 14, 1, "#c9a02c");
+  px(ctx, 7, 7, 10, 1, "#c9a02c");
+  px(ctx, 9, 8, 6, 1, "#c9a02c");
+  px(ctx, 6, 6, 2, 1, "#e6c35c");
+  px(ctx, 14, 6, 2, 1, "#e6c35c");
+  px(ctx, 11, 9, 2, 1, "#8a6d1f"); // bail
+
+  if (id.includes("heart")) {
+    px(ctx, 9, 10, 2, 1, color);
+    px(ctx, 13, 10, 2, 1, color);
+    px(ctx, 8, 11, 8, 2, color);
+    px(ctx, 10, 13, 4, 1, color);
+    px(ctx, 11, 14, 2, 1, color);
+    px(ctx, 9, 11, 2, 1, hi);
+    px(ctx, 11, 15, 2, 1, dk);
+  } else if (id.includes("star")) {
+    px(ctx, 11, 10, 2, 1, color);
+    px(ctx, 8, 11, 8, 2, color);
+    px(ctx, 10, 13, 4, 1, color);
+    px(ctx, 9, 14, 2, 1, color);
+    px(ctx, 13, 14, 2, 1, color);
+    px(ctx, 11, 11, 2, 1, hi);
+    px(ctx, 9, 15, 1, 1, dk);
+    px(ctx, 14, 15, 1, 1, dk);
+  } else if (id.includes("crystal")) {
+    px(ctx, 11, 10, 2, 1, color);
+    px(ctx, 10, 11, 4, 2, color);
+    px(ctx, 9, 13, 6, 2, color);
+    px(ctx, 10, 15, 4, 1, color);
+    px(ctx, 11, 16, 2, 1, dk);
+    px(ctx, 10, 11, 1, 2, hi);
+    px(ctx, 13, 13, 2, 2, dk);
+  } else if (id.includes("moon")) {
+    px(ctx, 10, 10, 4, 1, color);
+    px(ctx, 9, 11, 3, 1, color);
+    px(ctx, 8, 12, 3, 2, color);
+    px(ctx, 9, 14, 3, 1, color);
+    px(ctx, 10, 15, 4, 1, color);
+    px(ctx, 9, 11, 1, 1, hi);
+    px(ctx, 13, 10, 1, 1, dk);
+    px(ctx, 13, 15, 1, 1, dk);
+  } else if (id.includes("dragon")) {
+    px(ctx, 9, 10, 6, 2, dk); // mount band
+    px(ctx, 10, 12, 4, 2, color);
+    px(ctx, 11, 14, 3, 1, color);
+    px(ctx, 11, 15, 2, 1, color);
+    px(ctx, 12, 16, 1, 1, hi); // sharp tip
+    px(ctx, 13, 12, 1, 2, dk);
+  } else if (id.includes("clover")) {
+    px(ctx, 9, 10, 2, 2, color);
+    px(ctx, 13, 10, 2, 2, color);
+    px(ctx, 8, 12, 8, 2, color);
+    px(ctx, 10, 14, 4, 1, color);
+    px(ctx, 9, 11, 1, 1, hi);
+    px(ctx, 11, 15, 2, 2, dk); // stem
+  } else if (id.includes("candy")) {
+    px(ctx, 10, 10, 4, 1, color);
+    px(ctx, 9, 11, 6, 3, color);
+    px(ctx, 10, 14, 4, 1, color);
+    px(ctx, 10, 11, 2, 1, hi); // swirl
+    px(ctx, 12, 13, 2, 1, hi);
+    px(ctx, 13, 14, 1, 1, dk);
+  } else if (id.includes("phoenix")) {
+    px(ctx, 11, 10, 2, 1, color);
+    px(ctx, 10, 11, 4, 2, color);
+    px(ctx, 9, 13, 6, 2, color);
+    px(ctx, 10, 15, 4, 1, color);
+    px(ctx, 11, 13, 2, 2, "#ffd600"); // hot core
+    px(ctx, 13, 15, 1, 1, dk);
+  } else {
+    // Generic round pendant
+    px(ctx, 10, 10, 4, 1, color);
+    px(ctx, 9, 11, 6, 3, color);
+    px(ctx, 10, 14, 4, 1, color);
+    px(ctx, 10, 11, 2, 1, hi);
+    px(ctx, 13, 13, 1, 1, dk);
   }
 }
 

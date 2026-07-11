@@ -867,7 +867,7 @@ function drawEquipAccessory(
     drawSpriteBow(ctx, ox, oy, accColor);
   } else if (accId.includes("neck") || accId.includes("pendant")) {
     // Shop necklaces use ids like neck_heart / neck_star (no "necklace" substring).
-    drawSpriteNecklace(ctx, ox, oy, accColor);
+    drawSpriteNecklace(ctx, ox, oy, accId, accColor);
   } else if (accId.includes("scarf")) {
     drawSpriteScarf(ctx, ox, oy, accColor);
   } else if (accId.includes("wand")) {
@@ -915,16 +915,109 @@ function drawSpriteBow(ctx: CanvasRenderingContext2D, ox: number, oy: number, co
   px(ctx, ox+23, oy+3, 1, 1, hi);
 }
 
-function drawSpriteNecklace(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
-  const hi = lightenHex(color, 0.3);
-  // Chain around neck
-  px(ctx, ox+12, oy+15, 8, 1, color);
-  px(ctx, ox+13, oy+15, 1, 1, hi);
-  px(ctx, ox+17, oy+15, 1, 1, hi);
-  // Heart pendant
-  px(ctx, ox+15, oy+16, 2, 1, color);
-  px(ctx, ox+15, oy+17, 2, 1, color);
-  px(ctx, ox+16, oy+17, 1, 1, hi);
+/**
+ * Necklace overlay — gold chain across the neck (y15) plus a pendant hanging
+ * on the chest (y17..20). Each necklace id gets its own pendant silhouette;
+ * dark edging keeps pale item colors (pearl/moon/crystal) readable on any
+ * shirt or background.
+ */
+function drawSpriteNecklace(
+  ctx: CanvasRenderingContext2D,
+  ox: number, oy: number,
+  accId: string,
+  color: string,
+) {
+  const dk = darkenHex(color, 0.45);
+  const hi = lightenHex(color, 0.35);
+
+  if (accId.includes("pearl")) {
+    // Double strand of shaded beads — reads even white-on-white
+    px(ctx, ox+12, oy+15, 8, 1, "#ffffff");
+    px(ctx, ox+13, oy+15, 1, 1, "#c7c7d1");
+    px(ctx, ox+15, oy+15, 1, 1, "#c7c7d1");
+    px(ctx, ox+17, oy+15, 1, 1, "#c7c7d1");
+    px(ctx, ox+13, oy+16, 6, 1, "#e8e8ee");
+    px(ctx, ox+14, oy+16, 1, 1, "#9e9ea8");
+    px(ctx, ox+16, oy+16, 1, 1, "#9e9ea8");
+    px(ctx, ox+15, oy+17, 2, 2, "#ffffff"); // drop pearl
+    px(ctx, ox+16, oy+18, 1, 1, "#9e9ea8");
+    return;
+  }
+
+  // Gold chain with hanging bail
+  px(ctx, ox+12, oy+15, 8, 1, "#c9a02c");
+  px(ctx, ox+12, oy+15, 1, 1, "#8a6d1f");
+  px(ctx, ox+19, oy+15, 1, 1, "#8a6d1f");
+  px(ctx, ox+15, oy+16, 2, 1, "#8a6d1f");
+
+  if (accId.includes("heart")) {
+    px(ctx, ox+13, oy+17, 2, 1, color);
+    px(ctx, ox+16, oy+17, 2, 1, color);
+    px(ctx, ox+13, oy+18, 5, 1, color);
+    px(ctx, ox+13, oy+18, 1, 1, hi);
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+15, oy+20, 1, 1, dk);
+  } else if (accId.includes("star")) {
+    px(ctx, ox+15, oy+17, 1, 1, color);
+    px(ctx, ox+13, oy+18, 5, 1, color);
+    px(ctx, ox+15, oy+18, 1, 1, hi);
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+13, oy+20, 1, 1, dk);
+    px(ctx, ox+17, oy+20, 1, 1, dk);
+  } else if (accId.includes("crystal")) {
+    // Elongated crystal drop
+    px(ctx, ox+15, oy+17, 1, 1, color);
+    px(ctx, ox+14, oy+18, 3, 1, color);
+    px(ctx, ox+14, oy+18, 1, 1, hi);
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+16, oy+19, 1, 1, dk);
+    px(ctx, ox+15, oy+20, 1, 1, dk);
+  } else if (accId.includes("moon")) {
+    // Crescent open to the right
+    px(ctx, ox+14, oy+17, 3, 1, color);
+    px(ctx, ox+16, oy+17, 1, 1, dk);
+    px(ctx, ox+13, oy+18, 2, 1, color);
+    px(ctx, ox+13, oy+18, 1, 1, hi);
+    px(ctx, ox+13, oy+19, 2, 1, color);
+    px(ctx, ox+14, oy+20, 3, 1, color);
+    px(ctx, ox+16, oy+20, 1, 1, dk);
+  } else if (accId.includes("dragon")) {
+    // Fang: dark mount band, tapering tooth with light tip
+    px(ctx, ox+14, oy+17, 3, 1, dk);
+    px(ctx, ox+14, oy+18, 3, 1, color);
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+16, oy+19, 1, 1, dk);
+    px(ctx, ox+15, oy+20, 1, 1, hi);
+  } else if (accId.includes("clover")) {
+    // Clover: lobes + stem
+    px(ctx, ox+13, oy+17, 2, 1, color);
+    px(ctx, ox+16, oy+17, 2, 1, color);
+    px(ctx, ox+13, oy+18, 5, 1, color);
+    px(ctx, ox+14, oy+18, 1, 1, hi);
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+15, oy+20, 1, 1, dk); // stem
+  } else if (accId.includes("candy")) {
+    // Round wrapped candy with swirl
+    px(ctx, ox+14, oy+17, 3, 1, color);
+    px(ctx, ox+13, oy+18, 5, 1, color);
+    px(ctx, ox+14, oy+18, 2, 1, hi); // swirl
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+16, oy+19, 1, 1, dk);
+  } else if (accId.includes("phoenix")) {
+    // Flame teardrop with hot core
+    px(ctx, ox+15, oy+17, 1, 1, color);
+    px(ctx, ox+14, oy+18, 3, 1, color);
+    px(ctx, ox+14, oy+19, 3, 1, color);
+    px(ctx, ox+15, oy+19, 1, 1, "#ffd600"); // core
+    px(ctx, ox+15, oy+20, 1, 1, dk);
+  } else {
+    // Generic round pendant
+    px(ctx, ox+14, oy+17, 3, 1, color);
+    px(ctx, ox+14, oy+18, 3, 1, color);
+    px(ctx, ox+14, oy+18, 1, 1, hi);
+    px(ctx, ox+16, oy+18, 1, 1, dk);
+    px(ctx, ox+15, oy+19, 1, 1, dk);
+  }
 }
 
 function drawSpriteScarf(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {

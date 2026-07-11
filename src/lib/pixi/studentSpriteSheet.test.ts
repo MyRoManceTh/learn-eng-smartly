@@ -76,14 +76,16 @@ function makeOverlay(
   hairStyle: string | null,
   hatId: string | null,
   shirtPattern: string | null = null,
+  accessoryId: string | null = null,
+  accessoryColor: string = "#80DEEA",
 ): EquipmentOverlay {
   return {
     hairStyle,
     shirtPattern,
     hatId,
     hatColor: "#cc3344",
-    accessoryId: null,
-    accessoryColor: "#80DEEA",
+    accessoryId,
+    accessoryColor,
     leftHandId: null,
     leftHandColor: "#80DEEA",
     rightHandId: null,
@@ -248,6 +250,57 @@ describe("generateStudentSpriteSheet — hair × hat combinations", () => {
       });
     }
   }
+});
+
+describe("generateStudentSpriteSheet — necklaces", () => {
+  // id → item color, mirroring avatarItems.ts / gachaItems.ts
+  const NECKLACES: Array<[string, string]> = [
+    ["neck_heart", "#FF4081"],
+    ["neck_star", "#FFD700"],
+    ["neck_pearl", "#FFFFFF"],
+    ["neck_crystal", "#B3E5FC"],
+    ["neck_moon", "#FFF9C4"],
+    ["neck_dragon", "#FF6F00"],
+    ["gacha_neck_clover", "#66BB6A"],
+    ["gacha_neck_candy", "#FF80AB"],
+    ["gacha_neck_starlocket", "#FFD54F"],
+    ["gacha_neck_phoenix", "#FF6F00"],
+  ];
+
+  const fingerprint = (overlay: EquipmentOverlay | null) => {
+    draws = [];
+    generateStudentSpriteSheet(undefined, overlay);
+    return draws.map((d) => `${d.x},${d.y},${d.w},${d.h},${d.fillStyle}`).join("|");
+  };
+
+  for (const [id, color] of NECKLACES) {
+    it(`necklace="${id}" renders inside frame bounds and adds pixels`, () => {
+      const bare = generateAndCount(makeOverlay("softbob", null)).drawCount;
+      const r = generateAndCount(makeOverlay("softbob", null, null, id, color));
+      expect(r.drawCount, `${id} added no pixels`).toBeGreaterThan(bare);
+      expect(r.outOfFrameX, `${id} drew outside its frame`).toEqual([]);
+    });
+  }
+
+  it("each necklace draws a distinct pendant (not just a recolor)", () => {
+    // Same accessoryColor for all → any output difference must come from the
+    // per-id pendant shape.
+    const prints = new Map<string, string>();
+    for (const [id] of NECKLACES) {
+      prints.set(id, fingerprint(makeOverlay("softbob", null, null, id, "#B3E5FC")));
+    }
+    const ids = [...prints.keys()];
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        // star and starlocket intentionally share the star pendant shape
+        if (ids[i].includes("star") && ids[j].includes("star")) continue;
+        expect(
+          prints.get(ids[i]),
+          `${ids[i]} and ${ids[j]} rendered identically`,
+        ).not.toBe(prints.get(ids[j]));
+      }
+    }
+  });
 });
 
 describe("generateStudentSpriteSheet — shirt patterns", () => {
