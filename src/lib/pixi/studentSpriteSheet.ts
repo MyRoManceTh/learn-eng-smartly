@@ -730,8 +730,8 @@ function drawEquipAccessory(
     drawSpriteGlasses(ctx, ox, oy, accColor);
   } else if (accId.includes("bow")) {
     drawSpriteBow(ctx, ox, oy, accColor);
-  } else if (accId.includes("necklace")) {
-    drawSpriteNecklace(ctx, ox, oy, accColor);
+  } else if (accId.startsWith("neck_") || accId.startsWith("gacha_neck_")) {
+    drawSpriteNecklace(ctx, ox, oy, accId, accColor);
   } else if (accId.includes("scarf")) {
     drawSpriteScarf(ctx, ox, oy, accColor);
   } else if (accId.includes("wand")) {
@@ -779,16 +779,45 @@ function drawSpriteBow(ctx: CanvasRenderingContext2D, ox: number, oy: number, co
   px(ctx, ox+23, oy+3, 1, 1, hi);
 }
 
-function drawSpriteNecklace(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
-  const hi = lightenHex(color, 0.3);
-  // Chain around neck
-  px(ctx, ox+12, oy+15, 8, 1, color);
-  px(ctx, ox+13, oy+15, 1, 1, hi);
-  px(ctx, ox+17, oy+15, 1, 1, hi);
-  // Heart pendant
-  px(ctx, ox+15, oy+16, 2, 1, color);
-  px(ctx, ox+15, oy+17, 2, 1, color);
-  px(ctx, ox+16, oy+17, 1, 1, hi);
+function drawSpriteNecklace(ctx: CanvasRenderingContext2D, ox: number, oy: number, id: string, color: string) {
+  // A dark rim keeps pale pearls and light-colored pendants legible on any shirt.
+  const rim = darkenHex(color, 0.55);
+  const shine = lightenHex(color, 0.35);
+  px(ctx, ox+12, oy+15, 2, 1, rim);
+  px(ctx, ox+14, oy+16, 4, 1, rim);
+  px(ctx, ox+18, oy+15, 2, 1, rim);
+  px(ctx, ox+15, oy+17, 3, 3, rim);
+  px(ctx, ox+16, oy+17, 1, 2, color);
+
+  if (id === "neck_pearl") {
+    px(ctx, ox+12, oy+15, 2, 2, rim);
+    px(ctx, ox+12, oy+15, 1, 1, color);
+    px(ctx, ox+14, oy+16, 2, 2, rim);
+    px(ctx, ox+14, oy+16, 1, 1, color);
+    px(ctx, ox+17, oy+16, 2, 2, rim);
+    px(ctx, ox+17, oy+16, 1, 1, color);
+    px(ctx, ox+19, oy+15, 2, 2, rim);
+    px(ctx, ox+19, oy+15, 1, 1, color);
+    px(ctx, ox+16, oy+18, 1, 1, shine);
+  } else if (id.includes("star") || id.includes("dragon") || id.includes("phoenix")) {
+    px(ctx, ox+16, oy+16, 1, 4, color);
+    px(ctx, ox+14, oy+18, 5, 1, color);
+    px(ctx, ox+16, oy+17, 1, 1, shine);
+  } else if (id.includes("heart") || id.includes("candy")) {
+    px(ctx, ox+15, oy+17, 1, 1, shine);
+    px(ctx, ox+17, oy+17, 1, 1, shine);
+    px(ctx, ox+16, oy+18, 1, 1, color);
+  } else if (id.includes("clover")) {
+    px(ctx, ox+15, oy+17, 3, 2, color);
+    px(ctx, ox+16, oy+19, 1, 1, shine);
+  } else if (id.includes("moon")) {
+    px(ctx, ox+15, oy+17, 3, 3, color);
+    px(ctx, ox+17, oy+17, 1, 2, rim);
+  } else {
+    // Crystal/other pendants have a bright center and pointed base.
+    px(ctx, ox+15, oy+17, 3, 2, color);
+    px(ctx, ox+16, oy+18, 1, 2, shine);
+  }
 }
 
 function drawSpriteScarf(ctx: CanvasRenderingContext2D, ox: number, oy: number, color: string) {
