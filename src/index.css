@@ -1,4 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+@font-face { font-family: Figtree; src: url('./assets/fonts/figtree-regular.ttf') format('truetype'); font-weight: 400 600; font-display: swap; }
+@font-face { font-family: Figtree; src: url('./assets/fonts/figtree-bold.ttf') format('truetype'); font-weight: 700 900; font-display: swap; }
+@font-face { font-family: Outfit; src: url('./assets/fonts/outfit-medium.ttf') format('truetype'); font-weight: 400 600; font-display: swap; }
+@font-face { font-family: Outfit; src: url('./assets/fonts/outfit-bold.ttf') format('truetype'); font-weight: 700 900; font-display: swap; }
+@font-face { font-family: 'Noto Sans Thai'; src: url('./assets/fonts/noto-thai-regular.ttf') format('truetype'); font-weight: 300 600; font-display: swap; }
+@font-face { font-family: 'Noto Sans Thai'; src: url('./assets/fonts/noto-thai-bold.ttf') format('truetype'); font-weight: 700 900; font-display: swap; }
+@font-face { font-family: 'Crimson Text'; src: url('./assets/fonts/crimson-regular.ttf') format('truetype'); font-weight: 400 600; font-display: swap; }
+@font-face { font-family: 'Crimson Text'; src: url('./assets/fonts/crimson-bold.ttf') format('truetype'); font-weight: 700 900; font-display: swap; }
+@font-face { font-family: 'Source Sans 3'; src: url('./assets/fonts/source-regular.ttf') format('truetype'); font-weight: 300 600; font-display: swap; }
+@font-face { font-family: 'Source Sans 3'; src: url('./assets/fonts/source-bold.ttf') format('truetype'); font-weight: 700 900; font-display: swap; }
 
 @tailwind base;
 @tailwind components;
@@ -63,6 +72,10 @@
     --gradient-start: 199 89% 75%;
     --gradient-mid: 250 80% 85%;
     --gradient-end: 330 80% 88%;
+    --arcade-blue: 222 79% 57%;
+    --arcade-coral: 0 100% 71%;
+    --arcade-gold: 43 100% 64%;
+    --arcade-canvas: 220 100% 98%;
   }
 
   .dark {
@@ -99,6 +112,10 @@
     --reading-bg: 210 20% 12%;
     --english-text: 0 0% 90%;
     --thai-phonetic: 330 50% 65%;
+    --arcade-blue: 222 79% 68%;
+    --arcade-coral: 0 85% 68%;
+    --arcade-gold: 43 100% 64%;
+    --arcade-canvas: 240 10% 8%;
   }
 }
 
@@ -118,6 +135,47 @@
 
   .font-thai {
     font-family: 'Noto Sans Thai', sans-serif;
+  }
+
+  .arcade-type {
+    font-family: 'Figtree', 'Noto Sans Thai', sans-serif;
+  }
+
+  .arcade-title {
+    font-family: 'Outfit', 'Noto Sans Thai', sans-serif;
+  }
+}
+
+@layer components {
+  .arcade-panel {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    box-shadow: 0 5px 0 hsl(var(--arcade-blue) / 0.12);
+  }
+  .arcade-stage {
+    border-radius: 8px;
+    background-image: radial-gradient(circle at 50% 44%, hsl(var(--arcade-gold) / .27) 0 25%, transparent 26%), linear-gradient(160deg, hsl(var(--arcade-blue) / .16), hsl(var(--card)) 58%, hsl(var(--arcade-coral) / .20));
+  }
+  .arcade-avatar-halo {
+    width: min(78%, 360px);
+    min-height: 275px;
+    border-radius: 50%;
+    background: hsl(var(--arcade-gold) / .20);
+    box-shadow: 0 0 0 16px hsl(var(--arcade-blue) / .08);
+  }
+  .arcade-avatar-halo canvas { transform: scale(1.25); }
+  .arcade-mode {
+    min-height: 120px;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 5px 0 hsl(var(--foreground) / .10);
+  }
+  .arcade-action { transition: transform .2s ease, box-shadow .2s ease; }
+  .arcade-action:hover { transform: translateY(-2px); box-shadow: 0 4px 0 hsl(var(--arcade-blue) / .18); }
+  @media (prefers-reduced-motion: reduce) {
+    .arcade-action, .arcade-panel, .arcade-avatar-halo canvas { transition: none; animation: none; }
+    .arcade-action:hover { transform: none; }
   }
 }
 

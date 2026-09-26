@@ -1,19 +1,14 @@
 import { memo } from "react";
 import { AvatarItem } from "@/types/avatar";
-import { getRarityColor, getRarityLabel } from "@/data/avatarItems";
+import { getRarityLabel } from "@/data/avatarItems";
 import PixelItemPreview from "./PixelItemPreview";
+import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { EmojiIcon } from "@/components/ui/EmojiIcon";
+import { Coins, Check } from "lucide-react";
 
 interface ItemCardProps {
   item: AvatarItem;
@@ -25,152 +20,48 @@ interface ItemCardProps {
   onUnequip: (item: AvatarItem) => void;
 }
 
-const rarityGradients: Record<string, string> = {
-  common: "from-slate-200 via-gray-100 to-slate-200",
-  rare: "from-blue-200 via-cyan-100 to-blue-200",
-  epic: "from-purple-200 via-pink-100 to-purple-200",
-  legendary: "from-yellow-200 via-amber-100 to-yellow-200",
-};
-
-const rarityBorders: Record<string, string> = {
-  common: "border-slate-300",
-  rare: "border-blue-400",
-  epic: "border-purple-400",
-  legendary: "border-yellow-400",
-};
-
-const rarityGlow: Record<string, string> = {
-  common: "",
-  rare: "shadow-blue-400/20",
-  epic: "shadow-purple-400/30",
-  legendary: "shadow-yellow-400/40 animate-legendary-glow",
+const rarityStyle: Record<AvatarItem["rarity"], string> = {
+  common: "bg-secondary text-secondary-foreground",
+  uncommon: "bg-quiz-correct/15 text-quiz-correct",
+  rare: "bg-arcade-blue/15 text-arcade-blue",
+  epic: "bg-accent/15 text-accent",
+  legendary: "bg-arcade-gold/25 text-foreground",
+  mythic: "bg-arcade-coral/25 text-foreground",
 };
 
 const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip }: ItemCardProps) => {
   const canAfford = coins >= item.price;
-  const isFree = item.price === 0;
-  const isDefaultOwned = isFree;
-
+  const isOwned = owned || item.price === 0;
   return (
-    <div
-      className={`relative rounded-2xl border-3 p-2.5 text-center transition-all duration-300
-        bg-gradient-to-br ${rarityGradients[item.rarity]}
-        ${rarityBorders[item.rarity]}
-        ${equipped
-          ? "ring-3 ring-green-400 scale-[1.02] shadow-xl shadow-green-400/30 border-green-400"
-          : owned || isDefaultOwned
-          ? `hover:scale-[1.05] hover:shadow-lg ${rarityGlow[item.rarity]} cursor-pointer`
-          : canAfford
-          ? `hover:scale-[1.05] hover:shadow-lg ${rarityGlow[item.rarity]} cursor-pointer`
-          : "opacity-50 grayscale-[30%]"
-        }`}
-      style={{ borderWidth: "3px" }}
-    >
-      {/* Rarity badge */}
-      <div
-        className="absolute -top-1 left-1/2 -translate-x-1/2 text-[8px] font-black px-2 py-0.5 rounded-full text-white uppercase tracking-wider whitespace-nowrap"
-        style={{ backgroundColor: getRarityColor(item.rarity) }}
-      >
-        {getRarityLabel(item.rarity)}
+    <div className={`min-w-0 flex flex-col rounded-md border bg-card p-3 transition-colors ${equipped ? "border-arcade-blue ring-1 ring-arcade-blue" : "border-border hover:border-arcade-blue/60"}`}>
+      <div className="flex justify-between items-start gap-1 min-h-6">
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${rarityStyle[item.rarity]}`}>{getRarityLabel(item.rarity)}</span>
+        {equipped && <span className="flex gap-1 items-center text-[10px] font-bold text-arcade-blue whitespace-nowrap"><Check className="w-3 h-3" />ใส่อยู่</span>}
       </div>
-
-      {/* Equipped badge */}
-      {equipped && (
-        <div className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-lg animate-bounce-slow z-10">
-          {<EmojiIcon emoji="✅" />} ใส่อยู่
-        </div>
-      )}
-
-      {/* Item pixel preview with background circle */}
-      <div className="mt-3 mb-1 flex justify-center">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center
-          bg-white/60 shadow-inner backdrop-blur-sm
-          ${item.rarity === "legendary" ? "animate-pulse-soft" : ""}
-          ${item.rarity === "epic" ? "animate-float" : ""}
-        `}>
-          <PixelItemPreview item={item} size="sm" />
-        </div>
+      <div className="my-3 mx-auto w-20 h-20 flex items-center justify-center rounded-md bg-secondary/70">
+        <PixelItemPreview item={item} size="sm" />
       </div>
-
-      {/* Name */}
-      <p className="text-[11px] font-black font-thai leading-tight truncate text-gray-800">
-        {item.nameThai}
-      </p>
-      <p className="text-[9px] text-gray-500 leading-tight font-semibold">{item.name}</p>
-
-      {/* Action area */}
-      <div className="mt-2">
+      <p className="text-sm font-bold font-thai text-foreground leading-tight break-words min-h-9">{item.nameThai}</p>
+      <p className="text-xs text-muted-foreground truncate mt-0.5" title={item.name}>{item.name}</p>
+      <div className="mt-auto pt-3">
         {equipped ? (
-          <button
-            onClick={() => onUnequip(item)}
-            className="w-full text-[10px] font-thai font-black text-white bg-gradient-to-r from-red-400 to-red-500
-              rounded-xl py-1.5 hover:from-red-500 hover:to-red-600 transition-all
-              shadow-md shadow-red-400/30 active:scale-95"
-          >
-            {<EmojiIcon emoji="✖" />} ถอดออก
-          </button>
-        ) : owned || isDefaultOwned ? (
-          <button
-            onClick={() => onEquip(item)}
-            className="w-full text-[10px] font-thai font-black text-white bg-gradient-to-r from-green-400 to-emerald-500
-              rounded-xl py-1.5 hover:from-green-500 hover:to-emerald-600 transition-all
-              shadow-md shadow-green-400/30 active:scale-95"
-          >
-            {<EmojiIcon emoji="👆" />} สวมใส่!
-          </button>
+          <Button variant="outline" className="w-full h-9 text-xs font-thai" onClick={() => onUnequip(item)}>ถอดออก</Button>
+        ) : isOwned ? (
+          <Button className="w-full h-9 text-xs font-thai bg-arcade-blue text-primary-foreground hover:bg-arcade-blue/90" onClick={() => onEquip(item)}>สวมใส่</Button>
         ) : (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <button
-                disabled={!canAfford}
-                className={`w-full text-[10px] font-black rounded-xl py-1.5 flex items-center justify-center gap-1 transition-all active:scale-95 ${
-                  canAfford
-                    ? "text-white bg-gradient-to-r from-amber-400 to-orange-500 shadow-md shadow-amber-400/30 hover:from-amber-500 hover:to-orange-600"
-                    : "text-gray-400 bg-gray-200 cursor-not-allowed"
-                }`}
-              >
-                {<EmojiIcon emoji="🪙" />} {item.price}
-              </button>
+              <Button disabled={!canAfford} variant="outline" className="w-full h-9 gap-1 text-xs font-thai"><Coins className="h-3.5 w-3.5 text-arcade-gold" />{item.price} เหรียญ</Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="rounded-3xl border-4 mx-4" style={{ borderColor: getRarityColor(item.rarity) }}>
+            <AlertDialogContent className="max-w-sm">
               <AlertDialogHeader>
-                <AlertDialogTitle className="font-thai text-center">
-                  <div className="flex justify-center mb-3 animate-bounce">
-                    <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/60 shadow-inner">
-                      <PixelItemPreview item={item} size="lg" />
-                    </div>
-                  </div>
-                  <div className="text-xl">ซื้อ {item.nameThai}?</div>
-                </AlertDialogTitle>
-                <AlertDialogDescription asChild>
-                  <div className="text-center space-y-3">
-                    <span className="block text-sm font-semibold text-gray-500">{item.name}</span>
-                    <span
-                      className="inline-block text-xs font-black px-3 py-1 rounded-full text-white shadow-md"
-                      style={{ backgroundColor: getRarityColor(item.rarity) }}
-                    >
-                      ⭐ {getRarityLabel(item.rarity)}
-                    </span>
-                    <div className="flex items-center justify-center gap-2 text-2xl font-black">
-                      <span className="animate-coin-spin">{<EmojiIcon emoji="🪙" />}</span>
-                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                        {item.price} เหรียญ
-                      </span>
-                    </div>
-                  </div>
-                </AlertDialogDescription>
+                <div className="mx-auto mb-2 w-24 h-24 flex items-center justify-center rounded-md bg-secondary"><PixelItemPreview item={item} size="lg" /></div>
+                <AlertDialogTitle className="font-thai text-center">ซื้อ {item.nameThai}?</AlertDialogTitle>
+                <AlertDialogDescription className="text-center font-thai">{getRarityLabel(item.rarity)} · {item.price} เหรียญ</AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter className="gap-2 sm:gap-2">
-                <AlertDialogCancel className="font-thai rounded-xl font-bold">
-                  {<EmojiIcon emoji="❌" />} ยกเลิก
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => onBuy(item)}
-                  className="font-thai rounded-xl font-black bg-gradient-to-r from-amber-400 to-orange-500
-                    hover:from-amber-500 hover:to-orange-600 shadow-lg shadow-amber-400/30 text-white border-0"
-                >
-                  {<EmojiIcon emoji="🛒" />} ซื้อเลย!
-                </AlertDialogAction>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="font-thai">ยกเลิก</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onBuy(item)} className="font-thai bg-arcade-blue text-primary-foreground hover:bg-arcade-blue/90">ซื้อเลย</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -181,5 +72,4 @@ const ItemCard = memo(({ item, owned, equipped, coins, onBuy, onEquip, onUnequip
 });
 
 ItemCard.displayName = "ItemCard";
-
 export default ItemCard;

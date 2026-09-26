@@ -68,6 +68,10 @@ export default {
   				'5': 'hsl(var(--level-5))'
   			},
   			'star-gold': 'hsl(var(--star-gold))',
+			'arcade-blue': 'hsl(var(--arcade-blue) / <alpha-value>)',
+			'arcade-coral': 'hsl(var(--arcade-coral) / <alpha-value>)',
+			'arcade-gold': 'hsl(var(--arcade-gold) / <alpha-value>)',
+			'arcade-canvas': 'hsl(var(--arcade-canvas) / <alpha-value>)',
   			gradient: {
   				start: 'hsl(var(--gradient-start))',
   				mid: 'hsl(var(--gradient-mid))',
