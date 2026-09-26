@@ -626,7 +626,7 @@ const WordGamesPage = () => {
       </header>
       <main className="px-4 py-6 max-w-6xl mx-auto space-y-7">
         {/* Game Mode Selector */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4" aria-label="รูปแบบเกม">
           <div className="arcade-mode bg-arcade-blue text-primary-foreground">
             <span className="text-2xl"><EmojiIcon emoji="🎯" /></span>
             <h3 className="font-bold font-thai text-sm mt-2">จับคู่คำ</h3>
