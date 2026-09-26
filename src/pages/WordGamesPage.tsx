@@ -617,37 +617,38 @@ const WordGamesPage = () => {
 
   // === Game Set Selection ===
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-indigo-50 to-purple-100 pb-24">
-      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
-        <div className="px-4 py-3">
-          <h1 className="text-lg font-bold font-thai">{<EmojiIcon emoji="🎮" />} เกมคำศัพท์</h1>
-          <p className="text-xs text-muted-foreground font-thai mt-0.5">เลือกหมวดแล้วเริ่มเล่นเลย!</p>
+    <div className="min-h-screen bg-arcade-canvas arcade-type pb-24">
+      <header className="border-b border-border bg-card sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-5">
+          <h1 className="arcade-title text-2xl font-bold">{<EmojiIcon emoji="🎮" />} เกมคำศัพท์</h1>
+          <p className="text-sm text-muted-foreground font-thai mt-1">เลือกหมวดคำศัพท์ที่อยากเล่น</p>
         </div>
       </header>
-      <main className="px-4 py-4 max-w-lg mx-auto space-y-4">
+      <main className="px-4 py-6 max-w-6xl mx-auto space-y-7">
         {/* Game Mode Selector */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 p-3 text-white shadow-lg">
-            <span className="text-2xl">{<EmojiIcon emoji="🎯" />}</span>
-            <h3 className="font-bold font-thai text-xs mt-1">จับคู่คำ</h3>
-            <p className="text-[10px] text-purple-200 font-thai">Matching</p>
+        <div className="grid grid-cols-3 gap-2 sm:gap-4" aria-label="รูปแบบเกม">
+          <div className="arcade-mode bg-arcade-blue text-primary-foreground">
+            <span className="text-2xl"><EmojiIcon emoji="🎯" /></span>
+            <h3 className="font-bold font-thai text-sm mt-2">จับคู่คำ</h3>
+            <p className="text-xs opacity-80">Matching</p>
           </div>
-          <div className="rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-3 text-white shadow-lg">
-            <span className="text-2xl">{<EmojiIcon emoji="✏" />}️</span>
-            <h3 className="font-bold font-thai text-xs mt-1">เติมคำ</h3>
-            <p className="text-[10px] text-pink-200 font-thai">Fill Blank</p>
+          <div className="arcade-mode bg-arcade-coral text-foreground">
+            <span className="text-2xl"><EmojiIcon emoji="✏" /></span>
+            <h3 className="font-bold font-thai text-sm mt-2">เติมคำ</h3>
+            <p className="text-xs opacity-80">Fill Blank</p>
           </div>
-          <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 p-3 text-white shadow-lg">
-            <span className="text-2xl">{<EmojiIcon emoji="⚡" />}</span>
-            <h3 className="font-bold font-thai text-xs mt-1">เร็วแค่ไหน</h3>
-            <p className="text-[10px] text-orange-200 font-thai">Speed Match</p>
+          <div className="arcade-mode bg-arcade-gold text-foreground">
+            <span className="text-2xl"><EmojiIcon emoji="⚡" /></span>
+            <h3 className="font-bold font-thai text-sm mt-2">เร็วแค่ไหน</h3>
+            <p className="text-xs opacity-80">Speed Match</p>
           </div>
         </div>
 
         {/* Game Sets */}
-        <h3 className="text-sm font-bold font-thai text-foreground">{<EmojiIcon emoji="🎲" />} เลือกหมวดคำศัพท์</h3>
+        <h2 className="arcade-title text-xl font-bold text-foreground">เลือกหมวดคำศัพท์</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {wordGameSets.map((set) => (
-          <div key={set.id} className="rounded-2xl border-2 border-white/60 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+          <div key={set.id} className="arcade-panel p-5 flex flex-col justify-between gap-5">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="font-bold font-thai text-foreground">{set.categoryThai}</h3>
@@ -655,25 +656,26 @@ const WordGamesPage = () => {
                   <span className="text-xs text-muted-foreground">{set.category}</span>
                   <div className="flex gap-0.5">
                     {[1, 2, 3].map(s => (
-                      <Star key={s} className={cn("w-3 h-3", s <= set.level ? "text-amber-400 fill-amber-400" : "text-gray-200")} />
+                      <Star key={s} className={cn("w-3 h-3", s <= set.level ? "text-arcade-gold fill-arcade-gold" : "text-muted")} />
                     ))}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button onClick={() => startMatching(set)} variant="outline" className="flex-1 font-thai text-xs h-10 px-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+              <Button onClick={() => startMatching(set)} variant="outline" className="font-thai text-xs h-11 px-1.5 arcade-action">
                 {<EmojiIcon emoji="🎯" />} จับคู่คำ
               </Button>
-              <Button onClick={() => startFillBlank(set)} variant="outline" className="flex-1 font-thai text-xs h-10 px-2">
+              <Button onClick={() => startFillBlank(set)} variant="outline" className="font-thai text-xs h-11 px-1.5 arcade-action">
                 {<EmojiIcon emoji="✏" />}️ เติมคำ
               </Button>
-              <Button onClick={() => startSpeedMatch(set)} variant="outline" className="flex-1 font-thai text-xs h-10 px-2">
+              <Button onClick={() => startSpeedMatch(set)} variant="outline" className="font-thai text-xs h-11 px-1.5 arcade-action">
                 {<EmojiIcon emoji="⚡" />} เร็วแค่ไหน
               </Button>
             </div>
           </div>
         ))}
+        </div>
       </main>
     </div>
   );
