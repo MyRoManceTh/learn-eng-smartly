@@ -245,7 +245,7 @@ describe("equipped necklaces", () => {
   it("resolves the necklace independently of a held item", () => {
     const equipped = { ...DEFAULT_EQUIPPED, necklace: "neck_pearl", rightHand: "right_wand" };
     expect(resolveAccessoryId(equipped)).toBe("neck_pearl");
-    expect(resolveAccessoryColor(equipped)).toBe("#FFFFFF");
+    expect(resolveAccessoryColor(equipped)).toBe("#ffffff");
   });
 
   for (const item of necklaces) {
