@@ -90,9 +90,7 @@ export function useFriendLeaderboard() {
 
       // 2. Get profiles
       const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name, total_exp, current_streak, evolution_stage, equipped")
-        .in("user_id", allUserIds);
+        .rpc("get_public_profiles", { _ids: allUserIds });
 
       // 3. Get weekly learning history
       const weekStart = getStartOfWeek();

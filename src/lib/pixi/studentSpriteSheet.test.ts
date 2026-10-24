@@ -18,6 +18,10 @@ import {
   SPRITE_FRAME_H,
   type EquipmentOverlay,
 } from "./studentSpriteSheet";
+import { resolveAccessoryId, resolveAccessoryColor } from "./spriteColors";
+import { DEFAULT_EQUIPPED } from "@/types/avatar";
+import { avatarItems } from "@/data/avatarItems";
+import { gachaExclusiveItems } from "@/data/gachaItems";
 
 // ── Recording 2D context (jsdom has no canvas) ──────────────────────────
 interface DrawCall {
@@ -232,5 +236,35 @@ describe("generateStudentSpriteSheet — hair × hat combinations", () => {
         ).toEqual([]);
       });
     }
+  }
+});
+
+describe("equipped necklaces", () => {
+  const necklaces = [...avatarItems, ...gachaExclusiveItems].filter(item => item.category === "necklace");
+
+  it("resolves the necklace independently of a held item", () => {
+    const equipped = { ...DEFAULT_EQUIPPED, necklace: "neck_pearl", rightHand: "right_wand" };
+    expect(resolveAccessoryId(equipped)).toBe("neck_pearl");
+    expect(resolveAccessoryColor(equipped)).toBe("#ffffff");
+  });
+
+  for (const item of necklaces) {
+    it(`${item.id} changes every pose without spilling outside its frame`, () => {
+      const equipped = { ...DEFAULT_EQUIPPED, necklace: item.id, rightHand: "right_wand" };
+      const overlay = { ...makeOverlay("softbob", null), accessoryId: resolveAccessoryId(equipped), accessoryColor: resolveAccessoryColor(equipped), rightHandId: "right_wand" };
+      draws = [];
+      generateStudentSpriteSheet(undefined, { ...overlay, accessoryId: null });
+      const baseline = draws.slice();
+      draws = [];
+      generateStudentSpriteSheet(undefined, overlay);
+      expect(draws.length).toBeGreaterThan(baseline.length);
+      for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
+        const from = frame * SPRITE_FRAME_W;
+        const changes = draws.filter(d => d.x >= from && d.x < from + SPRITE_FRAME_W).length
+          - baseline.filter(d => d.x >= from && d.x < from + SPRITE_FRAME_W).length;
+        expect(changes, `${item.id}: frame ${frame}`).toBeGreaterThan(0);
+      }
+      expect(generateAndCount(overlay).outOfFrameX).toEqual([]);
+    });
   }
 });

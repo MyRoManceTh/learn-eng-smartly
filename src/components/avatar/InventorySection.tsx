@@ -2,6 +2,9 @@ import { AvatarItem, EquippedItems, ItemCategory } from "@/types/avatar";
 import { getItemById, avatarItems } from "@/data/avatarItems";
 import ItemCard from "./ItemCard";
 import { EmojiIcon } from "@/components/ui/EmojiIcon";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { categoryLabels } from "@/data/avatarItems";
 
 interface InventorySectionProps {
   inventory: string[];
@@ -13,34 +16,16 @@ interface InventorySectionProps {
 
 const hiddenCategories = new Set(["hat"]);
 
-const categoryConfig: Record<string, { label: string; icon: string; color: string }> = {
-  skin: { label: "สีผิว", icon: "👤", color: "from-orange-400 to-amber-500" },
-  hair: { label: "ทรงผม", icon: "💇", color: "from-pink-400 to-rose-500" },
-  hairColor: { label: "สีผม", icon: "🎨", color: "from-violet-400 to-purple-500" },
-  hat: { label: "หมวก", icon: "🎩", color: "from-yellow-400 to-orange-400" },
-  shirt: { label: "เสื้อ", icon: "👕", color: "from-green-400 to-emerald-500" },
-  pants: { label: "กางเกง", icon: "👖", color: "from-indigo-400 to-blue-500" },
-  shoes: { label: "รองเท้า", icon: "👟", color: "from-teal-400 to-cyan-500" },
-  necklace: { label: "สร้อยคอ", icon: "📿", color: "from-pink-300 to-rose-400" },
-  leftHand: { label: "มือซ้าย", icon: "🫲", color: "from-blue-400 to-indigo-500" },
-  rightHand: { label: "มือขวา", icon: "🫱", color: "from-purple-400 to-violet-500" },
-  aura: { label: "ออร่า", icon: "✨", color: "from-yellow-300 to-amber-400" },
-};
-
 const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: InventorySectionProps) => {
+  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>("shirt");
   const defaultItems = avatarItems.filter((item) => item.price === 0);
   const purchasedItems = inventory
     .map((id) => getItemById(id))
     .filter((item): item is AvatarItem => item !== undefined);
 
-  const allOwned = [...defaultItems, ...purchasedItems.filter((p) => p.price > 0)];
+  const allOwned = [...defaultItems, ...purchasedItems.filter((p) => p.price > 0)].filter(item => !hiddenCategories.has(item.category));
 
-  const grouped = allOwned.reduce((acc, item) => {
-    if (hiddenCategories.has(item.category)) return acc;
-    if (!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, AvatarItem[]>);
+  const filteredItems = allOwned.filter(item => item.category === selectedCategory);
 
   const getEquippedId = (category: ItemCategory): string | null => {
     return (equipped as unknown as Record<string, string | null>)[category] || null;
@@ -49,52 +34,27 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
   if (allOwned.length === 0) {
     return (
       <div className="text-center py-16 font-thai">
-        <div className="text-7xl mb-4 animate-bounce">{<EmojiIcon emoji="🛍" />}️</div>
-        <p className="text-lg font-black text-gray-500">ยังไม่มีไอเทม</p>
-        <p className="text-sm mt-2 text-gray-400">ไปซื้อที่ร้านค้าได้เลย! {<EmojiIcon emoji="🏪" />}</p>
+        <div className="text-5xl mb-4"><EmojiIcon emoji="🛍" /></div>
+        <p className="text-lg font-black text-foreground">ยังไม่มีไอเทม</p>
+        <p className="text-sm mt-2 text-muted-foreground">ไปซื้อที่ร้านค้าได้เลย!</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-5">
-      {/* Stats bar */}
-      <div className="flex items-center justify-center gap-3 py-2">
-        <div className="flex items-center gap-1.5 bg-white/80 rounded-full px-3 py-1.5 shadow-md">
-          <span className="text-sm">{<EmojiIcon emoji="📦" />}</span>
-          <span className="text-xs font-black font-thai text-gray-600">
-            {allOwned.length} ไอเทม
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 bg-white/80 rounded-full px-3 py-1.5 shadow-md">
-          <span className="text-sm">{<EmojiIcon emoji="🏷" />}️</span>
-          <span className="text-xs font-black font-thai text-gray-600">
-            {Object.keys(grouped).length} หมวด
-          </span>
-        </div>
+    <div className="space-y-4">
+      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar" aria-label="หมวดไอเทมที่มี">
+        {categoryLabels.map(cat => (
+          <Button key={cat.key} variant="ghost" onClick={() => setSelectedCategory(cat.key)} aria-pressed={selectedCategory === cat.key}
+            className={`flex flex-col items-center gap-0.5 min-w-[72px] h-16 px-2 font-thai rounded-md ${selectedCategory === cat.key ? "bg-arcade-blue text-primary-foreground hover:bg-arcade-blue/90 hover:text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-arcade-blue/10"}`}>
+            <span className="text-xl"><EmojiIcon emoji={cat.icon} /></span><span className="text-[10px] font-bold whitespace-nowrap">{cat.label}</span>
+          </Button>
+        ))}
       </div>
-
-      {Object.entries(grouped).map(([category, items], groupIndex) => {
-        const config = categoryConfig[category];
-        return (
-          <div
-            key={category}
-            className="animate-pop-in"
-            style={{ animationDelay: `${groupIndex * 100}ms` }}
-          >
-            {/* Category header */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className={`flex items-center gap-1.5 bg-gradient-to-r ${config?.color || "from-gray-400 to-gray-500"} text-white rounded-full px-3 py-1 shadow-md`}>
-                <span className="text-sm"><EmojiIcon emoji={config?.icon} /></span>
-                <span className="text-[11px] font-black font-thai">{config?.label || category}</span>
-              </div>
-              <div className="flex-1 h-0.5 rounded-full bg-gradient-to-r from-gray-200 to-transparent" />
-              <span className="text-[10px] font-bold text-gray-400">{items.length}</span>
-            </div>
-
-            {/* Items grid */}
-            <div className="grid grid-cols-3 gap-2.5">
-              {items.map((item) => (
+      <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground font-thai"><span className="h-px flex-1 bg-border" />{filteredItems.length} ไอเทม<span className="h-px flex-1 bg-border" /></div>
+      {filteredItems.length ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {filteredItems.map((item) => (
                 <ItemCard
                   key={item.id}
                   item={item}
@@ -107,9 +67,7 @@ const InventorySection = ({ inventory, equipped, coins, onEquip, onUnequip }: In
                 />
               ))}
             </div>
-          </div>
-        );
-      })}
+      ) : <p className="text-center text-sm text-muted-foreground font-thai py-12">ยังไม่มีไอเทมในหมวดนี้</p>}
     </div>
   );
 };

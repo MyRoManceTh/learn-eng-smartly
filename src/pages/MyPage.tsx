@@ -346,12 +346,12 @@ const MyPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-purple-50 to-pink-50 pb-28">
+    <div className="min-h-screen bg-arcade-canvas arcade-type pb-28">
       {/* === HEADER === */}
-      <header className="border-b border-white/50 bg-white/70 backdrop-blur-xl shadow-sm sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="border-b border-border bg-card/95 backdrop-blur-xl sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-14 rounded-xl bg-gradient-to-b from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden shadow-md border border-white/60 shrink-0">
+            <div className="w-12 h-14 rounded-md bg-secondary flex items-center justify-center overflow-hidden border border-border shrink-0">
               <div className="scale-[0.45] origin-center">
                 <SpriteAvatar equipped={equipped} size="sm" />
               </div>
@@ -388,22 +388,22 @@ const MyPage = () => {
       </div>
 
       {/* === MAIN TABS === */}
-      <div className="max-w-3xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4">
         <Tabs defaultValue="character" className="w-full">
-          <TabsList className="w-full mb-4 h-12 p-1 bg-white/50 backdrop-blur-md rounded-2xl shadow-lg border border-white/30 grid grid-cols-5">
-            <TabsTrigger value="character" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+          <TabsList className="w-full max-w-3xl mx-auto mb-4 h-12 p-1 bg-card border border-border grid grid-cols-5">
+            <TabsTrigger value="character" className="font-thai text-[10px] font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">
               {<EmojiIcon emoji="👤" />} ตัวเรา
             </TabsTrigger>
-            <TabsTrigger value="room" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="room" className="font-thai text-[10px] font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">
               {<EmojiIcon emoji="🛋" />}️ ห้อง
             </TabsTrigger>
-            <TabsTrigger value="pets" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="pets" className="font-thai text-[10px] font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">
               {<EmojiIcon emoji="🐾" />} สัตว์เลี้ยง
             </TabsTrigger>
-            <TabsTrigger value="stats" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="stats" className="font-thai text-[10px] font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">
               {<EmojiIcon emoji="📊" />} สถิติ
             </TabsTrigger>
-            <TabsTrigger value="inventory" className="font-thai text-[10px] font-bold rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-md">
+            <TabsTrigger value="inventory" className="font-thai text-[10px] font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">
               {<EmojiIcon emoji="📦" />} คลัง
             </TabsTrigger>
           </TabsList>
@@ -575,24 +575,38 @@ const MyPage = () => {
 
           {/* ============ TAB 2: CHARACTER ============ */}
           <TabsContent value="character">
-            <div className="space-y-4">
-              {/* Avatar preview - 8-bit pixel character */}
-              <div className="rounded-2xl border border-white/50 bg-gradient-to-b from-cyan-100 via-sky-50 to-white p-8 shadow-lg flex justify-center items-center">
-                <SpriteAvatar
-                  equipped={equipped}
-                  size="lg"
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+              <div className="lg:col-span-5 space-y-5">
+                <div className="arcade-stage relative min-h-[330px] sm:min-h-[420px] lg:min-h-[550px] flex flex-col items-center justify-center overflow-hidden border-4 border-card bg-card">
+                  <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-arcade-blue/10 to-transparent" />
+                  <div className="arcade-avatar-halo relative flex items-center justify-center mt-8">
+                    <SpriteAvatar equipped={equipped} size="lg" />
+                  </div>
+                  <div className="mt-5 text-center z-10">
+                    <p className="arcade-title text-xl font-bold text-foreground">{profileData?.display_name && !profileData.display_name.includes('@line.local') ? profileData.display_name : 'ตัวละครของฉัน'}</p>
+                    <p className="text-xs text-muted-foreground">{evolutionStage.nameThai} · {getCefrLabel(profileData?.current_level || 1)}</p>
+                  </div>
+                </div>
+                <div className="arcade-panel p-4 sm:p-6">
+                  <h2 className="arcade-title text-lg font-bold mb-3">เลือกโหมดการเล่น</h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button onClick={() => navigate('/games')} className="h-20 flex-col gap-1 bg-arcade-blue text-primary-foreground hover:bg-arcade-blue/90 arcade-action"><EmojiIcon emoji="🎮" /><span>เกมคำศัพท์</span></Button>
+                    <Button onClick={() => navigate('/flashcards')} variant="outline" className="h-20 flex-col gap-1 arcade-action"><EmojiIcon emoji="📚" /><span>ทบทวนคำ</span></Button>
+                  </div>
+                </div>
               </div>
 
               {/* Shop / Inventory / Gacha sub-tabs */}
-              <Tabs defaultValue="shop">
-                <TabsList className="w-full grid grid-cols-3 mb-3 h-11 bg-white/50 backdrop-blur rounded-xl">
-                  <TabsTrigger value="shop" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">{<EmojiIcon emoji="🛒" />} ร้านค้า</TabsTrigger>
-                  <TabsTrigger value="closet" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">{<EmojiIcon emoji="👔" />} ตู้เสื้อผ้า</TabsTrigger>
-                  <TabsTrigger value="gacha" className="font-thai text-xs font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:shadow">{<EmojiIcon emoji="🎰" />} กาชา</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="shop">
+              <Tabs defaultValue="closet" className="lg:col-span-7 arcade-panel overflow-hidden min-w-0 lg:min-h-[700px]">
+                <div className="p-4 sm:p-6 border-b border-border">
+                  <h2 className="arcade-title text-xl font-bold mb-4">ตู้เสื้อผ้า <span className="text-muted-foreground text-sm font-medium">Wardrobe</span></h2>
+                  <TabsList className="w-full grid grid-cols-3 h-12 bg-secondary p-1">
+                    <TabsTrigger value="closet" className="font-thai text-xs font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">{<EmojiIcon emoji="👔" />} ตู้เสื้อผ้า</TabsTrigger>
+                    <TabsTrigger value="shop" className="font-thai text-xs font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">{<EmojiIcon emoji="🛒" />} ร้านค้า</TabsTrigger>
+                    <TabsTrigger value="gacha" className="font-thai text-xs font-bold data-[state=active]:bg-arcade-blue data-[state=active]:text-primary-foreground">{<EmojiIcon emoji="🎰" />} กาชา</TabsTrigger>
+                  </TabsList>
+                </div>
+                <TabsContent value="shop" className="p-4 sm:p-6 mt-0">
                   <ShopSection
                     coins={coins}
                     inventory={inventory}
@@ -603,7 +617,7 @@ const MyPage = () => {
                   />
                 </TabsContent>
 
-                <TabsContent value="closet">
+                <TabsContent value="closet" className="p-4 sm:p-6 mt-0">
                   <InventorySection
                     inventory={inventory}
                     equipped={equipped}
@@ -613,7 +627,7 @@ const MyPage = () => {
                   />
                 </TabsContent>
 
-                <TabsContent value="gacha">
+                <TabsContent value="gacha" className="p-4 sm:p-6 mt-0">
                   <GachaSpinner
                     coins={coins}
                     gachaTickets={profile?.gacha_tickets || 0}

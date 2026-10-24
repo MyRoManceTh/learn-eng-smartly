@@ -63,9 +63,7 @@ export function useFriends() {
     }
 
     const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, display_name, total_exp, current_streak, equipped, evolution_stage, lessons_completed, energy")
-      .in("user_id", friendUserIds);
+      .rpc("get_public_profiles", { _ids: friendUserIds });
 
     const profileMap = new Map<string, Record<string, unknown>>();
     ((profiles as Record<string, unknown>[]) || []).forEach((p) =>
@@ -128,12 +126,10 @@ export function useFriends() {
     if (gifts && (gifts as Record<string, unknown>[]).length > 0) {
       const senderIds = [...new Set((gifts as any[]).map((g) => g.sender_id))];
       const { data: senderProfiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name")
-        .in("user_id", senderIds);
+        .rpc("get_public_profiles", { _ids: senderIds });
 
       const senderMap = new Map<string, string>();
-      ((senderProfiles as Record<string, string>[]) || []).forEach((p) =>
+      ((senderProfiles as Array<{ user_id: string; display_name: string | null }>) || []).forEach((p) =>
         senderMap.set(p.user_id, p.display_name || "ไม่ระบุชื่อ")
       );
 
@@ -171,18 +167,16 @@ export function useFriends() {
         return false;
       }
 
-      const { data: friendProfile } = await supabase
-        .from("profiles")
-        .select("user_id")
-        .eq("friend_code", code)
-        .maybeSingle();
+      const { data: friendProfileRows } = await supabase
+        .rpc("get_user_id_by_friend_code", { _code: code });
 
+      const friendProfile = Array.isArray(friendProfileRows) ? friendProfileRows[0] : null;
       if (!friendProfile) {
         toast.error("ไม่พบรหัสเพื่อนนี้");
         return false;
       }
 
-      const fp = friendProfile as Record<string, string>;
+      const fp = friendProfile as { user_id: string; display_name: string | null };
       if (fp.user_id === user.id) {
         toast.error("ไม่สามารถเพิ่มตัวเองเป็นเพื่อนได้");
         return false;

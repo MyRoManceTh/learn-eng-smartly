@@ -1,0 +1,2 @@
+- Keep the avatar wardrobe and word-game selection presentation in existing `/my` and `/games` routes; this preserves current accounts, game rules, and reward logic.
+- Keep arcade presentation colors and fonts in semantic global tokens and local font assets; this ensures themed views and avoids remote CSS imports.
