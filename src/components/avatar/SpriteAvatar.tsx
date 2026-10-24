@@ -14,12 +14,12 @@ interface SpriteAvatarProps {
   pose?: CharacterPose;
 }
 
-/** CSS display sizes — integer scale of 32×40 sprite */
+/** CSS display sizes — integer scale of 32×46 sprite */
 const SIZE_CONFIG = {
-  xs: { cssWidth: 64,  cssHeight: 80  }, // 2× — fits compact rows (friends list)
-  sm: { cssWidth: 96,  cssHeight: 120 },
-  md: { cssWidth: 128, cssHeight: 160 },
-  lg: { cssWidth: 192, cssHeight: 240 },
+  xs: { cssWidth: 64,  cssHeight: 92  }, // 2× — fits compact rows (friends list)
+  sm: { cssWidth: 96,  cssHeight: 138 }, // 3×
+  md: { cssWidth: 128, cssHeight: 184 }, // 4×
+  lg: { cssWidth: 192, cssHeight: 276 }, // 6×
 };
 
 const SpriteAvatar: React.FC<SpriteAvatarProps> = ({

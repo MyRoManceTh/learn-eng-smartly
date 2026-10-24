@@ -49,9 +49,7 @@ const AvatarPage = () => {
         setInventory(Array.isArray(inv) ? inv : []);
         const eq = (data as any).equipped;
         if (eq && typeof eq === "object" && !Array.isArray(eq)) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { hat: _hat, ...eqWithoutHat } = eq as any;
-          setEquipped({ ...DEFAULT_EQUIPPED, ...eqWithoutHat });
+          setEquipped({ ...DEFAULT_EQUIPPED, ...(eq as Partial<EquippedItems>) });
         }
       }
       setLoading(false);

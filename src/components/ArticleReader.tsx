@@ -23,7 +23,7 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
   };
 
   return (
-    <div className="rounded-2xl border border-purple-100/50 bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-lg shadow-purple-500/5">
+    <div className="rounded-2xl border border-purple-100/50 bg-white/90 backdrop-blur-sm p-4 sm:p-6 shadow-lg shadow-purple-500/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Title */}
       <div className="mb-3 sm:mb-4">
         <div className="flex items-start justify-between gap-2">
@@ -82,13 +82,10 @@ const ArticleReader = ({ sentences, translation, imageUrl, title, titleThai }: A
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-purple-100/50 my-3 sm:my-4" />
-
       {/* Thai translation */}
-      <div>
-        <h4 className="text-sm font-semibold text-muted-foreground mb-2 font-thai">{<EmojiIcon emoji="📝" />} แปลเป็นไทย</h4>
-        <p className="font-thai text-foreground leading-relaxed text-sm">{translation}</p>
+      <div className="rounded-xl bg-gradient-to-br from-purple-50/80 to-pink-50/60 border border-purple-100/60 p-3 sm:p-4">
+        <h4 className="text-sm font-semibold text-purple-500 mb-1.5 font-thai">{<EmojiIcon emoji="📝" />} แปลเป็นไทย</h4>
+        <p className="font-thai text-foreground/80 leading-relaxed text-sm">{translation}</p>
       </div>
     </div>
   );

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { QuizQuestion } from "@/types/lesson";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, ArrowRight, Trophy, Zap, Coins } from "lucide-react";
+import { ArrowRight, Trophy, Zap } from "lucide-react";
+import { QuizOptionButton } from "@/components/QuizOptionButton";
 import { playCorrect, playWrong, playComplete } from "@/utils/sounds";
 import confetti from "canvas-confetti";
 import { supabase } from "@/integrations/supabase/client";
@@ -322,40 +323,26 @@ const QuizPage = () => {
             shaking ? "animate-[shake_0.5s_ease-in-out]" : ""
           }`}
         >
-          <p className="text-lg font-thai mb-6 leading-relaxed">{question.question}</p>
+          <div key={currentQ} className="animate-in fade-in slide-in-from-right-4 duration-300">
+            <p className="text-lg font-thai mb-6 leading-relaxed">{question.question}</p>
 
-          <div className="space-y-3 mb-6">
-            {question.options.map((opt, idx) => {
-              let variant: "outline" | "default" | "destructive" = "outline";
-              let icon = null;
-
-              if (showResult) {
-                if (idx === question.correctIndex) {
-                  variant = "default";
-                  icon = <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />;
-                } else if (idx === selected) {
-                  variant = "destructive";
-                  icon = <XCircle className="w-5 h-5 mr-3 flex-shrink-0" />;
-                }
-              }
-
-              return (
-                <Button
+            <div className="space-y-3 mb-6">
+              {question.options.map((opt, idx) => (
+                <QuizOptionButton
                   key={idx}
-                  variant={variant}
-                  className="w-full justify-start text-left font-thai h-auto py-4 px-4 text-base"
-                  onClick={() => handleSelect(idx)}
-                  disabled={showResult}
-                >
-                  {icon}
-                  {opt}
-                </Button>
-              );
-            })}
+                  option={opt}
+                  index={idx}
+                  showResult={showResult}
+                  isCorrect={idx === question.correctIndex}
+                  isSelected={idx === selected}
+                  onSelect={handleSelect}
+                />
+              ))}
+            </div>
           </div>
 
           {showResult && (
-            <Button onClick={handleNext} className="w-full font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25">
+            <Button onClick={handleNext} className="w-full font-thai h-12 text-base bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg shadow-purple-500/25 animate-in fade-in slide-in-from-bottom-2 duration-300">
               {currentQ + 1 >= questions.length ? "ดูผลคะแนน →" : "ข้อถัดไป →"}
             </Button>
           )}

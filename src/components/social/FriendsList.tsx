@@ -23,7 +23,7 @@ function parseEquipped(raw: any): EquippedItems {
     skin: (raw.skin && getItemById(raw.skin)) ? raw.skin : DEFAULT_EQUIPPED.skin,
     hair: (raw.hair && getItemById(raw.hair)) ? raw.hair : DEFAULT_EQUIPPED.hair,
     hairColor: (raw.hairColor && getItemById(raw.hairColor)) ? raw.hairColor : DEFAULT_EQUIPPED.hairColor,
-    hat: null,
+    hat: (raw.hat && getItemById(raw.hat)) ? raw.hat : null,
     shirt: (raw.shirt && getItemById(raw.shirt)) ? raw.shirt : DEFAULT_EQUIPPED.shirt,
     pants: (raw.pants && getItemById(raw.pants)) ? raw.pants : DEFAULT_EQUIPPED.pants,
     shoes: (raw.shoes && getItemById(raw.shoes)) ? raw.shoes : DEFAULT_EQUIPPED.shoes,

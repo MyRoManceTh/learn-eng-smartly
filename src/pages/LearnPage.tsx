@@ -221,14 +221,19 @@ const LearnPage = () => {
 
         <main className="max-w-7xl mx-auto px-4 py-6 animate-in fade-in duration-300">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-300">
               <div className="relative">
-                <Loader2 className="w-12 h-12 animate-spin text-purple-400" />
-                <span className="absolute inset-0 flex items-center justify-center text-xl">
+                <Loader2 className="w-14 h-14 animate-spin text-purple-400" />
+                <span className="absolute inset-0 flex items-center justify-center text-2xl animate-pulse-soft">
                   <EmojiIcon emoji={selectedModule.icon} />
                 </span>
               </div>
-              <p className="font-thai mt-4 text-lg text-white/60">กำลังสร้างบทเรียน...</p>
+              <p className="font-thai mt-5 text-lg text-white/70">กำลังสร้างบทเรียน...</p>
+              <div className="flex gap-1.5 mt-3">
+                <span className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 rounded-full bg-pink-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
             </div>
           ) : (
             <>

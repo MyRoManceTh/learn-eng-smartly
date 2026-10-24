@@ -136,6 +136,11 @@ export function drawLineStickerCharacter(
 
   drawHead(g, c);
   drawHair(g, hairStyle, c);
+
+  // Hat sits over the hair but behind the face, so headbands and
+  // brims never cover the big anime eyes
+  if (equipped.hat && c.hat !== null) drawHat(g, equipped.hat, c);
+
   drawFace(g, c, emotion, blinkFrame, equipped.rightHand);
   drawAccessoryFront(g, equipped.rightHand, c);
 

@@ -101,10 +101,14 @@ const PixelAvatar: React.FC<PixelAvatarProps> = ({
     const init = async () => {
       if (!canvasRef.current) return;
 
+      // Render at the actual display density so the vector character stays
+      // crisp when the small logical canvas is CSS-scaled up.
+      const cssScale = Math.ceil(SIZE_CONFIG[size].cssWidth / INTERNAL_W);
       const app = await createPixelApp(canvasRef.current, {
         width: INTERNAL_W,
         height: INTERNAL_H,
         transparent: true,
+        resolution: cssScale * Math.min(2, window.devicePixelRatio || 1),
       });
 
       if (destroyed) {
